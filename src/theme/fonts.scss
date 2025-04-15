@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "GeistSans";
+  font-style: normal;
+  src: url("fonts/Geist[wght].woff2") format("woff");
+}
+
+body, button, input {
+  font-family: GeistSans, serif;
+}

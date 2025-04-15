@@ -1,0 +1,207 @@
+$icon-size: 16px;
+
+@mixin x-odoo-sh-success-icon($color: 28a745) {
+  	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23#{$color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>');
+}
+@mixin x-odoo-sh-warning-icon($color: e28900) {
+  	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23#{$color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>');
+}
+@mixin x-odoo-sh-error-icon($color: dc3545) {
+  	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23#{$color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+}
+@mixin x-odoo-sh-build-icon($color: 212529) {
+	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23#{$color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hammer"><path d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96l.92.82A6.18 6.18 0 0 1 12 8.4V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/></svg>');
+	animation: hammer-hit 0.75s infinite;
+	top: 0;
+}
+@mixin x-odoo-sh-no-build-icon() {
+  	background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-off"><path d="m2 2 20 20"/><path d="M8.35 2.69A10 10 0 0 1 21.3 15.65"/><path d="M19.08 19.08A10 10 0 1 1 4.92 4.92"/></svg>');
+}
+@mixin x-odoo-sh-base-icon($left, $top) {
+	content: "";
+	position: absolute;
+	left: $left;
+	top: $top;
+	transform: translateY(-50%);
+	width: $icon-size;
+	height: $icon-size;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+/*
+    Attempt to fix misalignment of the dropdown in the cards view
+    (.o_project_container .o_project_dropdown)
+ */
+.x-odoo-sh-favorite-icon {
+	cursor: pointer;
+	&:hover {
+		background-color: #00a09d;
+		color: white;
+		>i.fa-star {
+			color: orange;
+		}
+	}
+	>i.fa-star {
+		color: darkorange;
+	}
+}
+.x-odoo-sh-favorite-icon-list {
+	cursor: pointer;
+}
+.x-odoo-sh-favorite-icon-list.fa-star {
+	color: darkorange;
+}
+.x-odoo-sh-fix-card-dropdown {
+	padding: 0.6rem 0.5rem 0.4rem !important;
+}
+.x-odoo-sh-fix-card-buttons-row {
+	display: flex !important;
+	align-items: center !important;
+}
+.x-odoo-sh-copy-branch-name, .x-odoo-sh-github-link, .x-odoo-sh-project-task-link {
+	color: #b5b7ba;
+	display: flex;
+	align-items: center;
+	font-size: 15px;
+	margin-bottom: 0;
+	cursor: pointer;
+	&:hover {
+		color: white;
+	}
+}
+.x-odoo-sh-project-task-link {
+	margin-left: 8px;
+}
+.x-odoo-sh-copy-branch-name {
+	margin-left: 12px;
+}
+.x-odoo-sh-github-link {
+	margin-left: 8px;
+}
+.o_builds_view.x-odoo-options-colorblind-mode {
+	.o_sh_build_panel_right {
+		.card-body, .o_card_footer {
+			background-color: initial !important;
+			color: initial !important;
+		}
+		.o_builds_card {
+			box-shadow: initial;
+			header {
+				position: relative;
+				padding-left: $icon-size + 4px;
+				.o_builds_commit::before {
+					@include x-odoo-sh-base-icon(0, 50%);
+				}
+			}
+		}
+		.o_builds_card.o_success {
+			color: #0f5132;
+			background-color: #d1e7dd;
+			border-color: #28a745;
+			.o_builds_commit::before {
+				@include x-odoo-sh-success-icon();
+			}
+		}
+		.o_builds_card.o_warning {
+			color: #664d03;
+			background-color: #fff3cd;
+			border-color: #e28900;
+			&:not(:has(div.progress-bar-animated)) {
+				.o_builds_commit::before {
+					@include x-odoo-sh-warning-icon();
+				}
+			}
+			&:has(div.progress-bar-animated) {
+				.o_builds_commit::before {
+					@include x-odoo-sh-build-icon(e28900);
+				}
+			}
+		}
+		.o_builds_card.o_failed {
+		 	color: #842029;
+			background-color: #f8d7da;
+			border-color: #dc3545;
+			&:not(:has(div.progress-bar-animated)) {
+				.o_builds_commit::before {
+					@include x-odoo-sh-error-icon();
+				}
+			}
+			&:has(div.progress-bar-animated) {
+				.o_builds_commit::before {
+					@include x-odoo-sh-build-icon(dc3545);
+				}
+			}
+		}
+		.o_builds_card.o_progress, .o_builds_card.o_updating {
+			.o_builds_commit::before {
+				@include x-odoo-sh-build-icon();
+			}
+		}
+	}
+}
+
+.o_branches_listing.x-odoo-options-colorblind-mode {
+	.o_branch_icon {
+		&:has(> i.fa-circle-o-notch) {
+			position: relative;
+			i {
+				display: none;
+			}
+			&::before {
+				@include x-odoo-sh-base-icon(6px, 0);
+			}
+			&[title="In progress"]::before, &[title="killed"]::before {
+				@include x-odoo-sh-build-icon(b5b7ba);
+				top: 12.5%;
+			}
+			&.o_branch_failed::before {
+				@include x-odoo-sh-build-icon(dc3545);
+				top: 12.5%;
+			}
+			&.o_branch_warning::before {
+				@include x-odoo-sh-build-icon(e28900);
+				top: 12.5%;
+			}
+		}
+		&:has(> i.gi-primitive-dot) {
+			position: relative;
+			i {
+				display: none;
+			}
+			&::before {
+				@include x-odoo-sh-base-icon(6px, 50%);
+			}
+			&.o_branch_success::before {
+				@include x-odoo-sh-success-icon();
+			}
+			&.o_branch_warning::before {
+				@include x-odoo-sh-warning-icon();
+			}
+			&.o_branch_failed::before {
+				@include x-odoo-sh-error-icon();
+			}
+		}
+		&:has(> i.gi-primitive-dot-stroke) {
+			position: relative;
+			i {
+				display: none;
+			}
+			&::before {
+				@include x-odoo-sh-base-icon(6px, 50%);
+			}
+			&.o_branch_no_build::before {
+				@include x-odoo-sh-no-build-icon();
+			}
+		}
+	}
+}
+
+@keyframes hammer-hit {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-25deg);
+  }
+}

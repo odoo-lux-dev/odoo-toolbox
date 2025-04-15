@@ -1,0 +1,29 @@
+@use "sass:map";
+@use "theme" as *;
+
+$themes: (
+  light: $light-theme,
+  dark: $dark-theme
+);
+
+@each $name, $theme in $themes {
+  body.#{$name} {
+    @each $property, $value in $theme {
+      --#{$property}: #{map.get($theme, $property)};
+    }
+  }
+}
+
+$header-background-color: var(--header-background-color);
+$header-link-color: var(--header-link-color);
+$header-text-color: var(--header-text-color);
+$header-border-color: var(--header-border-color);
+$body-background-color: var(--body-background-color);
+$footer-text-color: var(--footer-text-color);
+$footer-background-color: var(--footer-background-color);
+$favorite-odd-row-background-color: var(--favorite-odd-row-background-color);
+$favorite-hover-row-background-color: var(--favorite-hover-row-background-color);
+$favorite-row-link-color: var(--favorite-row-link-color);
+$favorite-hover-row-link-color: var(--favorite-hover-row-link-color);
+$favorite-row-arrow-color: var(--favorite-row-arrow-color);
+$favorite-hover-row-arrow-color: var(--favorite-hover-row-arrow-color);

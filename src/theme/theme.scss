@@ -1,0 +1,34 @@
+@use "light-theme" as light;
+@use "dark-theme" as dark;
+
+$light-theme: (
+  header-background-color: light.$header-background-color,
+  header-text-color: light.$header-text-color,
+  header-link-color: light.$header-link-color,
+  header-border-color: light.$header-border-color,
+  body-background-color: light.$body-background-color,
+  footer-background-color: light.$footer-background-color,
+  footer-text-color: light.$footer-text-color,
+  favorite-odd-row-background-color: light.$favorite-odd-row-background-color,
+  favorite-hover-row-background-color: light.$favorite-hover-row-background-color,
+  favorite-row-link-color: light.$favorite-row-link-color,
+  favorite-hover-row-link-color: light.$favorite-hover-row-link-color,
+  favorite-row-arrow-color: light.$favorite-row-arrow-color,
+  favorite-hover-row-arrow-color: light.$favorite-hover-row-arrow-color,
+);
+
+$dark-theme: (
+  header-background-color: dark.$header-background-color,
+  header-text-color: dark.$header-text-color,
+  header-link-color: dark.$header-link-color,
+  header-border-color: dark.$header-border-color,
+  body-background-color: dark.$body-background-color,
+  footer-background-color: dark.$footer-background-color,
+  footer-text-color: dark.$footer-text-color,
+  favorite-odd-row-background-color: dark.$favorite-odd-row-background-color,
+  favorite-hover-row-background-color: dark.$favorite-hover-row-background-color,
+  favorite-row-link-color: dark.$favorite-row-link-color,
+  favorite-hover-row-link-color: dark.$favorite-hover-row-link-color,
+  favorite-row-arrow-color: dark.$favorite-row-arrow-color,
+  favorite-hover-row-arrow-color: dark.$favorite-hover-row-arrow-color,
+);

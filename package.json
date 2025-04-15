@@ -1,0 +1,36 @@
+{
+  "name": "odoo-sh-enhancer-web-extension",
+  "version": "{{EXTENSION_VERSION}}",
+  "packageManager": "bun@1.2.5",
+  "displayName": "Odoo Toolbox",
+  "author": "THCL&SAJU",
+  "description": "Enhances the experience of Odoo developers and Odoo.SH users by adding a variety of tools and features.",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare",
+    "lint": "biome lint .",
+    "format": "biome format . --write"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@preact/preset-vite": "^2.10.1",
+    "@wxt-dev/auto-icons": "^1.0.2",
+    "sass": "^1.86.0",
+    "typescript": "^5.8.2",
+    "wxt": "^0.19.29"
+  },
+  "dependencies": {
+    "history": "^5.3.0",
+    "preact": "^10.26.5",
+    "preact-router": "^4.1.2",
+    "swapy": "^1.0.5"
+  }
+}

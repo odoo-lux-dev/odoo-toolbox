@@ -1,0 +1,60 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Release Extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
+
+      - name: Update extension version
+        run: sed -i "s/{{EXTENSION_VERSION}}/${{ env.VERSION }}/" package.json
+
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Clean dist directory
+        run: rm -rf dist/
+
+      - name: Run build script
+        run: |
+          bun run zip
+          bun run zip:firefox
+
+      - name: Upload to stores
+        run: |
+          bun wxt submit \
+            --chrome-zip dist/odoo-toolbox-${{ env.VERSION }}-chrome.zip \
+            --firefox-zip dist/odoo-toolbox-${{ env.VERSION }}-firefox.zip --firefox-sources-zip dist/odoo-toolbox-${{ env.VERSION }}-sources.zip
+
+        env:
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          CHROME_PUBLISH_TARGET: default
+          CHROME_SKIP_SUBMIT_REVIEW: false
+          FIREFOX_EXTENSION_ID: odoo_toolbox@thcl-saju
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release v${{ env.VERSION }}"
+          generate_release_notes: true
+          files: |
+            dist/odoo-toolbox-${{ env.VERSION }}-chrome.zip
+            dist/odoo-toolbox-${{ env.VERSION }}-firefox.zip
