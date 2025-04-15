@@ -12,6 +12,7 @@ import { ImportIcon } from "../icons/import-icon"
 import { LuxembourgFlag } from "../icons/luxembourg-flag"
 import Match from "preact-router/match"
 import { Link } from "preact-router"
+import { GithubIcon } from "../icons/github-icon"
 
 export const OptionsSidebar = () => {
   const [statusMessage, setStatusMessage] = useState("")
@@ -108,8 +109,16 @@ export const OptionsSidebar = () => {
           />
         </div>
         <div class="x-odoo-options-page-sidebar-footer-version">
-          <LuxembourgFlag />
+          <a
+            href="https://github.com/odoo-lux-dev/odoo-toolbox"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="GitHub Repository"
+          >
+            <GithubIcon />
+          </a>
           <span id="extension-version">{extensionVersion}</span>
+          <LuxembourgFlag />
         </div>
       </div>
     </div>
