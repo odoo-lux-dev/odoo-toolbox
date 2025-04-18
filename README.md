@@ -136,23 +136,14 @@ bun build:firefox
 
 This will create a `dist` folder containing the built production-ready extension that you can then load into your browser.
 
-## Release / Zip
+## Zip
 To create a zip file containing the built extension, you can run the following commands in your terminal:
 ```bash
 bun zip
 bun zip:firefox
 ```
 
-This will create a zip file in the `dist` folder that you can then upload to the Chrome Web Store or Firefox Add-ons.
-
-To upload you can use the following commands:
-```bash
-bun wxt submit \
-    --chrome-zip dist/*-chrome.zip \
-    --firefox-zip dist/*-firefox.zip --firefox-sources-zip .output/*-sources.zip
-```
-
-Get more details here [WXT Publishing Guide](https://wxt.dev/guide/essentials/publishing.html)
+This will create a zip file in the `dist` folder.
 
 <br>
 
