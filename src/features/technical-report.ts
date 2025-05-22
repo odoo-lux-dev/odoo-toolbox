@@ -185,8 +185,9 @@ const _addLoadingIconOnPrintOption = (
     } else {
       spanReportRow.appendChild(loadingIconContainer)
       ;(spanReportRow as HTMLSpanElement).style.display = "flex"
-      ;(spanReportRow as HTMLSpanElement).style.justifyContent = "space-between"
+      ;(spanReportRow as HTMLSpanElement).style.gap = "4px"
       ;(spanReportRow as HTMLSpanElement).style.alignItems = "center"
+      ;(loadingIconContainer as HTMLDivElement).style.marginLeft = "auto"
     }
   })
 }
@@ -289,8 +290,9 @@ const _addPrintOptionsToNode = (
     } else {
       spanReportRow.appendChild(divPrintOptions)
       ;(spanReportRow as HTMLSpanElement).style.display = "flex"
-      ;(spanReportRow as HTMLSpanElement).style.justifyContent = "space-between"
+      ;(spanReportRow as HTMLSpanElement).style.gap = "4px"
       ;(spanReportRow as HTMLSpanElement).style.alignItems = "center"
+      ;(divPrintOptions as HTMLDivElement).style.marginLeft = "auto"
     }
   })
 }
