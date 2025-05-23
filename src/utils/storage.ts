@@ -1,4 +1,4 @@
-import { storage, StorageItemKey, WatchCallback } from "wxt/storage"
+import { storage, StorageItemKey, WatchCallback } from "wxt/utils/storage"
 import {
   CHROME_STORAGE_FAVORITES_KEY,
   CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
