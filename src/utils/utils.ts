@@ -237,6 +237,19 @@ const validateConfigFile = (
   return { valid: true, message: "" }
 }
 
+const simpleDebounce = (func: Function, timeout: number) => {
+  let timeoutId: NodeJS.Timeout | null = null
+
+  return (...args: any[]) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => {
+      func(...args)
+    }, timeout)
+  }
+}
+
 export {
   getDefaultDebugMode,
   getOdooWindowObject,
@@ -249,4 +262,5 @@ export {
   isOnNewURLPos,
   validateConfigFile,
   getDefaultDarkMode,
+  simpleDebounce,
 }

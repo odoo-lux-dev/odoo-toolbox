@@ -5,6 +5,7 @@ import {
   getFavoritesProjects,
 } from "@/utils/storage"
 import { Favorite } from "@/utils/types"
+import { simpleDebounce } from "@/utils/utils"
 
 const addFavorite = (projectName: string) => addToFavorites(projectName)
 
@@ -152,6 +153,57 @@ const handleFavoriteClick = async (
 }
 
 /**
+ * Updates the search bar on the project list page to filter projects based on user input
+ * and take the custom project name into account.
+ *
+ * This function modifies the search bar's class name to a custom one to ignore the default search
+ * and adds a custom event listener, close to the default one.
+ */
+const updateSearchBar = () => {
+  const projectsSearchBar = document.querySelector(".o_sh_projects_search")
+  const projectsSearchBarInput = projectsSearchBar?.querySelector("input")
+
+  if (!projectsSearchBar || !projectsSearchBarInput) return
+
+  // Replace the class name to ignore the default search
+  projectsSearchBar.classList.replace(
+    "o_sh_projects_search",
+    "x-odoo-sh-projects-search"
+  )
+
+  projectsSearchBarInput.addEventListener(
+    "input",
+    simpleDebounce((event: InputEvent) => {
+      const input = event.target as HTMLInputElement
+      const searchQuery = input.value.toLowerCase()
+      const cards = Array.from(
+        document.querySelectorAll<HTMLElement>(".o_project_card_container")
+      )
+      for (const card of cards) {
+        card.classList.remove("d-none")
+        const projectDefaultName = (card.dataset.name || "").toLowerCase()
+        const subscriptionCode = (
+          card.dataset.subscriptionCode || ""
+        ).toLowerCase()
+        const projectNameElement = card.querySelector(
+          ".x-odoo-sh-project-name"
+        ) as HTMLElement | null
+        const projectName = (projectNameElement?.innerText || "").toLowerCase()
+
+        if (
+          searchQuery &&
+          !projectDefaultName.includes(searchQuery) &&
+          !subscriptionCode.includes(searchQuery) &&
+          !projectName.includes(searchQuery)
+        ) {
+          card.classList.add("d-none")
+        }
+      }
+    }, 350)
+  )
+}
+
+/**
  * Handles the initialization and dynamic updates of the project list page. This function is responsible for:
  * - Checking if there are any project cards or list items on the page. If none are found, the function exits.
  * - Retrieving the list of favorite projects from storage.
@@ -175,6 +227,8 @@ const handleProjectListPageFavorites = async (): Promise<void> => {
   if (projectsCardsNodes.length === 0 && projectsListNodes.length === 0) {
     return
   }
+
+  updateSearchBar()
 
   const projectsCards = Array.from(projectsCardsNodes)
   const projectsList = Array.from(projectsListNodes)
@@ -203,11 +257,13 @@ const handleProjectListPageFavorites = async (): Promise<void> => {
       )
       buttonsRow.appendChild(star)
 
-      if (currentFavorite) {
-        const projectCardTopBar = buttonsRow.parentElement
-        const projectLinkNameTopBar = projectCardTopBar?.querySelector("a")
-        if (projectLinkNameTopBar)
+      const projectCardTopBar = buttonsRow.parentElement
+      const projectLinkNameTopBar = projectCardTopBar?.querySelector("a")
+      if (projectLinkNameTopBar) {
+        projectLinkNameTopBar.classList.add("x-odoo-sh-project-name")
+        if (currentFavorite) {
           renameProjectName(currentFavorite.display_name, projectLinkNameTopBar)
+        }
       }
 
       star.addEventListener("click", (event) =>
@@ -231,9 +287,11 @@ const handleProjectListPageFavorites = async (): Promise<void> => {
         "list",
         currentFavorite !== undefined
       )
+      nameCell.classList.add("x-odoo-sh-project-name")
 
-      if (currentFavorite)
+      if (currentFavorite) {
         renameProjectName(currentFavorite.display_name, nameCell)
+      }
 
       nameCell.prepend(star)
 
