@@ -201,6 +201,30 @@ const updateSearchBar = () => {
       }
     }, 350)
   )
+
+  projectsSearchBarInput.addEventListener("keydown", (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      const visibleCards = Array.from(
+        document.querySelectorAll<HTMLElement>(".o_project_card_container")
+      ).filter((card) => !card.classList.contains("d-none"))
+      /**
+       * Check if only one favorite matches the search and, if so, open it
+       *
+       * We check if the length of visibleCards is 2
+       * because there is one visible card in the card view
+       * and its corresponding row in the list view
+       */
+      if (visibleCards.length === 2) {
+        const cardElement = visibleCards[0]
+        const linkElement = Array.from(cardElement.querySelectorAll("a")).find(
+          (a) =>
+            a.getAttribute("href")?.startsWith("/project/") &&
+            a.textContent?.includes("Open")
+        )
+        linkElement?.click()
+      }
+    }
+  })
 }
 
 /**
