@@ -1,5 +1,5 @@
 {
-  "name": "odoo-sh-enhancer-web-extension",
+  "name": "odoo-toolbox",
   "version": "{{EXTENSION_VERSION}}",
   "packageManager": "bun@1.2.5",
   "displayName": "Odoo Toolbox",
