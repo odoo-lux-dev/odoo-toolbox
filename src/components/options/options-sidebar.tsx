@@ -18,7 +18,7 @@ export const OptionsSidebar = () => {
   const [statusMessage, setStatusMessage] = useState("")
   const [statusClass, setStatusClass] = useState("")
   const [extensionVersion] = useState(
-    `v${chrome.runtime.getManifest().version}`
+    `v${browser.runtime.getManifest().version}`
   )
 
   const fileInputRef = createRef()
