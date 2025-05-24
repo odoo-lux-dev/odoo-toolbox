@@ -1,4 +1,7 @@
-import { alignLocalDataWithSyncedData } from "@/utils/storage"
+import {
+  alignLocalDataWithSyncedData,
+  importConfiguration,
+} from "@/utils/storage"
 import { alarms, checkAndHandleAlarms } from "@/entries/background/alarms"
 import { commands } from "@/entries/background/commands"
 
@@ -22,4 +25,38 @@ export default defineBackground(() => {
     const commandInstance = commands.find((c) => c.getName() === command)
     if (commandInstance) commandInstance.execute()
   })
+
+  browser.runtime.onMessageExternal.addListener(
+    (request, sender, sendResponse) => {
+      const currentBrowser = import.meta.env.BROWSER
+      const isChromiumBased = ["chrome", "edge", "opera"].includes(
+        currentBrowser
+      )
+
+      const publicExtensionId = isChromiumBased
+        ? "fkgeepkgoihjhiinffddgjmdkhelpnfo"
+        : "odoo_sh_extension@thcl-saju"
+
+      if (sender.id !== publicExtensionId) {
+        return sendResponse({
+          status: "error",
+          message: "Unauthorized request from external extension",
+        })
+      }
+
+      importConfiguration(request.config)
+        .then(() => {
+          sendResponse({
+            status: "success",
+            message: "Configuration migrated successfully",
+          })
+        })
+        .catch((error) => {
+          sendResponse({
+            status: "error",
+            message: `Failed to migrate configuration: ${error.message}`,
+          })
+        })
+    }
+  )
 })
