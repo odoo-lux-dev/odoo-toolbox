@@ -10,6 +10,7 @@ import { DebugModeAssetsIcon } from "@/components/icons/debug-assets-icon"
 import { DebugModeOffIcon } from "@/components/icons/debug-off-icon"
 import { SunIcon } from "@/components/icons/sun-icon"
 import { MoonIcon } from "@/components/icons/moon-icon"
+import { DebugModeTestsAssetsIcon } from "@/components/icons/debug-tests-assets-icon"
 
 export const Footer = () => {
   const { theme, debugMode, updateTheme, updateDebugMode } = usePopup()
@@ -23,49 +24,47 @@ export const Footer = () => {
     updateTheme(newTheme)
   }
 
-  const handleDebugModeToggle = () => {
+  const handleDebugModeToggle = (() => {
     let clickCount = 0
-    let singleClickTimer: number
+    let clickTimer: number
+
+    const executeDebugModeChange = async (targetMode: DebugModeType) => {
+      await setDebugMode(targetMode)
+      await refreshActiveTabs(targetMode)
+      updateDebugMode(targetMode)
+      clickCount = 0
+    }
 
     return async () => {
       clickCount++
 
+      if (clickTimer) {
+        clearTimeout(clickTimer)
+      }
+
+      // If any debug mode is active, single click disables it
+      if (debugMode !== "disabled") {
+        await executeDebugModeChange("disabled")
+        return
+      }
+
       if (clickCount === 1) {
-        singleClickTimer = window.setTimeout(async () => {
-          let newMode: DebugModeType = "disabled"
-
-          if (debugMode === "disabled") {
-            newMode = "1"
-            await setDebugMode(newMode)
-            await refreshActiveTabs(newMode)
-          } else {
-            newMode = "disabled"
-            await setDebugMode(newMode)
-            await refreshActiveTabs(newMode)
-          }
-
-          updateDebugMode(newMode)
-          clickCount = 0
-        }, 300)
+        // Single click: enable debug mode
+        clickTimer = window.setTimeout(() => executeDebugModeChange("1"), 400)
       } else if (clickCount === 2) {
-        clearTimeout(singleClickTimer)
-        let newMode: DebugModeType = "disabled"
-
-        if (debugMode !== "assets") {
-          newMode = "assets"
-          await setDebugMode(newMode)
-          await refreshActiveTabs(newMode)
-        } else {
-          newMode = "disabled"
-          await setDebugMode(newMode)
-          await refreshActiveTabs(newMode)
-        }
-
-        updateDebugMode(newMode)
+        // Double click: enable assets mode
+        clickTimer = window.setTimeout(
+          () => executeDebugModeChange("assets"),
+          200
+        )
+      } else if (clickCount === 3) {
+        // Triple click: enable assets tests mode
+        await executeDebugModeChange("assets,tests")
+      } else {
         clickCount = 0
       }
     }
-  }
+  })()
 
   const openOptions = () => {
     chrome.runtime.openOptionsPage()
@@ -76,6 +75,8 @@ export const Footer = () => {
     DebugIcon = DebugModeOnIcon
   } else if (debugMode === "assets") {
     DebugIcon = DebugModeAssetsIcon
+  } else if (debugMode === "assets,tests") {
+    DebugIcon = DebugModeTestsAssetsIcon
   } else {
     DebugIcon = DebugModeOffIcon
   }
@@ -105,13 +106,11 @@ export const Footer = () => {
         <span
           id="toggle-debug-mode"
           title={
-            debugMode === "1"
+            ["1", "assets,tests", "assets"].includes(debugMode)
               ? "Disable debug mode"
-              : debugMode === "assets"
-                ? "Disable debug mode"
-                : "Enable debug mode"
+              : "Enable debug mode"
           }
-          onClick={handleDebugModeToggle()}
+          onClick={handleDebugModeToggle}
         >
           <DebugIcon isNostalgia={isNostalgia} />
         </span>

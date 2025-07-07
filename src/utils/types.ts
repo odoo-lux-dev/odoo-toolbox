@@ -12,7 +12,7 @@ export type OrmReportRecord = {
   report_name: string
 }
 
-export type DebugModeType = "1" | "disabled" | "assets"
+export type DebugModeType = "1" | "disabled" | "assets" | "assets,tests"
 
 export type StoredSettingsV1 = {
   [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]: "manual" | "1" | "0" | "assets"

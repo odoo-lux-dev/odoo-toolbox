@@ -41,6 +41,7 @@ export const DebugModeOption = () => {
       </li>
       <li>[Always] Debug mode will always be enabled</li>
       <li>[Assets] Debug mode will always be enabled to assets</li>
+      <li>[Tests assets] Debug mode will always be enabled to tests assets</li>
     </ul>
   )
 
@@ -56,8 +57,9 @@ export const DebugModeOption = () => {
           <span>
             You can also configure this by clicking the bug icon within the
             popup.
-            <br />A <strong>single click</strong> will toggle debug mode, while
-            a <strong>double click</strong> will activate assets debug.
+            <br />A <strong>single click</strong> will toggle debug mode, a{" "}
+            <strong>double click</strong> will activate assets debug, and a{" "}
+            <strong>triple click</strong> will activate tests assets debug.
           </span>
         </DebugModeTips>
 
@@ -95,6 +97,18 @@ export const DebugModeOption = () => {
           />
           <span className="checkmark"></span>
           Assets
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="debug-mode"
+            value="assets,tests"
+            checked={selectedMode === "assets,tests"}
+            onChange={handleChange}
+          />
+          <span className="checkmark"></span>
+          Tests assets
         </label>
       </div>
     </OptionItem>
