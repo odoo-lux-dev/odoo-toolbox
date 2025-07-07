@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "^2.0.6",
     "@preact/preset-vite": "^2.10.1",
     "@wxt-dev/auto-icons": "^1.0.2",
     "sass": "^1.89.0",
