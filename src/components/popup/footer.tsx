@@ -1,6 +1,10 @@
 import { useEffect } from "preact/hooks"
 import { usePopup } from "./popup-context"
-import { toggleExtensionTheme, setDebugMode } from "@/utils/storage"
+import {
+  toggleExtensionTheme,
+  setDebugMode,
+  toggleTechnicalList,
+} from "@/utils/storage"
 import { refreshActiveTabs } from "@/utils/background-utils"
 import { DebugModeType } from "@/utils/types"
 import { SettingsIcon } from "@/components/icons/settings-icon"
@@ -11,9 +15,17 @@ import { DebugModeOffIcon } from "@/components/icons/debug-off-icon"
 import { SunIcon } from "@/components/icons/sun-icon"
 import { MoonIcon } from "@/components/icons/moon-icon"
 import { DebugModeTestsAssetsIcon } from "@/components/icons/debug-tests-assets-icon"
+import { CodeIcon } from "../icons/code-icon"
 
 export const Footer = () => {
-  const { theme, debugMode, updateTheme, updateDebugMode } = usePopup()
+  const {
+    theme,
+    debugMode,
+    updateTheme,
+    updateDebugMode,
+    showTechnicalList,
+    updateShowTechnicalList,
+  } = usePopup()
   const { isNostalgia, themeProps } = useThemedIcons()
   const { moonProps, sunProps } = themeProps
 
@@ -22,6 +34,12 @@ export const Footer = () => {
     document.body.className = newTheme
     await toggleExtensionTheme()
     updateTheme(newTheme)
+  }
+
+  const handleShowTechnicalListToggle = async () => {
+    await toggleTechnicalList()
+    updateShowTechnicalList(!showTechnicalList)
+    await refreshActiveTabs()
   }
 
   const handleDebugModeToggle = (() => {
@@ -113,6 +131,17 @@ export const Footer = () => {
           onClick={handleDebugModeToggle}
         >
           <DebugIcon isNostalgia={isNostalgia} />
+        </span>
+        <span
+          id="toggle-technical-list"
+          title={
+            showTechnicalList
+              ? "Enable technical sidebar"
+              : "Disable technical sidebar"
+          }
+          onClick={handleShowTechnicalListToggle}
+        >
+          <CodeIcon isEnabled={showTechnicalList} isNostalgia={isNostalgia} />
         </span>
       </div>
       <span

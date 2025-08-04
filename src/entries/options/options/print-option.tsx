@@ -1,4 +1,3 @@
-import { useState, useEffect } from "preact/hooks"
 import {
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
@@ -9,17 +8,7 @@ import { ToggleSwitch } from "@/components/toggle-switch"
 import { useOptions } from "@/components/options/options-context"
 
 export const PrintOption = () => {
-  const [pdfEnabled, setPdfEnabled] = useState(false)
-  const [htmlEnabled, setHtmlEnabled] = useState(false)
   const { settings } = useOptions()
-
-  useEffect(() => {
-    setPdfEnabled(!!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF])
-    setHtmlEnabled(!!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML])
-  }, [
-    settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF],
-    settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML],
-  ])
 
   const handlePdfChange = async (checked: boolean) => {
     await setPrintOptionsPDF(checked)
@@ -28,6 +17,9 @@ export const PrintOption = () => {
   const handleHtmlChange = async (checked: boolean) => {
     await setPrintOptionsHTML(checked)
   }
+
+  const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF]
+  const htmlEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML]
 
   const additionalTooltipContent = (
     <ul>

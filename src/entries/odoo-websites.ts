@@ -6,6 +6,7 @@ import {
 import { setDebugMode } from "@/features/debug-mode"
 import { handleTechnicalModelName } from "@/features/technical-model-name"
 import { setDefaultDarkMode } from "@/features/default-dark-mode"
+import { initTechnicalList } from "@/features/technical-list"
 
 const handleVersion17AndAbove = async (targetNode: Element) => {
   handleTechnicalModelName(targetNode)
@@ -64,4 +65,6 @@ export default defineUnlistedScript(async () => {
   } else if (darkModeSettings.reload) {
     window.location.reload()
   }
+
+  initTechnicalList()
 })

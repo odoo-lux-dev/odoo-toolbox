@@ -135,10 +135,42 @@ footer {
         transform: rotate(-60deg);
     }
 }
-#toggle-popup-theme, #toggle-debug-mode {
+#toggle-popup-theme, #toggle-debug-mode, #toggle-technical-list {
 	cursor: pointer;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+
+.x-odoo-code-icon-container {
+  position: relative;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+}
+
+.x-odoo-code-icon-badge {
+  position: absolute;
+  top: 8px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+  
+  border: 1px solid #666666;
+  color: #666666;
+  
+  &.x-odoo-code-icon-badge-nostalgia {
+    border: 1px solid #ff0000;
+    color: #ff0000;
+  }
 }

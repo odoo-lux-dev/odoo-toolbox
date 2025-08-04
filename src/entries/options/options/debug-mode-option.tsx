@@ -1,4 +1,3 @@
-import { useState, useEffect } from "preact/hooks"
 import { CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY } from "@/utils/constants"
 import { DebugModeType } from "@/utils/types"
 import { setDebugMode } from "@/utils/storage"
@@ -7,15 +6,9 @@ import { DebugModeTips } from "@/components/options/debug-mode-tips"
 import { useOptions } from "@/components/options/options-context"
 
 export const DebugModeOption = () => {
-  const [selectedMode, setSelectedMode] = useState<DebugModeType>("disabled")
   const { settings } = useOptions()
 
-  useEffect(() => {
-    setSelectedMode(
-      (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) ||
-        "disabled"
-    )
-  }, [settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]])
+  const selectedMode = (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) || "disabled"
 
   const handleChange = async (event: Event) => {
     const target = event.target as HTMLInputElement
