@@ -1,5 +1,3 @@
-import { useState, useEffect } from "preact/hooks"
-
 interface ToggleSwitchProps {
   isChecked: boolean
   onChange: (checked: boolean) => Promise<void> | void
@@ -17,16 +15,9 @@ export const ToggleSwitch = ({
   disabled = false,
   className = "default-switch",
 }: ToggleSwitchProps) => {
-  const [checked, setChecked] = useState(isChecked)
-
-  useEffect(() => {
-    setChecked(isChecked)
-  }, [isChecked])
-
   const handleChange = async (e: Event) => {
     const target = e.target as HTMLInputElement
     const newChecked = target.checked
-    setChecked(newChecked)
     await onChange(newChecked)
   }
 
@@ -34,7 +25,7 @@ export const ToggleSwitch = ({
     <label className={`switch ${className}`}>
       <input
         type="checkbox"
-        checked={checked}
+        checked={isChecked}
         onChange={handleChange}
         disabled={disabled}
       />

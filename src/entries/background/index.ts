@@ -4,6 +4,7 @@ import {
 } from "@/utils/storage"
 import { alarms, checkAndHandleAlarms } from "@/entries/background/alarms"
 import { commands } from "@/entries/background/commands"
+import { shouldShowUpdatePage } from "@/utils/update-manager"
 
 export default defineBackground(() => {
   browser.runtime.onStartup.addListener(async () => {
@@ -11,9 +12,38 @@ export default defineBackground(() => {
     await checkAndHandleAlarms()
   })
 
-  browser.runtime.onInstalled.addListener(async () => {
+  browser.runtime.onInstalled.addListener(async (details) => {
     await alignLocalDataWithSyncedData()
     await checkAndHandleAlarms()
+
+    if (details.reason === "update" && details.previousVersion) {
+      const currentVersion = browser.runtime.getManifest().version
+      const previousVersion = details.previousVersion
+
+      if (shouldShowUpdatePage(currentVersion, previousVersion)) {
+        browser.windows.getCurrent().then((currentWindow) => {
+          const width = 400
+          const height = 800
+
+          const left =
+            (currentWindow.width ? currentWindow.width : 1920) / 2 - width / 2
+          const top =
+            (currentWindow.height ? currentWindow.height : 1080) / 2 -
+            height / 2 -
+            100
+
+          browser.windows.create({
+            url: browser.runtime.getURL("/update.html"),
+            width,
+            height,
+            type: "popup",
+            focused: true,
+            left: Math.round(left),
+            top: Math.round(top),
+          })
+        })
+      }
+    }
   })
 
   browser.alarms.onAlarm.addListener((alarm) => {

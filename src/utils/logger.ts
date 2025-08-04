@@ -18,4 +18,8 @@ export class Logger {
   static warn(...messages: unknown[]): void {
     console.warn(this.prefix, ...messages)
   }
+
+  static debug(...messages: unknown[]): void {
+    console.debug(this.prefix, ...messages)
+  }
 }

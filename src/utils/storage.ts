@@ -13,6 +13,7 @@ import {
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
   CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
+  CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
 } from "./constants"
 import {
   DebugModeType,
@@ -30,6 +31,7 @@ import {
   StoredSettingsV7,
   StoredSettingsV8,
   StoredSettingsV9,
+  StoredSettingsV10,
 } from "@/utils/types"
 import { Logger } from "@/utils/logger"
 
@@ -59,7 +61,7 @@ const favoritesSyncStorage = storage.defineItem<Favorite[]>(
 const settingsSyncStorage = storage.defineItem<StoredSettings>(
   <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
   {
-    version: 9,
+    version: 10,
     init: () => {
       return {
         [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]: "disabled" as DebugModeType,
@@ -73,6 +75,7 @@ const settingsSyncStorage = storage.defineItem<StoredSettings>(
         [CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE]: false,
         [CHROME_STORAGE_SETTINGS_COLORBLIND_MODE]: false,
         [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: false,
+        [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
       } as StoredSettings
     },
     migrations: {
@@ -132,6 +135,12 @@ const settingsSyncStorage = storage.defineItem<StoredSettings>(
         return {
           ...settings,
           [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: false,
+        }
+      },
+      10: (settings: StoredSettingsV9): StoredSettingsV10 => {
+        return {
+          ...settings,
+          [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
         }
       },
     },
@@ -356,6 +365,25 @@ const toggleExtensionTheme = async () => {
   return setSettings(newSettings)
 }
 
+const setShowTechnicalList = async (showTechnicalList: boolean) => {
+  const settings = await getSettings()
+  const newSettings = {
+    ...settings,
+    [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: showTechnicalList,
+  }
+  return setSettings(newSettings)
+}
+
+const toggleTechnicalList = async () => {
+  const settings = await getSettings()
+  const newSettings = {
+    ...settings,
+    [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]:
+      !settings[[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]],
+  }
+  return setSettings(newSettings)
+}
+
 const retrieveSyncedData = async () => {
   const favorites = await favoritesSyncStorage.getValue()
   const settings = await settingsSyncStorage.getValue()
@@ -446,4 +474,6 @@ export {
   importConfiguration,
   getStoredDefaultDarkMode,
   setStoredDefaultDarkMode,
+  setShowTechnicalList,
+  toggleTechnicalList,
 }

@@ -6,6 +6,7 @@ const getShowTechnicalModel = () => document.body.dataset.showTechnicalModel
 const getShowPrintOptionsHTML = () => document.body.dataset.showPrintOptionsHTML
 const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF
 const getDefaultDarkMode = () => document.body.dataset.defaultDarkMode
+const getShowTechnicalList = () => document.body.dataset.showTechnicalList
 const getOdooWindowObject = () =>
   // @ts-expect-error odoo is defined on Odoo pages
   Object.prototype.hasOwnProperty.call(window, "odoo") && window.odoo
@@ -13,10 +14,10 @@ const getOdooWindowObject = () =>
 const isOnSpecificRecordPage = () => {
   const odooWindowObject = getOdooWindowObject()
   const recordLocalState =
-    odooWindowObject?.__WOWL_DEBUG__?.root.actionService.currentController?.getLocalState()
+    odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.getLocalState()
 
   return (
-    (!!odooWindowObject?.__WOWL_DEBUG__?.root.actionService.currentController
+    (!!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController
       ?.props.resId ||
       !!recordLocalState?.resId) &&
     !!odooWindowObject?.__WOWL_DEBUG__?.root.actionService.currentController
@@ -263,4 +264,5 @@ export {
   validateConfigFile,
   getDefaultDarkMode,
   simpleDebounce,
+  getShowTechnicalList,
 }

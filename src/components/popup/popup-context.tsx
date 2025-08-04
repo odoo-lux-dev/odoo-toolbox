@@ -9,8 +9,10 @@ interface PopupContextType {
   loading: boolean
   theme: "dark" | "light"
   debugMode: DebugModeType
+  showTechnicalList: boolean
   updateTheme: (newTheme: "dark" | "light") => void
   updateDebugMode: (newMode: DebugModeType) => void
+  updateShowTechnicalList: (value: boolean) => void
 }
 
 const defaultValue: PopupContextType = {
@@ -18,19 +20,24 @@ const defaultValue: PopupContextType = {
   loading: true,
   theme: "light",
   debugMode: "disabled",
+  showTechnicalList: false,
   updateTheme: () => null,
   updateDebugMode: () => null,
+  updateShowTechnicalList: () => null,
 }
 
 const PopupContext = createContext<PopupContextType>(defaultValue)
 
 export const PopupProvider = ({
   children,
-}: { children: ComponentChildren }) => {
+}: {
+  children: ComponentChildren
+}) => {
   const [favorites, setFavorites] = useState<Favorite[]>([])
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState<"dark" | "light">("light")
   const [debugMode, setDebugMode] = useState<DebugModeType>("disabled")
+  const [showTechnicalList, setShowTechnicalList] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
@@ -38,9 +45,11 @@ export const PopupProvider = ({
         const favs = await getFavoritesProjects()
         setFavorites(favs || [])
 
-        const { extensionTheme, enableDebugMode } = await getSettings()
+        const { extensionTheme, enableDebugMode, showTechnicalList } =
+          await getSettings()
         setTheme(extensionTheme || "light")
         setDebugMode(enableDebugMode || "disabled")
+        setShowTechnicalList(showTechnicalList || false)
       } catch (error) {
         Logger.error("Error loading popup data:", error)
       } finally {
@@ -59,6 +68,10 @@ export const PopupProvider = ({
     setDebugMode(newMode)
   }
 
+  const updateShowTechnicalList = (value: boolean) => {
+    setShowTechnicalList(value)
+  }
+
   return (
     <PopupContext.Provider
       value={{
@@ -66,8 +79,10 @@ export const PopupProvider = ({
         loading,
         theme,
         debugMode,
+        showTechnicalList,
         updateTheme,
         updateDebugMode,
+        updateShowTechnicalList,
       }}
     >
       {children}
