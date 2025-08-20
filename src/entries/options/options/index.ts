@@ -9,13 +9,13 @@ import { TechnicalListOption } from "./technical-list"
 import { TechnicalModelOption } from "./technical-model"
 
 export const ExtensionOptions = [
-  { component: PrintOption, category: "Odoo" },
-  { component: TechnicalModelOption, category: "Odoo" },
-  { component: NostalgiaModeOption, category: "Odoo" },
-  { component: DefaultDarkModeOption, category: "Odoo" },
-  { component: DebugModeOption, category: "Odoo" },
-  { component: TechnicalListOption, category: "Odoo" },
-  { component: ShPageRenameOption, category: "Odoo.SH" },
-  { component: ColorBlindOption, category: "Odoo.SH" },
-  { component: TaskLinkOption, category: "Odoo.SH" },
+    { component: PrintOption, category: "Odoo" },
+    { component: TechnicalModelOption, category: "Odoo" },
+    { component: NostalgiaModeOption, category: "Odoo" },
+    { component: DefaultDarkModeOption, category: "Odoo" },
+    { component: DebugModeOption, category: "Odoo" },
+    { component: TechnicalListOption, category: "Odoo" },
+    { component: ShPageRenameOption, category: "Odoo.SH" },
+    { component: ColorBlindOption, category: "Odoo.SH" },
+    { component: TaskLinkOption, category: "Odoo.SH" },
 ]

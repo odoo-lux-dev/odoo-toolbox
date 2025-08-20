@@ -1,0 +1,83 @@
+.field-metadata-tooltip {
+    cursor: help;
+    position: relative;
+    display: inline-block;
+
+    .detail-label {
+        text-decoration: underline dotted;
+        text-underline-offset: 2px;
+        text-decoration-color: var(--devtools-text-muted);
+    }
+
+    &:hover .detail-label {
+        text-decoration-color: var(--devtools-primary);
+    }
+}
+
+.portal-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+
+    .field-metadata-tooltip-message {
+        background-color: var(--devtools-tooltip-bg);
+        color: var(--devtools-tooltip-text);
+        border: 1px solid var(--devtools-tooltip-border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 11px;
+        box-shadow: 0 2px 8px var(--devtools-op-black-02);
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .field-metadata-tooltip-title {
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: var(--devtools-tooltip-title);
+    }
+
+    .field-metadata-item {
+        margin-bottom: 2px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .field-metadata-key {
+        color: var(--devtools-text-secondary);
+        font-weight: 500;
+    }
+
+    .field-metadata-value {
+        margin-left: 4px;
+        white-space: pre-wrap;
+        word-break: break-word;
+
+        &.cell-string {
+            color: var(--devtools-success);
+        }
+
+        &.cell-number {
+            color: var(--devtools-primary);
+        }
+
+        &.cell-boolean {
+            color: var(--devtools-warning);
+        }
+
+        &.cell-object {
+            color: var(--devtools-text-secondary);
+        }
+    }
+
+    .field-metadata-array {
+        color: var(--devtools-text-secondary);
+
+        .field-metadata-value {
+            margin: 0;
+        }
+    }
+}

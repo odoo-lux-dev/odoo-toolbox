@@ -1,45 +1,66 @@
+import { useComputed } from "@preact/signals"
 import { JSX } from "preact"
-import { useState } from "preact/hooks"
+import {
+    expandedSectionsSignal,
+    setSectionExpanded,
+} from "@/contexts/technical-list-signals"
+import { useTechnicalListSections } from "@/contexts/technical-list-signals-hook"
 
 interface InfoSectionProps {
-  icon: string
-  title: string
-  children: JSX.Element | JSX.Element[] | (JSX.Element | null | false)[]
-  defaultExpanded?: boolean
+    icon: string
+    title: string
+    children: JSX.Element | JSX.Element[] | (JSX.Element | null | false)[]
+    defaultExpanded?: boolean
+    sectionId?: string
 }
 
 export const InfoSection = ({
-  icon,
-  title,
-  children,
-  defaultExpanded = false,
+    icon,
+    title,
+    children,
+    defaultExpanded = false,
+    sectionId,
 }: InfoSectionProps) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+    const { toggleSectionExpanded } = useTechnicalListSections()
 
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded)
-  }
+    const effectiveSectionId =
+        sectionId || title.toLowerCase().replace(/\s+/g, "-")
 
-  return (
-    <div className="x-odoo-technical-list-info-record-info">
-      <div
-        className="x-odoo-technical-list-info-section-header"
-        onClick={toggleExpanded}
-        title={isExpanded ? "Click to collapse" : "Click to expand"}
-      >
-        <div className="x-odoo-technical-list-info-section-title">
-          <i className={`fa ${icon}`} />
-          <span>{title}</span>
+    if (
+        defaultExpanded &&
+        !expandedSectionsSignal.value.has(effectiveSectionId)
+    ) {
+        setSectionExpanded(effectiveSectionId, true)
+    }
+
+    const isExpanded = useComputed(() => expandedSectionsSignal.value.has(effectiveSectionId))
+
+    const toggleExpanded = () => {
+        toggleSectionExpanded(effectiveSectionId)
+    }
+
+    return (
+        <div className="x-odoo-technical-list-info-record-info">
+            <div
+                className="x-odoo-technical-list-info-section-header"
+                onClick={toggleExpanded}
+                title={
+                    isExpanded.value ? "Click to collapse" : "Click to expand"
+                }
+            >
+                <div className="x-odoo-technical-list-info-section-title">
+                    <i className={`fa ${icon}`} />
+                    <span>{title}</span>
+                </div>
+                <i
+                    className={`fa fa-chevron-right x-odoo-technical-list-info-section-toggle ${isExpanded.value ? "x-odoo-technical-list-info-section-expanded" : ""}`}
+                />
+            </div>
+            {isExpanded.value && (
+                <div className="x-odoo-technical-list-info-section-content">
+                    {children}
+                </div>
+            )}
         </div>
-        <i
-          className={`fa fa-chevron-right x-odoo-technical-list-info-section-toggle ${isExpanded ? "x-odoo-technical-list-info-section-expanded" : ""}`}
-        />
-      </div>
-      {isExpanded && (
-        <div className="x-odoo-technical-list-info-section-content">
-          {children}
-        </div>
-      )}
-    </div>
-  )
+    )
 }

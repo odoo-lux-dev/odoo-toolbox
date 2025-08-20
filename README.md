@@ -36,6 +36,8 @@ This extension aims to enhance the experience of Odoo developers and Odoo.SH use
 
 # Non exhaustive functionnalities
 
+* __Advanced DevTools panel for Odoo RPC testing and data exploration__
+* __Technical sidebar with field inspection and database context information__
 * __Star project on odoo SH, order the favorites list and ability to rename them__
 * __Enable (or not) debug mode by default on Odoo websites__
 * __Toggle debug mode from the extension's popup__
@@ -50,58 +52,6 @@ This extension aims to enhance the experience of Odoo developers and Odoo.SH use
 * __Default dark mode setting for Odoo interfaces__
 * __Export and import extension configuration for easy sharing or backup__
 * __Quick access to GitHub repositories from branch pages__
-
-<br>
-
----
-
-<br>
-
-# Project Structure
-
-The extension is built using WXT ([Docs](https://wxt.dev/)) and follows a modular architecture:
-
-### `/src/components`
-Reusable UI components:
-- `/icons` - SVG icons used throughout the extension
-- `/options` - Components specific to the options page
-- `/popup` - Components for the popup interface
-- Common UI elements like tooltips and toggles
-
-### `/src/entries`
-Entry points for the extension's different components:
-- `/background` - Background script for handling alarms. Used for persisting configuration
-- `/popup` - The extension's popup interface for quick access to favorites and debug toggle
-- `/options` - The extension's settings page with all configuration options
-- `/odoosh.content` - Content scripts specifically for Odoo.sh pages
-- `/global.content` - Content scripts applied to all Odoo pages
-- `/odoo-websites.js` - Script for enhancing Odoo websites functionality
-
-### `/src/features`
-Core functionality modules:
-- `/debug-mode.ts` - Manages debug mode functionality
-- `/technical-report.ts` - Handles technical printing options in Odoo reports
-- `/technical-model-name.ts` - Adds technical model names to Odoo views
-- `/default-dark-mode.ts` - Controls dark mode settings for Odoo interfaces
-- `/odoo-sh` - Features specifically for Odoo.sh
-
-### `/src/hooks`
-Custom React hooks for reusable logic:
-- `use-themed-icons.tsx` - Hook to manage icons based on theme and nostalgia mode
-
-### `/src/utils`
-Utility functions and shared resources:
-- `/storage.ts` - Extension storage management with migrations system
-- `/constants.ts` - Application-wide constants
-- `/types.ts` - TypeScript type definitions
-- `/utils.ts` - Shared utility functions
-- `/logger.ts` - Logging utilities
-- `/regex.ts` - Regular expressions for parsing branch names and tasks
-
-### `/src/theme`
-UI theming components:
-- Dark/light theme implementation
-- Variables and styling utilities for consistent UI
 
 <br>
 
@@ -144,6 +94,62 @@ bun zip:firefox
 ```
 
 This will create a zip file in the `dist` folder.
+
+<br>
+
+---
+<br>
+
+# Use of Odoo Code in this project
+
+This project includes code sourced from the [Odoo](https://github.com/odoo/odoo) open source project, specifically from the [`src/utils/odoo-py_js`](./src/utils/odoo-py_js) directory.
+
+- The included Odoo code is distributed under the [GNU Lesser General Public License version 3 (LGPLv3)](https://www.gnu.org/licenses/lgpl-3.0.html).
+- The code has been incorporated without modification and is used as a utility module within this extension.
+- For full details, license texts, and original sources, please refer to:
+  - The LICENSE file contained in `src/utils/odoo-py_js`
+  - The official Odoo repository: https://github.com/odoo/odoo/tree/f0b80bd634c4a907a4df7d06d318572ccdeb2fca/addons/web/static/src/core/py_js
+
+By including this code, this project complies with LGPLv3 license requirements concerning attribution and usage.
+
+<br>
+
+---
+<br>
+
+# Extension Permissions
+
+This extension requests the following permissions to provide its functionality:
+
+## Required Permissions
+
+| Permission | Purpose | Justification |
+|------------|---------|---------------|
+| **`storage`** | Store user preferences and configuration | Save extension settings, Odoo.SH favorites, debug mode preferences, and DevTools history across browser sessions |
+| **`tabs`** | Access tab information | Read current tab URL to detect Odoo websites and apply extension features only on relevant pages |
+| **`alarms`** | Schedule background tasks | Manage data persistence and cleanup operations for stored favorites and history |
+| **`scripting`** | Execute scripts on web pages | Inject content scripts into Odoo pages to enable DevTools RPC communication, debug mode toggle, and technical features |
+| **`clipboardWrite`** | Copy data to clipboard | Allow users to copy technical information (field values, branch names, etc.) with one-click actions |
+
+## Host Permissions
+
+| Permission | Purpose | Justification |
+|------------|---------|---------------|
+| **`*://*/*` (All websites)** | Access all websites | Automatically detect Odoo installations across any domain (including custom domains, localhost, Odoo.SH subdomains) and apply relevant features |
+
+## Web Accessible Resources
+
+| Resource | Purpose |
+|----------|---------|
+| **`odoo-websites.js`** | Shared utilities for Odoo page detection and interaction |
+
+## Privacy & Security
+
+- **No data collection**: The extension does not collect, transmit, or store any personal data externally
+- **Local storage only**: All settings and favorites are stored locally in your browser
+- **Odoo-specific**: Features are only activated on detected Odoo websites
+- **No external requests**: The extension only communicates with the current Odoo instance you're viewing
+- **Open source**: All code is publicly available for review on GitHub
 
 <br>
 

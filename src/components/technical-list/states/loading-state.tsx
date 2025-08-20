@@ -1,12 +1,12 @@
 interface LoadingStateProps {
-  message?: string
+    message?: string
 }
 
 export const LoadingState = ({
-  message = "Scanning technical fields...",
+    message = "Scanning technical fields...",
 }: LoadingStateProps) => (
-  <div className="x-odoo-technical-list-info-loading">
-    <i className="fa fa-spinner fa-spin" />
-    <span>{message}</span>
-  </div>
+    <div className="x-odoo-technical-list-info-loading">
+        <i className="fa fa-spinner fa-spin" />
+        <span>{message}</span>
+    </div>
 )

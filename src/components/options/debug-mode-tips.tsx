@@ -1,13 +1,15 @@
-import { InformationIcon } from "@/components/icons/information-icon"
+import { Info } from "lucide-preact"
 import { ComponentChildren } from "preact"
 
 export const DebugModeTips = ({
-  children,
-}: { children: ComponentChildren }) => {
-  return (
-    <div className="debug-mode-tips">
-      <InformationIcon />
-      {children}
-    </div>
-  )
+    children,
+}: {
+    children: ComponentChildren
+}) => {
+    return (
+        <div className="debug-mode-tips">
+            <Info />
+            {children}
+        </div>
+    )
 }
