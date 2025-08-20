@@ -1,0 +1,67 @@
+@use "@/components/devtools/selects/selects.styles";
+
+.field-type {
+    font-size: 10px;
+    color: var(--devtools-text-muted);
+    font-style: italic;
+}
+
+.field-selected-indicator {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--devtools-primary);
+    font-weight: bold;
+}
+
+.selected-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    min-height: 24px;
+}
+
+.selected-field {
+    display: flex;
+    align-items: baseline;
+    background-color: var(--devtools-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    gap: 6px;
+
+    .field-name {
+        font-weight: 500;
+    }
+
+    .remove-field {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        font-size: 14px;
+        line-height: 1;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
+
+.loading-spinner {
+    display: flex;
+    position: absolute;
+    right: 8px;
+    padding: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--devtools-text-muted);
+
+    svg {
+        animation: spin 2s linear infinite;
+    }
+}

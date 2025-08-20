@@ -1,0 +1,162 @@
+name: Bug Report
+description: Report a bug or issue with Odoo Toolbox extension
+title: "[BUG] "
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+
+  - type: dropdown
+    id: odoo-version
+    attributes:
+      label: Odoo Version
+      description: What version of Odoo are you running?
+      options:
+        - "16.0"
+        - "17.0"
+        - "18.0"
+        - "Other (specify in additional context)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: odoo-environment
+    attributes:
+      label: Odoo Environment
+      description: What type of Odoo environment are you using?
+      options:
+        - "Odoo.sh"
+        - "On-premise"
+        - "Local development"
+        - "Other (specify in additional context)"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: What browser are you using?
+      placeholder: "e.g. Chrome 120, Firefox 119, Edge 118"
+    validations:
+      required: true
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension Version
+      description: What version of Odoo Toolbox are you using? (Check in chrome://extensions)
+      placeholder: "e.g. 1.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      placeholder: "e.g. Windows 11, macOS 14, Ubuntu 22.04"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Tell us how to reproduce this bug
+      placeholder: |
+        1. Open DevTools on an Odoo page
+        2. Navigate to '...' tab in Odoo Toolbox
+        3. Click on '....'
+        4. See error
+      value: |
+        1. 
+        2. 
+        3. 
+        4. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-details
+    attributes:
+      label: Error Details
+      description: If there are console errors, please include them here
+      render: shell
+
+  - type: input
+    id: odoo-model
+    attributes:
+      label: Odoo Model (if applicable)
+      description: What Odoo model is involved?
+      placeholder: "e.g. sale.order, res.partner"
+
+  - type: dropdown
+    id: view-type
+    attributes:
+      label: View Type (if applicable)
+      description: What type of view were you using?
+      options:
+        - "form"
+        - "list"
+        - "kanban"
+        - "graph"
+        - "pivot"
+        - "calendar"
+        - "Other"
+
+  - type: input
+    id: record-ids
+    attributes:
+      label: Record ID(s) (if applicable)
+      description: What record(s) were you working with?
+      placeholder: "e.g. #1234 or multiple records"
+
+  - type: checkboxes
+    id: features-affected
+    attributes:
+      label: Extension Features Affected
+      description: Which features of Odoo Toolbox are affected?
+      options:
+        - label: Technical List
+        - label: Record Inspector
+        - label: Field Metadata
+        - label: RPC Operations (Read/Write/Create)
+        - label: Context Menu actions
+        - label: Other (specify in additional context)
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the problem here, such as:
+        - Does this happen with specific Odoo modules?
+        - Is it related to specific user permissions?
+        - Does it work in other browsers?

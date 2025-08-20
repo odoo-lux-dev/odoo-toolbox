@@ -1,8 +1,7 @@
 import {
-  getOdooWindowObject,
-  getShowTechnicalModel,
-  hasNewOdooURL,
-  isOnNewURLPos,
+    getShowTechnicalModel,
+    hasNewOdooURL,
+    isOnNewURLPos,
 } from "@/utils/utils"
 
 /**
@@ -17,13 +16,13 @@ import {
  * @returns {HTMLSpanElement} The created span element with the specified classes and inner HTML content.
  */
 const createTechnicalModelNameSpan = (
-  classNames: string[],
-  innerContent: string
+    classNames: string[],
+    innerContent: string
 ): HTMLSpanElement => {
-  const technicalModelNameSpan = document.createElement("span")
-  technicalModelNameSpan.classList.add(...classNames)
-  technicalModelNameSpan.innerHTML = innerContent
-  return technicalModelNameSpan
+    const technicalModelNameSpan = document.createElement("span")
+    technicalModelNameSpan.classList.add(...classNames)
+    technicalModelNameSpan.innerHTML = innerContent
+    return technicalModelNameSpan
 }
 
 /**
@@ -37,23 +36,23 @@ const createTechnicalModelNameSpan = (
  *                                      This affects the styling and positioning of the model name.
  */
 const appendModelNameToBreadcrumb = (
-  breadcrumb: Element,
-  modelName: string,
-  isGlobal: boolean = false
+    breadcrumb: Element,
+    modelName: string,
+    isGlobal: boolean = false
 ): void => {
-  const spanClassNames = [
-    "x-odoo-technical-model-name",
-    isGlobal ? "x-odoo-technical-model-name-breadcrumb" : "",
-  ].filter(Boolean)
+    const spanClassNames = [
+        "x-odoo-technical-model-name",
+        isGlobal ? "x-odoo-technical-model-name-breadcrumb" : "",
+    ].filter(Boolean)
 
-  const innerContent = isGlobal
-    ? `(${modelName})`
-    : `<strong>Technical model :</strong> <i>${modelName}</i>`
-  const technicalModelNameSpan = createTechnicalModelNameSpan(
-    spanClassNames,
-    innerContent
-  )
-  breadcrumb.appendChild(technicalModelNameSpan)
+    const innerContent = isGlobal
+        ? `(${modelName})`
+        : `<strong>Technical model :</strong> <i>${modelName}</i>`
+    const technicalModelNameSpan = createTechnicalModelNameSpan(
+        spanClassNames,
+        innerContent
+    )
+    breadcrumb.appendChild(technicalModelNameSpan)
 }
 
 /**
@@ -67,42 +66,49 @@ const appendModelNameToBreadcrumb = (
  *                               (breadcrumbs or control panels) to append the model name.
  */
 const handleTechnicalModelName = (targetNode: Element): void => {
-  const showTechnicalModel = getShowTechnicalModel() === "true"
-  if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return
+    const showTechnicalModel = getShowTechnicalModel() === "true"
+    if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return
 
-  const odooWindowObject = getOdooWindowObject()
-  const currentModelName =
-    odooWindowObject?.__WOWL_DEBUG__?.root.actionService?.currentController
-      ?.props?.resModel
-  if (!currentModelName) return
+    const odooWindowObject = window.odoo
+    const currentModelName =
+        odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController
+            ?.props?.resModel
+    if (!currentModelName) return
 
-  const leftModelBreadcrumb = targetNode.querySelector("ol.breadcrumb")
-  const leftGlobalBreadcrumb = targetNode.querySelector("div.o_breadcrumb")
-  const rightControlPanelContainer = targetNode.querySelector(
-    "div.o_control_panel_navigation"
-  )
-
-  if (
-    leftModelBreadcrumb &&
-    !leftModelBreadcrumb.querySelector("span.x-odoo-technical-model-name")
-  ) {
-    appendModelNameToBreadcrumb(leftModelBreadcrumb, currentModelName, true)
-  } else if (
-    !leftModelBreadcrumb &&
-    leftGlobalBreadcrumb &&
-    !leftGlobalBreadcrumb.querySelector("span.x-odoo-technical-model-name")
-  ) {
-    appendModelNameToBreadcrumb(leftGlobalBreadcrumb, currentModelName, true)
-  } else if (
-    !leftGlobalBreadcrumb &&
-    !leftModelBreadcrumb &&
-    rightControlPanelContainer &&
-    !rightControlPanelContainer.querySelector(
-      "span.x-odoo-technical-model-name"
+    const leftModelBreadcrumb = targetNode.querySelector("ol.breadcrumb")
+    const leftGlobalBreadcrumb = targetNode.querySelector("div.o_breadcrumb")
+    const rightControlPanelContainer = targetNode.querySelector(
+        "div.o_control_panel_navigation"
     )
-  ) {
-    appendModelNameToBreadcrumb(rightControlPanelContainer, currentModelName)
-  }
+
+    if (
+        leftModelBreadcrumb &&
+        !leftModelBreadcrumb.querySelector("span.x-odoo-technical-model-name")
+    ) {
+        appendModelNameToBreadcrumb(leftModelBreadcrumb, currentModelName, true)
+    } else if (
+        !leftModelBreadcrumb &&
+        leftGlobalBreadcrumb &&
+        !leftGlobalBreadcrumb.querySelector("span.x-odoo-technical-model-name")
+    ) {
+        appendModelNameToBreadcrumb(
+            leftGlobalBreadcrumb,
+            currentModelName,
+            true
+        )
+    } else if (
+        !leftGlobalBreadcrumb &&
+        !leftModelBreadcrumb &&
+        rightControlPanelContainer &&
+        !rightControlPanelContainer.querySelector(
+            "span.x-odoo-technical-model-name"
+        )
+    ) {
+        appendModelNameToBreadcrumb(
+            rightControlPanelContainer,
+            currentModelName
+        )
+    }
 }
 
 export { handleTechnicalModelName }

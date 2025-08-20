@@ -1,24 +1,28 @@
 import "./style.scss"
 import { useEffect } from "preact/hooks"
-import { usePopup } from "@/components/popup/popup-context"
+import { Footer } from "@/components/popup/footer"
 import { Header } from "@/components/popup/header"
 import { ProjectList } from "@/components/popup/project-list"
-import { Footer } from "@/components/popup/footer"
+import { usePopup } from "@/contexts/popup-signals-hook"
 
 export const App = () => {
-  const { theme } = usePopup()
+    const { theme, initializeData } = usePopup()
 
-  useEffect(() => {
-    document.body.className = theme
-  }, [theme])
+    useEffect(() => {
+        initializeData()
+    }, [])
 
-  return (
-    <>
-      <Header />
-      <main className="container">
-        <ProjectList />
-      </main>
-      <Footer />
-    </>
-  )
+    useEffect(() => {
+        document.body.className = theme
+    }, [theme])
+
+    return (
+        <>
+            <Header />
+            <main className="container">
+                <ProjectList />
+            </main>
+            <Footer />
+        </>
+    )
 }

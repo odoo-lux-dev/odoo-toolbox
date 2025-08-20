@@ -1,0 +1,42 @@
+@use "@/components/devtools/selects/selects.styles";
+
+.model-search-highlight {
+    background-color: rgba(245, 158, 11, 0.4);
+    color: var(--devtools-text-primary);
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+
+.refresh-button {
+    display: flex;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--devtools-text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 2px;
+    transition: all 0.1s ease;
+
+    &:hover {
+        background-color: var(--devtools-bg-secondary);
+        color: var(--devtools-text-primary);
+    }
+
+    &:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    &.error {
+        color: var(--devtools-warning);
+
+        &:hover {
+            background-color: var(--devtools-warning-bg);
+        }
+    }
+}

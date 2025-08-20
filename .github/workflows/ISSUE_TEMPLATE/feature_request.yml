@@ -1,0 +1,123 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for Odoo Toolbox
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! We appreciate your input.
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is.
+      placeholder: "I'm always frustrated when working with Odoo records because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution-description
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: affected-areas
+    attributes:
+      label: Which Odoo Toolbox area would this affect?
+      description: Select all that apply
+      options:
+        - label: Technical List (record browsing and filtering)
+        - label: Record Inspector (field details and metadata)
+        - label: RPC Operations (Read/Write/Create tabs)
+        - label: Context Menu actions (right-click options)
+        - label: Field rendering and display
+        - label: DevTools panel UI/UX
+        - label: Cross-browser compatibility
+        - label: Other (specify in additional context)
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+
+  - type: checkboxes
+    id: odoo-versions
+    attributes:
+      label: Odoo Versions (if applicable)
+      description: Which Odoo versions should this feature support?
+      options:
+        - label: All versions
+        - label: Odoo 16+
+        - label: Odoo 17+
+        - label: Odoo 18+
+        - label: Specific version (specify in additional context)
+
+  - type: input
+    id: field-types
+    attributes:
+      label: Field Types (if applicable)
+      description: What field types are involved?
+      placeholder: "e.g. many2one, one2many, selection, etc."
+
+  - type: input
+    id: models
+    attributes:
+      label: Models (if applicable)
+      description: What Odoo models are involved?
+      placeholder: "e.g. sale.order, res.partner, or general"
+
+  - type: checkboxes
+    id: view-types
+    attributes:
+      label: View Types (if applicable)
+      description: Which view types should this feature support?
+      options:
+        - label: form
+        - label: list
+        - label: kanban
+        - label: graph
+        - label: pivot
+        - label: calendar
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Case Examples
+      description: Provide specific examples of how this feature would be used
+      placeholder: |
+        1. When working with [specific scenario]
+        2. During [specific workflow]
+        3. To improve [specific task]
+      value: |
+        1. 
+        2. 
+        3. 
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - "Nice to have"
+        - "Would significantly improve workflow"
+        - "Critical for productivity"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context, mockups, or screenshots about the feature request here. Include:
+        - Wireframes or UI mockups if applicable
+        - Similar features in other tools
+        - Technical considerations you're aware of

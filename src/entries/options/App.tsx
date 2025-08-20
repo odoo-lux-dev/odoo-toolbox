@@ -1,49 +1,59 @@
 import "./style.scss"
-import { Route, Router, CustomHistory } from "preact-router"
-import { OptionsLayout } from "@/components/options/options-layout"
 import { createHashHistory } from "history"
-import { OptionsPage } from "./pages/options-page"
+import { useEffect } from "preact/hooks"
+import { CustomHistory, Route, Router } from "preact-router"
+import { OptionsLayout } from "@/components/options/options-layout"
+import { setupOptionsWatchers } from "@/contexts/options-signals"
+import { useOptions } from "@/contexts/options-signals-hook"
 import { FavoritesPage } from "./pages/favorites-page"
+import { OptionsPage } from "./pages/options-page"
 
 export const App = () => {
-  const history = createHashHistory()
-  const customHistory: CustomHistory = {
-    listen: (callback) => {
-      return history.listen(({ location }) => {
-        callback(location)
-      })
-    },
-    location: history.location,
-    push: history.push,
-    replace: history.replace,
-  }
+    const { initializeOptions } = useOptions()
+    const history = createHashHistory()
+    const customHistory: CustomHistory = {
+        listen: (callback) => {
+            return history.listen(({ location }) => {
+                callback(location)
+            })
+        },
+        location: history.location,
+        push: history.push,
+        replace: history.replace,
+    }
 
-  return (
-    <Router history={customHistory}>
-      <Route
-        path="/"
-        component={() => (
-          <OptionsLayout>
-            <OptionsPage />
-          </OptionsLayout>
-        )}
-      />
-      <Route
-        path="/options"
-        component={() => (
-          <OptionsLayout>
-            <OptionsPage />
-          </OptionsLayout>
-        )}
-      />
-      <Route
-        path="/favorites"
-        component={() => (
-          <OptionsLayout>
-            <FavoritesPage />
-          </OptionsLayout>
-        )}
-      />
-    </Router>
-  )
+    useEffect(() => {
+        initializeOptions()
+        const cleanup = setupOptionsWatchers()
+        return cleanup
+    }, [])
+
+    return (
+        <Router history={customHistory}>
+            <Route
+                path="/"
+                component={() => (
+                    <OptionsLayout>
+                        <OptionsPage />
+                    </OptionsLayout>
+                )}
+            />
+            <Route
+                path="/options"
+                component={() => (
+                    <OptionsLayout>
+                        <OptionsPage />
+                    </OptionsLayout>
+                )}
+            />
+            <Route
+                path="/favorites"
+                component={() => (
+                    <OptionsLayout>
+                        <FavoritesPage />
+                    </OptionsLayout>
+                )}
+            />
+        </Router>
+    )
 }

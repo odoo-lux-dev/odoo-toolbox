@@ -1,0 +1,74 @@
+@use "@/entries/devtools-panel/_mixins" as m;
+
+.select-container {
+    position: relative;
+}
+
+.select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--devtools-bg-tertiary);
+    border: 1px solid var(--devtools-border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+    box-shadow: var(--devtools-shadow-lg);
+}
+
+.select-option {
+    padding: 8px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--devtools-border);
+    transition: background-color 0.2s ease;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+    position: relative;
+
+    &.selected {
+        background-color: rgba(2, 199, 181, 0.1);
+        border-left: 3px solid var(--devtools-primary);
+    }
+
+    &:hover,
+    &.focused {
+        background-color: var(--devtools-bg-secondary);
+    }
+
+    &.focused {
+        border-left: 2px solid var(--devtools-primary);
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.select-technical-name {
+    font-weight: 500;
+    color: var(--devtools-text-primary);
+    font-size: 12px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.select-display-name {
+    font-size: 11px;
+    color: var(--devtools-text-secondary);
+    margin-top: 1px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.select-more {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--devtools-text-muted);
+    font-style: italic;
+    background-color: var(--devtools-op-white-02);
+}
