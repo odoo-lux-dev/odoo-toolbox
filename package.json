@@ -1,36 +1,42 @@
 {
-  "name": "odoo-toolbox",
-  "version": "{{EXTENSION_VERSION}}",
-  "packageManager": "bun@1.2.5",
-  "displayName": "Odoo Toolbox",
-  "author": "THCL&SAJU",
-  "description": "Enhances the experience of Odoo developers and Odoo.SH users by adding a variety of tools and features.",
-  "type": "module",
-  "scripts": {
-    "dev": "wxt",
-    "dev:firefox": "wxt -b firefox",
-    "build": "wxt build",
-    "build:firefox": "wxt build -b firefox",
-    "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox",
-    "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare",
-    "lint": "biome lint .",
-    "format": "biome format . --write"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
-    "@preact/preset-vite": "^2.10.1",
-    "@wxt-dev/auto-icons": "^1.0.2",
-    "sass": "^1.89.0",
-    "typescript": "^5.8.3",
-    "wxt": "^0.20.6"
-  },
-  "dependencies": {
-    "history": "^5.3.0",
-    "preact": "^10.26.6",
-    "preact-router": "^4.1.2",
-    "swapy": "^1.0.5"
-  }
+    "name": "odoo-toolbox",
+    "version": "{{EXTENSION_VERSION}}",
+    "packageManager": "bun@1.2.20",
+    "displayName": "Odoo Toolbox",
+    "author": "THCL&SAJU",
+    "description": "Enhances the experience of Odoo developers and Odoo.SH users by adding a variety of tools and features.",
+    "type": "module",
+    "scripts": {
+        "dev": "wxt",
+        "dev:firefox": "wxt -b firefox",
+        "build": "wxt build",
+        "build:firefox": "wxt build -b firefox",
+        "zip": "wxt zip",
+        "zip:firefox": "wxt zip -b firefox",
+        "compile": "tsc --noEmit",
+        "postinstall": "wxt prepare",
+        "lint": "biome lint .",
+        "format": "biome format . --write",
+        "test": "bun test",
+        "test:validation": "bun test src/components/devtools/utils/query-validation.test.ts"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@biomejs/biome": "^2.2.2",
+        "@preact/preset-vite": "^2.10.2",
+        "@types/bun": "^1.2.20",
+        "@wxt-dev/auto-icons": "^1.1.0",
+        "sass": "^1.91.0",
+        "typescript": "^5.9.2",
+        "wxt": "^0.20.8"
+    },
+    "dependencies": {
+        "@preact/signals": "^2.3.1",
+        "history": "^5.3.0",
+        "lucide-preact": "^0.542.0",
+        "preact": "^10.27.1",
+        "preact-router": "^4.1.2",
+        "swapy": "^1.0.5",
+        "vite": "^7.1.4"
+    }
 }

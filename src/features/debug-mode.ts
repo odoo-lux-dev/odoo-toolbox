@@ -1,5 +1,5 @@
-import { getDefaultDebugMode, getOdooWindowObject } from "@/utils/utils"
-import { DebugModeType } from "@/utils/types"
+import { DebugModeType } from "@/types"
+import { getDefaultDebugMode } from "@/utils/utils"
 
 /**
  * Sets the debug mode for the Odoo application based on the URL parameters and the default debug mode.
@@ -14,51 +14,51 @@ import { DebugModeType } from "@/utils/types"
  * If the conditions for changing the debug mode are not met, the function completes without action.
  */
 const setDebugMode = async (
-  url: URL
+    url: URL
 ): Promise<{ reload: boolean; url?: string }> => {
-  const defaultDebugMode = getDefaultDebugMode()
-  const odooWindowObject = getOdooWindowObject()
+    const defaultDebugMode = getDefaultDebugMode()
+    const odooWindowObject = window.odoo
 
-  if (odooWindowObject?.debug !== undefined && defaultDebugMode) {
-    const params = url.searchParams
-    const urlDebugMode = params.get("debug")
+    if (odooWindowObject?.debug !== undefined && defaultDebugMode) {
+        const params = url.searchParams
+        const urlDebugMode = params.get("debug")
 
-    // We need to reload the page if :
-    // - The default debug mode is not "disabled" and the URL debug mode is not set (so debug mode disabled)
-    // - or the default debug mode is not "disabled" and the URL debug mode is different from the default debug mode
-    // If the defaultDebugMode is "disabled", we don't override the fact that we manually set the debug mode in the URL
-    // to be less intrusive.
-    const needReload =
-      defaultDebugMode !== "disabled" &&
-      (urlDebugMode !== odooWindowObject.debug ||
-        urlDebugMode !== defaultDebugMode)
+        // We need to reload the page if :
+        // - The default debug mode is not "disabled" and the URL debug mode is not set (so debug mode disabled)
+        // - or the default debug mode is not "disabled" and the URL debug mode is different from the default debug mode
+        // If the defaultDebugMode is "disabled", we don't override the fact that we manually set the debug mode in the URL
+        // to be less intrusive.
+        const needReload =
+            defaultDebugMode !== "disabled" &&
+            (urlDebugMode !== odooWindowObject.debug ||
+                urlDebugMode !== defaultDebugMode)
+
+        return {
+            reload: needReload,
+            url: generateDebugModeUrl(url, defaultDebugMode),
+        }
+    }
 
     return {
-      reload: needReload,
-      url: generateDebugModeUrl(url, defaultDebugMode),
+        reload: false,
     }
-  }
-
-  return {
-    reload: false,
-  }
 }
 
 const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
-  const params = url.searchParams
+    const params = url.searchParams
 
-  if (debugMode === "disabled") {
-    params.set("debug", "0")
-  } else {
-    params.set("debug", debugMode)
-  }
+    if (debugMode === "disabled") {
+        params.set("debug", "0")
+    } else {
+        params.set("debug", debugMode)
+    }
 
-  return (
-    url.origin +
-    url.pathname +
-    (params.size > 0 ? `?${params.toString()}` : "") +
-    url.hash
-  )
+    return (
+        url.origin +
+        url.pathname +
+        (params.size > 0 ? `?${params.toString()}` : "") +
+        url.hash
+    )
 }
 
 export { setDebugMode, generateDebugModeUrl }

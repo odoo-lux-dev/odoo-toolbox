@@ -1,0 +1,53 @@
+:root {
+    --devtools-primary: #02c7b5;
+    --devtools-primary-hover: #0db5a6;
+    --devtools-primary-rgb: 2, 199, 181;
+    --devtools-secondary: #6b7280;
+    --devtools-success: #10b981;
+    --devtools-error: #ef4444;
+    --devtools-warning: #f59e0b;
+
+    --devtools-bg-primary: #1f2937;
+    --devtools-bg-secondary: #374151;
+    --devtools-bg-tertiary: #4b5563;
+    --devtools-bg-warning: #d9770645;
+    --devtools-bg-success: #16a34a47;
+    --devtools-bg-error: #dc26262b;
+
+    --devtools-text-primary: #f9fafb;
+    --devtools-text-secondary: #d1d5db;
+    --devtools-text-muted: #9ca3af;
+
+    --devtools-border: #374151;
+    --devtools-border-light: #4b5563;
+    --devtools-border-subtle: #4a5568;
+
+    --devtools-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --devtools-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    --devtools-tooltip-bg: #2d2d2d;
+    --devtools-tooltip-text: #ffffff;
+    --devtools-tooltip-border: #444;
+    --devtools-tooltip-title: #4a9eff;
+    --devtools-success-strong: #22c55e;
+    --devtools-success-strong-dark: #16a34a;
+
+    --devtools-warning-strong: #f59e0b;
+    --devtools-warning-strong-dark: #d97706;
+
+    --devtools-error-strong: #ef4444;
+    --devtools-error-strong-dark: #dc2626;
+
+    --devtools-info-strong: #3b82f6;
+    --devtools-info-strong-dark: #2563eb;
+
+    --devtools-accent-success: #059669;
+    --devtools-tooltip-border-raw: #444;
+
+    --devtools-op-white-02: rgba(255, 255, 255, 0.02);
+    --devtools-op-white-05: rgba(255, 255, 255, 0.05);
+    --devtools-op-white-10: rgba(255, 255, 255, 0.10);
+    --devtools-op-black-02: rgba(0, 0, 0, 0.02);
+    --devtools-op-black-05: rgba(0, 0, 0, 0.05);
+    --devtools-op-black-10: rgba(0, 0, 0, 0.10);
+}

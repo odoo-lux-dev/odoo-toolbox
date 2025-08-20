@@ -1,0 +1,120 @@
+@use "@/entries/devtools-panel/_mixins" as m;
+
+.tab-results {
+    flex: 1;
+    background-color: var(--devtools-bg-primary);
+    padding: 24px 24px 16px 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-bottom-left-radius: 8px;
+    border-top-left-radius: 8px;
+    gap: 16px;
+
+    .result-header {
+        padding: 12px 0;
+        margin-bottom: 0;
+    }
+}
+
+.tab-results-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-top: 1px solid var(--devtools-border);
+    padding-top: 8px;
+
+    &:has(.result-viewer.error) {
+        padding-top: 22px;
+    }
+}
+
+.tab-results-section-content {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+
+.tab-warning-banner {
+    @include m.banner-warning-soft(4px);
+}
+
+.tab-editor-section {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 8px;
+}
+
+.tab-editor {
+    @include m.editor-base(160px);
+}
+
+.tab-actions {
+    display: flex;
+    margin-top: 12px;
+}
+
+.tab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.tab-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--devtools-border);
+
+    .header-left {
+        display: flex;
+        align-items: baseline;
+        flex: 1;
+
+        h3 {
+            margin: 0;
+            color: var(--devtools-text-primary);
+            font-size: 16px;
+            font-weight: 600;
+
+            &.error {
+                color: var(--devtools-error);
+            }
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: var(--devtools-error);
+            font-weight: 400;
+            margin-left: 8px;
+            margin-top: 1px;
+        }
+    }
+
+    .header-right {
+        display: flex;
+        align-items: baseline;
+        margin-left: 12px;
+    }
+}
+
+.tab-section-header {
+    flex: 1;
+
+    h4 {
+        margin: 0;
+        color: var(--devtools-text-primary);
+        font-size: 14px;
+        font-weight: 600;
+
+        span {
+            color: var(--devtools-primary);
+        }
+    }
+}

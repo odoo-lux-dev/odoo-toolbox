@@ -1,0 +1,180 @@
+@use "@/entries/devtools-panel/_variables";
+@use "@/entries/devtools-panel/_mixins" as m;
+
+.confirmation-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.confirmation-modal {
+    background-color: var(--devtools-bg-primary);
+    border-radius: 8px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    border: 1px solid var(--devtools-border);
+
+    &--warning {
+        border-left: 4px solid var(--devtools-warning);
+    }
+
+    &--danger {
+        border-left: 4px solid var(--devtools-error);
+    }
+
+    &--success {
+        border-left: 4px solid var(--devtools-success);
+    }
+}
+
+.confirmation-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px 24px;
+    border-bottom: 1px solid var(--devtools-border);
+}
+
+.confirmation-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--devtools-text-primary);
+}
+
+.confirmation-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--devtools-text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background-color: var(--devtools-bg-secondary);
+        color: var(--devtools-text-primary);
+    }
+}
+
+.confirmation-modal-body {
+    padding: 20px 24px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.confirmation-modal-message {
+    margin: 0 0 16px 0;
+    color: var(--devtools-text-primary);
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.confirmation-modal-details {
+    margin-top: 16px;
+
+    details {
+        border: 1px solid var(--devtools-border);
+        border-radius: 4px;
+        padding: 8px 12px;
+        background-color: var(--devtools-bg-secondary);
+    }
+
+    summary {
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--devtools-text-secondary);
+        user-select: none;
+
+        &:hover {
+            color: var(--devtools-text-primary);
+        }
+    }
+}
+
+.confirmation-modal-details-content {
+    margin: 12px 0 0 0;
+    padding: 12px;
+    background-color: var(--devtools-bg-tertiary);
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--devtools-font-mono);
+    color: var(--devtools-text-secondary);
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.confirmation-modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px 20px 24px;
+    border-top: 1px solid var(--devtools-border);
+    background-color: var(--devtools-bg-secondary);
+}
+
+.confirmation-modal-button {
+    @include m.button-base(8px, 16px);
+    flex: 1;
+    font-weight: 500;
+    transition: all 0.15s ease;
+
+    &-cancel {
+        @include m.button-outline(var(--devtools-text-muted), var(--devtools-bg-tertiary), var(--devtools-text-primary));
+    }
+
+    &-confirm {
+        &-default {
+            @include m.button-filled(var(--devtools-primary), white);
+        }
+
+        &-warning {
+            @include m.button-filled(var(--devtools-warning), white);
+        }
+
+        &-danger {
+            @include m.button-filled(var(--devtools-error), white);
+        }
+
+        &-success {
+            @include m.button-filled(var(--devtools-success), white);
+        }
+    }
+
+    &:disabled {
+        @include m.disabled-state;
+    }
+}
+
+@keyframes confirmationModalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.confirmation-modal {
+    animation: confirmationModalFadeIn 0.15s ease-out;
+}
