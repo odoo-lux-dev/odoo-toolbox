@@ -1,7 +1,18 @@
 import type { OdooActionParams, OdooRpcParams } from "@/types"
 
 /**
- * Handle messages from DevTools and forward them to content scripts
+ * Forward a DevTools request to the target tab's page context and return its result.
+ *
+ * Executes `executeInContentScript` in the MAIN world of the tab specified by `request.tabId`,
+ * passing `request.scriptId` and `request.params` (or `null`). The resolved value (or any
+ * thrown error) from the injected function is forwarded to `sendResponse`.
+ *
+ * @param request - Object containing:
+ *   - `tabId`: the destination tab id to run the script in.
+ *   - `scriptId`: identifier selecting the action to run inside the page.
+ *   - `params` (optional): payload forwarded to the injected function; `null` is used when omitted.
+ * @param sendResponse - Callback invoked with the injected script's result or with an error object
+ *   if execution fails.
  */
 export async function handleDevToolsMessage(
     request: { tabId: number; scriptId: string; params?: unknown },
@@ -23,14 +34,39 @@ export async function handleDevToolsMessage(
 }
 
 /**
- * Function to be executed in the content script context
+ * Executes a requested helper inside the page (content script) context and returns its result.
+ *
+ * This function is injected into the page and provides a set of helpers to inspect Odoo state
+ * (version, user context, current page info), execute Odoo RPC calls (ORM for Odoo 17+ or legacy RPC),
+ * and trigger Odoo actions. It runs entirely in the page's global context (accessing window.odoo
+ * and Owl debug structures) and returns either the helper result or a serializable error object.
+ *
+ * Supported script IDs:
+ * - "GET_ODOO_INFO": returns Odoo version, majorVersion, and optional database.
+ * - "GET_ODOO_CONTEXT": returns the current user context (or empty object).
+ * - "GET_CURRENT_PAGE_INFO": returns a concise description of the current page (model, recordIds, domain, viewType, title).
+ * - "EXECUTE_ODOO_RPC": executes an RPC described by OdooRpcParams (ORM for v17+, legacy RPC otherwise).
+ * - "EXECUTE_ODOO_ACTION": triggers an action described by OdooActionParams.
+ *
+ * @param scriptId - Identifier of the helper to execute (one of the supported script IDs above).
+ * @param params - Optional parameters passed to the selected helper (e.g., RPC or action params).
+ * @returns A promise resolving to the helper's result, or a serializable error object when an exception occurs.
  */
 async function executeInContentScript(
     scriptId: string,
     params?: unknown | null
 ): Promise<unknown> {
     // All required functions must be declared inside this function
-    // because imports are not available in the injected context
+    /**
+     * Extracts Odoo server version and database name from page globals.
+     *
+     * Reads `window.odoo.info` or `window.odoo.session_info` (if present) to derive:
+     * - `version`: numeric server version (e.g., `14` or `14.1`) or `null` if not parseable,
+     * - `majorVersion`: numeric major version (e.g., `14`) or `null` if not parseable,
+     * - `database`: the database name string when available.
+     *
+     * @returns An object with `version`, `majorVersion`, and optional `database`.
+     */
     function getOdooInfo(): {
         version: number | null
         majorVersion: number | null
@@ -56,6 +92,14 @@ async function executeInContentScript(
         }
     }
 
+    /**
+     * Retrieve the current Odoo user context from the page, if available.
+     *
+     * Returns the user context object read from in-page debug namespaces when Odoo is present and its version can be determined.
+     * If no context is found, Odoo is not detected, or an error occurs, an empty object is returned.
+     *
+     * @returns The user context as a plain object, or an empty object when unavailable.
+     */
     function getOdooContext(): Record<string, unknown> {
         try {
             const { version, majorVersion } = getOdooInfo()
@@ -257,6 +301,21 @@ async function executeInContentScript(
         }
     }
 
+    /**
+     * Summarizes the current Odoo page (model, record IDs, domain, view type, and title).
+     *
+     * Attempts to derive page information from the in-page Odoo state and URL. If the Odoo major
+     * version cannot be determined, the search values are unavailable, or an error occurs, an empty
+     * object is returned. When available:
+     * - `model` is the current model name.
+     * - `recordIds` is an array of selected or focused record IDs (single ID is returned as a one-item array).
+     * - `domain` is the current domain/filter if present and non-empty.
+     * - `viewType` is the current view type (`"form"`, `"list"`, etc.), inferred from context and domain/ids.
+     * - `title` is the document title.
+     *
+     * @returns An object containing any of `{ model, recordIds, domain, viewType, title }`. Returns an
+     * empty object when page information cannot be determined.
+     */
     function getCurrentPageInfo(): {
         model?: string
         recordIds?: number[]
@@ -317,6 +376,19 @@ async function executeInContentScript(
         }
     }
 
+    /**
+     * Execute an Odoo RPC call (supports both new ORM for Odoo 17+ and legacy RPC).
+     *
+     * Attempts to detect the in-page Odoo instance and run the requested RPC using:
+     * - the Owl/ORM call path for Odoo >= 17, or
+     * - the legacy `web.rpc` service for older versions.
+     *
+     * Merges the current user's in-page context with `params.context` before calling.
+     *
+     * @param params - RPC parameters including `model`, `method`, optional `args`, `kwargs`, and optional `context`
+     * @returns The RPC call result as returned by the in-page Odoo runtime.
+     * @throws If Odoo is not detected, the detected version is unsupported, the required ORM/RPC service is unavailable, or when a legacy RPC returns an error (legacy errors are normalized to an `Error` with additional fields like `code`, `data`, `debug`, `name: "RPC_ERROR"`, `arguments`, and `context`).
+     */
     async function executeOdooRpc(params: OdooRpcParams): Promise<unknown> {
         const { version, majorVersion } = getOdooInfo()
         const odoo = window.odoo
@@ -410,6 +482,17 @@ async function executeInContentScript(
         }
     }
 
+    /**
+     * Executes an Odoo client action in the page's context.
+     *
+     * Calls the page's available action service (`doAction`) with the provided action payload and options.
+     *
+     * @param params - Object containing the `action` descriptor to execute and optional `options` forwarded to the action service.
+     * @returns The result returned by the Odoo action service (type depends on the executed action).
+     * @throws Error - If Odoo is not detected on the page.
+     * @throws Error - If the detected Odoo version is not supported.
+     * @throws Error - If an action service (`doAction`) is not available on the page.
+     */
     async function executeOdooAction(
         params: OdooActionParams
     ): Promise<unknown> {
