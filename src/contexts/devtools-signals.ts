@@ -27,6 +27,11 @@ export const fieldsMetadataSignal = signal<
     Record<string, FieldMetadata> | undefined
 >(undefined)
 
+// Fields metadata for the displayed results (frozen at query execution)
+export const resultFieldsMetadataSignal = signal<
+    Record<string, FieldMetadata> | undefined
+>(undefined)
+
 // RPC Result Signals
 export const dataSignal = signal<Record<string, unknown>[] | null>(null)
 export const loadingSignal = signal(false)
@@ -90,6 +95,7 @@ export const rpcResultSignal = computed(
         lastQuery: lastQuerySignal.value,
         isNewQuery: isNewQuerySignal.value,
         model: resultModelSignal.value,
+        fieldsMetadata: resultFieldsMetadataSignal.value,
     })
 )
 
@@ -141,6 +147,8 @@ export const setRpcResult = (updates: Partial<RpcResultState>) => {
     if (updates.isNewQuery !== undefined)
         isNewQuerySignal.value = updates.isNewQuery
     if (updates.model !== undefined) resultModelSignal.value = updates.model
+    if (updates.fieldsMetadata !== undefined)
+        resultFieldsMetadataSignal.value = updates.fieldsMetadata
 }
 
 export const resetRpcResult = () => {
@@ -152,6 +160,7 @@ export const resetRpcResult = () => {
     lastQuerySignal.value = null
     isNewQuerySignal.value = false
     resultModelSignal.value = null
+    resultFieldsMetadataSignal.value = undefined
 }
 
 // ===== TAB-SPECIFIC SIGNALS HELPERS =====
@@ -198,6 +207,9 @@ export const executeQuery = async (
         ...(isNewQuery && { data: null, totalCount: null }),
     })
 
+    // Capture the current fields metadata for the results
+    const currentFieldsMetadata = fieldsMetadataSignal.value
+
     try {
         const {
             model,
@@ -228,6 +240,7 @@ export const executeQuery = async (
                 lastQuery: queryToUse,
                 isNewQuery: false,
                 model,
+                fieldsMetadata: currentFieldsMetadata,
             })
 
             if (isNewQuery) {
@@ -270,6 +283,7 @@ export const executeQuery = async (
             lastQuery: queryToUse,
             isNewQuery: false,
             model,
+            fieldsMetadata: currentFieldsMetadata,
         })
 
         if (isNewQuery) {
