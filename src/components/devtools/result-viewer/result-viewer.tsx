@@ -44,7 +44,7 @@ export const ResultViewer = ({
 }: ResultViewerProps) => {
     const { query: rpcQuery } = useRpcQuery()
     const { result: rpcResult } = useRpcResult()
-    const { data, loading, error, errorDetails, isNewQuery } = rpcResult
+    const { data, loading, error, errorDetails, isNewQuery, fieldsMetadata } = rpcResult
 
     const { copyToClipboard } = useCopyToClipboard()
     const copyButtonRef = useRef<HTMLButtonElement>(null)
@@ -306,7 +306,7 @@ export const ResultViewer = ({
             ) : (
                 <RecordRenderer
                     records={data || []}
-                    fieldsMetadata={rpcQuery.fieldsMetadata}
+                    fieldsMetadata={fieldsMetadata}
                     clickableRow={true}
                     showId={true}
                     onExpandToggle={toggleRowExpansion}

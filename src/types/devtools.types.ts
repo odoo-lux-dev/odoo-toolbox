@@ -35,6 +35,7 @@ export interface RpcResultState {
     lastQuery: RpcQueryState | null
     isNewQuery: boolean
     model: string | null
+    fieldsMetadata?: Record<string, FieldMetadata>
 }
 
 export interface OdooModel {
