@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState } from "preact/hooks"
-import { EnhancedTechnicalFieldInfo } from "@/types"
+import {
+    EnhancedTechnicalButtonInfo,
+    EnhancedTechnicalFieldInfo,
+} from "@/types"
 
 interface UseElementSelectorOptions {
     validFields?: EnhancedTechnicalFieldInfo[]
+    validButtons?: EnhancedTechnicalButtonInfo[]
     onNonSelectableClick?: () => void
     isExpanded?: boolean
 }
@@ -20,18 +24,24 @@ const HOVER_CLASS = "x-odoo-field-selector-hover"
 /**
  * Hook for selecting elements in the page
  *
- * Synchronized detection criteria (ALL required):
+ * Synchronized detection criteria for fields (ALL required):
  * - MUST have the class .o_field_widget OR .o_field_cell
  * - AND MUST have the attribute name OR data-name
  *
+ * Synchronized detection criteria for buttons (ALL required):
+ * - MUST be a <button> element
+ * - AND MUST have type="object" OR type="action"
+ * - AND MUST have the attribute name OR id (name takes priority)
+ *
  * This automatically excludes <th>, <div>, and other elements that don't
- * have the specific Odoo field classes, even if they have a data-name.
+ * have the specific Odoo classes/attributes, even if they have a data-name.
  */
 
 export const useElementSelector = (
     options: UseElementSelectorOptions = {}
 ): UseElementSelectorReturn => {
-    const { validFields, onNonSelectableClick, isExpanded } = options
+    const { validFields, validButtons, onNonSelectableClick, isExpanded } =
+        options
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
         null
@@ -68,49 +78,72 @@ export const useElementSelector = (
         })
     }, [clearAllHighlights])
 
-    const getFieldNameFromElement = useCallback(
+    const getElementIdentifier = useCallback(
         (element: HTMLElement): string | null => {
+            // For fields: name or data-name
+            // For buttons: name first, then id as fallback
             return (
                 element.getAttribute("name") ||
                 element.getAttribute("data-name") ||
+                element.getAttribute("id") ||
                 null
             )
         },
         []
     )
 
-    const isValidFieldElement = useCallback(
+    const isValidElement = useCallback(
         (element: HTMLElement): boolean => {
-            // - MUST have the class .o_field_widget OR .o_field_cell
-            // - AND MUST have the attribute name OR data-name
-
+            // Check if it's a valid field
             const hasFieldWidget = element.classList.contains("o_field_widget")
             const hasFieldCell = element.classList.contains("o_field_cell")
-            const hasNameAttr =
+            const hasFieldNameAttr =
                 element.hasAttribute("name") ||
                 element.hasAttribute("data-name")
 
-            const isOdooField = (hasFieldWidget || hasFieldCell) && hasNameAttr
+            const isOdooField =
+                (hasFieldWidget || hasFieldCell) && hasFieldNameAttr
 
-            if (!isOdooField) {
+            // Check if it's a valid button
+            const isButton = element.tagName.toLowerCase() === "button"
+            const hasValidButtonType =
+                element.getAttribute("type") === "object" ||
+                element.getAttribute("type") === "action"
+            const hasButtonNameAttr =
+                element.hasAttribute("name") || element.hasAttribute("id")
+
+            const isOdooButton =
+                isButton && hasValidButtonType && hasButtonNameAttr
+
+            // Must be either a valid field or a valid button
+            if (!isOdooField && !isOdooButton) {
                 return false
             }
 
-            if (validFields && validFields.length > 0) {
-                const fieldName = getFieldNameFromElement(element)
-                if (!fieldName) {
-                    return false
-                }
+            const elementIdentifier = getElementIdentifier(element)
+            if (!elementIdentifier) {
+                return false
+            }
 
+            // Check against valid fields if it's a field
+            if (isOdooField && validFields && validFields.length > 0) {
                 const isInValidFields = validFields.some(
-                    (field) => field.name === fieldName
+                    (field) => field.name === elementIdentifier
                 )
-                return isInValidFields
+                if (!isInValidFields) return false
+            }
+
+            // Check against valid buttons if it's a button
+            if (isOdooButton && validButtons && validButtons.length > 0) {
+                const isInValidButtons = validButtons.some(
+                    (button) => button.name === elementIdentifier
+                )
+                if (!isInValidButtons) return false
             }
 
             return true
         },
-        [validFields, getFieldNameFromElement]
+        [validFields, validButtons, getElementIdentifier]
     )
 
     const getElementDistance = useCallback(
@@ -128,19 +161,17 @@ export const useElementSelector = (
         []
     )
 
-    const findValidFieldElement = useCallback(
+    const findValidElement = useCallback(
         (startElement: HTMLElement): HTMLElement | null => {
-            if (isValidFieldElement(startElement)) {
+            if (isValidElement(startElement)) {
                 return startElement
             }
 
+            // Try to find a valid field element
             const cellElement = startElement.closest(
                 ".o_field_cell[name], .o_field_cell[data-name]"
             )
-            if (
-                cellElement &&
-                isValidFieldElement(cellElement as HTMLElement)
-            ) {
+            if (cellElement && isValidElement(cellElement as HTMLElement)) {
                 return cellElement as HTMLElement
             }
 
@@ -157,15 +188,23 @@ export const useElementSelector = (
                 // (Many2One, autocomplete, etc.) but stay reasonable to avoid containers that are too distant
                 if (
                     distance <= 5 &&
-                    isValidFieldElement(widgetElement as HTMLElement)
+                    isValidElement(widgetElement as HTMLElement)
                 ) {
                     return widgetElement as HTMLElement
                 }
             }
 
+            // Try to find a valid button element
+            const buttonElement = startElement.closest(
+                'button[type="object"], button[type="action"]'
+            )
+            if (buttonElement && isValidElement(buttonElement as HTMLElement)) {
+                return buttonElement as HTMLElement
+            }
+
             return null
         },
-        [isValidFieldElement, getElementDistance]
+        [isValidElement, getElementDistance]
     )
 
     const handleMouseOver = useCallback(
@@ -175,24 +214,19 @@ export const useElementSelector = (
             const target = event.target as HTMLElement
             if (!target) return
 
-            const fieldElement = findValidFieldElement(target)
-            if (!fieldElement) return
+            const validElement = findValidElement(target)
+            if (!validElement) return
 
-            if (hoveredElement && hoveredElement !== fieldElement) {
+            if (hoveredElement && hoveredElement !== validElement) {
                 hoveredElement.classList.remove(HOVER_CLASS)
             }
 
-            if (fieldElement !== selectedElement) {
-                fieldElement.classList.add(HOVER_CLASS)
-                setHoveredElement(fieldElement)
+            if (validElement !== selectedElement) {
+                validElement.classList.add(HOVER_CLASS)
+                setHoveredElement(validElement)
             }
         },
-        [
-            isSelectionMode,
-            findValidFieldElement,
-            hoveredElement,
-            selectedElement,
-        ]
+        [isSelectionMode, findValidElement, hoveredElement, selectedElement]
     )
 
     const handleMouseOut = useCallback(
@@ -221,9 +255,9 @@ export const useElementSelector = (
                 return
             }
 
-            const fieldElement = findValidFieldElement(target)
+            const validElement = findValidElement(target)
 
-            if (!fieldElement) {
+            if (!validElement) {
                 if (onNonSelectableClick) {
                     onNonSelectableClick()
                 }
@@ -240,12 +274,12 @@ export const useElementSelector = (
                 setHoveredElement(null)
             }
 
-            fieldElement.classList.add(HIGHLIGHT_CLASS)
-            setSelectedElement(fieldElement)
+            validElement.classList.add(HIGHLIGHT_CLASS)
+            setSelectedElement(validElement)
         },
         [
             isSelectionMode,
-            findValidFieldElement,
+            findValidElement,
             clearSelection,
             hoveredElement,
             onNonSelectableClick,
@@ -291,41 +325,54 @@ export const useElementSelector = (
                     (mutation.addedNodes.length > 0 ||
                         mutation.removedNodes.length > 0)
                 ) {
-                    const addedFields = Array.from(mutation.addedNodes).some(
+                    const addedElements = Array.from(mutation.addedNodes).some(
                         (node) => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
                                 const element = node as Element
                                 return (
                                     element.querySelector?.(
-                                        ".o_field_widget, .o_field_cell"
+                                        ".o_field_widget, .o_field_cell, button[type='object'], button[type='action']"
                                     ) ||
                                     element.classList?.contains(
                                         "o_field_widget"
                                     ) ||
-                                    element.classList?.contains("o_field_cell")
+                                    element.classList?.contains(
+                                        "o_field_cell"
+                                    ) ||
+                                    (element.tagName?.toLowerCase() ===
+                                        "button" &&
+                                        (element.getAttribute("type") ===
+                                            "object" ||
+                                            element.getAttribute("type") ===
+                                                "action"))
                                 )
                             }
                             return false
                         }
                     )
 
-                    const removedFields = Array.from(
+                    const removedElements = Array.from(
                         mutation.removedNodes
                     ).some((node) => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             const element = node as Element
                             return (
                                 element.querySelector?.(
-                                    ".o_field_widget, .o_field_cell"
+                                    ".o_field_widget, .o_field_cell, button[type='object'], button[type='action']"
                                 ) ||
                                 element.classList?.contains("o_field_widget") ||
-                                element.classList?.contains("o_field_cell")
+                                element.classList?.contains("o_field_cell") ||
+                                (element.tagName?.toLowerCase() === "button" &&
+                                    (element.getAttribute("type") ===
+                                        "object" ||
+                                        element.getAttribute("type") ===
+                                            "action"))
                             )
                         }
                         return false
                     })
 
-                    if (addedFields || removedFields) {
+                    if (addedElements || removedElements) {
                         shouldReattach = true
 
                         if (

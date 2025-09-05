@@ -1,7 +1,7 @@
 import { JSX } from "preact"
 import { useEffect } from "preact/hooks"
-import { useDatabaseInfo } from "@/hooks/use-database-info"
-import { useTechnicalSidebar } from "@/hooks/use-technical-sidebar"
+import { useDatabaseInfo } from "@/components/technical-list/hooks/use-database-info"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 import { TechnicalSidebarContextType } from "@/types"
 import { TechnicalSidebarContext } from "./technical-sidebar-context"
 
@@ -32,11 +32,14 @@ export const TechnicalSidebarProvider = ({
 
     const isWebsite = sidebarState.viewInfo?.websiteInfo != null
     const hasFields = (sidebarState.viewInfo?.technicalFields?.length || 0) > 0
+    const hasButtons =
+        (sidebarState.viewInfo?.technicalButtons?.length || 0) > 0
 
     const contextValue: TechnicalSidebarContextType = {
         ...sidebarState,
         isWebsite,
         hasFields,
+        hasButtons,
         dbInfo: databaseState.dbInfo,
         dbLoading: databaseState.loading,
         dbError: databaseState.error,

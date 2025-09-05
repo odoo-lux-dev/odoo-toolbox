@@ -1,6 +1,7 @@
 import "@/entries/devtools-panel/tabs/tabs.style.scss"
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor"
 import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete"
 import {
@@ -25,7 +26,6 @@ import {
     useRpcResult,
     useTabValues,
 } from "@/contexts/devtools-signals-hook"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 import { Logger } from "@/services/logger"
 import { isOdooError } from "@/services/odoo-error"
 import { odooRpcService } from "@/services/odoo-rpc-service"
@@ -160,7 +160,12 @@ export const CreateTab = () => {
                             requiredValidation.missingRequiredFields
                         )
                 )
-            showNotification(message, "error", ERROR_NOTIFICATION_TIMEOUT, actionButton)
+            showNotification(
+                message,
+                "error",
+                ERROR_NOTIFICATION_TIMEOUT,
+                actionButton
+            )
             return false
         }
 

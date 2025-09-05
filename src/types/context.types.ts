@@ -5,6 +5,7 @@ import type {
 } from "@/components/shared/notifications/notifications.types"
 import type {
     DatabaseInfo,
+    EnhancedTechnicalButtonInfo,
     EnhancedTechnicalFieldInfo,
     ViewInfo,
 } from "@/types/technical.types"
@@ -13,6 +14,7 @@ export interface TechnicalSidebarContextType {
     isExpanded: boolean
     isSelectionMode: boolean
     selectedFieldInfo: EnhancedTechnicalFieldInfo | null
+    selectedButtonInfo: EnhancedTechnicalButtonInfo | null
 
     buttonRef: RefObject<HTMLDivElement>
 
@@ -22,6 +24,7 @@ export interface TechnicalSidebarContextType {
 
     isWebsite: boolean
     hasFields: boolean
+    hasButtons: boolean
 
     dbInfo: DatabaseInfo | null
     dbLoading: boolean
@@ -32,7 +35,15 @@ export interface TechnicalSidebarContextType {
     toggleSelectionMode: () => void
 
     highlightField: (fieldName: string) => void
+    highlightButton: (
+        buttonName: string,
+        buttonType: "object" | "action"
+    ) => void
     clearFieldHighlight: (fieldName: string) => void
+    clearButtonHighlight: (
+        buttonName: string,
+        buttonType: "object" | "action"
+    ) => void
     clearAllHighlights: () => void
 }
 

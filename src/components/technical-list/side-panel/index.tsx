@@ -1,8 +1,9 @@
 import { SidePanelHeader } from "@/components/technical-list/side-panel/header"
 import { SidePanelSummary } from "@/components/technical-list/side-panel/summary"
-import { ErrorState, LoadingState } from "@/components/technical-list/states"
+import { EmptyState, ErrorState, LoadingState } from "@/components/technical-list/states"
 import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
 import { PanelContent } from "./content"
+import { SelectedButtonContent } from "./selected-button-content"
 import { SelectedFieldContent } from "./selected-field-content"
 
 export const SidePanel = () => {
@@ -12,6 +13,8 @@ export const SidePanel = () => {
         error,
         clearAllHighlights,
         isSelectionMode,
+        selectedFieldInfo,
+        selectedButtonInfo,
         viewInfo,
     } = useTechnicalSidebarContext()
 
@@ -28,7 +31,16 @@ export const SidePanel = () => {
                 {error && <ErrorState message={error} />}
 
                 {isSelectionMode && !loading && !error && (
-                    <SelectedFieldContent />
+                    <>
+                        {selectedFieldInfo && <SelectedFieldContent />}
+                        {selectedButtonInfo && <SelectedButtonContent />}
+                        {!selectedFieldInfo && !selectedButtonInfo && (
+                            <EmptyState
+                                icon="fa-mouse-pointer"
+                                message="Click on an element in the page to see its details"
+                            />
+                        )}
+                    </>
                 )}
 
                 {!isSelectionMode && viewInfo && !loading && !error && (

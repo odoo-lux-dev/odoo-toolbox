@@ -1,5 +1,6 @@
 import { History } from "lucide-preact"
 import { route } from "preact-router"
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
 import {
     resetRpcQuery,
@@ -9,7 +10,6 @@ import {
     setRpcQuery,
     setWriteValues,
 } from "@/contexts/devtools-signals"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 import type { HistoryAction } from "@/types"
 
 interface HistoryActionRestoreProps {

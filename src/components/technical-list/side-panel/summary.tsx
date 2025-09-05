@@ -1,3 +1,4 @@
+import { Info } from "lucide-preact"
 import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
 
 export const SidePanelSummary = () => {
@@ -19,9 +20,17 @@ export const SidePanelSummary = () => {
             ) : (
                 <>
                     {viewInfo.totalFields} field
-                    {viewInfo.totalFields > 1 ? "s" : ""} found
+                    {viewInfo.totalFields > 1 ? "s" : ""}
+                    {viewInfo.totalButtons > 0 && (
+                        <>
+                            {" "}
+                            - {viewInfo.totalButtons} button
+                            {viewInfo.totalButtons > 1 ? "s" : ""}
+                        </>
+                    )}{" "}
+                    found
                     <span className="x-odoo-technical-list-info-hint">
-                        <i className="fa fa-info-circle" />
+                        <Info size={10} />
                         Hover to highlight in view
                     </span>
                 </>

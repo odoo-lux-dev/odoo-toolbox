@@ -1,3 +1,4 @@
+import { Info } from "lucide-preact"
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
 import { EnhancedTechnicalFieldInfo } from "@/types"
 import { isDynamicCondition } from "@/utils/field-utils"
@@ -102,13 +103,13 @@ export const FieldItem = ({
             {(isDynamicCondition(field.debugInfo?.required) ||
                 isDynamicCondition(field.debugInfo?.readonly) ||
                 isDynamicCondition(field.debugInfo?.invisible)) && (
-                <div className="x-odoo-technical-list-info-conditional-note">
-                    <i className="fa fa-info-circle"></i>
-                    <span>
-                        * indicates conditional behavior based on field state
-                    </span>
-                </div>
-            )}
+                    <div className="x-odoo-technical-list-info-conditional-note">
+                        <Info size={10} />
+                        <span>
+                            * indicates conditional behavior based on field state
+                        </span>
+                    </div>
+                )}
 
             {field.debugInfo && (
                 <div className="x-odoo-technical-list-info-debug-details">

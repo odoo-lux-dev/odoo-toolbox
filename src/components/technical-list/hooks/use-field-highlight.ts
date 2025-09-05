@@ -3,6 +3,7 @@ import { useCallback, useRef } from "preact/hooks"
 export const useFieldHighlight = () => {
     const highlightedElements = useRef<Set<Element>>(new Set())
     const fieldElementsCache = useRef<Map<string, Element[]>>(new Map())
+    const buttonElementsCache = useRef<Map<string, Element[]>>(new Map())
 
     const findFieldElements = useCallback((fieldName: string): Element[] => {
         if (fieldElementsCache.current.has(fieldName)) {
@@ -57,6 +58,51 @@ export const useFieldHighlight = () => {
         return elements
     }, [])
 
+    const findButtonElements = useCallback(
+        (buttonName: string, buttonType: "object" | "action"): Element[] => {
+            const cacheKey = `${buttonType}:${buttonName}`
+            if (buttonElementsCache.current.has(cacheKey)) {
+                return buttonElementsCache.current.get(cacheKey)!
+            }
+
+            const elements: Element[] = []
+
+            // Search for buttons with matching name/id and type
+            let selector = ""
+            if (buttonType === "object") {
+                selector = `button[type="object"][name="${buttonName}"]`
+            } else if (buttonType === "action") {
+                // For action buttons, check both name and id attributes
+                selector = `button[type="action"][name="${buttonName}"], button[type="action"][id="${buttonName}"]`
+            }
+
+            const allMatches = document.querySelectorAll(selector)
+
+            // Filter to keep only parent elements (not children)
+            const filteredElements: Element[] = []
+
+            allMatches.forEach((element) => {
+                // Check if this element is a child of another element with the same name
+                const isChild = Array.from(allMatches).some((otherElement) => {
+                    return (
+                        otherElement !== element &&
+                        otherElement.contains(element)
+                    )
+                })
+
+                // Keep only elements that are not children of other elements with the same name
+                if (!isChild) {
+                    filteredElements.push(element)
+                }
+            })
+
+            elements.push(...filteredElements)
+            buttonElementsCache.current.set(cacheKey, elements)
+            return elements
+        },
+        []
+    )
+
     const highlightField = useCallback(
         (fieldName: string) => {
             // Clear existing highlights
@@ -93,6 +139,42 @@ export const useFieldHighlight = () => {
         [findFieldElements]
     )
 
+    const highlightButton = useCallback(
+        (buttonName: string, buttonType: "object" | "action") => {
+            // Clear existing highlights
+            if (highlightedElements.current.size > 0) {
+                highlightedElements.current.forEach((element) => {
+                    element.classList.remove("x-odoo-field-highlighted")
+                })
+                highlightedElements.current.clear()
+            }
+
+            const buttonElements = findButtonElements(buttonName, buttonType)
+
+            // Apply highlight to found elements
+            buttonElements.forEach((element) => {
+                element.classList.add("x-odoo-field-highlighted")
+                highlightedElements.current.add(element)
+            })
+
+            // Scroll to first element if not visible
+            if (buttonElements.length > 0) {
+                const firstElement = buttonElements[0]
+                const rect = firstElement.getBoundingClientRect()
+                const isVisible =
+                    rect.top >= 0 && rect.bottom <= window.innerHeight
+
+                if (!isVisible) {
+                    firstElement.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                    })
+                }
+            }
+        },
+        [findButtonElements]
+    )
+
     const clearAllHighlights = useCallback(() => {
         highlightedElements.current.forEach((element) => {
             element.classList.remove("x-odoo-field-highlighted")
@@ -116,13 +198,32 @@ export const useFieldHighlight = () => {
         [findFieldElements, clearAllHighlights]
     )
 
+    const clearButtonHighlight = useCallback(
+        (buttonName?: string, buttonType?: "object" | "action") => {
+            if (!buttonName || !buttonType) {
+                clearAllHighlights()
+                return
+            }
+
+            const buttonElements = findButtonElements(buttonName, buttonType)
+            buttonElements.forEach((element) => {
+                element.classList.remove("x-odoo-field-highlighted")
+                highlightedElements.current.delete(element)
+            })
+        },
+        [findButtonElements, clearAllHighlights]
+    )
+
     const clearCache = useCallback(() => {
         fieldElementsCache.current.clear()
+        buttonElementsCache.current.clear()
     }, [])
 
     return {
         highlightField,
+        highlightButton,
         clearFieldHighlight,
+        clearButtonHighlight,
         clearAllHighlights,
         clearCache,
     }

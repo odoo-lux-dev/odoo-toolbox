@@ -21,8 +21,10 @@ export interface ViewInfo {
     currentModel?: string
     currentRecordId?: number
     technicalFields: EnhancedTechnicalFieldInfo[]
+    technicalButtons: EnhancedTechnicalButtonInfo[]
     viewType?: string
     totalFields: number
+    totalButtons: number
     websiteInfo?: WebsiteInfo
 }
 
@@ -45,11 +47,35 @@ export interface DebugFieldInfo {
     selection?: Array<[string, string]> | null
 }
 
+export interface DebugButtonInfo {
+    name: string
+    type: "object" | "action"
+    string?: string
+    invisible?: boolean | string | null
+    context?: unknown
+    confirm?: string
+    help?: string
+    icon?: string
+}
+
 export interface EnhancedTechnicalFieldInfo extends TechnicalFieldInfo {
     debugInfo?: DebugFieldInfo
     hasDebugData: boolean
     canBeRequired?: boolean
     canBeReadonly?: boolean
+}
+
+export interface TechnicalButtonInfo {
+    name: string
+    type: "object" | "action"
+    label?: string
+    isVisible?: boolean
+    hotkey?: string
+}
+
+export interface EnhancedTechnicalButtonInfo extends TechnicalButtonInfo {
+    debugInfo?: DebugButtonInfo
+    hasDebugData: boolean
 }
 
 export interface WebsiteInfo {
