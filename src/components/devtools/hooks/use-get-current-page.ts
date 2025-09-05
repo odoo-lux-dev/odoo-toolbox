@@ -36,11 +36,17 @@ export const useGetCurrentPage = () => {
                 )
 
                 if (result) {
-                    setRpcQuery(result.updates)
+                    setRpcQuery({
+                        limit: 80,
+                        offset: 0,
+                        orderBy: "",
+                        selectedFields: [],
+                        ...result.updates,
+                    })
 
                     if (autoExecute) {
                         try {
-                            await executeQuery(true, result.updates)
+                            await executeQuery(true)
                         } catch (executeError) {
                             Logger.error(
                                 "Error executing automatic query:",
