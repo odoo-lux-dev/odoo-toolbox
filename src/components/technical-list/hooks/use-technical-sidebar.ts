@@ -1,20 +1,33 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks"
-import { useElementSelector } from "@/hooks/use-element-selector"
-import { useFieldHighlight } from "@/hooks/use-field-highlight"
-import { useViewInfo } from "@/hooks/use-view-info"
-import { EnhancedTechnicalFieldInfo } from "@/types"
+import { useElementSelector } from "@/components/technical-list/hooks/use-element-selector"
+import { useFieldHighlight } from "@/components/technical-list/hooks/use-field-highlight"
+import { useViewInfo } from "@/components/technical-list/hooks/use-view-info"
+import {
+    EnhancedTechnicalButtonInfo,
+    EnhancedTechnicalFieldInfo,
+} from "@/types"
 
 export const useTechnicalSidebar = () => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [selectedFieldInfo, setSelectedFieldInfo] =
         useState<EnhancedTechnicalFieldInfo | null>(null)
+    const [selectedButtonInfo, setSelectedButtonInfo] =
+        useState<EnhancedTechnicalButtonInfo | null>(null)
     const buttonRef = useRef<HTMLDivElement>(null)
 
-    const { viewInfo, loading, error, refresh, extractSingleFieldInfo } =
-        useViewInfo()
+    const {
+        viewInfo,
+        loading,
+        error,
+        refresh,
+        extractSingleFieldInfo,
+        extractSingleButtonInfo,
+    } = useViewInfo()
     const {
         highlightField,
+        highlightButton,
         clearFieldHighlight,
+        clearButtonHighlight,
         clearAllHighlights,
         clearCache,
     } = useFieldHighlight()
@@ -33,6 +46,7 @@ export const useTechnicalSidebar = () => {
         clearSelection,
     } = useElementSelector({
         validFields: viewInfo?.technicalFields,
+        validButtons: viewInfo?.technicalButtons,
         onNonSelectableClick: handleNonSelectableClick,
         isExpanded: isExpanded,
     })
@@ -132,12 +146,36 @@ export const useTechnicalSidebar = () => {
 
     useEffect(() => {
         if (selectedElement) {
-            const fieldInfo = extractSingleFieldInfo(selectedElement)
-            setSelectedFieldInfo(fieldInfo)
+            // Check if it's a field or a button
+            const hasFieldWidget =
+                selectedElement.classList.contains("o_field_widget")
+            const hasFieldCell =
+                selectedElement.classList.contains("o_field_cell")
+            const isButton = selectedElement.tagName.toLowerCase() === "button"
+            const hasValidButtonType =
+                selectedElement.getAttribute("type") === "object" ||
+                selectedElement.getAttribute("type") === "action"
+
+            if (hasFieldWidget || hasFieldCell) {
+                // It's a field
+                const fieldInfo = extractSingleFieldInfo(selectedElement)
+                setSelectedFieldInfo(fieldInfo)
+                setSelectedButtonInfo(null)
+            } else if (isButton && hasValidButtonType) {
+                // It's a button
+                const buttonInfo = extractSingleButtonInfo(selectedElement)
+                setSelectedButtonInfo(buttonInfo)
+                setSelectedFieldInfo(null)
+            } else {
+                // Clear both if it's neither
+                setSelectedFieldInfo(null)
+                setSelectedButtonInfo(null)
+            }
         } else {
             setSelectedFieldInfo(null)
+            setSelectedButtonInfo(null)
         }
-    }, [selectedElement, extractSingleFieldInfo])
+    }, [selectedElement, extractSingleFieldInfo, extractSingleButtonInfo])
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -175,6 +213,7 @@ export const useTechnicalSidebar = () => {
     return {
         isExpanded,
         selectedFieldInfo,
+        selectedButtonInfo,
         buttonRef,
 
         viewInfo,
@@ -189,7 +228,9 @@ export const useTechnicalSidebar = () => {
         toggleSelectionMode,
 
         highlightField,
+        highlightButton,
         clearFieldHighlight,
+        clearButtonHighlight,
         clearAllHighlights,
     }
 }

@@ -3,6 +3,8 @@ import { signal } from "@preact/signals"
 export const searchTermSignal = signal("")
 export const showOnlyRequiredSignal = signal(false)
 export const showOnlyReadonlySignal = signal(false)
+export const showOnlyFieldsSignal = signal(false)
+export const showOnlyButtonsSignal = signal(false)
 export const expandedSectionsSignal = signal<Set<string>>(new Set())
 
 export const setSearchTerm = (term: string) => {
@@ -15,6 +17,14 @@ export const setShowOnlyRequired = (show: boolean) => {
 
 export const setShowOnlyReadonly = (show: boolean) => {
     showOnlyReadonlySignal.value = show
+}
+
+export const setShowOnlyFields = (show: boolean) => {
+    showOnlyFieldsSignal.value = show
+}
+
+export const setShowOnlyButtons = (show: boolean) => {
+    showOnlyButtonsSignal.value = show
 }
 
 export const toggleSectionExpanded = (sectionId: string) => {
@@ -41,4 +51,6 @@ export const clearTechnicalFilters = () => {
     searchTermSignal.value = ""
     showOnlyRequiredSignal.value = false
     showOnlyReadonlySignal.value = false
+    showOnlyFieldsSignal.value = false
+    showOnlyButtonsSignal.value = false
 }

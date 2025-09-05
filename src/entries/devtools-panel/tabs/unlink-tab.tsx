@@ -1,6 +1,7 @@
 import "@/entries/devtools-panel/tabs/tabs.style.scss"
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { useQueryIds } from "@/components/devtools/hooks/use-query-ids"
 import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar"
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer"
@@ -16,7 +17,6 @@ import {
     useRpcQuery,
     useRpcResult,
 } from "@/contexts/devtools-signals-hook"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 import { Logger } from "@/services/logger"
 import { odooRpcService } from "@/services/odoo-rpc-service"
 import { addUnlinkToHistory } from "@/utils/history-helpers"

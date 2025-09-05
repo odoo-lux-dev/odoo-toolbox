@@ -1,6 +1,6 @@
 import { useCallback, useState } from "preact/hooks"
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 import { validateJSON } from "@/utils/query-validation"
 
 export interface UseJsonEditorProps {

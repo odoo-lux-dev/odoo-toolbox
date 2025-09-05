@@ -591,6 +591,13 @@
   }
 }
 
+.x-odoo-technical-list-info-search-filters-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 .x-odoo-technical-list-info-checkbox {
   display: flex;
   align-items: center;
@@ -618,6 +625,13 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  .x-odoo-technical-list-info-section-title {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    color: #9ca3af;
+  }
 }
 
 .x-odoo-technical-list-info-field {

@@ -3,8 +3,12 @@ import {
     searchTermSignal,
     setSearchTerm,
     setSectionExpanded,
+    setShowOnlyButtons,
+    setShowOnlyFields,
     setShowOnlyReadonly,
     setShowOnlyRequired,
+    showOnlyButtonsSignal,
+    showOnlyFieldsSignal,
     showOnlyReadonlySignal,
     showOnlyRequiredSignal,
     toggleSectionExpanded,
@@ -14,10 +18,14 @@ export const useTechnicalListFilters = () => ({
     searchTerm: searchTermSignal.value,
     showOnlyRequired: showOnlyRequiredSignal.value,
     showOnlyReadonly: showOnlyReadonlySignal.value,
+    showOnlyFields: showOnlyFieldsSignal.value,
+    showOnlyButtons: showOnlyButtonsSignal.value,
 
     setSearchTerm,
     setShowOnlyRequired,
     setShowOnlyReadonly,
+    setShowOnlyFields,
+    setShowOnlyButtons,
 })
 
 export const useTechnicalListSections = () => ({

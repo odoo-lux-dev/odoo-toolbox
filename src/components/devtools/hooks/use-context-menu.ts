@@ -1,6 +1,6 @@
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 
 export const useContextMenu = () => {
     const { copyToClipboard } = useCopyToClipboard()

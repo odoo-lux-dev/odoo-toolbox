@@ -1,6 +1,7 @@
 import "@/entries/devtools-panel/tabs/tabs.style.scss"
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
 import { useQueryIds } from "@/components/devtools/hooks/use-query-ids"
 import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor"
 import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete"
@@ -22,7 +23,6 @@ import {
     useRpcResult,
     useTabValues,
 } from "@/contexts/devtools-signals-hook"
-import { useDevToolsNotifications } from "@/hooks/use-devtools-notifications"
 import { Logger } from "@/services/logger"
 import { odooRpcService } from "@/services/odoo-rpc-service"
 import { addWriteToHistory } from "@/utils/history-helpers"
@@ -105,7 +105,11 @@ export const WriteTab = () => {
         }
 
         if (!writeData.trim()) {
-            showNotification("Write data is required", "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(
+                "Write data is required",
+                "error",
+                ERROR_NOTIFICATION_TIMEOUT
+            )
             return
         }
 
@@ -126,7 +130,11 @@ export const WriteTab = () => {
             const richNotification = createFieldValidationErrorNotification(
                 fieldsValidation.invalidFields
             )
-            showNotification(richNotification, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(
+                richNotification,
+                "error",
+                ERROR_NOTIFICATION_TIMEOUT
+            )
             return
         }
 

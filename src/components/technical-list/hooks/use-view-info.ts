@@ -1,7 +1,9 @@
 import { useCallback, useState } from "preact/hooks"
 import { Logger } from "@/services/logger"
 import {
+    DebugButtonInfo,
     DebugFieldInfo,
+    EnhancedTechnicalButtonInfo,
     EnhancedTechnicalFieldInfo,
     ViewInfo,
     WebsiteInfo,
@@ -99,6 +101,51 @@ export const useViewInfo = () => {
 
         return null
     }, [])
+
+    const extractDebugButtonInfo = useCallback(
+        (
+            buttonName: string,
+            buttonType: "object" | "action"
+        ): DebugButtonInfo | null => {
+            // Search for all elements with data-tooltip-info
+            const tooltipElements = document.querySelectorAll(
+                "[data-tooltip-info]"
+            )
+
+            for (const element of tooltipElements) {
+                try {
+                    const tooltipInfo =
+                        element.getAttribute("data-tooltip-info")
+                    if (!tooltipInfo) continue
+
+                    const decodedInfo = tooltipInfo.replace(/&quot;/g, '"')
+                    const parsed = JSON.parse(decodedInfo)
+
+                    // Check if it's a button tooltip and matches our criteria
+                    if (
+                        parsed.button?.name === buttonName &&
+                        parsed.button?.type === buttonType
+                    ) {
+                        return {
+                            name: parsed.button.name,
+                            type: parsed.button.type,
+                            string: parsed.button.string,
+                            invisible: parsed.button.invisible,
+                            context: parsed.context,
+                            confirm: parsed.button.confirm,
+                            help: parsed.button.help,
+                            icon: parsed.button.icon,
+                        }
+                    }
+                } catch {
+                    // Continue the loop
+                }
+            }
+
+            return null
+        },
+        []
+    )
 
     const extractDebugFieldInfo = useCallback(
         (fieldName: string): DebugFieldInfo | null => {
@@ -402,6 +449,71 @@ export const useViewInfo = () => {
         },
         [extractDebugFieldInfo]
     )
+
+    const extractButtonInfo = useCallback(
+        (buttonElement: Element): EnhancedTechnicalButtonInfo => {
+            const buttonType = buttonElement.getAttribute("type") as
+                | "object"
+                | "action"
+
+            // Always use the name attribute from DOM for simplicity
+            const buttonName =
+                buttonElement.getAttribute("name") ||
+                buttonElement.getAttribute("id") ||
+                "unknown"
+
+            // Try to get debug info for additional metadata
+            const debugInfo = extractDebugButtonInfo(buttonName, buttonType)
+            let label = ""
+            let isVisible = true
+
+            if (debugInfo) {
+                // Use debug information (more precise)
+                label = debugInfo.string || ""
+
+                // Handle visibility from invisible attribute
+                if (typeof debugInfo.invisible === "boolean") {
+                    isVisible = !debugInfo.invisible
+                } else if (
+                    debugInfo.invisible === "True" ||
+                    debugInfo.invisible === "False" ||
+                    debugInfo.invisible === "1" ||
+                    debugInfo.invisible === "0"
+                ) {
+                    isVisible = !(
+                        debugInfo.invisible === "True" ||
+                        debugInfo.invisible === "1"
+                    )
+                } else if (
+                    debugInfo.invisible &&
+                    typeof debugInfo.invisible === "string"
+                ) {
+                    // Dynamic condition - check if button is actually visible
+                    isVisible = !buttonElement.hasAttribute("invisible")
+                }
+            } else {
+                // Fallback to extracting from DOM
+                const spanElement = buttonElement.querySelector("span")
+                label = spanElement?.textContent?.trim() || ""
+                isVisible = !buttonElement.hasAttribute("invisible")
+            }
+
+            const hotkey =
+                buttonElement.getAttribute("data-hotkey") || undefined
+
+            return {
+                name: buttonName,
+                type: buttonType,
+                label,
+                isVisible,
+                hotkey,
+                debugInfo: debugInfo || undefined,
+                hasDebugData: !!debugInfo,
+            }
+        },
+        [extractDebugButtonInfo]
+    )
+
     const fetchViewInfo = useCallback(async (): Promise<ViewInfo> => {
         const odooWindowObject = window.odoo
         if (!odooWindowObject) {
@@ -449,6 +561,42 @@ export const useViewInfo = () => {
 
         technicalFields.sort((a, b) => a.name.localeCompare(b.name))
 
+        // Extract buttons information
+        const buttonElements = document.querySelectorAll(
+            'button[type="object"], button[type="action"]'
+        )
+        const technicalButtons: EnhancedTechnicalButtonInfo[] = []
+        const seenButtons = new Set<string>()
+
+        buttonElements.forEach((element) => {
+            try {
+                const buttonType = element.getAttribute("type") as
+                    | "object"
+                    | "action"
+                const buttonName =
+                    buttonType === "action"
+                        ? element.getAttribute("id") ||
+                          element.getAttribute("name")
+                        : element.getAttribute("name") ||
+                          element.getAttribute("id")
+
+                if (
+                    !buttonName ||
+                    !buttonType ||
+                    seenButtons.has(`${buttonType}:${buttonName}`)
+                )
+                    return
+
+                const buttonInfo = extractButtonInfo(element)
+                seenButtons.add(`${buttonType}:${buttonName}`)
+                technicalButtons.push(buttonInfo)
+            } catch (error) {
+                Logger.warn(`Error extracting button info:`, error)
+            }
+        })
+
+        technicalButtons.sort((a, b) => a.name.localeCompare(b.name))
+
         // Extract website information if on a website
         const websiteInfo = extractWebsiteInfo() || undefined
 
@@ -456,11 +604,13 @@ export const useViewInfo = () => {
             currentModel,
             currentRecordId,
             technicalFields,
+            technicalButtons,
             viewType,
             totalFields: technicalFields.length,
+            totalButtons: technicalButtons.length,
             websiteInfo,
         }
-    }, [extractFieldInfo, extractWebsiteInfo])
+    }, [extractFieldInfo, extractButtonInfo, extractWebsiteInfo])
 
     const extractSingleFieldInfo = useCallback(
         (element: HTMLElement): EnhancedTechnicalFieldInfo | null => {
@@ -497,6 +647,40 @@ export const useViewInfo = () => {
         [extractFieldInfo]
     )
 
+    const extractSingleButtonInfo = useCallback(
+        (element: HTMLElement): EnhancedTechnicalButtonInfo | null => {
+            if (!element) return null
+
+            // Check that the element meets the criteria of an Odoo button
+            const isButton = element.tagName.toLowerCase() === "button"
+            const hasType = element.hasAttribute("type")
+            const buttonType = element.getAttribute("type")
+            const isValidType =
+                buttonType === "object" || buttonType === "action"
+            const hasNameOrId =
+                element.hasAttribute("name") || element.hasAttribute("id")
+
+            if (!isButton || !hasType || !isValidType || !hasNameOrId) {
+                Logger.debug(
+                    "Selected element doesn't match button criteria - should not happen if selector works correctly"
+                )
+                return null
+            }
+
+            try {
+                const buttonInfo = extractButtonInfo(element as Element)
+                return buttonInfo
+            } catch (error) {
+                Logger.error(
+                    "Failed to extract button info from element:",
+                    error
+                )
+                return null
+            }
+        },
+        [extractButtonInfo]
+    )
+
     const refresh = useCallback(async () => {
         setLoading(true)
         setError(null)
@@ -522,5 +706,6 @@ export const useViewInfo = () => {
         error,
         refresh,
         extractSingleFieldInfo,
+        extractSingleButtonInfo,
     }
 }
