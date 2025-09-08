@@ -9,7 +9,6 @@ interface FieldRenderSwitchProps {
     fieldName: string
     fieldMetadata: FieldMetadata | null
     level?: number
-    parentModel?: string
     showAsRowWithLabel?: boolean
     additionalClasses?: string
     onContextMenu?: (
@@ -25,7 +24,6 @@ export const FieldRenderSwitch = ({
     fieldName,
     fieldMetadata,
     level = 0,
-    parentModel,
     showAsRowWithLabel = false,
     additionalClasses = "",
     onContextMenu,
@@ -98,7 +96,6 @@ export const FieldRenderSwitch = ({
                 fieldMetadata={fieldMetadata}
                 onContextMenu={onContextMenu}
                 level={level}
-                parentModel={parentModel}
             />
         )
     }

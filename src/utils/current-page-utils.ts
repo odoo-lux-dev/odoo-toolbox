@@ -7,19 +7,6 @@ import type {
 import { calculateQueryValidity } from "@/utils/query-validation"
 
 /**
- * Determines if page information justifies auto-execution
- */
-export const shouldAutoExecuteQuery = (pageInfo: PageInfo): boolean => {
-    // Auto-execute if we have IDs or a significant domain
-    return !!(
-        (pageInfo.recordIds && pageInfo.recordIds.length > 0) ||
-        (pageInfo.domain &&
-            Array.isArray(pageInfo.domain) &&
-            pageInfo.domain.length > 0)
-    )
-}
-
-/**
  * Utility function to process current page information
  * and generate appropriate updates for RPC state
  */
