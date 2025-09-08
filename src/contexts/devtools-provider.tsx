@@ -7,7 +7,6 @@ import { odooRpcService } from "@/services/odoo-rpc-service"
 import { DevToolsContextValue } from "@/types"
 import {
   getCurrentPageAndProcess,
-  shouldAutoExecuteQuery,
 } from "@/utils/current-page-utils"
 import { DevToolsContext } from "./devtools-context"
 import {
@@ -67,19 +66,17 @@ export const DevToolsProvider = ({ children }: DevToolsProviderProps) => {
               odooRpcService.getCurrentPageInfo()
             )
 
-            if (result) {
+            if (result?.updates.isQueryValid) {
               setRpcQuery(result.updates)
-
-              if (shouldAutoExecuteQuery(result.pageInfo)) {
-                try {
-                  await executeQuery(true, result.updates)
-                } catch (queryError) {
-                  Logger.warn(
-                    "Failed to auto-execute query on initialization:",
-                    queryError
-                  )
-                }
+              try {
+                await executeQuery(true, result.updates)
+              } catch (queryError) {
+                Logger.warn(
+                  "Failed to auto-execute query on initialization:",
+                  queryError
+                )
               }
+
             }
           } catch (pageError) {
             Logger.warn(

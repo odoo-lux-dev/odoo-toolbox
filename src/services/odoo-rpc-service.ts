@@ -1,6 +1,7 @@
 import { Logger } from "@/services/logger"
 import { createOdooError, isOdooError } from "@/services/odoo-error"
 import type {
+    FieldMetadata,
     OdooActionParams,
     OdooArchiveParams,
     OdooCallMethodParams,
@@ -607,7 +608,7 @@ export class OdooRpcService {
     async getFieldsInfo(
         model: string,
         fields?: string[]
-    ): Promise<Record<string, unknown>> {
+    ): Promise<Record<string, FieldMetadata>> {
         if (!model) {
             throw new Error("Model is required for fields_get")
         }
@@ -616,7 +617,7 @@ export class OdooRpcService {
             model,
             method: "fields_get",
             args: [fields],
-        }) as Promise<Record<string, unknown>>
+        }) as Promise<Record<string, FieldMetadata>>
     }
 }
 

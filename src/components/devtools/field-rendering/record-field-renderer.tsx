@@ -47,7 +47,6 @@ export const RecordFieldRenderer = ({
                     value={fieldValue}
                     fieldName={fieldKey}
                     level={level + 1}
-                    parentModel={parentModel}
                     parentFieldsMetadata={fieldsMetadata}
                     showAsRowWithLabel={true}
                     onContextMenu={(event, fieldName, value, fieldMetadata) =>
@@ -99,7 +98,6 @@ export const RecordFieldRenderer = ({
                     value={fieldValue}
                     fieldName={fieldKey}
                     level={level + 1}
-                    parentModel={parentModel}
                     parentFieldsMetadata={fieldsMetadata}
                     additionalClasses="detail-values"
                 />

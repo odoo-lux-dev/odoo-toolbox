@@ -626,6 +626,10 @@
   flex-direction: column;
   gap: 12px;
 
+  &:has(+ .x-odoo-technical-list-info-fields) {
+    margin-bottom: 16px;
+  }
+
   .x-odoo-technical-list-info-section-title {
     display: flex;
     gap: 6px;

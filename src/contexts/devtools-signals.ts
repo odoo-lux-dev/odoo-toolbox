@@ -207,9 +207,6 @@ export const executeQuery = async (
         ...(isNewQuery && { data: null, totalCount: null }),
     })
 
-    // Capture the current fields metadata for the results
-    const currentFieldsMetadata = fieldsMetadataSignal.value
-
     try {
         const {
             model,
@@ -240,7 +237,7 @@ export const executeQuery = async (
                 lastQuery: queryToUse,
                 isNewQuery: false,
                 model,
-                fieldsMetadata: currentFieldsMetadata,
+                fieldsMetadata: fieldsMetadataSignal.value,
             })
 
             if (isNewQuery) {
@@ -283,7 +280,7 @@ export const executeQuery = async (
             lastQuery: queryToUse,
             isNewQuery: false,
             model,
-            fieldsMetadata: currentFieldsMetadata,
+            fieldsMetadata: fieldsMetadataSignal.value,
         })
 
         if (isNewQuery) {

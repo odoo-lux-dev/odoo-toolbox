@@ -16,7 +16,6 @@ import type { BaseFieldProps } from "./types"
 
 interface RelationalFieldProps extends BaseFieldProps {
     level?: number
-    parentModel?: string
 }
 
 export const RelationalFieldRenderer = ({
@@ -25,7 +24,6 @@ export const RelationalFieldRenderer = ({
     fieldMetadata,
     onContextMenu,
     level = 0,
-    parentModel,
 }: RelationalFieldProps) => {
     const { openRecord, focusOnRecord, openRecords, focusOnRecords } =
         useRecordActions()
