@@ -1,4 +1,4 @@
-import type { OdooActionParams, OdooRpcParams } from "@/types"
+import type { OdooActionParams } from "@/types"
 
 /**
  * Forward a DevTools request to the target tab's page context and return its result.
@@ -45,7 +45,6 @@ export async function handleDevToolsMessage(
  * - "GET_ODOO_INFO": returns Odoo version, majorVersion, and optional database.
  * - "GET_ODOO_CONTEXT": returns the current user context (or empty object).
  * - "GET_CURRENT_PAGE_INFO": returns a concise description of the current page (model, recordIds, domain, viewType, title).
- * - "EXECUTE_ODOO_RPC": executes an RPC described by OdooRpcParams (ORM for v17+, legacy RPC otherwise).
  * - "EXECUTE_ODOO_ACTION": triggers an action described by OdooActionParams.
  *
  * @param scriptId - Identifier of the helper to execute (one of the supported script IDs above).
@@ -377,112 +376,6 @@ async function executeInContentScript(
     }
 
     /**
-     * Execute an Odoo RPC call (supports both new ORM for Odoo 17+ and legacy RPC).
-     *
-     * Attempts to detect the in-page Odoo instance and run the requested RPC using:
-     * - the Owl/ORM call path for Odoo >= 17, or
-     * - the legacy `web.rpc` service for older versions.
-     *
-     * Merges the current user's in-page context with `params.context` before calling.
-     *
-     * @param params - RPC parameters including `model`, `method`, optional `args`, `kwargs`, and optional `context`
-     * @returns The RPC call result as returned by the in-page Odoo runtime.
-     * @throws If Odoo is not detected, the detected version is unsupported, the required ORM/RPC service is unavailable, or when a legacy RPC returns an error (legacy errors are normalized to an `Error` with additional fields like `code`, `data`, `debug`, `name: "RPC_ERROR"`, `arguments`, and `context`).
-     */
-    async function executeOdooRpc(params: OdooRpcParams): Promise<unknown> {
-        const { version, majorVersion } = getOdooInfo()
-        const odoo = window.odoo
-
-        if (!version) {
-            throw new Error("Odoo not detected on this page")
-        }
-
-        if (!majorVersion) {
-            throw new Error("Odoo version not supported.")
-        }
-
-        // Get current user context and merge with provided context
-        const userContext = getOdooContext()
-        const finalContext = { ...userContext, ...params.context }
-
-        if (majorVersion >= 17) {
-            // Use new ORM for Odoo 17+
-            const orm = odoo?.__WOWL_DEBUG__?.root?.orm
-            if (!orm) {
-                throw new Error("ORM not available")
-            }
-
-            return await orm.call(
-                params.model,
-                params.method,
-                params.args || [],
-                {
-                    context: finalContext,
-                    ...params.kwargs,
-                }
-            )
-        } else {
-            // Use legacy RPC as fallback
-            const rpc = odoo?.__DEBUG__?.services?.["web.rpc"]
-            if (!rpc) {
-                throw new Error("RPC service not available")
-            }
-
-            try {
-                const result = await rpc.query({
-                    model: params.model,
-                    method: params.method,
-                    args: params.args || [],
-                    kwargs: params.kwargs || {},
-                    context: finalContext,
-                })
-                return result
-            } catch (error: unknown) {
-                // Transform legacy error format to our standard Odoo error format
-                if (error && typeof error === "object" && "message" in error) {
-                    const errorWithMessage = error as { message?: unknown }
-
-                    if (
-                        errorWithMessage.message &&
-                        typeof errorWithMessage.message === "object"
-                    ) {
-                        const errorData = errorWithMessage.message as {
-                            code?: number
-                            message?: string
-                            data?: {
-                                name?: string
-                                debug?: string
-                                message?: string
-                                arguments?: unknown[]
-                                context?: Record<string, unknown>
-                            }
-                        }
-
-                        const odooError = new Error(
-                            errorData.data?.message ||
-                                errorData.message ||
-                                "Unknown Odoo error"
-                        )
-
-                        Object.assign(odooError, {
-                            code: errorData.code,
-                            data: errorData.data,
-                            debug: errorData.data?.debug,
-                            name: "RPC_ERROR",
-                            arguments: errorData.data?.arguments,
-                            context: errorData.data?.context,
-                        })
-                        throw odooError
-                    }
-                }
-
-                // If it's not the expected legacy format, throw the original error
-                throw error
-            }
-        }
-    }
-
-    /**
      * Executes an Odoo client action in the page's context.
      *
      * Calls the page's available action service (`doAction`) with the provided action payload and options.
@@ -528,12 +421,6 @@ async function executeInContentScript(
 
             case "GET_CURRENT_PAGE_INFO":
                 return getCurrentPageInfo()
-
-            case "EXECUTE_ODOO_RPC":
-                if (!params || typeof params !== "object") {
-                    throw new Error("Invalid RPC parameters")
-                }
-                return await executeOdooRpc(params as OdooRpcParams)
 
             case "EXECUTE_ODOO_ACTION":
                 if (!params || typeof params !== "object") {

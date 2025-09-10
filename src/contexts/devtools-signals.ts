@@ -41,6 +41,7 @@ export const totalCountSignal = signal<number | null>(null)
 export const lastQuerySignal = signal<RpcQueryState | null>(null)
 export const isNewQuerySignal = signal(false)
 export const resultModelSignal = signal<string | null>(null)
+export const excludedFieldsSignal = signal<string[]>([])
 
 // Models State Signals
 export const modelsSignal = signal<OdooModel[]>([])
@@ -96,6 +97,7 @@ export const rpcResultSignal = computed(
         isNewQuery: isNewQuerySignal.value,
         model: resultModelSignal.value,
         fieldsMetadata: resultFieldsMetadataSignal.value,
+        excludedFields: excludedFieldsSignal.value,
     })
 )
 
@@ -149,6 +151,8 @@ export const setRpcResult = (updates: Partial<RpcResultState>) => {
     if (updates.model !== undefined) resultModelSignal.value = updates.model
     if (updates.fieldsMetadata !== undefined)
         resultFieldsMetadataSignal.value = updates.fieldsMetadata
+    if (updates.excludedFields !== undefined)
+        excludedFieldsSignal.value = updates.excludedFields
 }
 
 export const resetRpcResult = () => {
@@ -161,6 +165,7 @@ export const resetRpcResult = () => {
     isNewQuerySignal.value = false
     resultModelSignal.value = null
     resultFieldsMetadataSignal.value = undefined
+    excludedFieldsSignal.value = []
 }
 
 // ===== TAB-SPECIFIC SIGNALS HELPERS =====
@@ -225,9 +230,18 @@ export const executeQuery = async (
             const result = await odooRpcService.read(
                 model,
                 ids,
-                selectedFields.length > 0 ? selectedFields : []
+                selectedFields.length > 0 ? selectedFields : [],
+                undefined,
+                fieldsMetadataSignal.value
             )
             const resultArray = Array.isArray(result) ? result : [result]
+
+            const excludedFields =
+                await odooRpcService.getExcludedFieldsForQuery(
+                    model,
+                    selectedFields.length > 0 ? selectedFields : [],
+                    fieldsMetadataSignal.value
+                )
 
             setRpcResult({
                 data: resultArray,
@@ -238,6 +252,7 @@ export const executeQuery = async (
                 isNewQuery: false,
                 model,
                 fieldsMetadata: fieldsMetadataSignal.value,
+                excludedFields,
             })
 
             if (isNewQuery) {
@@ -266,10 +281,17 @@ export const executeQuery = async (
             limit,
             offset,
             order: orderBy,
+            fieldsMetadata: fieldsMetadataSignal.value,
         }
 
         const result = await odooRpcService.searchRead(queryParams)
         const resultArray = Array.isArray(result) ? result : [result]
+
+        const excludedFields = await odooRpcService.getExcludedFieldsForQuery(
+            model,
+            selectedFields.length > 0 ? selectedFields : undefined,
+            fieldsMetadataSignal.value
+        )
 
         setRpcResult({
             data: resultArray,
@@ -281,6 +303,7 @@ export const executeQuery = async (
             isNewQuery: false,
             model,
             fieldsMetadata: fieldsMetadataSignal.value,
+            excludedFields,
         })
 
         if (isNewQuery) {
@@ -362,6 +385,7 @@ export const loadFieldsMetadata = async (model: string) => {
         const fieldsMetadata = (await odooRpcService.getFieldsInfo(
             model
         )) as Record<string, FieldMetadata>
+        console.log(fieldsMetadata)
         fieldsMetadataSignal.value = fieldsMetadata
     } catch (error) {
         Logger.error("Failed to load fields metadata for model", model, error)

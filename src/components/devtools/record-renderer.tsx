@@ -4,12 +4,14 @@ import {
     ChevronRight,
     Crosshair,
     Layers2,
+    TriangleAlert,
 } from "lucide-preact"
 import { useRpcQuery } from "@/contexts/devtools-signals-hook"
 import { FieldMetadata } from "@/types"
 import { ContextMenu } from "./context-menu/context-menu"
 import { RecordFieldRenderer } from "./field-rendering/record-field-renderer"
 import { useExpansion } from "./hooks/use-expansion"
+import { useModelExcludedFields } from "./hooks/use-model-excluded-fields"
 import { useRecordActions } from "./hooks/use-record-actions"
 import { useRecordContextMenu } from "./hooks/use-record-context-menu"
 import { LevelProvider } from "./level-context"
@@ -38,6 +40,7 @@ export const RecordRenderer = ({
     renderAsList = true,
 }: RecordRendererProps) => {
     const { query: rpcQuery } = useRpcQuery()
+    const { hasModelExcludedFields, getModelExcludedFields } = useModelExcludedFields()
     const { currentExpanded, toggleExpansion } = useExpansion(
         onExpandToggle,
         expandedRecords
@@ -131,6 +134,10 @@ export const RecordRenderer = ({
 
                 const displayName = getRecordDisplayName(record)
 
+                const currentModel = parentModel || rpcQuery.model
+                const modelHasExcludedFields = currentModel ? hasModelExcludedFields(currentModel) : false
+                const excludedFields = currentModel ? getModelExcludedFields(currentModel) : []
+
                 return (
                     <div
                         key={recordId}
@@ -178,49 +185,56 @@ export const RecordRenderer = ({
                                 >
                                     {displayName}
                                 </span>
-                                {(parentModel || rpcQuery.model) &&
-                                    recordId && (
-                                        <div className="record-actions">
-                                            <button
-                                                className="open-record-button focus-button"
-                                                title="Focus on this record"
-                                                onClick={(e) =>
-                                                    handleFocusRecord(
-                                                        record,
-                                                        e as unknown as Event
-                                                    )
-                                                }
+                                {(currentModel && recordId) ? (
+                                    <div className="record-actions">
+                                        {modelHasExcludedFields && isExpanded ? (
+                                            <span
+                                                className="excluded-fields-indicator"
+                                                title={`Excluded fields from ${currentModel}: ${excludedFields.join(', ')}`}
                                             >
-                                                <Crosshair size={16} />
-                                            </button>
-                                            <button
-                                                className="open-record-button"
-                                                title="Open record in Odoo"
-                                                onClick={(e) =>
-                                                    handleOpenRecord(
-                                                        record,
-                                                        e as unknown as Event,
-                                                        false
-                                                    )
-                                                }
-                                            >
-                                                <ArrowUpRight size={16} />
-                                            </button>
-                                            <button
-                                                className="open-record-button popup-button"
-                                                title="Open record in popup"
-                                                onClick={(e) =>
-                                                    handleOpenRecord(
-                                                        record,
-                                                        e as unknown as Event,
-                                                        true
-                                                    )
-                                                }
-                                            >
-                                                <Layers2 size={16} />
-                                            </button>
-                                        </div>
-                                    )}
+                                                <TriangleAlert size={16} />
+                                            </span>
+                                        ) : null}
+                                        <button
+                                            className="open-record-button focus-button"
+                                            title="Focus on this record"
+                                            onClick={(e) =>
+                                                handleFocusRecord(
+                                                    record,
+                                                    e as unknown as Event
+                                                )
+                                            }
+                                        >
+                                            <Crosshair size={16} />
+                                        </button>
+                                        <button
+                                            className="open-record-button"
+                                            title="Open record in Odoo"
+                                            onClick={(e) =>
+                                                handleOpenRecord(
+                                                    record,
+                                                    e as unknown as Event,
+                                                    false
+                                                )
+                                            }
+                                        >
+                                            <ArrowUpRight size={16} />
+                                        </button>
+                                        <button
+                                            className="open-record-button popup-button"
+                                            title="Open record in popup"
+                                            onClick={(e) =>
+                                                handleOpenRecord(
+                                                    record,
+                                                    e as unknown as Event,
+                                                    true
+                                                )
+                                            }
+                                        >
+                                            <Layers2 size={16} />
+                                        </button>
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
 
