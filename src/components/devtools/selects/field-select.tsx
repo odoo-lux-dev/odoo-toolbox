@@ -27,10 +27,17 @@ export const FieldSelect = ({
         }))
     })
 
-    const currentValues = Array.isArray(values) ? values : (values ? [values] : [])
+    const currentValues = Array.isArray(values)
+        ? values
+        : values
+            ? [values]
+            : []
+    const excludedFields = rpcResult.excludedFields || []
 
     const handleChange = (selectedValues: string | string[]) => {
-        const fieldsArray = Array.isArray(selectedValues) ? selectedValues : [selectedValues]
+        const fieldsArray = Array.isArray(selectedValues)
+            ? selectedValues
+            : [selectedValues]
         setRpcQuery({
             selectedFields: fieldsArray,
             offset: 0,
@@ -50,6 +57,7 @@ export const FieldSelect = ({
             enableSmartSort={true}
             maxDisplayedOptions={100}
             multiple={true}
+            excludedFields={excludedFields}
         />
     )
 }

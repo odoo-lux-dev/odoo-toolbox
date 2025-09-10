@@ -5,8 +5,10 @@ import {
     ChevronRight,
     Crosshair,
     Layers2,
+    TriangleAlert,
 } from "lucide-preact"
 import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip"
+import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields"
 import { useRecordActions } from "@/components/devtools/hooks/use-record-actions"
 import { RecordRenderer } from "@/components/devtools/record-renderer"
 import { odooRpcService } from "@/services/odoo-rpc-service"
@@ -25,6 +27,7 @@ export const RelationalFieldRenderer = ({
     onContextMenu,
     level = 0,
 }: RelationalFieldProps) => {
+    const { hasModelExcludedFields, getModelExcludedFields } = useModelExcludedFields()
     const { openRecord, focusOnRecord, openRecords, focusOnRecords } =
         useRecordActions()
 
@@ -40,6 +43,9 @@ export const RelationalFieldRenderer = ({
 
     const ids = extractIds(value)
     const modelName = getRelatedModel(fieldMetadata)
+
+    const modelHasExcludedFields = modelName ? hasModelExcludedFields(modelName) : false
+    const excludedFields = modelName ? getModelExcludedFields(modelName) : []
 
     const handleExpand = async () => {
         if (!isExpanded.value && !relatedData.value) {
@@ -181,8 +187,16 @@ export const RelationalFieldRenderer = ({
                                         record.display_name ||
                                         `Record ${index + 1}`}
                                 </span>
-                                {recordId && modelName && (
+                                {(recordId && modelName) ? (
                                     <div className="record-actions">
+                                        {modelHasExcludedFields && isExpanded ? (
+                                            <span
+                                                className="excluded-fields-indicator"
+                                                title={`Excluded fields from ${modelName}: ${excludedFields.join(', ')}`}
+                                            >
+                                                <TriangleAlert size={16} />
+                                            </span>
+                                        ) : null}
                                         <button
                                             className="open-record-button focus-button"
                                             title="Focus on this record"
@@ -222,7 +236,7 @@ export const RelationalFieldRenderer = ({
                                             <Layers2 size={16} />
                                         </button>
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                             {isExpanded && (
                                 <div className="relational-record-content">
@@ -298,6 +312,14 @@ export const RelationalFieldRenderer = ({
                 </span>
                 {modelName && ids.length > 0 && (
                     <div className="relational-field-actions">
+                        {modelHasExcludedFields && isExpanded.value ? (
+                            <span
+                                className="excluded-fields-indicator"
+                                title={`Excluded fields from ${modelName}: ${excludedFields.join(', ')}`}
+                            >
+                                <TriangleAlert size={12} />
+                            </span>
+                        ) : null}
                         <button
                             className="open-relational-field-button focus-button"
                             title="Focus on this record"

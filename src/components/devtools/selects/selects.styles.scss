@@ -19,6 +19,9 @@
     gap: 6px;
 
     .field-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         font-weight: 500;
         user-select: none;
     }
@@ -35,6 +38,14 @@
 
         &:hover {
             opacity: 0.7;
+        }
+    }
+
+    &.excluded {
+        background-color: #e67e22;
+
+        .excluded-indicator {
+            animation: pulse 2s infinite;
         }
     }
 }
@@ -193,5 +204,19 @@
 
     svg {
         animation: spin 2s linear infinite;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

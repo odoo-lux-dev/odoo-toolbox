@@ -17,18 +17,106 @@ import type {
     OdooWriteParams,
 } from "@/types"
 
+interface FieldFilterResult {
+    filteredFields: string[] | undefined
+    excludedFields: string[]
+}
+
+/**
+ * Configuration for fields to exclude from certain models
+ * Key: model name, Value: array of field names to exclude
+ */
+const EXCLUDED_FIELDS_CONFIG: Record<string, string[]> = {
+    "account.move": ["needed_terms"],
+    "documents.document": ["raw"],
+    "ir.attachment": ["raw"],
+}
+
 /**
  * Service for managing Odoo RPC operations
  * Provides a unified API for all RPC calls to Odoo
  */
 export class OdooRpcService {
     private static instance: OdooRpcService | null = null
+    private odooInfo: OdooInfo | null = null
+    private excludedFieldsConfig: Record<string, string[]> = {
+        ...EXCLUDED_FIELDS_CONFIG,
+    }
 
     static getInstance(): OdooRpcService {
         if (!OdooRpcService.instance) {
             OdooRpcService.instance = new OdooRpcService()
         }
         return OdooRpcService.instance
+    }
+
+    /**
+     * Get current excluded fields configuration
+     */
+    getExcludedFieldsConfig(): Record<string, string[]> {
+        return { ...this.excludedFieldsConfig }
+    }
+
+    /**
+     * Get current page origin
+     */
+    private async getPageOrigin(): Promise<string> {
+        return this.promiseWrappedInspectedWindowEval(
+            "location.origin"
+        ) as Promise<string>
+    }
+
+    /**
+     * Initialize session info if needed
+     */
+    private async initialize(): Promise<void> {
+        if (this.odooInfo) return
+        this.odooInfo = await this.getRpcOdooInfo()
+    }
+
+    /**
+     * Make a JSON-RPC call to Odoo
+     */
+    private async makeJsonRpcCall(
+        endpoint: string,
+        params: Record<string, unknown>
+    ): Promise<unknown> {
+        await this.initialize()
+
+        const origin = await this.getPageOrigin()
+        const url = `${origin}${endpoint}`
+
+        const payload = {
+            id: Math.floor(Math.random() * 10000),
+            jsonrpc: "2.0",
+            method: "call",
+            params: params,
+        }
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+
+        const result = await response.json()
+
+        if (result.error) {
+            throw createOdooError({
+                name: "RPC_ERROR",
+                message: result.error.data?.message || result.error.message,
+                code: result.error.code,
+                data: result.error.data,
+            })
+        }
+
+        return result.result
     }
 
     /**
@@ -142,7 +230,80 @@ export class OdooRpcService {
     }
 
     /**
-     * Check if we have the permission of current host
+     * Filter fields based on exclusion config and handle empty fields list
+     * @param model - The model name
+     * @param fields - Array of field names (undefined means all fields)
+     * @param fieldsMetadata - Optional fields metadata to avoid additional RPC call
+     * @returns Object with filtered fields and list of excluded fields
+     */
+    private async filterFields(
+        model: string,
+        fields?: string[],
+        fieldsMetadata?: Record<string, FieldMetadata>
+    ): Promise<FieldFilterResult> {
+        const excludedFields = this.excludedFieldsConfig[model] || []
+
+        // If no exclusion config for this model, return fields as-is
+        if (excludedFields.length === 0) {
+            return {
+                filteredFields: fields,
+                excludedFields: [],
+            }
+        }
+
+        // If fields is undefined/empty, we need to get all fields and exclude the problematic ones
+        if (!fields || fields.length === 0) {
+            try {
+                // Use provided metadata or fetch it (should not happen but to be sure)
+                const metadata =
+                    fieldsMetadata || (await this.getFieldsInfo(model))
+                const allFieldNames = Object.keys(metadata)
+
+                // Return all fields except excluded ones
+                const filteredFields = allFieldNames.filter(
+                    (fieldName) => !excludedFields.includes(fieldName)
+                )
+                const actuallyExcluded = allFieldNames.filter((fieldName) =>
+                    excludedFields.includes(fieldName)
+                )
+
+                return {
+                    filteredFields,
+                    excludedFields: actuallyExcluded,
+                }
+            } catch {
+                return {
+                    filteredFields: fields,
+                    excludedFields: [],
+                }
+            }
+        }
+
+        // Filter out excluded fields from the provided fields list
+        const filteredFields = fields.filter(
+            (fieldName) => !excludedFields.includes(fieldName)
+        )
+        const actuallyExcluded = fields.filter((fieldName) =>
+            excludedFields.includes(fieldName)
+        )
+
+        // If all fields were filtered out, return at least ["id"] to avoid getting all fields
+        if (filteredFields.length === 0) {
+            return {
+                filteredFields: ["id"],
+                excludedFields: actuallyExcluded,
+            }
+        }
+
+        return {
+            filteredFields,
+            excludedFields: actuallyExcluded,
+        }
+    }
+
+    /**
+     * Check if we have permission for the current host
+     *
      */
     async checkHostPermission(): Promise<boolean> {
         try {
@@ -255,15 +416,33 @@ export class OdooRpcService {
     }
 
     /**
-     * Executes a generic RPC call to Odoo in the inspected page
+     * Executes a generic RPC call to Odoo using direct HTTP calls
      */
     async executeRpc(params: OdooRpcParams): Promise<unknown> {
         try {
-            const result = await this.sendBrowserMessage(
-                "EXECUTE_ODOO_RPC",
-                params
-            )
-            return result
+            await this.initialize()
+
+            if (!this.odooInfo?.version) {
+                throw new Error("Odoo version not supported")
+            }
+
+            // Merge user context with provided context (To be implemented soon)
+            const mergedContext = {
+                ...params.context,
+            }
+
+            const endpoint = `/web/dataset/call_kw/${params.model}/${params.method}`
+            const rpcParams = {
+                args: params.args || [],
+                kwargs: {
+                    context: mergedContext,
+                    ...params.kwargs,
+                },
+                model: params.model,
+                method: params.method,
+            }
+
+            return await this.makeJsonRpcCall(endpoint, rpcParams)
         } catch (error) {
             if (isOdooError(error)) {
                 throw error
@@ -349,23 +528,31 @@ export class OdooRpcService {
             limit,
             order,
             context,
+            fieldsMetadata,
         } = params
 
         if (!model) {
             throw new Error("Model is required for search_read")
         }
 
+        const filterFieldsResult = await this.filterFields(
+            model,
+            fields,
+            fieldsMetadata
+        )
+
         return this.executeRpc({
             model,
             method: "search_read",
             args: [domain],
             kwargs: {
-                fields,
+                fields: filterFieldsResult.filteredFields,
                 offset,
                 limit,
                 order,
             },
             context,
+            fieldsMetadata,
         }) as Promise<Record<string, unknown>[]>
     }
 
@@ -376,7 +563,8 @@ export class OdooRpcService {
         model: string,
         ids: number[],
         fields?: string[],
-        context?: Record<string, unknown>
+        context?: Record<string, unknown>,
+        fieldsMetadata?: Record<string, FieldMetadata>
     ): Promise<Record<string, unknown>[]> {
         if (!model) {
             throw new Error("Model is required for read")
@@ -386,12 +574,19 @@ export class OdooRpcService {
             throw new Error("IDs are required for read")
         }
 
+        const filterFieldsResult = await this.filterFields(
+            model,
+            fields,
+            fieldsMetadata
+        )
+
         return this.executeRpc({
             model,
             method: "read",
             args: [ids],
-            kwargs: { fields },
+            kwargs: { fields: filterFieldsResult.filteredFields },
             context,
+            fieldsMetadata,
         }) as Promise<Record<string, unknown>[]>
     }
 
@@ -603,8 +798,20 @@ export class OdooRpcService {
     }
 
     /**
-     * Gets field information for a model
+     * Get list of fields that would be excluded for a given model and field list
      */
+    async getExcludedFieldsForQuery(
+        model: string,
+        fields?: string[],
+        fieldsMetadata?: Record<string, FieldMetadata>
+    ): Promise<string[]> {
+        const filterResult = await this.filterFields(
+            model,
+            fields,
+            fieldsMetadata
+        )
+        return filterResult.excludedFields
+    }
     async getFieldsInfo(
         model: string,
         fields?: string[]

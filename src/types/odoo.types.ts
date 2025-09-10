@@ -1,3 +1,5 @@
+import type { FieldMetadata } from "./devtools.types"
+
 // Odoo domain types - operator can be any string, let Odoo handle validation
 export type OdooDomainOperator = string
 export type OdooDomainCondition = [string, OdooDomainOperator, unknown]
@@ -10,6 +12,7 @@ export interface OdooRpcParams {
     args?: unknown[]
     kwargs?: Record<string, unknown>
     context?: Record<string, unknown>
+    fieldsMetadata?: Record<string, FieldMetadata>
 }
 export interface OdooActionParams {
     action: Record<string, unknown> | number | string
@@ -28,6 +31,7 @@ export interface OdooSearchParams {
 
 export interface OdooSearchReadParams extends OdooSearchParams {
     ids?: number[]
+    fieldsMetadata?: Record<string, FieldMetadata>
 }
 
 export interface OdooWriteParams {

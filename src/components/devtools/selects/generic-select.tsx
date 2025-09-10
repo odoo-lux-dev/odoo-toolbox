@@ -34,6 +34,8 @@ export interface GenericSelectProps {
         options: GenericSelectOption[],
         searchTerm: string
     ) => GenericSelectOption[]
+
+    excludedFields?: string[]
 }
 
 export const GenericSelect = ({
@@ -52,6 +54,7 @@ export const GenericSelect = ({
     enableSmartSort = true,
     customSort,
     multiple = false,
+    excludedFields = [],
 }: GenericSelectProps) => {
     const searchValue = useSignal("")
     const isOpen = useSignal(false)
@@ -294,6 +297,7 @@ export const GenericSelect = ({
                 <SelectedFieldBadges
                     selectedValues={getCurrentValues()}
                     onRemove={handleRemoveBadge}
+                    excludedFields={excludedFields}
                 />
             )}
 
