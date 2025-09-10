@@ -7,9 +7,11 @@ import {
     Layers2,
     TriangleAlert,
 } from "lucide-preact"
+import { ContextMenu } from "@/components/devtools/context-menu/context-menu"
 import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip"
 import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields"
 import { useRecordActions } from "@/components/devtools/hooks/use-record-actions"
+import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu"
 import { RecordRenderer } from "@/components/devtools/record-renderer"
 import { odooRpcService } from "@/services/odoo-rpc-service"
 import { FieldMetadata } from "@/types"
@@ -30,6 +32,12 @@ export const RelationalFieldRenderer = ({
     const { hasModelExcludedFields, getModelExcludedFields } = useModelExcludedFields()
     const { openRecord, focusOnRecord, openRecords, focusOnRecords } =
         useRecordActions()
+    const {
+        contextMenu,
+        handleRecordContextMenu,
+        closeContextMenu,
+        getContextMenuItems,
+    } = useRecordContextMenu()
 
     const isExpanded = useSignal(false)
     const relatedData = useSignal<Record<string, unknown>[] | null>(null)
@@ -169,6 +177,13 @@ export const RelationalFieldRenderer = ({
                             <div
                                 className="relational-record-header"
                                 onClick={() => handleRelatedRecordToggle(index)}
+                                onContextMenu={(e) =>
+                                    handleRecordContextMenu(
+                                        e as unknown as MouseEvent,
+                                        record,
+                                        modelName || undefined
+                                    )
+                                }
                             >
                                 <span className="expand-icon">
                                     {isExpanded ? (
@@ -363,6 +378,13 @@ export const RelationalFieldRenderer = ({
                     {renderRelationalContent()}
                 </div>
             )}
+
+            <ContextMenu
+                visible={contextMenu.visible}
+                position={contextMenu.position}
+                items={getContextMenuItems()}
+                onClose={closeContextMenu}
+            />
         </div>
     )
 }
