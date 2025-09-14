@@ -1631,6 +1631,51 @@ body:not(.x-odoo-side-panel-open) {
 }
 
 
+// ===== MODEL ACTIONS =====
+.x-odoo-model-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.x-odoo-model-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #e7e9ed;
+  color: #374151;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+  justify-content: center;
+
+  @media (prefers-color-scheme: dark) {
+    background: #4b5563;
+    color: #E4E4E4;
+  }
+
+  &:hover:not(:disabled) {
+    color: #1F2937;
+    background: #d8dadd;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
 // ===== ACCESSIBILITY =====
 @media (prefers-reduced-motion: reduce) {
 
@@ -1642,7 +1687,8 @@ body:not(.x-odoo-side-panel-open) {
   .o_action_manager,
   .o_main_content,
   .o_content,
-  .x-odoo-technical-list-info {
+  .x-odoo-technical-list-info,
+  .x-odoo-model-action-btn {
     transition: none !important;
     animation: none !important;
   }
