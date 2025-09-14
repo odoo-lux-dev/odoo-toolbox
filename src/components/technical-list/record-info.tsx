@@ -1,5 +1,6 @@
 import { InfoItem } from "./info-item"
 import { InfoSection } from "./info-section"
+import { ModelActions } from "./model-actions"
 
 interface RecordInfoProps {
     currentModel?: string
@@ -49,7 +50,10 @@ export const RecordInfo = ({
 
     return (
         <InfoSection icon="fa-cogs" title="Record Information">
-            {items}
+            <>
+                {items}
+                {currentModel ? <ModelActions currentModel={currentModel} /> : null}
+            </>
         </InfoSection>
     )
 }
