@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "preact/hooks"
 import {
+    isSelectionModeSignal,
+    selectedElementSignal,
+    setSelectedElement,
+    toggleSelectionMode,
+} from "@/contexts/technical-sidebar-signals"
+import {
     EnhancedTechnicalButtonInfo,
     EnhancedTechnicalFieldInfo,
 } from "@/types"
@@ -42,20 +48,17 @@ export const useElementSelector = (
 ): UseElementSelectorReturn => {
     const { validFields, validButtons, onNonSelectableClick, isExpanded } =
         options
-    const [isSelectionMode, setIsSelectionMode] = useState(false)
-    const [selectedElement, setSelectedElement] = useState<HTMLElement | null>(
-        null
-    )
+
     const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(
         null
     )
 
     const clearSelection = useCallback(() => {
-        if (selectedElement) {
-            selectedElement.classList.remove(HIGHLIGHT_CLASS)
+        if (selectedElementSignal.value) {
+            selectedElementSignal.value.classList.remove(HIGHLIGHT_CLASS)
             setSelectedElement(null)
         }
-    }, [selectedElement])
+    }, [])
 
     const clearAllHighlights = useCallback(() => {
         const highlightedElements = document.querySelectorAll(
@@ -68,14 +71,15 @@ export const useElementSelector = (
         setHoveredElement(null)
     }, [])
 
-    const toggleSelectionMode = useCallback(() => {
-        setIsSelectionMode((prev) => {
-            const newMode = !prev
-            if (!newMode) {
-                clearAllHighlights()
-            }
-            return newMode
-        })
+    const handleToggleSelectionMode = useCallback(() => {
+        const currentMode = isSelectionModeSignal.value
+        const newMode = !currentMode
+
+        if (!newMode) {
+            clearAllHighlights()
+        }
+
+        toggleSelectionMode()
     }, [clearAllHighlights])
 
     const getElementIdentifier = useCallback(
@@ -209,7 +213,7 @@ export const useElementSelector = (
 
     const handleMouseOver = useCallback(
         (event: MouseEvent) => {
-            if (!isSelectionMode) return
+            if (!isSelectionModeSignal.value) return
 
             const target = event.target as HTMLElement
             if (!target) return
@@ -221,32 +225,35 @@ export const useElementSelector = (
                 hoveredElement.classList.remove(HOVER_CLASS)
             }
 
-            if (validElement !== selectedElement) {
+            if (validElement !== selectedElementSignal.value) {
                 validElement.classList.add(HOVER_CLASS)
                 setHoveredElement(validElement)
             }
         },
-        [isSelectionMode, findValidElement, hoveredElement, selectedElement]
+        [findValidElement, hoveredElement]
     )
 
     const handleMouseOut = useCallback(
         (event: MouseEvent) => {
-            if (!isSelectionMode) return
+            if (!isSelectionModeSignal.value) return
 
             const target = event.target as HTMLElement
             if (!target) return
 
-            if (hoveredElement && hoveredElement !== selectedElement) {
+            if (
+                hoveredElement &&
+                hoveredElement !== selectedElementSignal.value
+            ) {
                 hoveredElement.classList.remove(HOVER_CLASS)
                 setHoveredElement(null)
             }
         },
-        [isSelectionMode, hoveredElement, selectedElement]
+        [hoveredElement]
     )
 
     const handleClick = useCallback(
         (event: MouseEvent) => {
-            if (!isSelectionMode) return
+            if (!isSelectionModeSignal.value) return
 
             const target = event.target as HTMLElement
             if (!target) return
@@ -277,27 +284,19 @@ export const useElementSelector = (
             validElement.classList.add(HIGHLIGHT_CLASS)
             setSelectedElement(validElement)
         },
-        [
-            isSelectionMode,
-            findValidElement,
-            clearSelection,
-            hoveredElement,
-            onNonSelectableClick,
-        ]
+        [findValidElement, clearSelection, hoveredElement, onNonSelectableClick]
     )
 
     useEffect(() => {
-        if (isSelectionMode) {
+        if (isSelectionModeSignal.value) {
             document.addEventListener("mouseover", handleMouseOver, true)
             document.addEventListener("mouseout", handleMouseOut, true)
             document.addEventListener("click", handleClick, true)
-
             document.body.style.cursor = "crosshair"
         } else {
             document.removeEventListener("mouseover", handleMouseOver, true)
             document.removeEventListener("mouseout", handleMouseOut, true)
             document.removeEventListener("click", handleClick, true)
-
             document.body.style.cursor = ""
         }
 
@@ -307,13 +306,18 @@ export const useElementSelector = (
             document.removeEventListener("click", handleClick, true)
             document.body.style.cursor = ""
         }
-    }, [isSelectionMode, handleMouseOver, handleMouseOut, handleClick])
+    }, [
+        isSelectionModeSignal.value,
+        handleMouseOver,
+        handleMouseOut,
+        handleClick,
+    ])
 
     // Observe DOM changes to reattach event listeners
     // when content changes (e.g., tab switching in Odoo)
     // Works in selection mode OR when sidebar is open
     useEffect(() => {
-        if (!isSelectionMode && !isExpanded) return
+        if (!isSelectionModeSignal.value && !isExpanded) return
 
         const observer = new MutationObserver((mutations) => {
             let shouldReattach = false
@@ -376,8 +380,8 @@ export const useElementSelector = (
                         shouldReattach = true
 
                         if (
-                            selectedElement &&
-                            !document.contains(selectedElement)
+                            selectedElementSignal.value &&
+                            !document.contains(selectedElementSignal.value)
                         ) {
                             shouldClearSelection = true
                         }
@@ -405,7 +409,7 @@ export const useElementSelector = (
         return () => {
             observer.disconnect()
         }
-    }, [isSelectionMode, isExpanded, onNonSelectableClick, selectedElement])
+    }, [isExpanded, onNonSelectableClick])
 
     useEffect(() => {
         return () => {
@@ -415,9 +419,9 @@ export const useElementSelector = (
     }, [clearAllHighlights])
 
     return {
-        isSelectionMode,
-        selectedElement,
-        toggleSelectionMode,
+        isSelectionMode: isSelectionModeSignal.value,
+        selectedElement: selectedElementSignal.value,
+        toggleSelectionMode: handleToggleSelectionMode,
         clearSelection,
     }
 }

@@ -1,7 +1,11 @@
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 import { SidePanelHeader } from "@/components/technical-list/side-panel/header"
 import { SidePanelSummary } from "@/components/technical-list/side-panel/summary"
-import { EmptyState, ErrorState, LoadingState } from "@/components/technical-list/states"
-import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
+import {
+    EmptyState,
+    ErrorState,
+    LoadingState,
+} from "@/components/technical-list/states"
 import { PanelContent } from "./content"
 import { SelectedButtonContent } from "./selected-button-content"
 import { SelectedFieldContent } from "./selected-field-content"
@@ -16,7 +20,7 @@ export const SidePanel = () => {
         selectedFieldInfo,
         selectedButtonInfo,
         viewInfo,
-    } = useTechnicalSidebarContext()
+    } = useTechnicalSidebar()
 
     return (
         <div

@@ -1,4 +1,12 @@
-import { useCallback, useState } from "preact/hooks"
+import { useCallback } from "preact/hooks"
+import {
+    dbErrorSignal,
+    dbInfoSignal,
+    dbLoadingSignal,
+    setDbError,
+    setDbInfo,
+    setDbLoading,
+} from "@/contexts/technical-sidebar-signals"
 import { Logger } from "@/services/logger"
 import { DatabaseInfo } from "@/types"
 import { getOdooVersion } from "@/utils/utils"
@@ -25,11 +33,7 @@ const formatDebugMode = (debugMode: string | undefined): string => {
 }
 
 export const useDatabaseInfo = () => {
-    const [dbInfo, setDbInfo] = useState<DatabaseInfo | null>(null)
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
-    const fetchDatabaseInfo = useCallback(async (): Promise<DatabaseInfo> => {
+    const fetchDatabaseInfo = useCallback((): DatabaseInfo => {
         const odooWindowObject = window.odoo
         if (!odooWindowObject) {
             throw new Error("Odoo object not found")
@@ -53,12 +57,12 @@ export const useDatabaseInfo = () => {
         }
     }, [])
 
-    const refresh = useCallback(async () => {
-        setLoading(true)
-        setError(null)
+    const refresh = useCallback(() => {
+        setDbLoading(true)
+        setDbError(null)
 
         try {
-            const info = await fetchDatabaseInfo()
+            const info = fetchDatabaseInfo()
             setDbInfo(info)
         } catch (err) {
             const errorMessage =
@@ -66,16 +70,16 @@ export const useDatabaseInfo = () => {
                     ? err.message
                     : "Failed to load database information"
             Logger.error("Failed to get database info:", err)
-            setError(errorMessage)
+            setDbError(errorMessage)
         } finally {
-            setLoading(false)
+            setDbLoading(false)
         }
     }, [fetchDatabaseInfo])
 
     return {
-        dbInfo,
-        loading,
-        error,
+        dbInfo: dbInfoSignal.value,
+        loading: dbLoadingSignal.value,
+        error: dbErrorSignal.value,
         refresh,
     }
 }

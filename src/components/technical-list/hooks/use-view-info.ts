@@ -1,4 +1,12 @@
-import { useCallback, useState } from "preact/hooks"
+import { useCallback } from "preact/hooks"
+import {
+    errorSignal,
+    loadingSignal,
+    setError,
+    setLoading,
+    setViewInfo,
+    viewInfoSignal,
+} from "@/contexts/technical-sidebar-signals"
 import { Logger } from "@/services/logger"
 import {
     DebugButtonInfo,
@@ -11,10 +19,6 @@ import {
 import { isOnSpecificRecordPage } from "@/utils/utils"
 
 export const useViewInfo = () => {
-    const [viewInfo, setViewInfo] = useState<ViewInfo | null>(null)
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
     const extractWebsiteInfo = useCallback((): WebsiteInfo | null => {
         const extractFromHtml = (
             htmlElement: HTMLElement
@@ -514,7 +518,7 @@ export const useViewInfo = () => {
         [extractDebugButtonInfo]
     )
 
-    const fetchViewInfo = useCallback(async (): Promise<ViewInfo> => {
+    const fetchViewInfo = useCallback((): ViewInfo => {
         const odooWindowObject = window.odoo
         if (!odooWindowObject) {
             throw new Error("Odoo object not found")
@@ -681,12 +685,12 @@ export const useViewInfo = () => {
         [extractButtonInfo]
     )
 
-    const refresh = useCallback(async () => {
+    const refresh = useCallback(() => {
         setLoading(true)
         setError(null)
 
         try {
-            const info = await fetchViewInfo()
+            const info = fetchViewInfo()
             setViewInfo(info)
         } catch (err) {
             const errorMessage =
@@ -701,9 +705,9 @@ export const useViewInfo = () => {
     }, [fetchViewInfo])
 
     return {
-        viewInfo,
-        loading,
-        error,
+        viewInfo: viewInfoSignal.value,
+        loading: loadingSignal.value,
+        error: errorSignal.value,
         refresh,
         extractSingleFieldInfo,
         extractSingleButtonInfo,

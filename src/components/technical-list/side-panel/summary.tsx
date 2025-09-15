@@ -1,9 +1,9 @@
 import { Info } from "lucide-preact"
-import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 
 export const SidePanelSummary = () => {
     const { viewInfo, isSelectionMode, isWebsite } =
-        useTechnicalSidebarContext()
+        useTechnicalSidebar()
 
     if (!viewInfo || isSelectionMode) return null
 
