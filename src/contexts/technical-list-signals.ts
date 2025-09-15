@@ -54,3 +54,27 @@ export const clearTechnicalFilters = () => {
     showOnlyFieldsSignal.value = false
     showOnlyButtonsSignal.value = false
 }
+
+export const useTechnicalListFilters = () => ({
+    searchTerm: searchTermSignal.value,
+    showOnlyRequired: showOnlyRequiredSignal.value,
+    showOnlyReadonly: showOnlyReadonlySignal.value,
+    showOnlyFields: showOnlyFieldsSignal.value,
+    showOnlyButtons: showOnlyButtonsSignal.value,
+
+    setSearchTerm,
+    setShowOnlyRequired,
+    setShowOnlyReadonly,
+    setShowOnlyFields,
+    setShowOnlyButtons,
+})
+
+export const useTechnicalListSections = () => ({
+    expandedSections: expandedSectionsSignal.value,
+
+    toggleSectionExpanded,
+    setSectionExpanded,
+
+    isSectionExpanded: (sectionId: string) =>
+        expandedSectionsSignal.value.has(sectionId),
+})

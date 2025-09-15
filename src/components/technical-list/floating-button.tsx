@@ -1,7 +1,7 @@
-import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 
 export const FloatingButton = () => {
-    const { isExpanded, handleToggle } = useTechnicalSidebarContext()
+    const { isExpanded, handleToggle } = useTechnicalSidebar()
 
     return (
         <button

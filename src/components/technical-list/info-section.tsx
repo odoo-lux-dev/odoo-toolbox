@@ -3,8 +3,8 @@ import { JSX } from "preact"
 import {
     expandedSectionsSignal,
     setSectionExpanded,
+    useTechnicalListSections,
 } from "@/contexts/technical-list-signals"
-import { useTechnicalListSections } from "@/contexts/technical-list-signals-hook"
 
 interface InfoSectionProps {
     icon: string
@@ -33,7 +33,9 @@ export const InfoSection = ({
         setSectionExpanded(effectiveSectionId, true)
     }
 
-    const isExpanded = useComputed(() => expandedSectionsSignal.value.has(effectiveSectionId))
+    const isExpanded = useComputed(() =>
+        expandedSectionsSignal.value.has(effectiveSectionId)
+    )
 
     const toggleExpanded = () => {
         toggleSectionExpanded(effectiveSectionId)

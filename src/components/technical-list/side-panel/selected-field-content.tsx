@@ -1,52 +1,32 @@
-import { DatabaseInfoComponent } from "@/components/technical-list/database-info"
 import { FieldItem } from "@/components/technical-list/field-item"
-import { RecordInfo } from "@/components/technical-list/record-info"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 import { EmptyState } from "@/components/technical-list/states"
-import { WebsiteInfo } from "@/components/technical-list/website-info"
-import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
 
 export const SelectedFieldContent = () => {
     const {
         selectedFieldInfo,
-        viewInfo,
         highlightField,
         clearFieldHighlight,
-        isWebsite,
-        dbInfo,
-    } = useTechnicalSidebarContext()
+    } = useTechnicalSidebar()
+
+    if (!selectedFieldInfo) {
+        return <EmptyState
+            icon="fa-mouse-pointer"
+            message="Click on a field in the page to see its details"
+        />
+    }
 
     return (
-        <>
-            {dbInfo ? <DatabaseInfoComponent dbInfo={dbInfo} /> : null}
-
-            {isWebsite && viewInfo?.websiteInfo ? (
-                <WebsiteInfo websiteInfo={viewInfo.websiteInfo} />
-            ) : viewInfo?.currentModel ? (
-                <RecordInfo
-                    currentModel={viewInfo.currentModel}
-                    currentRecordId={viewInfo.currentRecordId}
-                    viewType={viewInfo.viewType}
-                />
-            ) : null}
-
-            {selectedFieldInfo ? (
-                <div className="x-odoo-technical-list-info-selected-field">
-                    <div className="x-odoo-technical-list-info-selected-field-header">
-                        <i className="fa fa-crosshairs" />
-                        <span>Selected Field</span>
-                    </div>
-                    <FieldItem
-                        field={selectedFieldInfo}
-                        onHighlight={highlightField}
-                        onClearHighlight={clearFieldHighlight}
-                    />
-                </div>
-            ) : (
-                <EmptyState
-                    icon="fa-mouse-pointer"
-                    message="Click on a field in the page to see its details"
-                />
-            )}
-        </>
+        <div className="x-odoo-technical-list-info-selected-field">
+            <div className="x-odoo-technical-list-info-selected-field-header">
+                <i className="fa fa-crosshairs" />
+                <span>Selected Field</span>
+            </div>
+            <FieldItem
+                field={selectedFieldInfo}
+                onHighlight={highlightField}
+                onClearHighlight={clearFieldHighlight}
+            />
+        </div>
     )
 }

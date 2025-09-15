@@ -2,11 +2,11 @@ import { List, MousePointerClick } from "lucide-preact"
 import { ButtonItem } from "@/components/technical-list/button-item"
 import { DatabaseInfoComponent } from "@/components/technical-list/database-info"
 import { FieldItem } from "@/components/technical-list/field-item"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
 import { RecordInfo } from "@/components/technical-list/record-info"
 import { EmptyState } from "@/components/technical-list/states"
 import { WebsiteInfo } from "@/components/technical-list/website-info"
-import { useTechnicalListFilters } from "@/contexts/technical-list-signals-hook"
-import { useTechnicalSidebarContext } from "@/contexts/technical-sidebar-context"
+import { useTechnicalListFilters } from "@/contexts/technical-list-signals"
 import { FieldFilters } from "./field-filters"
 
 export const PanelContent = () => {
@@ -20,7 +20,7 @@ export const PanelContent = () => {
         hasFields,
         hasButtons,
         dbInfo,
-    } = useTechnicalSidebarContext()
+    } = useTechnicalSidebar()
 
     const {
         searchTerm,
