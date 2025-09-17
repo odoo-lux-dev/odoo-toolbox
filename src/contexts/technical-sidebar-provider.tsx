@@ -1,4 +1,3 @@
-import type { RefObject } from "preact"
 import { JSX } from "preact"
 import { useEffect } from "preact/hooks"
 import { useDatabaseInfo } from "@/components/technical-list/hooks/use-database-info"
@@ -12,12 +11,10 @@ import {
 
 interface TechnicalSidebarProviderProps {
     children: JSX.Element | JSX.Element[]
-    buttonRef?: RefObject<HTMLDivElement>
 }
 
 export const TechnicalSidebarProvider = ({
     children,
-    buttonRef,
 }: TechnicalSidebarProviderProps) => {
     const { refresh: refreshViewInfo } = useViewInfo()
     const { refresh: refreshDbInfo } = useDatabaseInfo()
@@ -64,48 +61,6 @@ export const TechnicalSidebarProvider = ({
             document.removeEventListener("keydown", handleKeyDown)
         }
     }, [])
-
-    // Setup global click outside listener
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            // Only handle clicks when sidebar is expanded and not in selection mode
-            if (isSelectionModeSignal.value || !isExpandedSignal.value) {
-                return
-            }
-
-            if (
-                buttonRef?.current &&
-                buttonRef.current.contains(event.target as Node)
-            ) {
-                return
-            }
-
-            const sidePanel = document.querySelector(
-                ".x-odoo-technical-list-info-side-panel"
-            )
-            if (sidePanel && sidePanel.contains(event.target as Node)) {
-                return
-            }
-
-            // Don't close if clicking on Odoo interface (forms, tabs, etc.)
-            const target = event.target as HTMLElement
-            if (
-                target.closest(
-                    ".o_form_view, .o_list_view, .o_kanban_view, .o_content, .o_main_navbar, .o_cp_top, .o_cp_bottom"
-                )
-            ) {
-                return
-            }
-
-            closePanel()
-        }
-
-        document.addEventListener("mousedown", handleClickOutside)
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside)
-        }
-    }, [buttonRef])
 
     return <>{children}</>
 }
