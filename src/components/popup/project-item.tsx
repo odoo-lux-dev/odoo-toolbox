@@ -11,7 +11,7 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
         ) {
             // Left Click only without any modifiers
             event.preventDefault()
-            chrome.tabs.update({
+            browser.tabs.update({
                 url: `https://www.odoo.sh/project/${favorite.name}`,
             })
             // Close the popup once we click on the link

@@ -82,7 +82,7 @@ export const Footer = () => {
     })()
 
     const openOptions = () => {
-        chrome.runtime.openOptionsPage()
+        browser.runtime.openOptionsPage()
     }
 
     let DebugIcon
