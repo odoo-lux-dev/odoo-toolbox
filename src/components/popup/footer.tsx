@@ -137,8 +137,8 @@ export const Footer = () => {
                     id="toggle-technical-list"
                     title={
                         showTechnicalList
-                            ? "Enable technical sidebar"
-                            : "Disable technical sidebar"
+                            ? "Disable technical sidebar"
+                            : "Enable technical sidebar"
                     }
                     onClick={handleShowTechnicalListToggle}
                 >
