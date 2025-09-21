@@ -1,49 +1,98 @@
+import { useTechnicalSidebar } from "./hooks/use-technical-sidebar"
 import { InfoItem } from "./info-item"
 import { InfoSection } from "./info-section"
 import { ModelActions } from "./model-actions"
 
-interface RecordInfoProps {
-    currentModel?: string
-    currentRecordId?: number
-    viewType?: string
-}
-
-export const RecordInfo = ({
-    currentModel,
-    currentRecordId,
-    viewType,
-}: RecordInfoProps) => {
+export const RecordInfo = () => {
+    const {
+        viewInfo,
+    } = useTechnicalSidebar()
     const items = []
 
-    if (currentModel) {
+    if (viewInfo?.currentModel) {
         items.push(
             <InfoItem
                 icon="fa-table"
                 label="Model"
-                value={currentModel}
-                copyable={true}
+                value={viewInfo?.currentModel}
+                copyable
             />
         )
     }
 
-    if (currentRecordId) {
+    if (viewInfo?.currentRecordId) {
         items.push(
             <InfoItem
                 icon="fa-id-card"
                 label="Record ID"
-                value={currentRecordId.toString()}
-                copyable={true}
+                value={viewInfo?.currentRecordId.toString()}
+                copyable
             />
         )
     }
 
-    if (viewType) {
+    if (viewInfo?.viewType) {
         items.push(
             <InfoItem
                 icon="fa-eye"
                 label="View Type"
-                value={viewType}
-                copyable={true}
+                value={viewInfo?.viewType}
+                copyable
+            />
+        )
+    }
+
+    if (viewInfo?.actionType) {
+        items.push(
+            <InfoItem
+                icon="fa-star-o"
+                label="Action Type"
+                value={viewInfo?.actionType}
+                copyable
+            />
+        )
+    }
+
+    if (viewInfo?.actionName) {
+        items.push(
+            <InfoItem
+                icon="fa-bolt"
+                label="Action Name"
+                value={viewInfo?.actionName}
+                copyable
+            />
+        )
+    }
+
+    if (viewInfo?.actionXmlId) {
+        items.push(
+            <InfoItem
+                icon="fa-code"
+                label="Action XML ID"
+                value={viewInfo?.actionXmlId}
+                copyable
+            />
+        )
+    }
+
+    if (viewInfo?.actionContext) {
+        items.push(
+            <InfoItem
+                icon="fa-cog"
+                label="Action Context"
+                value={viewInfo?.actionContext}
+                copyable
+            />
+        )
+    }
+
+    if (viewInfo?.actionDomain) {
+        items.push(
+            <InfoItem
+                icon="fa-filter"
+                label="Action Domain"
+                value={viewInfo?.actionDomain}
+                copyable
             />
         )
     }
@@ -52,7 +101,7 @@ export const RecordInfo = ({
         <InfoSection icon="fa-cogs" title="Record Information">
             <>
                 {items}
-                {currentModel ? <ModelActions currentModel={currentModel} /> : null}
+                {viewInfo?.currentModel ? <ModelActions currentModel={viewInfo?.currentModel} /> : null}
             </>
         </InfoSection>
     )

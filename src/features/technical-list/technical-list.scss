@@ -365,7 +365,7 @@
 .x-odoo-technical-list-info-item {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 8px 0;
   gap: 16px;
 
@@ -386,7 +386,10 @@
   line-height: 1.4;
 
   i {
+    width: 16px;
     margin-right: 8px;
+    display: inline-flex;
+    justify-content: center;
   }
 
   @media (prefers-color-scheme: dark) {
