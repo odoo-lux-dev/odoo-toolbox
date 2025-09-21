@@ -96,6 +96,14 @@ declare global {
                                 currentId?: number
                                 [key: string]: unknown
                             }
+                            action?: {
+                                context?: Record<string, unknown>
+                                domain?: unknown[]
+                                name?: string
+                                xml_id?: string
+                                type?: string
+                                [key: string]: unknown
+                            }
                             [key: string]: unknown
                         }
                         [key: string]: unknown

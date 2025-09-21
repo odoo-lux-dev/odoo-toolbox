@@ -26,6 +26,11 @@ export interface ViewInfo {
     totalFields: number
     totalButtons: number
     websiteInfo?: WebsiteInfo
+    actionContext?: string
+    actionName?: string
+    actionDomain?: string
+    actionXmlId?: string
+    actionType?: string
 }
 
 export interface DebugFieldInfo {

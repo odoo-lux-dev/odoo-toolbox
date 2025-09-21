@@ -527,6 +527,11 @@ export const useViewInfo = () => {
         let currentModel: string | undefined
         let currentRecordId: number | undefined
         let viewType: string | undefined
+        let actionContext: string | undefined
+        let actionName: string | undefined
+        let actionDomain: string | undefined
+        let actionXmlId: string | undefined
+        let actionType: string | undefined
 
         try {
             const controller =
@@ -534,6 +539,27 @@ export const useViewInfo = () => {
                     ?.currentController
             currentModel = controller?.props?.resModel
             viewType = controller?.view?.type
+            actionName = controller?.action?.name
+            actionXmlId = controller?.action?.xml_id
+            actionType = controller?.action?.type
+
+            if (
+                controller?.action?.domain &&
+                Array.isArray(controller.action.domain) &&
+                controller.action.domain.length > 0
+            ) {
+                actionDomain = JSON.stringify(controller.action.domain)
+            }
+
+            if (
+                controller?.action?.context &&
+                typeof controller.action.context === "object" &&
+                !Array.isArray(controller.action.context) &&
+                Object.keys(controller.action.context).length > 0
+            ) {
+                actionContext = JSON.stringify(controller.action.context)
+            }
+
             if (isOnSpecificRecordPage()) {
                 const localState = controller?.getLocalState?.()
                 currentRecordId = localState?.resId || localState?.currentId
@@ -613,6 +639,11 @@ export const useViewInfo = () => {
             totalFields: technicalFields.length,
             totalButtons: technicalButtons.length,
             websiteInfo,
+            actionContext,
+            actionName,
+            actionDomain,
+            actionXmlId,
+            actionType,
         }
     }, [extractFieldInfo, extractButtonInfo, extractWebsiteInfo])
 

@@ -64,11 +64,7 @@ export const PanelContent = () => {
             {isWebsite && viewInfo.websiteInfo ? (
                 <WebsiteInfo websiteInfo={viewInfo.websiteInfo} />
             ) : viewInfo.currentModel ? (
-                <RecordInfo
-                    currentModel={viewInfo.currentModel}
-                    currentRecordId={viewInfo.currentRecordId}
-                    viewType={viewInfo.viewType}
-                />
+                <RecordInfo />
             ) : null}
 
             {(hasFields || hasButtons) && (
