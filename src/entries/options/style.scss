@@ -666,6 +666,10 @@ input[type="checkbox"] {
 	}
 }
 
+#extension-version {
+	font-size: 12px;
+}
+
 @media (max-width: 768px) {
 	.x-odoo-options-page-options-container {
 		grid-template-columns: 1fr;
