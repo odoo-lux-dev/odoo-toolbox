@@ -385,7 +385,6 @@ export const loadFieldsMetadata = async (model: string) => {
         const fieldsMetadata = (await odooRpcService.getFieldsInfo(
             model
         )) as Record<string, FieldMetadata>
-        console.log(fieldsMetadata)
         fieldsMetadataSignal.value = fieldsMetadata
     } catch (error) {
         Logger.error("Failed to load fields metadata for model", model, error)

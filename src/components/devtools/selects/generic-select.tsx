@@ -181,8 +181,16 @@ export const GenericSelect = ({
     })
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (
+        const isPlainEnter =
             e.key === "Enter" &&
+            !e.ctrlKey &&
+            !e.metaKey &&
+            !e.altKey &&
+            !e.shiftKey
+
+        if (
+            // Only trigger when Enter is pressed without modifier keys
+            isPlainEnter &&
             searchValue.value &&
             allowFreeInput &&
             !multiple &&
