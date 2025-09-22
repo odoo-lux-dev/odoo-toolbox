@@ -107,12 +107,20 @@ export function useDropdownNavigation<T>({
                     }
                     break
 
-                case "Enter":
+                case "Enter": {
+                    const isPlainEnter =
+                        !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey
                     e.preventDefault()
-                    if (focusedIndex >= 0 && focusedIndex < items.length) {
+                    if (
+                        // Only trigger when Enter is pressed without modifier keys
+                        isPlainEnter &&
+                        focusedIndex >= 0 &&
+                        focusedIndex < items.length
+                    ) {
                         onSelect(items[focusedIndex], focusedIndex)
                     }
                     break
+                }
 
                 case "Tab":
                     if (acceptTab) {
