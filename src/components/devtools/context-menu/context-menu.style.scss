@@ -2,6 +2,7 @@
     background-color: var(--devtools-bg-secondary);
     border: 1px solid var(--devtools-border);
     border-radius: 6px;
+    overflow: hidden;
     box-shadow: var(--devtools-shadow-lg);
     min-width: 180px;
     z-index: 1000;
@@ -13,7 +14,6 @@
     color: var(--devtools-text-primary);
     cursor: pointer;
     transition: background-color 0.2s ease;
-    border-radius: 6px;
 
     &:hover {
         background-color: var(--devtools-primary);
