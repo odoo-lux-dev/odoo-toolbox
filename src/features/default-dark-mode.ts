@@ -9,6 +9,7 @@ const setDefaultDarkMode = (): { reload: boolean; url?: string } => {
     if (
         !odooVersion ||
         parseFloat(odooVersion) < 16.0 ||
+        parseFloat(odooVersion) >= 19.0 ||
         defaultDarkMode === "false"
     )
         return { reload: false }
