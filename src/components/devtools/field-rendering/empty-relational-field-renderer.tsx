@@ -1,9 +1,9 @@
-import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip"
-import { useLevel } from "@/components/devtools/level-context"
-import type { BaseFieldProps } from "./types"
+import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip";
+import { useLevel } from "@/components/devtools/level-context";
+import type { BaseFieldProps } from "./types";
 
 interface EmptyRelationalFieldProps extends BaseFieldProps {
-    level?: number
+    level?: number;
 }
 
 export const EmptyRelationalFieldRenderer = ({
@@ -13,8 +13,8 @@ export const EmptyRelationalFieldRenderer = ({
     onContextMenu,
     level = 0,
 }: EmptyRelationalFieldProps) => {
-    const contextLevel = useLevel()
-    const actualLevel = contextLevel || level
+    const contextLevel = useLevel();
+    const actualLevel = contextLevel || level;
 
     return (
         <div className="field-with-label">
@@ -23,14 +23,14 @@ export const EmptyRelationalFieldRenderer = ({
                 onContextMenu={
                     onContextMenu
                         ? (e) => {
-                            e.preventDefault()
-                            onContextMenu(
-                                e as unknown as MouseEvent,
-                                fieldName,
-                                value,
-                                fieldMetadata
-                            )
-                        }
+                              e.preventDefault();
+                              onContextMenu(
+                                  e as unknown as MouseEvent,
+                                  fieldName,
+                                  value,
+                                  fieldMetadata,
+                              );
+                          }
                         : undefined
                 }
             >
@@ -57,5 +57,5 @@ export const EmptyRelationalFieldRenderer = ({
                 </span>
             </div>
         </div>
-    )
-}
+    );
+};

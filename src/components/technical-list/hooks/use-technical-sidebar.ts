@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef } from "preact/hooks"
+import { useCallback, useEffect, useRef } from "preact/hooks";
 
-import { useElementSelector } from "@/components/technical-list/hooks/use-element-selector"
-import { useFieldHighlight } from "@/components/technical-list/hooks/use-field-highlight"
-import { useViewInfo } from "@/components/technical-list/hooks/use-view-info"
+import { useElementSelector } from "@/components/technical-list/hooks/use-element-selector";
+import { useFieldHighlight } from "@/components/technical-list/hooks/use-field-highlight";
+import { useViewInfo } from "@/components/technical-list/hooks/use-view-info";
 import {
     closePanel,
     dbErrorSignal,
@@ -19,10 +19,10 @@ import {
     setSelectedButtonInfo,
     setSelectedFieldInfo,
     toggleExpanded,
-} from "@/contexts/technical-sidebar-signals"
+} from "@/contexts/technical-sidebar-signals";
 
 export const useTechnicalSidebar = () => {
-    const buttonRef = useRef<HTMLDivElement>(null)
+    const buttonRef = useRef<HTMLDivElement>(null);
 
     const {
         viewInfo,
@@ -31,7 +31,7 @@ export const useTechnicalSidebar = () => {
         refresh,
         extractSingleFieldInfo,
         extractSingleButtonInfo,
-    } = useViewInfo()
+    } = useViewInfo();
     const {
         highlightField,
         highlightButton,
@@ -39,35 +39,35 @@ export const useTechnicalSidebar = () => {
         clearButtonHighlight,
         clearAllHighlights,
         clearCache,
-    } = useFieldHighlight()
+    } = useFieldHighlight();
 
     const handleNonSelectableClick = useCallback(() => {
         // Refresh the list of fields when clicking on a non-selectable element
         // (e.g. a tab in a Form view)
-        clearCache()
-        refresh()
-    }, [clearCache, refresh])
+        clearCache();
+        refresh();
+    }, [clearCache, refresh]);
 
     const { toggleSelectionMode, clearSelection } = useElementSelector({
         validFields: viewInfo?.technicalFields,
         validButtons: viewInfo?.technicalButtons,
         onNonSelectableClick: handleNonSelectableClick,
         isExpanded: isExpandedSignal.value,
-    })
+    });
 
     const handleToggle = useCallback(() => {
         if (!isExpandedSignal.value) {
-            clearCache()
-            refresh()
+            clearCache();
+            refresh();
         } else {
-            clearAllHighlights()
+            clearAllHighlights();
 
             if (isSelectionModeSignal.value) {
-                clearSelection()
-                toggleSelectionMode()
+                clearSelection();
+                toggleSelectionMode();
             }
         }
-        toggleExpanded()
+        toggleExpanded();
     }, [
         isSelectionModeSignal.value,
         clearCache,
@@ -75,72 +75,74 @@ export const useTechnicalSidebar = () => {
         clearAllHighlights,
         clearSelection,
         toggleSelectionMode,
-    ])
+    ]);
 
     const handleClose = useCallback(() => {
-        clearAllHighlights()
+        clearAllHighlights();
 
         if (isSelectionModeSignal.value) {
-            clearSelection()
-            toggleSelectionMode()
+            clearSelection();
+            toggleSelectionMode();
         }
 
-        closePanel()
-    }, [clearAllHighlights, clearSelection, toggleSelectionMode])
+        closePanel();
+    }, [clearAllHighlights, clearSelection, toggleSelectionMode]);
 
     // Handle opening/closing of the sidebar
     // Effect to offset main content via CSS
     useEffect(() => {
-        const bodyElement = document.body
+        const bodyElement = document.body;
 
         if (isExpandedSignal.value) {
-            bodyElement.classList.add("x-odoo-side-panel-open")
+            bodyElement.classList.add("x-odoo-side-panel-open");
         } else {
-            bodyElement.classList.remove("x-odoo-side-panel-open")
+            bodyElement.classList.remove("x-odoo-side-panel-open");
         }
-    }, [isExpandedSignal.value])
+    }, [isExpandedSignal.value]);
 
     useEffect(() => {
         if (selectedElementSignal.value) {
             // Check if it's a field or a button
             const hasFieldWidget =
-                selectedElementSignal.value.classList.contains("o_field_widget")
+                selectedElementSignal.value.classList.contains(
+                    "o_field_widget",
+                );
             const hasFieldCell =
-                selectedElementSignal.value.classList.contains("o_field_cell")
+                selectedElementSignal.value.classList.contains("o_field_cell");
             const isButton =
-                selectedElementSignal.value.tagName.toLowerCase() === "button"
+                selectedElementSignal.value.tagName.toLowerCase() === "button";
             const hasValidButtonType =
                 selectedElementSignal.value.getAttribute("type") === "object" ||
-                selectedElementSignal.value.getAttribute("type") === "action"
+                selectedElementSignal.value.getAttribute("type") === "action";
 
             if (hasFieldWidget || hasFieldCell) {
                 // It's a field
                 const fieldInfo = extractSingleFieldInfo(
-                    selectedElementSignal.value
-                )
-                setSelectedFieldInfo(fieldInfo)
-                setSelectedButtonInfo(null)
+                    selectedElementSignal.value,
+                );
+                setSelectedFieldInfo(fieldInfo);
+                setSelectedButtonInfo(null);
             } else if (isButton && hasValidButtonType) {
                 // It's a button
                 const buttonInfo = extractSingleButtonInfo(
-                    selectedElementSignal.value
-                )
-                setSelectedButtonInfo(buttonInfo)
-                setSelectedFieldInfo(null)
+                    selectedElementSignal.value,
+                );
+                setSelectedButtonInfo(buttonInfo);
+                setSelectedFieldInfo(null);
             } else {
                 // Clear both if it's neither
-                setSelectedFieldInfo(null)
-                setSelectedButtonInfo(null)
+                setSelectedFieldInfo(null);
+                setSelectedButtonInfo(null);
             }
         } else {
-            setSelectedFieldInfo(null)
-            setSelectedButtonInfo(null)
+            setSelectedFieldInfo(null);
+            setSelectedButtonInfo(null);
         }
     }, [
         selectedElementSignal.value,
         extractSingleFieldInfo,
         extractSingleButtonInfo,
-    ])
+    ]);
 
     return {
         isExpanded: isExpandedSignal.value,
@@ -172,5 +174,5 @@ export const useTechnicalSidebar = () => {
         clearFieldHighlight,
         clearButtonHighlight,
         clearAllHighlights,
-    }
-}
+    };
+};

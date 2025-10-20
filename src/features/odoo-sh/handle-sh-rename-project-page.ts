@@ -1,25 +1,25 @@
 const renameShProjectPageTitle = (
     currentProjectName: string,
-    baseProjectName: string
+    baseProjectName: string,
 ): void => {
-    let urlSubPart = "Branches"
-    const currentUrl = window.location.href
+    let urlSubPart = "Branches";
+    const currentUrl = window.location.href;
 
     if (
         currentUrl.includes(`project/${baseProjectName}/branches`) ||
         currentUrl.endsWith(`project/${baseProjectName}`)
     ) {
-        urlSubPart = "Branches"
+        urlSubPart = "Branches";
     } else if (currentUrl.includes(`project/${baseProjectName}/builds`)) {
-        urlSubPart = "Builds"
+        urlSubPart = "Builds";
     } else if (currentUrl.includes(`project/${baseProjectName}/status`)) {
-        urlSubPart = "Status"
+        urlSubPart = "Status";
     } else if (currentUrl.includes(`project/${baseProjectName}/logs`)) {
-        urlSubPart = "Audit Logs"
+        urlSubPart = "Audit Logs";
     } else if (currentUrl.includes(`project/${baseProjectName}/settings`)) {
-        urlSubPart = "Settings"
+        urlSubPart = "Settings";
     }
-    document.title = `${currentProjectName} (SH) - ${urlSubPart}`
-}
+    document.title = `${currentProjectName} (SH) - ${urlSubPart}`;
+};
 
-export { renameShProjectPageTitle }
+export { renameShProjectPageTitle };

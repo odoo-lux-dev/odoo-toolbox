@@ -1,46 +1,46 @@
-import "@/components/devtools/domain-editor/domain-editor.styles.scss"
-import { useComputed } from "@preact/signals"
-import { domainSignal, loadingSignal } from "@/contexts/devtools-signals"
-import { validateDomain } from "@/utils/query-validation"
-import { QuickDomainButtons } from "./quick-domain-buttons"
+import "@/components/devtools/domain-editor/domain-editor.styles.scss";
+import { useComputed } from "@preact/signals";
+import { domainSignal, loadingSignal } from "@/contexts/devtools-signals";
+import { validateDomain } from "@/utils/query-validation";
+import { QuickDomainButtons } from "./quick-domain-buttons";
 
 interface DomainEditorProps {
-    placeholder?: string
+    placeholder?: string;
 }
 
 export const DomainEditor = ({
     placeholder = 'Enter domain (e.g., [["active", "=", true]])',
 }: DomainEditorProps) => {
-    const validation = useComputed(() => validateDomain(domainSignal.value))
-    const isValid = useComputed(() => validation.value.isValid)
-    const error = useComputed(() => validation.value.error || null)
+    const validation = useComputed(() => validateDomain(domainSignal.value));
+    const isValid = useComputed(() => validation.value.isValid);
+    const error = useComputed(() => validation.value.error || null);
 
     const handleChange = (e: Event) => {
-        const target = e.target as HTMLTextAreaElement
-        const newValue = target.value
+        const target = e.target as HTMLTextAreaElement;
+        const newValue = target.value;
 
-        domainSignal.value = newValue
-    }
+        domainSignal.value = newValue;
+    };
 
     const addCommonDomain = (domain: string) => {
-        const currentValue = domainSignal.value.trim()
-        let finalDomain: string
+        const currentValue = domainSignal.value.trim();
+        let finalDomain: string;
 
         if (currentValue === "" || currentValue === "[]") {
-            finalDomain = domain
+            finalDomain = domain;
         } else {
             try {
-                const current = JSON.parse(currentValue)
-                const newDomain = JSON.parse(domain)
-                const merged = ["&", ...current, ...newDomain]
-                finalDomain = JSON.stringify(merged)
+                const current = JSON.parse(currentValue);
+                const newDomain = JSON.parse(domain);
+                const merged = ["&", ...current, ...newDomain];
+                finalDomain = JSON.stringify(merged);
             } catch {
-                finalDomain = domain
+                finalDomain = domain;
             }
         }
 
-        domainSignal.value = finalDomain
-    }
+        domainSignal.value = finalDomain;
+    };
 
     return (
         <div className="domain-editor-container">
@@ -127,5 +127,5 @@ export const DomainEditor = ({
                 </details>
             </div>
         </div>
-    )
-}
+    );
+};

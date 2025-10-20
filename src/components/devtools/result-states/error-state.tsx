@@ -1,8 +1,8 @@
-import { ErrorDisplay } from "@/components/devtools/error-display"
+import { ErrorDisplay } from "@/components/devtools/error-display";
 
 interface ErrorStateProps {
-    error: string
-    errorDetails?: unknown
+    error: string;
+    errorDetails?: unknown;
 }
 
 export const ErrorState = ({ error, errorDetails }: ErrorStateProps) => (
@@ -12,4 +12,4 @@ export const ErrorState = ({ error, errorDetails }: ErrorStateProps) => (
             <ErrorDisplay error={error} errorDetails={errorDetails} />
         </div>
     </div>
-)
+);

@@ -1,14 +1,11 @@
-import { createHashHistory } from "history"
-import { render } from "preact"
-import { App } from "./App"
+import { createHashHistory } from "history";
+import { render } from "preact";
+import { App } from "./App";
 
-const history = createHashHistory()
+const history = createHashHistory();
 
 if (history.location.pathname === "/") {
-    history.replace("/options")
+    history.replace("/options");
 }
 
-render(
-    <App />,
-    document.body
-)
+render(<App />, document.body);

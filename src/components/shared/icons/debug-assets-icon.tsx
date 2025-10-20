@@ -1,9 +1,9 @@
-import { BugPlay } from "lucide-preact"
+import { BugPlay } from "lucide-preact";
 
 export const DebugModeAssetsIcon = ({
     isNostalgia = false,
 }: {
-    isNostalgia: boolean
+    isNostalgia: boolean;
 }) => {
     if (isNostalgia) {
         return (
@@ -75,8 +75,8 @@ export const DebugModeAssetsIcon = ({
                     />
                 </g>
             </svg>
-        )
+        );
     }
 
-    return <BugPlay size={16} />
-}
+    return <BugPlay size={16} />;
+};

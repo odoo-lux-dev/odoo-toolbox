@@ -1,54 +1,56 @@
-import { useComputed } from "@preact/signals"
-import { useEffect } from "preact/hooks"
+import { useComputed } from "@preact/signals";
+import { useEffect } from "preact/hooks";
 import {
     loadModels,
     modelsSignal,
     setRpcQuery,
-} from "@/contexts/devtools-signals"
+} from "@/contexts/devtools-signals";
 import {
     useModelsState,
     useRpcQuery,
     useRpcResult,
-} from "@/contexts/devtools-signals-hook"
-import { GenericSelect, GenericSelectOption } from "./generic-select"
+} from "@/contexts/devtools-signals-hook";
+import { GenericSelect, GenericSelectOption } from "./generic-select";
 
 interface ModelSelectProps {
-    placeholder?: string
+    placeholder?: string;
 }
 
 export const ModelSelect = ({
     placeholder = "Select a model...",
 }: ModelSelectProps) => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { modelsState } = useModelsState()
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { modelsState } = useModelsState();
 
-    const { model: value } = rpcQuery
+    const { model: value } = rpcQuery;
 
     // Transform models to generic options
     const modelOptions = useComputed((): GenericSelectOption[] => {
-        const currentModels = modelsSignal.value
-        if (!currentModels || currentModels.length === 0) return []
+        const currentModels = modelsSignal.value;
+        if (!currentModels || currentModels.length === 0) return [];
 
-        return currentModels.map(model => ({
+        return currentModels.map((model) => ({
             value: model.model,
             label: model.name,
             searchableText: `${model.model} ${model.name}`,
-        }))
-    })
+        }));
+    });
 
     const handleChange = (selectedValue: string | string[]) => {
-        const modelValue = Array.isArray(selectedValue) ? selectedValue[0] : selectedValue
+        const modelValue = Array.isArray(selectedValue)
+            ? selectedValue[0]
+            : selectedValue;
         setRpcQuery({
             model: modelValue,
             selectedFields: [],
             offset: 0,
-        })
-    }
+        });
+    };
 
     const handleRefresh = () => {
-        loadModels(true)
-    }
+        loadModels(true);
+    };
 
     useEffect(() => {
         if (
@@ -56,14 +58,14 @@ export const ModelSelect = ({
             !modelsState.loading &&
             !modelsState.error
         ) {
-            loadModels()
+            loadModels();
         }
     }, [
         modelsState.models.length,
         modelsState.loading,
         modelsState.error,
         loadModels,
-    ])
+    ]);
 
     return (
         <GenericSelect
@@ -81,5 +83,5 @@ export const ModelSelect = ({
             enableSmartSort={true}
             maxDisplayedOptions={100}
         />
-    )
-}
+    );
+};

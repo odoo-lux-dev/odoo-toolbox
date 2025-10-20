@@ -1,42 +1,42 @@
-import type { ComponentChildren } from "preact"
-import type { OdooRpcError } from "@/services/odoo-error"
+import type { ComponentChildren } from "preact";
+import type { OdooRpcError } from "@/services/odoo-error";
 
 interface ErrorDisplayProps {
-    error: string
-    errorDetails?: unknown
+    error: string;
+    errorDetails?: unknown;
 }
 
 const ErrorSection = ({
     title,
     children,
 }: {
-    title: string
-    children: ComponentChildren
+    title: string;
+    children: ComponentChildren;
 }) => (
     <div className="error-section">
         <h5>{title}</h5>
         {children}
     </div>
-)
+);
 
 const CodeBlock = ({
     data,
     className = "error-code",
 }: {
-    data: unknown
-    className?: string
+    data: unknown;
+    className?: string;
 }) => (
     <pre className={className}>
         {typeof data === "string" ? data : JSON.stringify(data, null, 2)}
     </pre>
-)
+);
 
 const Detail = ({ label, value }: { label: string; value: unknown }) =>
     value ? (
         <div>
             <strong>{label}:</strong> {String(value)}
         </div>
-    ) : null
+    ) : null;
 
 export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
     if (!errorDetails || typeof errorDetails !== "object") {
@@ -44,13 +44,13 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
             <div className="error-simple">
                 <pre>{error}</pre>
             </div>
-        )
+        );
     }
 
-    const errorObj = errorDetails as Record<string, unknown>
+    const errorObj = errorDetails as Record<string, unknown>;
 
     if (errorObj.name === "RPC_ERROR") {
-        const odoo = errorDetails as OdooRpcError
+        const odoo = errorDetails as OdooRpcError;
         return (
             <div className="error-odoo">
                 <ErrorSection title="Error Summary">
@@ -101,7 +101,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                         </ErrorSection>
                     )}
             </div>
-        )
+        );
     }
 
     return (
@@ -122,5 +122,5 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                 <CodeBlock data={errorObj} />
             </ErrorSection>
         </div>
-    )
-}
+    );
+};

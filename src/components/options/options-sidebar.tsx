@@ -1,51 +1,51 @@
-import { Download, Settings2, Star, Upload } from "lucide-preact"
-import { createRef } from "preact"
-import { ChangeEvent } from "preact/compat"
-import { useState } from "preact/hooks"
-import { Link } from "preact-router"
-import Match from "preact-router/match"
-import { GithubIcon } from "@/components/shared/icons/github-icon"
-import { LuxembourgFlag } from "@/components/shared/icons/luxembourg-flag"
+import { Download, Settings2, Star, Upload } from "lucide-preact";
+import { createRef } from "preact";
+import { ChangeEvent } from "preact/compat";
+import { useState } from "preact/hooks";
+import { Link } from "preact-router";
+import Match from "preact-router/match";
+import { GithubIcon } from "@/components/shared/icons/github-icon";
+import { LuxembourgFlag } from "@/components/shared/icons/luxembourg-flag";
 import {
     handleExportConfig,
     handleImportConfig,
-} from "@/entries/options/backup"
+} from "@/entries/options/backup";
 
 export const OptionsSidebar = () => {
-    const [statusMessage, setStatusMessage] = useState("")
-    const [statusClass, setStatusClass] = useState("")
+    const [statusMessage, setStatusMessage] = useState("");
+    const [statusClass, setStatusClass] = useState("");
     const [extensionVersion] = useState(
-        `v${browser.runtime.getManifest().version}`
-    )
+        `v${browser.runtime.getManifest().version}`,
+    );
 
-    const fileInputRef = createRef()
+    const fileInputRef = createRef();
 
     const handleExport = async () => {
-        setStatusMessage("Exporting your settings...")
-        setStatusClass("x-odoo-backup-options-status-message")
+        setStatusMessage("Exporting your settings...");
+        setStatusClass("x-odoo-backup-options-status-message");
         try {
-            await handleExportConfig()
-            setStatusMessage("")
+            await handleExportConfig();
+            setStatusMessage("");
         } catch (error: unknown) {
             const errorMessage =
-                error instanceof Error ? error.message : String(error)
+                error instanceof Error ? error.message : String(error);
             setStatusMessage(
-                `An error occurred during export: ${errorMessage || "Unknown error"}`
-            )
-            setStatusClass("x-odoo-backup-options-status-message error")
+                `An error occurred during export: ${errorMessage || "Unknown error"}`,
+            );
+            setStatusClass("x-odoo-backup-options-status-message error");
         }
-    }
+    };
 
     const handleImport = () => {
         if (fileInputRef.current) {
-            fileInputRef.current.click()
+            fileInputRef.current.click();
         }
-    }
+    };
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-        await handleImportConfig(event)
-        ;(event.target as HTMLInputElement).value = ""
-    }
+        await handleImportConfig(event);
+        (event.target as HTMLInputElement).value = "";
+    };
     return (
         <div class="sidebar">
             <h1>Odoo Toolbox</h1>
@@ -119,5 +119,5 @@ export const OptionsSidebar = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

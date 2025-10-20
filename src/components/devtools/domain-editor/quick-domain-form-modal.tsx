@@ -1,13 +1,13 @@
-import { useComputed, useSignal } from "@preact/signals"
-import { useEffect } from "preact/hooks"
-import { QuickDomain } from "@/types"
-import { validateDomain } from "@/utils/query-validation"
+import { useComputed, useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { QuickDomain } from "@/types";
+import { validateDomain } from "@/utils/query-validation";
 
 interface QuickDomainFormModalProps {
-    domain: QuickDomain | null
-    onSave: (data: { name: string; domain: string }) => void
-    onCancel: () => void
-    isOpen: boolean
+    domain: QuickDomain | null;
+    onSave: (data: { name: string; domain: string }) => void;
+    onCancel: () => void;
+    isOpen: boolean;
 }
 
 export const QuickDomainFormModal = ({
@@ -16,39 +16,39 @@ export const QuickDomainFormModal = ({
     onCancel,
     isOpen,
 }: QuickDomainFormModalProps) => {
-    const name = useSignal(domain?.name || "")
-    const domainValue = useSignal(domain?.domain || "")
-    const validation = useComputed(() => validateDomain(domainValue.value))
+    const name = useSignal(domain?.name || "");
+    const domainValue = useSignal(domain?.domain || "");
+    const validation = useComputed(() => validateDomain(domainValue.value));
 
-    const isValid = useComputed(() => validation.value.isValid)
+    const isValid = useComputed(() => validation.value.isValid);
     const canSave = useComputed(
-        () => name.value.trim() && domainValue.value.trim() && isValid.value
-    )
+        () => name.value.trim() && domainValue.value.trim() && isValid.value,
+    );
 
     useEffect(() => {
         if (isOpen) {
-            name.value = domain?.name || ""
-            domainValue.value = domain?.domain || ""
+            name.value = domain?.name || "";
+            domainValue.value = domain?.domain || "";
         }
-    }, [domain, isOpen])
+    }, [domain, isOpen]);
 
     const handleSubmit = (e: Event) => {
-        e.preventDefault()
+        e.preventDefault();
         if (canSave.value) {
             onSave({
                 name: name.value.trim(),
                 domain: domainValue.value.trim(),
-            })
+            });
         }
-    }
+    };
 
     const handleOverlayClick = (e: Event) => {
         if (e.target === e.currentTarget) {
-            onCancel()
+            onCancel();
         }
-    }
+    };
 
-    if (!isOpen) return null
+    if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -62,9 +62,9 @@ export const QuickDomainFormModal = ({
                             type="text"
                             value={name.value}
                             onInput={(e) =>
-                            (name.value = (
-                                e.target as HTMLInputElement
-                            ).value)
+                                (name.value = (
+                                    e.target as HTMLInputElement
+                                ).value)
                             }
                             placeholder="e.g., Active Records"
                             className="form-input"
@@ -77,9 +77,9 @@ export const QuickDomainFormModal = ({
                         <textarea
                             value={domainValue.value}
                             onInput={(e) =>
-                            (domainValue.value = (
-                                e.target as HTMLTextAreaElement
-                            ).value)
+                                (domainValue.value = (
+                                    e.target as HTMLTextAreaElement
+                                ).value)
                             }
                             placeholder='e.g., [["active", "=", true]]'
                             className={`form-input ${!isValid.value && domainValue.value ? "error" : ""}`}
@@ -112,5 +112,5 @@ export const QuickDomainFormModal = ({
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};

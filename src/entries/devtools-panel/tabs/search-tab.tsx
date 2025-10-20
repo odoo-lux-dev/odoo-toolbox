@@ -1,26 +1,26 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss"
-import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar"
-import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer"
+import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
+import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
 import {
     executeQuery,
     resetRpcQuery,
     resetRpcResult,
-} from "@/contexts/devtools-signals"
-import { useRpcQuery } from "@/contexts/devtools-signals-hook"
+} from "@/contexts/devtools-signals";
+import { useRpcQuery } from "@/contexts/devtools-signals-hook";
 
 export const SearchTab = () => {
-    const { query: rpcQuery } = useRpcQuery()
+    const { query: rpcQuery } = useRpcQuery();
 
     const handleExecuteQuery = async () => {
-        await executeQuery(true)
-    }
+        await executeQuery(true);
+    };
 
     const handleClearForm = () => {
-        resetRpcQuery()
-        resetRpcResult()
-    }
+        resetRpcQuery();
+        resetRpcResult();
+    };
 
-    const isPrimaryActionDisabled = !rpcQuery.model || !rpcQuery.isQueryValid
+    const isPrimaryActionDisabled = !rpcQuery.model || !rpcQuery.isQueryValid;
 
     return (
         <div className="rpc-query-form">
@@ -40,5 +40,5 @@ export const SearchTab = () => {
                 <ResultViewer />
             </div>
         </div>
-    )
-}
+    );
+};

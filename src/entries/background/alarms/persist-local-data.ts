@@ -1,6 +1,6 @@
-import { ExtensionAlarm } from "@/entries/background/extension-alarms.class"
-import { configurationService } from "@/services/configuration-service"
-import { Logger } from "@/services/logger"
+import { ExtensionAlarm } from "@/entries/background/extension-alarms.class";
+import { configurationService } from "@/services/configuration-service";
+import { Logger } from "@/services/logger";
 
 const PersistLocalData = new ExtensionAlarm(
     "persist-local-data",
@@ -14,9 +14,9 @@ const PersistLocalData = new ExtensionAlarm(
             .catch((error: unknown) =>
                 Logger.error(
                     "An error occured while saving data to the cloud",
-                    error
-                )
-            )
-)
+                    error,
+                ),
+            ),
+);
 
-export { PersistLocalData }
+export { PersistLocalData };

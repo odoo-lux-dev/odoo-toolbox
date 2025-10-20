@@ -1,15 +1,15 @@
-import { Moon, Settings, Sun } from "lucide-preact"
-import { useEffect } from "preact/hooks"
-import { CodeIcon } from "@/components/shared/icons/code-icon"
-import { DebugModeAssetsIcon } from "@/components/shared/icons/debug-assets-icon"
-import { DebugModeOffIcon } from "@/components/shared/icons/debug-off-icon"
-import { DebugModeOnIcon } from "@/components/shared/icons/debug-on-icon"
-import { DebugModeTestsAssetsIcon } from "@/components/shared/icons/debug-tests-assets-icon"
-import { usePopup } from "@/contexts/popup-signals-hook"
-import { useThemedIcons } from "@/hooks/use-themed-icons"
-import { settingsService } from "@/services/settings-service"
-import { DebugModeType } from "@/types"
-import { refreshActiveTabs } from "@/utils/background-utils"
+import { Moon, Settings, Sun } from "lucide-preact";
+import { useEffect } from "preact/hooks";
+import { CodeIcon } from "@/components/shared/icons/code-icon";
+import { DebugModeAssetsIcon } from "@/components/shared/icons/debug-assets-icon";
+import { DebugModeOffIcon } from "@/components/shared/icons/debug-off-icon";
+import { DebugModeOnIcon } from "@/components/shared/icons/debug-on-icon";
+import { DebugModeTestsAssetsIcon } from "@/components/shared/icons/debug-tests-assets-icon";
+import { usePopup } from "@/contexts/popup-signals-hook";
+import { useThemedIcons } from "@/hooks/use-themed-icons";
+import { settingsService } from "@/services/settings-service";
+import { DebugModeType } from "@/types";
+import { refreshActiveTabs } from "@/utils/background-utils";
 
 export const Footer = () => {
     const {
@@ -19,90 +19,90 @@ export const Footer = () => {
         updateDebugMode,
         showTechnicalList,
         updateShowTechnicalList,
-    } = usePopup()
-    const { isNostalgia, themeProps } = useThemedIcons()
-    const { moonProps, sunProps } = themeProps
+    } = usePopup();
+    const { isNostalgia, themeProps } = useThemedIcons();
+    const { moonProps, sunProps } = themeProps;
 
     const handleThemeToggle = async () => {
-        const newTheme = theme === "dark" ? "light" : "dark"
-        document.body.className = newTheme
-        await settingsService.toggleExtensionTheme()
-        updateTheme(newTheme)
-    }
+        const newTheme = theme === "dark" ? "light" : "dark";
+        document.body.className = newTheme;
+        await settingsService.toggleExtensionTheme();
+        updateTheme(newTheme);
+    };
 
     const handleShowTechnicalListToggle = async () => {
-        await settingsService.toggleTechnicalList()
-        updateShowTechnicalList(!showTechnicalList)
-        await refreshActiveTabs()
-    }
+        await settingsService.toggleTechnicalList();
+        updateShowTechnicalList(!showTechnicalList);
+        await refreshActiveTabs();
+    };
 
     const handleDebugModeToggle = (() => {
-        let clickCount = 0
-        let clickTimer: number
+        let clickCount = 0;
+        let clickTimer: number;
 
         const executeDebugModeChange = async (targetMode: DebugModeType) => {
-            await settingsService.setDebugMode(targetMode)
-            await refreshActiveTabs(targetMode)
-            updateDebugMode(targetMode)
-            clickCount = 0
-        }
+            await settingsService.setDebugMode(targetMode);
+            await refreshActiveTabs(targetMode);
+            updateDebugMode(targetMode);
+            clickCount = 0;
+        };
 
         return async () => {
-            clickCount++
+            clickCount++;
 
             if (clickTimer) {
-                clearTimeout(clickTimer)
+                clearTimeout(clickTimer);
             }
 
             // If any debug mode is active, single click disables it
             if (debugMode !== "disabled") {
-                await executeDebugModeChange("disabled")
-                return
+                await executeDebugModeChange("disabled");
+                return;
             }
 
             if (clickCount === 1) {
                 // Single click: enable debug mode
                 clickTimer = window.setTimeout(
                     () => executeDebugModeChange("1"),
-                    400
-                )
+                    400,
+                );
             } else if (clickCount === 2) {
                 // Double click: enable assets mode
                 clickTimer = window.setTimeout(
                     () => executeDebugModeChange("assets"),
-                    200
-                )
+                    200,
+                );
             } else if (clickCount === 3) {
                 // Triple click: enable assets tests mode
-                await executeDebugModeChange("assets,tests")
+                await executeDebugModeChange("assets,tests");
             } else {
-                clickCount = 0
+                clickCount = 0;
             }
-        }
-    })()
+        };
+    })();
 
     const openOptions = () => {
-        browser.runtime.openOptionsPage()
-    }
+        browser.runtime.openOptionsPage();
+    };
 
-    let DebugIcon
+    let DebugIcon;
     if (debugMode === "1") {
-        DebugIcon = DebugModeOnIcon
+        DebugIcon = DebugModeOnIcon;
     } else if (debugMode === "assets") {
-        DebugIcon = DebugModeAssetsIcon
+        DebugIcon = DebugModeAssetsIcon;
     } else if (debugMode === "assets,tests") {
-        DebugIcon = DebugModeTestsAssetsIcon
+        DebugIcon = DebugModeTestsAssetsIcon;
     } else {
-        DebugIcon = DebugModeOffIcon
+        DebugIcon = DebugModeOffIcon;
     }
 
     useEffect(() => {
         setTimeout(() => {
             document
                 .querySelector(".settings-text")
-                ?.classList.add("transition")
-        }, 0)
-    }, [])
+                ?.classList.add("transition");
+        }, 0);
+    }, []);
 
     return (
         <footer>
@@ -157,5 +157,5 @@ export const Footer = () => {
                 <Settings size={18} />
             </span>
         </footer>
-    )
-}
+    );
+};

@@ -1,9 +1,9 @@
-import { Bug } from "lucide-preact"
+import { Bug } from "lucide-preact";
 
 export const DebugModeOnIcon = ({
     isNostalgia = false,
 }: {
-    isNostalgia: boolean
+    isNostalgia: boolean;
 }) => {
     if (isNostalgia) {
         return (
@@ -67,8 +67,8 @@ export const DebugModeOnIcon = ({
                     ></path>
                 </g>
             </svg>
-        )
+        );
     }
 
-    return <Bug size={16} />
-}
+    return <Bug size={16} />;
+};

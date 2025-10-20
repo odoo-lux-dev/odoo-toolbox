@@ -2,8 +2,8 @@ export const CodeIcon = ({
     isEnabled = true,
     isNostalgia = false,
 }: {
-    isEnabled?: boolean
-    isNostalgia?: boolean
+    isEnabled?: boolean;
+    isNostalgia?: boolean;
 }) => (
     <div className="x-odoo-code-icon-container">
         <svg
@@ -32,4 +32,4 @@ export const CodeIcon = ({
             </div>
         ) : null}
     </div>
-)
+);

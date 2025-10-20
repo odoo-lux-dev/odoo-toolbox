@@ -3,8 +3,8 @@ import type {
     NotificationFunction,
     PageInfo,
     RpcQueryState,
-} from "@/types"
-import { calculateQueryValidity } from "@/utils/query-validation"
+} from "@/types";
+import { calculateQueryValidity } from "@/utils/query-validation";
 
 /**
  * Utility function to process current page information
@@ -12,44 +12,44 @@ import { calculateQueryValidity } from "@/utils/query-validation"
  */
 export const processCurrentPageInfo = (
     pageInfo: PageInfo,
-    showNotification?: NotificationFunction
+    showNotification?: NotificationFunction,
 ): GetCurrentPageResult | null => {
     if (!pageInfo.model) {
         // No record found
-        showNotification?.("No record found on current page", "warning")
-        return null
+        showNotification?.("No record found on current page", "warning");
+        return null;
     }
 
     // Apply retrieved information
     const updates: Partial<RpcQueryState> = {
         model: pageInfo.model,
-    }
+    };
 
     if (pageInfo.recordIds && pageInfo.recordIds.length > 0) {
-        updates.ids = pageInfo.recordIds.join(",")
-        updates.domain = ""
+        updates.ids = pageInfo.recordIds.join(",");
+        updates.domain = "";
 
-        const recordCount = pageInfo.recordIds.length
+        const recordCount = pageInfo.recordIds.length;
         showNotification?.(
             `Found ${recordCount} record${recordCount > 1 ? "s" : ""} (${pageInfo.viewType || "unknown"} view)`,
-            "success"
-        )
+            "success",
+        );
     } else if (pageInfo.domain) {
-        updates.domain = JSON.stringify(pageInfo.domain)
-        updates.ids = ""
+        updates.domain = JSON.stringify(pageInfo.domain);
+        updates.ids = "";
 
         showNotification?.(
             `Found list view with domain filter for model: ${pageInfo.model}`,
-            "success"
-        )
+            "success",
+        );
     } else {
-        updates.ids = ""
-        updates.domain = ""
+        updates.ids = "";
+        updates.domain = "";
 
         showNotification?.(
             `Found model: ${pageInfo.model} (no specific records)`,
-            "info"
-        )
+            "info",
+        );
     }
 
     // Calculate validity using updates with default values
@@ -57,25 +57,25 @@ export const processCurrentPageInfo = (
         ...updates,
         limit: 80,
         offset: 0,
-    })
+    });
 
-    updates.isQueryValid = isValid
+    updates.isQueryValid = isValid;
 
-    return { pageInfo, updates }
-}
+    return { pageInfo, updates };
+};
 
 /**
  * Async utility function to retrieve and process current Odoo page information
  */
 export const getCurrentPageAndProcess = async (
     getCurrentPageInfo: () => Promise<PageInfo>,
-    showNotification?: NotificationFunction
+    showNotification?: NotificationFunction,
 ): Promise<GetCurrentPageResult | null> => {
     try {
-        const pageInfo = await getCurrentPageInfo()
-        return processCurrentPageInfo(pageInfo, showNotification)
+        const pageInfo = await getCurrentPageInfo();
+        return processCurrentPageInfo(pageInfo, showNotification);
     } catch {
-        showNotification?.("Failed to get current page information", "error")
-        return null
+        showNotification?.("Failed to get current page information", "error");
+        return null;
     }
-}
+};

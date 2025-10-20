@@ -1,20 +1,20 @@
-import "./style.scss"
-import { useEffect } from "preact/hooks"
-import { Footer } from "@/components/popup/footer"
-import { Header } from "@/components/popup/header"
-import { ProjectList } from "@/components/popup/project-list"
-import { usePopup } from "@/contexts/popup-signals-hook"
+import "./style.scss";
+import { useEffect } from "preact/hooks";
+import { Footer } from "@/components/popup/footer";
+import { Header } from "@/components/popup/header";
+import { ProjectList } from "@/components/popup/project-list";
+import { usePopup } from "@/contexts/popup-signals-hook";
 
 export const App = () => {
-    const { theme, initializeData } = usePopup()
+    const { theme, initializeData } = usePopup();
 
     useEffect(() => {
-        initializeData()
-    }, [])
+        initializeData();
+    }, []);
 
     useEffect(() => {
-        document.body.className = theme
-    }, [theme])
+        document.body.className = theme;
+    }, [theme]);
 
     return (
         <>
@@ -24,5 +24,5 @@ export const App = () => {
             </main>
             <Footer />
         </>
-    )
-}
+    );
+};

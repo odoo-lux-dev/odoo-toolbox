@@ -1,30 +1,30 @@
-import { Route, Router } from "preact-router"
-import { useSupportCheck } from "@/contexts/devtools-signals-hook"
-import { DevToolsLayout } from "@/entries/devtools-panel/devtools.layout"
-import { CallMethodTab } from "@/entries/devtools-panel/tabs/call-method-tab"
-import { CreateTab } from "@/entries/devtools-panel/tabs/create-tab"
-import { HistoryTab } from "@/entries/devtools-panel/tabs/history-tab"
-import { SearchTab } from "@/entries/devtools-panel/tabs/search-tab"
-import { UnlinkTab } from "@/entries/devtools-panel/tabs/unlink-tab"
-import { WriteTab } from "@/entries/devtools-panel/tabs/write-tab"
-import { odooRpcService } from "@/services/odoo-rpc-service"
+import { Route, Router } from "preact-router";
+import { useSupportCheck } from "@/contexts/devtools-signals-hook";
+import { DevToolsLayout } from "@/entries/devtools-panel/devtools.layout";
+import { CallMethodTab } from "@/entries/devtools-panel/tabs/call-method-tab";
+import { CreateTab } from "@/entries/devtools-panel/tabs/create-tab";
+import { HistoryTab } from "@/entries/devtools-panel/tabs/history-tab";
+import { SearchTab } from "@/entries/devtools-panel/tabs/search-tab";
+import { UnlinkTab } from "@/entries/devtools-panel/tabs/unlink-tab";
+import { WriteTab } from "@/entries/devtools-panel/tabs/write-tab";
+import { odooRpcService } from "@/services/odoo-rpc-service";
 
 interface DevToolsPageProps {
-    path?: string
+    path?: string;
 }
 
 // Main DevTools content with router
 export const DevToolsContent = () => {
-    const { isSupported, hasHostPermission } = useSupportCheck()
+    const { isSupported, hasHostPermission } = useSupportCheck();
 
     const handleRetry = () => {
-        window.location.reload()
-    }
+        window.location.reload();
+    };
 
     const handlePermissionsAsking = async () => {
-        await odooRpcService.requestHostPermission()
-        window.location.reload()
-    }
+        await odooRpcService.requestHostPermission();
+        window.location.reload();
+    };
 
     if (hasHostPermission == false) {
         return (
@@ -32,7 +32,10 @@ export const DevToolsContent = () => {
                 <div className="unsupported-message">
                     <h3>Insufficient Permissions</h3>
                     <div className="unsupported-details">
-                        <p>To access the Odoo Toolbox Devtools, you need to grant host permission for this domain.</p>
+                        <p>
+                            To access the Odoo Toolbox Devtools, you need to
+                            grant host permission for this domain.
+                        </p>
                     </div>
                     <button
                         className="btn btn-primary-outline retry-btn"
@@ -42,9 +45,8 @@ export const DevToolsContent = () => {
                     </button>
                 </div>
             </div>
-        )
+        );
     }
-
 
     if (isSupported === null) {
         return (
@@ -54,7 +56,7 @@ export const DevToolsContent = () => {
                     <span>Detecting Odoo version...</span>
                 </div>
             </div>
-        )
+        );
     }
 
     // If Odoo is not supported, show only error message
@@ -81,7 +83,7 @@ export const DevToolsContent = () => {
                     </button>
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -143,5 +145,5 @@ export const DevToolsContent = () => {
                 )}
             />
         </Router>
-    )
-}
+    );
+};

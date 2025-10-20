@@ -9,7 +9,7 @@ import {
     updateFavorites,
     updateShowTechnicalList,
     updateTheme,
-} from "./popup-signals"
+} from "./popup-signals";
 
 export const usePopupState = () => ({
     favorites: favoritesSignal.value,
@@ -17,7 +17,7 @@ export const usePopupState = () => ({
     theme: currentThemeComputed.value,
     debugMode: debugModeSignal.value,
     showTechnicalList: showTechnicalListSignal.value,
-})
+});
 
 export const usePopupActions = () => ({
     initializeData: initializePopupData,
@@ -25,9 +25,9 @@ export const usePopupActions = () => ({
     updateDebugMode,
     updateShowTechnicalList,
     updateFavorites,
-})
+});
 
 export const usePopup = () => ({
     ...usePopupState(),
     ...usePopupActions(),
-})
+});

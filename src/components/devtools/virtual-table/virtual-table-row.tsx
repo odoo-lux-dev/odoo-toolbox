@@ -1,12 +1,12 @@
-import { memo } from "preact/compat"
-import { VirtualTableCell } from "./virtual-table-cell"
+import { memo } from "preact/compat";
+import { VirtualTableCell } from "./virtual-table-cell";
 
 interface VirtualTableRowProps {
-    record: Record<string, unknown>
-    index: number
-    visibleKeys: string[]
-    startColumnIndex: number
-    columnWidth: number
+    record: Record<string, unknown>;
+    index: number;
+    visibleKeys: string[];
+    startColumnIndex: number;
+    columnWidth: number;
 }
 
 const VirtualTableRowComponent = ({
@@ -30,7 +30,7 @@ const VirtualTableRowComponent = ({
                 />
             ))}
         </tr>
-    )
-}
+    );
+};
 
-export const VirtualTableRow = memo(VirtualTableRowComponent)
+export const VirtualTableRow = memo(VirtualTableRowComponent);

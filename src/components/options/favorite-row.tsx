@@ -1,8 +1,8 @@
-import { useSignal } from "@preact/signals"
-import { Link, Pencil, Save, Trash, Undo2 } from "lucide-preact"
-import { useEffect, useRef } from "preact/hooks"
-import { Favorite } from "@/types"
-import { FavoriteDragHandler } from "./favorite-drag-handler"
+import { useSignal } from "@preact/signals";
+import { Link, Pencil, Save, Trash, Undo2 } from "lucide-preact";
+import { useEffect, useRef } from "preact/hooks";
+import { Favorite } from "@/types";
+import { FavoriteDragHandler } from "./favorite-drag-handler";
 
 export const FavoriteRow = ({
     slotId,
@@ -14,56 +14,56 @@ export const FavoriteRow = ({
     onDelete,
     onEdition,
 }: {
-    slotId: string
-    itemId: string
-    favorite: Favorite
-    isOtherRowEditing: boolean
-    onEditName: (name: string, newName: string) => Promise<void>
-    onEditTaskLink: (favorite: Favorite) => void
-    onDelete: (name: string) => Promise<void>
-    onEdition: (isEditing: boolean) => void
+    slotId: string;
+    itemId: string;
+    favorite: Favorite;
+    isOtherRowEditing: boolean;
+    onEditName: (name: string, newName: string) => Promise<void>;
+    onEditTaskLink: (favorite: Favorite) => void;
+    onDelete: (name: string) => Promise<void>;
+    onEdition: (isEditing: boolean) => void;
 }) => {
-    const isEditing = useSignal(false)
-    const displayName = useSignal(favorite.display_name)
-    const inputRef = useRef<HTMLInputElement>(null)
+    const isEditing = useSignal(false);
+    const displayName = useSignal(favorite.display_name);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isEditing.value && inputRef.current) {
-            inputRef.current.focus()
+            inputRef.current.focus();
         }
-    }, [isEditing.value])
+    }, [isEditing.value]);
 
     const startEditing = () => {
-        displayName.value = favorite.display_name
-        isEditing.value = true
-        onEdition(true)
-    }
+        displayName.value = favorite.display_name;
+        isEditing.value = true;
+        onEdition(true);
+    };
 
     const handleSave = async () => {
         if (displayName.value !== favorite.display_name) {
-            await onEditName(favorite.name, displayName.value)
+            await onEditName(favorite.name, displayName.value);
         }
-        isEditing.value = false
-        onEdition(false)
-    }
+        isEditing.value = false;
+        onEdition(false);
+    };
 
     const handleReset = async () => {
-        displayName.value = favorite.name
-        await onEditName(favorite.name, favorite.name)
-        isEditing.value = false
-        onEdition(false)
-    }
+        displayName.value = favorite.name;
+        await onEditName(favorite.name, favorite.name);
+        isEditing.value = false;
+        onEdition(false);
+    };
 
     const handleAbort = async () => {
-        displayName.value = favorite.display_name
-        isEditing.value = false
-        onEdition(false)
-    }
+        displayName.value = favorite.display_name;
+        isEditing.value = false;
+        onEdition(false);
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Enter") handleSave()
-        if (e.key === "Escape") handleAbort()
-    }
+        if (e.key === "Enter") handleSave();
+        if (e.key === "Escape") handleAbort();
+    };
 
     return (
         <div data-swapy-slot={slotId}>
@@ -91,8 +91,16 @@ export const FavoriteRow = ({
                         href={`https://www.odoo.sh/project/${favorite.name}`}
                         target="_blank"
                         data-swapy-no-drag
-                        className={isOtherRowEditing ? "x-odoo-options-page-favorite-disabled" : ""}
-                        onClick={isOtherRowEditing ? (e) => e.preventDefault() : undefined}
+                        className={
+                            isOtherRowEditing
+                                ? "x-odoo-options-page-favorite-disabled"
+                                : ""
+                        }
+                        onClick={
+                            isOtherRowEditing
+                                ? (e) => e.preventDefault()
+                                : undefined
+                        }
                     >
                         {favorite.display_name}
                     </a>
@@ -109,7 +117,11 @@ export const FavoriteRow = ({
                     disabled={isOtherRowEditing}
                     data-swapy-no-drag
                 >
-                    {isEditing.value ? <Save size={18} /> : <Pencil size={18} />}
+                    {isEditing.value ? (
+                        <Save size={18} />
+                    ) : (
+                        <Pencil size={18} />
+                    )}
                 </button>
 
                 <button
@@ -137,9 +149,13 @@ export const FavoriteRow = ({
                     disabled={isOtherRowEditing}
                     data-swapy-no-drag
                 >
-                    {isEditing.value ? <Undo2 size={18} /> : <Trash size={18} />}
+                    {isEditing.value ? (
+                        <Undo2 size={18} />
+                    ) : (
+                        <Trash size={18} />
+                    )}
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};

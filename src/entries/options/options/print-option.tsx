@@ -1,32 +1,33 @@
-import { OptionItem } from "@/components/options/option-item"
-import { ToggleSwitch } from "@/components/options/toggle-switch"
-import { useOptions } from "@/contexts/options-signals-hook"
-import { settingsService } from "@/services/settings-service"
+import { OptionItem } from "@/components/options/option-item";
+import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { useOptions } from "@/contexts/options-signals-hook";
+import { settingsService } from "@/services/settings-service";
 import {
     CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
     CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
-} from "@/utils/constants"
+} from "@/utils/constants";
 
 export const PrintOption = () => {
-    const { settings } = useOptions()
+    const { settings } = useOptions();
 
     const handlePdfChange = async (checked: boolean) => {
-        await settingsService.setPrintOptionsPDF(checked)
-    }
+        await settingsService.setPrintOptionsPDF(checked);
+    };
 
     const handleHtmlChange = async (checked: boolean) => {
-        await settingsService.setPrintOptionsHTML(checked)
-    }
+        await settingsService.setPrintOptionsHTML(checked);
+    };
 
-    const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF]
-    const htmlEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML]
+    const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF];
+    const htmlEnabled =
+        !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML];
 
     const additionalTooltipContent = (
         <ul>
             <li>[PDF] Enable PDF print option</li>
             <li>[HTML] Enable HTML print option</li>
         </ul>
-    )
+    );
 
     return (
         <OptionItem
@@ -52,5 +53,5 @@ export const PrintOption = () => {
                 />
             </div>
         </OptionItem>
-    )
-}
+    );
+};

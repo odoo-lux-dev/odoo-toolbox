@@ -5,27 +5,27 @@ import {
     Crosshair,
     Layers2,
     TriangleAlert,
-} from "lucide-preact"
-import { useRpcQuery } from "@/contexts/devtools-signals-hook"
-import { FieldMetadata } from "@/types"
-import { ContextMenu } from "./context-menu/context-menu"
-import { RecordFieldRenderer } from "./field-rendering/record-field-renderer"
-import { useExpansion } from "./hooks/use-expansion"
-import { useModelExcludedFields } from "./hooks/use-model-excluded-fields"
-import { useRecordActions } from "./hooks/use-record-actions"
-import { useRecordContextMenu } from "./hooks/use-record-context-menu"
-import { LevelProvider } from "./level-context"
+} from "lucide-preact";
+import { useRpcQuery } from "@/contexts/devtools-signals-hook";
+import { FieldMetadata } from "@/types";
+import { ContextMenu } from "./context-menu/context-menu";
+import { RecordFieldRenderer } from "./field-rendering/record-field-renderer";
+import { useExpansion } from "./hooks/use-expansion";
+import { useModelExcludedFields } from "./hooks/use-model-excluded-fields";
+import { useRecordActions } from "./hooks/use-record-actions";
+import { useRecordContextMenu } from "./hooks/use-record-context-menu";
+import { LevelProvider } from "./level-context";
 
 interface RecordRendererProps {
-    records: Record<string, unknown>[]
-    level?: number
-    fieldsMetadata?: Record<string, FieldMetadata>
-    parentModel?: string
-    clickableRow?: boolean
-    showId?: boolean
-    onExpandToggle?: (index: number) => void
-    expandedRecords?: Set<number>
-    renderAsList?: boolean
+    records: Record<string, unknown>[];
+    level?: number;
+    fieldsMetadata?: Record<string, FieldMetadata>;
+    parentModel?: string;
+    clickableRow?: boolean;
+    showId?: boolean;
+    onExpandToggle?: (index: number) => void;
+    expandedRecords?: Set<number>;
+    renderAsList?: boolean;
 }
 
 export const RecordRenderer = ({
@@ -39,59 +39,60 @@ export const RecordRenderer = ({
     expandedRecords,
     renderAsList = true,
 }: RecordRendererProps) => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { hasModelExcludedFields, getModelExcludedFields } = useModelExcludedFields()
+    const { query: rpcQuery } = useRpcQuery();
+    const { hasModelExcludedFields, getModelExcludedFields } =
+        useModelExcludedFields();
     const { currentExpanded, toggleExpansion } = useExpansion(
         onExpandToggle,
-        expandedRecords
-    )
+        expandedRecords,
+    );
     const {
         contextMenu,
         handleRecordContextMenu,
         handleFieldContextMenu,
         closeContextMenu,
         getContextMenuItems,
-    } = useRecordContextMenu()
-    const { openRecord, focusOnRecord } = useRecordActions()
+    } = useRecordContextMenu();
+    const { openRecord, focusOnRecord } = useRecordActions();
 
     const handleOpenRecord = async (
         record: Record<string, unknown>,
         event: Event,
-        asPopup = false
+        asPopup = false,
     ) => {
-        await openRecord(record, parentModel, event, asPopup)
-    }
+        await openRecord(record, parentModel, event, asPopup);
+    };
 
     const handleFocusRecord = async (
         record: Record<string, unknown>,
-        event: Event
+        event: Event,
     ) => {
-        await focusOnRecord(record, parentModel, event)
-    }
+        await focusOnRecord(record, parentModel, event);
+    };
 
     const getRecordDisplayName = (record: Record<string, unknown>): string => {
         if (record.display_name && typeof record.display_name === "string") {
-            return record.display_name
+            return record.display_name;
         }
         if (record.name && typeof record.name === "string") {
-            return record.name
+            return record.name;
         }
-        return `Record ${record.id || "Unknown"}`
-    }
+        return `Record ${record.id || "Unknown"}`;
+    };
 
     // Get all unique keys from all records with 'id' column first
     const allKeys = Array.from(
-        new Set(records.flatMap((record) => Object.keys(record)))
+        new Set(records.flatMap((record) => Object.keys(record))),
     ).sort((a, b) => {
-        if (a === "id" && b !== "id") return -1
-        if (b === "id" && a !== "id") return 1
-        return a.localeCompare(b)
-    })
+        if (a === "id" && b !== "id") return -1;
+        if (b === "id" && a !== "id") return 1;
+        return a.localeCompare(b);
+    });
 
     const renderRecordField = (
         key: string,
         val: unknown,
-        record: Record<string, unknown>
+        record: Record<string, unknown>,
     ) => {
         return (
             <RecordFieldRenderer
@@ -103,8 +104,8 @@ export const RecordRenderer = ({
                 parentModel={parentModel}
                 onFieldContextMenu={handleFieldContextMenu}
             />
-        )
-    }
+        );
+    };
 
     return (
         <div
@@ -113,8 +114,8 @@ export const RecordRenderer = ({
             }
         >
             {records.map((record, index) => {
-                const isExpanded = currentExpanded.has(index)
-                const recordId = record.id || index + 1
+                const isExpanded = currentExpanded.has(index);
+                const recordId = record.id || index + 1;
 
                 if (!renderAsList) {
                     return (
@@ -125,18 +126,22 @@ export const RecordRenderer = ({
                         >
                             <LevelProvider level={level + 1}>
                                 {allKeys.map((key) =>
-                                    renderRecordField(key, record[key], record)
+                                    renderRecordField(key, record[key], record),
                                 )}
                             </LevelProvider>
                         </div>
-                    )
+                    );
                 }
 
-                const displayName = getRecordDisplayName(record)
+                const displayName = getRecordDisplayName(record);
 
-                const currentModel = parentModel || rpcQuery.model
-                const modelHasExcludedFields = currentModel ? hasModelExcludedFields(currentModel) : false
-                const excludedFields = currentModel ? getModelExcludedFields(currentModel) : []
+                const currentModel = parentModel || rpcQuery.model;
+                const modelHasExcludedFields = currentModel
+                    ? hasModelExcludedFields(currentModel)
+                    : false;
+                const excludedFields = currentModel
+                    ? getModelExcludedFields(currentModel)
+                    : [];
 
                 return (
                     <div
@@ -155,7 +160,7 @@ export const RecordRenderer = ({
                                 handleRecordContextMenu(
                                     e as unknown as MouseEvent,
                                     record,
-                                    parentModel
+                                    parentModel,
                                 )
                             }
                         >
@@ -185,12 +190,13 @@ export const RecordRenderer = ({
                                 >
                                     {displayName}
                                 </span>
-                                {(currentModel && recordId) ? (
+                                {currentModel && recordId ? (
                                     <div className="record-actions">
-                                        {modelHasExcludedFields && isExpanded ? (
+                                        {modelHasExcludedFields &&
+                                        isExpanded ? (
                                             <span
                                                 className="excluded-fields-indicator"
-                                                title={`Excluded fields from ${currentModel}: ${excludedFields.join(', ')}`}
+                                                title={`Excluded fields from ${currentModel}: ${excludedFields.join(", ")}`}
                                             >
                                                 <TriangleAlert size={16} />
                                             </span>
@@ -201,7 +207,7 @@ export const RecordRenderer = ({
                                             onClick={(e) =>
                                                 handleFocusRecord(
                                                     record,
-                                                    e as unknown as Event
+                                                    e as unknown as Event,
                                                 )
                                             }
                                         >
@@ -214,7 +220,7 @@ export const RecordRenderer = ({
                                                 handleOpenRecord(
                                                     record,
                                                     e as unknown as Event,
-                                                    false
+                                                    false,
                                                 )
                                             }
                                         >
@@ -227,7 +233,7 @@ export const RecordRenderer = ({
                                                 handleOpenRecord(
                                                     record,
                                                     e as unknown as Event,
-                                                    true
+                                                    true,
                                                 )
                                             }
                                         >
@@ -245,14 +251,14 @@ export const RecordRenderer = ({
                                         renderRecordField(
                                             key,
                                             record[key],
-                                            record
-                                        )
+                                            record,
+                                        ),
                                     )}
                                 </LevelProvider>
                             </div>
                         )}
                     </div>
-                )
+                );
             })}
 
             <ContextMenu
@@ -262,5 +268,5 @@ export const RecordRenderer = ({
                 onClose={closeContextMenu}
             />
         </div>
-    )
-}
+    );
+};

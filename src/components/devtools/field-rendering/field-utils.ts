@@ -1,8 +1,8 @@
-import { FieldMetadata } from "@/types"
+import { FieldMetadata } from "@/types";
 
 export const extractIds = (value: unknown): number[] => {
     if (typeof value === "number") {
-        return [value]
+        return [value];
     }
     if (Array.isArray(value)) {
         // If it's an array with [id, "name"], take just the ID
@@ -11,26 +11,26 @@ export const extractIds = (value: unknown): number[] => {
             typeof value[0] === "number" &&
             typeof value[1] === "string"
         ) {
-            return [value[0]]
+            return [value[0]];
         }
         if (value.every((item) => typeof item === "number")) {
-            return value
+            return value;
         }
     }
-    return []
-}
+    return [];
+};
 
 export const getRelatedModel = (
-    fieldMetadata: FieldMetadata | null
+    fieldMetadata: FieldMetadata | null,
 ): string | null => {
     if (fieldMetadata && fieldMetadata.relation) {
-        return fieldMetadata.relation
+        return fieldMetadata.relation;
     }
-    return null
-}
+    return null;
+};
 
 export const isRelationalField = (
-    fieldMetadata: FieldMetadata | null
+    fieldMetadata: FieldMetadata | null,
 ): boolean => {
-    return !!fieldMetadata?.relation
-}
+    return !!fieldMetadata?.relation;
+};

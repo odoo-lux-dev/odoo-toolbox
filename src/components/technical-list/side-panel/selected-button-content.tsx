@@ -1,19 +1,18 @@
-import { ButtonItem } from "@/components/technical-list/button-item"
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
-import { EmptyState } from "@/components/technical-list/states"
+import { ButtonItem } from "@/components/technical-list/button-item";
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
+import { EmptyState } from "@/components/technical-list/states";
 
 export const SelectedButtonContent = () => {
-    const {
-        selectedButtonInfo,
-        highlightButton,
-        clearButtonHighlight,
-    } = useTechnicalSidebar()
+    const { selectedButtonInfo, highlightButton, clearButtonHighlight } =
+        useTechnicalSidebar();
 
     if (!selectedButtonInfo) {
-        return <EmptyState
-            icon="fa-mouse-pointer"
-            message="Click on a button in the page to see its details"
-        />
+        return (
+            <EmptyState
+                icon="fa-mouse-pointer"
+                message="Click on a button in the page to see its details"
+            />
+        );
     }
 
     return (
@@ -28,5 +27,5 @@ export const SelectedButtonContent = () => {
                 onClearHighlight={clearButtonHighlight}
             />
         </div>
-    )
-}
+    );
+};

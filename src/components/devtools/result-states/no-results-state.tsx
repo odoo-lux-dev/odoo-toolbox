@@ -4,4 +4,4 @@ export const NoResultsState = () => (
             No records found matching your criteria
         </div>
     </div>
-)
+);

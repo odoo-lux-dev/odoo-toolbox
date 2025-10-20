@@ -1,58 +1,58 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss"
-import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
-import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
-import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
-import { useQueryIds } from "@/components/devtools/hooks/use-query-ids"
-import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor"
-import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete"
-import { createFieldValidationErrorNotification } from "@/components/devtools/json-autocomplete/utils/json-autocomplete-utils"
-import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar"
-import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer"
-import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
-import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook"
+import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
+import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
+import { useQueryIds } from "@/components/devtools/hooks/use-query-ids";
+import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor";
+import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete";
+import { createFieldValidationErrorNotification } from "@/components/devtools/json-autocomplete/utils/json-autocomplete-utils";
+import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
+import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
+import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
     clearTabValues,
     executeQuery,
     resetRpcQuery,
     resetRpcResult,
     setWriteValues,
-} from "@/contexts/devtools-signals"
+} from "@/contexts/devtools-signals";
 import {
     useDatabase,
     useRpcQuery,
     useRpcResult,
     useTabValues,
-} from "@/contexts/devtools-signals-hook"
-import { Logger } from "@/services/logger"
-import { odooRpcService } from "@/services/odoo-rpc-service"
-import { addWriteToHistory } from "@/utils/history-helpers"
-import { validateFieldsExistence } from "@/utils/query-validation"
-import { generateRecordText } from "@/utils/tab-utils"
+} from "@/contexts/devtools-signals-hook";
+import { Logger } from "@/services/logger";
+import { odooRpcService } from "@/services/odoo-rpc-service";
+import { addWriteToHistory } from "@/utils/history-helpers";
+import { validateFieldsExistence } from "@/utils/query-validation";
+import { generateRecordText } from "@/utils/tab-utils";
 
 export const WriteTab = () => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { writeValues } = useTabValues()
-    const { database } = useDatabase()
-    const { writeLoading, setWriteLoading } = useDevToolsLoading()
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { writeValues } = useTabValues();
+    const { database } = useDatabase();
+    const { writeLoading, setWriteLoading } = useDevToolsLoading();
 
-    const { showNotification } = useDevToolsNotifications()
+    const { showNotification } = useDevToolsNotifications();
     const { isOpen, config, openConfirmation, handleConfirm, handleCancel } =
-        useConfirmationModal()
+        useConfirmationModal();
 
-    const { queryIds, clearIds } = useQueryIds()
+    const { queryIds, clearIds } = useQueryIds();
 
     const handleExecuteQuery = async () => {
-        await executeQuery(true, { offset: 0 })
-    }
+        await executeQuery(true, { offset: 0 });
+    };
 
     const handleClearForm = () => {
-        resetRpcQuery()
-        resetRpcResult()
-        clearIds()
-        clearJson()
-        clearTabValues()
-    }
+        resetRpcQuery();
+        resetRpcResult();
+        clearIds();
+        clearJson();
+        clearTabValues();
+    };
 
     const {
         jsonData: writeData,
@@ -63,106 +63,105 @@ export const WriteTab = () => {
     } = useJsonEditor({
         initialValue: writeValues.value || "",
         onValueChange: (value) => setWriteValues(value),
-    })
+    });
 
     const handleJsonChange = (newValue: string) => {
-        handleJsonChangeBase(newValue)
-        setWriteValues(newValue)
-    }
+        handleJsonChangeBase(newValue);
+        setWriteValues(newValue);
+    };
 
     const handleWriteExecute = async () => {
         if (!rpcQuery.model) {
             showNotification(
                 "Model is required for write operation",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
-        const targetIds = rpcQuery.ids?.trim() || queryIds.trim()
+        const targetIds = rpcQuery.ids?.trim() || queryIds.trim();
 
         if (!targetIds) {
             showNotification(
                 "Record IDs are required for write operation",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         try {
             const confirmed = await openConfirmation({
                 title: "Execute Write Operation",
-                message:
-                    `Are you sure you want to update ${targetIds.split(",").filter(id => id.trim()).length} record(s)? This action will modify the selected records permanently.`,
+                message: `Are you sure you want to update ${targetIds.split(",").filter((id) => id.trim()).length} record(s)? This action will modify the selected records permanently.`,
                 variant: "warning",
-            })
+            });
 
-            if (!confirmed) return
+            if (!confirmed) return;
         } catch {
-            return
+            return;
         }
 
         if (!writeData.trim()) {
             showNotification(
                 "Write data is required",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         if (!jsonValidation.isValid) {
             showNotification(
                 `JSON validation failed: ${jsonValidation.error}`,
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         const fieldsValidation = validateFieldsExistence(
             writeData,
-            rpcQuery.fieldsMetadata || {}
-        )
+            rpcQuery.fieldsMetadata || {},
+        );
         if (!fieldsValidation.isValid) {
             const richNotification = createFieldValidationErrorNotification(
-                fieldsValidation.invalidFields
-            )
+                fieldsValidation.invalidFields,
+            );
             showNotification(
                 richNotification,
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
-        setWriteLoading(true)
+        setWriteLoading(true);
 
         try {
             const ids = targetIds
                 .split(",")
                 .map((id) => parseInt(id.trim(), 10))
-                .filter((id) => !isNaN(id))
+                .filter((id) => !isNaN(id));
 
             if (ids.length === 0) {
-                throw new Error("No valid IDs found")
+                throw new Error("No valid IDs found");
             }
 
-            const values = JSON.parse(writeData)
+            const values = JSON.parse(writeData);
 
             const result = await odooRpcService.write({
                 model: rpcQuery.model,
                 ids,
                 values,
-            })
+            });
 
             if (result) {
                 showNotification(
                     `Successfully updated ${ids.length} record(s) in ${rpcQuery.model}`,
-                    "success"
-                )
+                    "success",
+                );
 
                 try {
                     await addWriteToHistory(
@@ -170,32 +169,35 @@ export const WriteTab = () => {
                         queryIds,
                         values,
                         ids.length,
-                        database
-                    )
+                        database,
+                    );
                 } catch (historyError) {
-                    Logger.warn("Failed to add write to history:", historyError)
+                    Logger.warn(
+                        "Failed to add write to history:",
+                        historyError,
+                    );
                 }
 
-                await executeQuery(true, { offset: rpcQuery.offset })
+                await executeQuery(true, { offset: rpcQuery.offset });
             } else {
                 showNotification(
                     "Write operation completed but returned false",
-                    "warning"
-                )
+                    "warning",
+                );
             }
         } catch (error) {
-            let errorMessage = "Write operation failed"
+            let errorMessage = "Write operation failed";
             if (error instanceof Error) {
-                errorMessage = `Write operation failed: ${error.message}`
+                errorMessage = `Write operation failed: ${error.message}`;
             } else if (typeof error === "string") {
-                errorMessage = `Write operation failed: ${error}`
+                errorMessage = `Write operation failed: ${error}`;
             }
 
-            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
         } finally {
-            setWriteLoading(false)
+            setWriteLoading(false);
         }
-    }
+    };
 
     return (
         <div className="rpc-query-form">
@@ -298,7 +300,7 @@ export const WriteTab = () => {
                                             {generateRecordText(
                                                 rpcResult.model,
                                                 rpcResult.data.length,
-                                                "updated"
+                                                "updated",
                                             )}
                                         </h4>
                                     </div>
@@ -315,5 +317,5 @@ export const WriteTab = () => {
                 onCancel={handleCancel}
             />
         </div>
-    )
-}
+    );
+};

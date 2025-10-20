@@ -1,18 +1,18 @@
-import { FieldMetadata } from "@/types"
-import { needsCommaAfter, needsCommaBefore } from "./json-parser"
+import { FieldMetadata } from "@/types";
+import { needsCommaAfter, needsCommaBefore } from "./json-parser";
 
 export interface Suggestion {
-    field: string
-    type: string
-    description: string
-    example: unknown
-    isSpecial?: boolean
-    specialAction?: () => void
+    field: string;
+    type: string;
+    description: string;
+    example: unknown;
+    isSpecial?: boolean;
+    specialAction?: () => void;
 }
 
 export interface ValueTemplate {
-    template: string
-    cursorOffset: number
+    template: string;
+    cursorOffset: number;
 }
 
 /**
@@ -20,36 +20,36 @@ export interface ValueTemplate {
  * @param fieldMeta - Field metadata
  */
 export const generateExampleValue = (fieldMeta: FieldMetadata): unknown => {
-    const { type, string: fieldString } = fieldMeta
-    const displayName = fieldString || "Value"
+    const { type, string: fieldString } = fieldMeta;
+    const displayName = fieldString || "Value";
 
     switch (type) {
         case "char":
         case "text":
-            return `Example ${displayName}`
+            return `Example ${displayName}`;
         case "integer":
-            return 42
+            return 42;
         case "float":
-            return 3.14
+            return 3.14;
         case "boolean":
-            return true
+            return true;
         case "date":
-            return "2024-01-01"
+            return "2024-01-01";
         case "datetime":
-            return "2024-01-01 12:00:00"
+            return "2024-01-01 12:00:00";
         case "many2one":
-            return 1
+            return 1;
         case "one2many":
         case "many2many":
-            return [0, 0, {}]
+            return [0, 0, {}];
         case "selection":
-            return "draft"
+            return "draft";
         case "binary":
-            return "base64_encoded_data"
+            return "base64_encoded_data";
         default:
-            return "value"
+            return "value";
     }
-}
+};
 
 /**
  * Determines value template based on field type
@@ -59,16 +59,16 @@ export const getValueTemplate = (fieldType: string): ValueTemplate => {
     switch (fieldType) {
         case "one2many":
         case "many2many":
-            return { template: "[]", cursorOffset: 1 }
+            return { template: "[]", cursorOffset: 1 };
         case "many2one":
         case "integer":
         case "float":
         case "boolean":
-            return { template: "", cursorOffset: 0 }
+            return { template: "", cursorOffset: 0 };
         default:
-            return { template: '""', cursorOffset: 1 }
+            return { template: '""', cursorOffset: 1 };
     }
-}
+};
 
 /**
  * Builds filtered and sorted suggestions list
@@ -83,37 +83,37 @@ export const buildSuggestions = (
     usedFields: Set<string>,
     partialText: string,
     maxResults = 10,
-    specialSuggestion?: Suggestion
+    specialSuggestion?: Suggestion,
 ): Suggestion[] => {
     const regularSuggestions = Object.entries(fieldsMetadata)
         .filter(([fieldName]) => {
             // Exclude already used fields
-            if (usedFields.has(fieldName)) return false
+            if (usedFields.has(fieldName)) return false;
 
             // Filter by partial text if present
             if (
                 partialText &&
                 !fieldName.toLowerCase().includes(partialText.toLowerCase())
             ) {
-                return false
+                return false;
             }
 
-            return true
+            return true;
         })
         .sort(([a], [b]) => {
             // Prioritize matches that start with partial text
             if (partialText) {
                 const aStarts = a
                     .toLowerCase()
-                    .startsWith(partialText.toLowerCase())
+                    .startsWith(partialText.toLowerCase());
                 const bStarts = b
                     .toLowerCase()
-                    .startsWith(partialText.toLowerCase())
-                if (aStarts && !bStarts) return -1
-                if (!aStarts && bStarts) return 1
+                    .startsWith(partialText.toLowerCase());
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
             }
 
-            return a.localeCompare(b)
+            return a.localeCompare(b);
         })
         .slice(0, maxResults)
         .map(([field, meta]) => ({
@@ -121,15 +121,15 @@ export const buildSuggestions = (
             type: meta.type,
             description: meta.string || field,
             example: generateExampleValue(meta),
-        }))
+        }));
 
     // If we have a special suggestion, add it at first position
     if (specialSuggestion) {
-        return [specialSuggestion, ...regularSuggestions]
+        return [specialSuggestion, ...regularSuggestions];
     }
 
-    return regularSuggestions
-}
+    return regularSuggestions;
+};
 
 /**
  * Calculates insertion parameters for a suggestion
@@ -144,25 +144,25 @@ export const calculateInsertionParams = (
     textBefore: string,
     textAfter: string,
     isPartialReplacement: boolean,
-    partialText: string
+    partialText: string,
 ) => {
-    const valueTemplate = getValueTemplate(suggestion.type)
-    const commaAfter = needsCommaAfter(textAfter) ? "," : ""
+    const valueTemplate = getValueTemplate(suggestion.type);
+    const commaAfter = needsCommaAfter(textAfter) ? "," : "";
 
     if (isPartialReplacement) {
         const beforePartial = textBefore.substring(
             0,
-            textBefore.length - partialText.length
-        )
+            textBefore.length - partialText.length,
+        );
 
         // Check if opening quotes are already present
-        const hasOpenQuote = beforePartial.trim().endsWith('"')
+        const hasOpenQuote = beforePartial.trim().endsWith('"');
 
         const fieldPart = hasOpenQuote
             ? `${suggestion.field}"` // Just close the quotes
-            : `"${suggestion.field}"` // Add complete quotes
+            : `"${suggestion.field}"`; // Add complete quotes
 
-        const insertion = `${fieldPart}: ${valueTemplate.template}${commaAfter}`
+        const insertion = `${fieldPart}: ${valueTemplate.template}${commaAfter}`;
 
         return {
             newValue: beforePartial + insertion + textAfter,
@@ -171,10 +171,10 @@ export const calculateInsertionParams = (
                 fieldPart.length +
                 2 +
                 valueTemplate.cursorOffset,
-        }
+        };
     } else {
-        const commaBefore = needsCommaBefore(textBefore) ? ", " : ""
-        const insertion = `${commaBefore}"${suggestion.field}": ${valueTemplate.template}${commaAfter}`
+        const commaBefore = needsCommaBefore(textBefore) ? ", " : "";
+        const insertion = `${commaBefore}"${suggestion.field}": ${valueTemplate.template}${commaAfter}`;
 
         return {
             newValue: textBefore + insertion + textAfter,
@@ -184,9 +184,9 @@ export const calculateInsertionParams = (
                 suggestion.field.length +
                 4 +
                 valueTemplate.cursorOffset,
-        }
+        };
     }
-}
+};
 
 /**
  * Creates special suggestion for adding all required fields
@@ -195,10 +195,10 @@ export const calculateInsertionParams = (
  */
 export const createRequiredFieldsSuggestion = (
     missingRequiredFields: string[],
-    onAddRequiredFields: () => void
+    onAddRequiredFields: () => void,
 ): Suggestion => {
-    const fieldCount = missingRequiredFields.length
-    const isPlural = fieldCount > 1
+    const fieldCount = missingRequiredFields.length;
+    const isPlural = fieldCount > 1;
 
     return {
         field: "__add_required_fields__",
@@ -207,8 +207,8 @@ export const createRequiredFieldsSuggestion = (
         example: "Insert template with required fields",
         isSpecial: true,
         specialAction: onAddRequiredFields,
-    }
-}
+    };
+};
 
 /**
  * Detects missing required fields for Create context
@@ -218,44 +218,44 @@ export const createRequiredFieldsSuggestion = (
  */
 export const getMissingRequiredFields = (
     jsonValue: string,
-    fieldsMetadata: Record<string, FieldMetadata>
+    fieldsMetadata: Record<string, FieldMetadata>,
 ): string[] => {
     // If no JSON or empty JSON, return all required non-readonly fields
     if (!jsonValue.trim() || jsonValue.trim() === "{}") {
         return Object.entries(fieldsMetadata)
             .filter(([, meta]) => meta.required && !meta.readonly)
-            .map(([field]) => field)
+            .map(([field]) => field);
     }
 
     try {
-        const parsedJson = JSON.parse(jsonValue)
+        const parsedJson = JSON.parse(jsonValue);
         if (
             typeof parsedJson !== "object" ||
             parsedJson === null ||
             Array.isArray(parsedJson)
         ) {
-            return []
+            return [];
         }
 
-        const existingFields = new Set(Object.keys(parsedJson))
+        const existingFields = new Set(Object.keys(parsedJson));
 
         return Object.entries(fieldsMetadata)
             .filter(
                 ([field, meta]) =>
                     meta.required &&
                     !meta.readonly &&
-                    !existingFields.has(field)
+                    !existingFields.has(field),
             )
-            .map(([field]) => field)
+            .map(([field]) => field);
     } catch {
-        const existingFields = new Set<string>()
+        const existingFields = new Set<string>();
 
-        const fieldMatches = jsonValue.match(/"([^"]+)":/g)
+        const fieldMatches = jsonValue.match(/"([^"]+)":/g);
         if (fieldMatches) {
             fieldMatches.forEach((match) => {
-                const fieldName = match.slice(1, -2) // Remove quotes and ":"
-                existingFields.add(fieldName)
-            })
+                const fieldName = match.slice(1, -2); // Remove quotes and ":"
+                existingFields.add(fieldName);
+            });
         }
 
         return Object.entries(fieldsMetadata)
@@ -263,10 +263,10 @@ export const getMissingRequiredFields = (
                 ([field, meta]) =>
                     meta.required &&
                     !meta.readonly &&
-                    !existingFields.has(field)
+                    !existingFields.has(field),
             )
-            .map(([field]) => field)
+            .map(([field]) => field);
     }
-}
+};
 
-export { needsCommaAfter, needsCommaBefore }
+export { needsCommaAfter, needsCommaBefore };

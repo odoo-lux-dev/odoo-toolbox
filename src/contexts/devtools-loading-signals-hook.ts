@@ -7,7 +7,7 @@ import {
     setMethodLoading,
     setWriteLoading,
     writeLoadingSignal,
-} from "./devtools-loading-signals"
+} from "./devtools-loading-signals";
 
 export const useDevToolsLoading = () => ({
     writeLoading: writeLoadingSignal.value,
@@ -19,4 +19,4 @@ export const useDevToolsLoading = () => ({
     setCreateLoading,
     setMethodLoading,
     setActionLoading,
-})
+});

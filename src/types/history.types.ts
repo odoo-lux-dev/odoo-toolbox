@@ -3,69 +3,69 @@ export type HistoryActionType =
     | "write"
     | "create"
     | "call-method"
-    | "unlink"
+    | "unlink";
 
 export interface BaseHistoryAction {
-    id: string
-    type: HistoryActionType
-    timestamp: number
-    model: string
-    database?: string
+    id: string;
+    type: HistoryActionType;
+    timestamp: number;
+    model: string;
+    database?: string;
 }
 
 export interface SearchHistoryAction extends BaseHistoryAction {
-    type: "search"
+    type: "search";
     parameters: {
-        model: string
-        domain: string
-        selectedFields: string[]
-        ids: string
-        limit: number
-        offset: number
-        orderBy: string
-        resultCount?: number
-    }
+        model: string;
+        domain: string;
+        selectedFields: string[];
+        ids: string;
+        limit: number;
+        offset: number;
+        orderBy: string;
+        resultCount?: number;
+    };
 }
 
 export interface WriteHistoryAction extends BaseHistoryAction {
-    type: "write"
+    type: "write";
     parameters: {
-        model: string
-        ids: string
-        values: Record<string, unknown>
-        recordsAffected?: number
-    }
+        model: string;
+        ids: string;
+        values: Record<string, unknown>;
+        recordsAffected?: number;
+    };
 }
 
 export interface CreateHistoryAction extends BaseHistoryAction {
-    type: "create"
+    type: "create";
     parameters: {
-        model: string
-        values: Record<string, unknown>
-        createdId?: number
-    }
+        model: string;
+        values: Record<string, unknown>;
+        createdId?: number;
+    };
 }
 
 export interface CallMethodHistoryAction extends BaseHistoryAction {
-    type: "call-method"
+    type: "call-method";
     parameters: {
-        model: string
-        method: string
-        args: unknown[]
-        kwargs: Record<string, unknown>
-        ids: string
-        result?: unknown
-    }
+        model: string;
+        method: string;
+        args: unknown[];
+        kwargs: Record<string, unknown>;
+        ids: string;
+        result?: unknown;
+    };
 }
 
 export interface UnlinkHistoryAction extends BaseHistoryAction {
-    type: "unlink"
+    type: "unlink";
     parameters: {
-        model: string
-        ids: string
-        operation: "archive" | "unarchive" | "delete"
-        recordsAffected?: number
-    }
+        model: string;
+        ids: string;
+        operation: "archive" | "unarchive" | "delete";
+        recordsAffected?: number;
+    };
 }
 
 export type HistoryAction =
@@ -73,15 +73,15 @@ export type HistoryAction =
     | WriteHistoryAction
     | CreateHistoryAction
     | CallMethodHistoryAction
-    | UnlinkHistoryAction
+    | UnlinkHistoryAction;
 
 export interface HistoryState {
-    actions: HistoryAction[]
-    loading: boolean
-    error: string | null
+    actions: HistoryAction[];
+    loading: boolean;
+    error: string | null;
 }
 
 export type CreateHistoryActionParams<T extends HistoryActionType> = Omit<
     Extract<HistoryAction, { type: T }>,
     "id" | "timestamp"
->
+>;

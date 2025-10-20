@@ -1,13 +1,16 @@
-import { useAutoEllipsisTitle } from "@/hooks/use-ellipsis-title"
-import { getValueClasses, ValueRenderer } from "../field-rendering/value-renderer"
+import { useAutoEllipsisTitle } from "@/hooks/use-ellipsis-title";
+import {
+    getValueClasses,
+    ValueRenderer,
+} from "../field-rendering/value-renderer";
 
 interface VirtualTableCellProps {
-    value: unknown
-    fieldKey: string
-    rowIndex: number
-    colIndex: number
-    startColumnIndex: number
-    columnWidth: number
+    value: unknown;
+    fieldKey: string;
+    rowIndex: number;
+    colIndex: number;
+    startColumnIndex: number;
+    columnWidth: number;
 }
 
 export const VirtualTableCell = ({
@@ -18,8 +21,8 @@ export const VirtualTableCell = ({
     startColumnIndex,
     columnWidth,
 }: VirtualTableCellProps) => {
-    const cellRef = useAutoEllipsisTitle<HTMLDivElement>([value])
-    const valueClasses = getValueClasses(value)
+    const cellRef = useAutoEllipsisTitle<HTMLDivElement>([value]);
+    const valueClasses = getValueClasses(value);
 
     return (
         <td
@@ -36,5 +39,5 @@ export const VirtualTableCell = ({
                 <ValueRenderer value={value} />
             </div>
         </td>
-    )
-}
+    );
+};

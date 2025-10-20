@@ -1,56 +1,56 @@
-import "@/components/devtools/query-form-sidebar/query-form-sidebar.styles.scss"
-import { ComponentChildren } from "preact"
-import { useEffect } from "preact/hooks"
-import { DomainEditor } from "@/components/devtools/domain-editor/domain-editor"
-import { useGetCurrentPage } from "@/components/devtools/hooks/use-get-current-page"
-import { FormSection } from "@/components/devtools/query-form-sidebar/form-section"
-import { FieldSelect } from "@/components/devtools/selects/field-select"
-import { ModelSelect } from "@/components/devtools/selects/model-select"
+import "@/components/devtools/query-form-sidebar/query-form-sidebar.styles.scss";
+import { ComponentChildren } from "preact";
+import { useEffect } from "preact/hooks";
+import { DomainEditor } from "@/components/devtools/domain-editor/domain-editor";
+import { useGetCurrentPage } from "@/components/devtools/hooks/use-get-current-page";
+import { FormSection } from "@/components/devtools/query-form-sidebar/form-section";
+import { FieldSelect } from "@/components/devtools/selects/field-select";
+import { ModelSelect } from "@/components/devtools/selects/model-select";
 import {
     idsSignal,
     limitSignal,
     offsetSignal,
     orderBySignal,
-} from "@/contexts/devtools-signals"
+} from "@/contexts/devtools-signals";
 import {
     useModelsState,
     useRpcQuery,
     useRpcResult,
-} from "@/contexts/devtools-signals-hook"
-import { Logger } from "@/services/logger"
+} from "@/contexts/devtools-signals-hook";
+import { Logger } from "@/services/logger";
 
 interface QueryFormSidebarProps {
-    children?: ComponentChildren
-    showModelSection?: boolean
-    modelPlaceholder?: string
+    children?: ComponentChildren;
+    showModelSection?: boolean;
+    modelPlaceholder?: string;
 
-    showRecordIdsSection?: boolean
-    recordIdsLabel?: string
-    recordIdsHelpText?: string
-    recordIdsPlaceholder?: string
-    recordIdsValue?: string
-    recordIdsRequired?: boolean
-    onRecordIdsChange?: (value: string) => void
+    showRecordIdsSection?: boolean;
+    recordIdsLabel?: string;
+    recordIdsHelpText?: string;
+    recordIdsPlaceholder?: string;
+    recordIdsValue?: string;
+    recordIdsRequired?: boolean;
+    onRecordIdsChange?: (value: string) => void;
 
-    showFieldsSection?: boolean
-    fieldsPlaceholder?: string
+    showFieldsSection?: boolean;
+    fieldsPlaceholder?: string;
 
-    showDomainSection?: boolean
-    domainPlaceholder?: string
+    showDomainSection?: boolean;
+    domainPlaceholder?: string;
 
-    showLimitOffsetSection?: boolean
+    showLimitOffsetSection?: boolean;
 
-    showOrderBySection?: boolean
-    orderByPlaceholder?: string
+    showOrderBySection?: boolean;
+    orderByPlaceholder?: string;
 
-    primaryActionLabel?: string
-    primaryActionDisabled?: boolean
-    onPrimaryAction?: () => void
-    onGetCurrent?: () => void
-    onClear?: () => void
-    isLoading?: boolean
+    primaryActionLabel?: string;
+    primaryActionDisabled?: boolean;
+    onPrimaryAction?: () => void;
+    onGetCurrent?: () => void;
+    onClear?: () => void;
+    isLoading?: boolean;
 
-    computePrimaryActionDisabled?: boolean
+    computePrimaryActionDisabled?: boolean;
 }
 
 export const QueryFormSidebar = ({
@@ -86,53 +86,62 @@ export const QueryFormSidebar = ({
 
     computePrimaryActionDisabled = false,
 }: QueryFormSidebarProps) => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { modelsState } = useModelsState()
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { modelsState } = useModelsState();
 
-    const { getAndApplyCurrentPage } = useGetCurrentPage()
+    const { getAndApplyCurrentPage } = useGetCurrentPage();
 
     const finalPrimaryActionDisabled = computePrimaryActionDisabled
         ? !rpcQuery.model || !rpcQuery.isQueryValid
-        : primaryActionDisabled
+        : primaryActionDisabled;
 
     const handleGetCurrent = async () => {
         if (onGetCurrent) {
-            onGetCurrent()
+            onGetCurrent();
         } else {
             await getAndApplyCurrentPage({
                 showNotifications: true,
                 autoExecute: true,
                 onError: (error: unknown) => {
-                    Logger.error("Error in handleGetCurrent:", error)
+                    Logger.error("Error in handleGetCurrent:", error);
                 },
-            })
+            });
         }
-    }
+    };
 
     const handleClear = () => {
         if (onClear) {
-            onClear()
+            onClear();
         }
-    }
+    };
 
     // Handle CTRL+Enter keyboard shortcut
     const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.ctrlKey && event.key === 'Enter' && onPrimaryAction) {
-            event.preventDefault()
-            if (!finalPrimaryActionDisabled && !rpcResult.loading && !isLoading) {
-                onPrimaryAction()
+        if (event.ctrlKey && event.key === "Enter" && onPrimaryAction) {
+            event.preventDefault();
+            if (
+                !finalPrimaryActionDisabled &&
+                !rpcResult.loading &&
+                !isLoading
+            ) {
+                onPrimaryAction();
             }
         }
-    }
+    };
 
     // Add keyboard event listener
     useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown)
+        document.addEventListener("keydown", handleKeyDown);
         return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [finalPrimaryActionDisabled, rpcResult.loading, isLoading, onPrimaryAction])
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [
+        finalPrimaryActionDisabled,
+        rpcResult.loading,
+        isLoading,
+        onPrimaryAction,
+    ]);
 
     return (
         <div className="query-form">
@@ -161,12 +170,12 @@ export const QueryFormSidebar = ({
                         type="text"
                         value={recordIdsValue ?? idsSignal.value}
                         onInput={(e) => {
-                            const target = e.target as HTMLInputElement
-                            idsSignal.value = target.value
+                            const target = e.target as HTMLInputElement;
+                            idsSignal.value = target.value;
                         }}
                         onBlur={() => {
                             if (onRecordIdsChange) {
-                                onRecordIdsChange(idsSignal.value)
+                                onRecordIdsChange(idsSignal.value);
                             }
                         }}
                         placeholder={recordIdsPlaceholder}
@@ -201,8 +210,9 @@ export const QueryFormSidebar = ({
                             type="number"
                             value={limitSignal.value}
                             onInput={(e) => {
-                                const target = e.target as HTMLInputElement
-                                limitSignal.value = parseInt(target.value) || 80
+                                const target = e.target as HTMLInputElement;
+                                limitSignal.value =
+                                    parseInt(target.value) || 80;
                             }}
                             placeholder="80"
                             className="form-input"
@@ -217,8 +227,9 @@ export const QueryFormSidebar = ({
                             type="number"
                             value={offsetSignal.value}
                             onInput={(e) => {
-                                const target = e.target as HTMLInputElement
-                                offsetSignal.value = parseInt(target.value) || 0
+                                const target = e.target as HTMLInputElement;
+                                offsetSignal.value =
+                                    parseInt(target.value) || 0;
                             }}
                             placeholder="0"
                             className="form-input"
@@ -236,8 +247,8 @@ export const QueryFormSidebar = ({
                         value={orderBySignal.value}
                         disabled={rpcResult.loading || isLoading}
                         onInput={(e) => {
-                            const target = e.target as HTMLInputElement
-                            orderBySignal.value = target.value
+                            const target = e.target as HTMLInputElement;
+                            orderBySignal.value = target.value;
                         }}
                         placeholder={orderByPlaceholder}
                         className="form-input"
@@ -268,7 +279,10 @@ export const QueryFormSidebar = ({
                                         : primaryActionLabel}
                                 </span>
                                 {!rpcResult.loading && !isLoading && (
-                                    <span className="btn-shortcut" title="Ctrl+Enter">
+                                    <span
+                                        className="btn-shortcut"
+                                        title="Ctrl+Enter"
+                                    >
                                         <kbd>⌃</kbd> + <kbd>⏎</kbd>
                                     </span>
                                 )}
@@ -298,5 +312,5 @@ export const QueryFormSidebar = ({
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

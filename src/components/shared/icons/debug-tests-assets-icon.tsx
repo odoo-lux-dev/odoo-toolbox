@@ -1,9 +1,9 @@
-import { FlaskConical } from "lucide-preact"
+import { FlaskConical } from "lucide-preact";
 
 export const DebugModeTestsAssetsIcon = ({
     isNostalgia = false,
 }: {
-    isNostalgia: boolean
+    isNostalgia: boolean;
 }) => {
     if (isNostalgia) {
         return (
@@ -71,8 +71,8 @@ export const DebugModeTestsAssetsIcon = ({
                     fill="#ffd6bb"
                 ></path>
             </svg>
-        )
+        );
     }
 
-    return <FlaskConical size={14} />
-}
+    return <FlaskConical size={14} />;
+};

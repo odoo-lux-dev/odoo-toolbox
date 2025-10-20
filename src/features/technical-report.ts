@@ -1,10 +1,10 @@
-import { OrmReportRecord, PrintOptionsReturn } from "@/types"
+import { OrmReportRecord, PrintOptionsReturn } from "@/types";
 import {
     getOdooVersion,
     getShowPrintOptionsHTML,
     getShowPrintOptionsPDF,
     isOnSpecificRecordPage,
-} from "@/utils/utils"
+} from "@/utils/utils";
 
 /**
  * Retrieves a list of print options available for the current record on an Odoo page.
@@ -29,41 +29,41 @@ import {
  * });
  */
 const getPrintOptionsList = async (
-    legacy: boolean = false
+    legacy: boolean = false,
 ): Promise<PrintOptionsReturn | undefined> => {
-    if (!isOnSpecificRecordPage()) return
-    const odooVersion = getOdooVersion()
-    const isVersion15 = parseFloat(odooVersion) === 15
+    if (!isOnSpecificRecordPage()) return;
+    const odooVersion = getOdooVersion();
+    const isVersion15 = parseFloat(odooVersion) === 15;
 
     const recordLocalState =
         // @ts-expect-error odoo is defined on Odoo pages
-        window.odoo.__WOWL_DEBUG__.root.actionService.currentController.getLocalState()
+        window.odoo.__WOWL_DEBUG__.root.actionService.currentController.getLocalState();
 
     const currentResModel =
         // @ts-expect-error odoo is defined on Odoo pages
         window.odoo.__WOWL_DEBUG__.root.actionService.currentController.props
-            .resModel
+            .resModel;
 
     const currentResId = isVersion15
         ? recordLocalState.currentId
-        : recordLocalState.resId
+        : recordLocalState.resId;
 
-    let reports
-    let companies
+    let reports;
+    let companies;
     if (legacy) {
-        let context
+        let context;
         // @ts-expect-error odoo is defined on Odoo pages
         if (window.odoo.__DEBUG__) {
             context = {
                 // @ts-expect-error odoo is defined on Odoo pages
                 lang: window.odoo.__DEBUG__.services["@web/session"].session
                     .user_context.lang,
-            }
+            };
         } else {
             context = {
                 // @ts-expect-error odoo is defined on Odoo pages
                 lang: window.odoo.__WOWL_DEBUG__.root.user.lang,
-            }
+            };
         }
         // @ts-expect-error odoo is defined on Odoo pages
         reports = await window.odoo.__DEBUG__.services["web.rpc"].query({
@@ -74,7 +74,7 @@ const getPrintOptionsList = async (
                 ["display_name", "report_name"],
             ],
             context,
-        })
+        });
 
         // @ts-expect-error odoo is defined on Odoo pages
         companies = await window.odoo.__DEBUG__.services["web.rpc"].query({
@@ -82,25 +82,25 @@ const getPrintOptionsList = async (
             method: "search_read",
             args: [[], ["id"]],
             context,
-        })
+        });
     } else {
         // @ts-expect-error odoo is defined on Odoo pages
         reports = await window.odoo.__WOWL_DEBUG__.root.orm.searchRead(
             "ir.actions.report",
             [["model", "=", currentResModel]],
-            ["display_name", "report_name"]
-        )
+            ["display_name", "report_name"],
+        );
         // @ts-expect-error odoo is defined on Odoo pages
         companies = await window.odoo.__WOWL_DEBUG__.root.orm.searchRead(
             "res.company",
             [],
-            ["id"]
-        )
+            ["id"],
+        );
     }
-    companies = companies.map((company: { id: number }) => company.id)
+    companies = companies.map((company: { id: number }) => company.id);
 
-    return { reports, currentResId, currentResModel, companies }
-}
+    return { reports, currentResId, currentResModel, companies };
+};
 
 /**
  * Generates a clickable span element representing a technical print option for a report.
@@ -121,24 +121,24 @@ const generateTechnicalPrintOptionElement = (
     reportType: "html" | "pdf",
     reportName: string,
     recordId: number,
-    companies: number[]
+    companies: number[],
 ): HTMLSpanElement => {
-    const iconClass = reportType === "html" ? "fa-html5" : "fa-file-pdf-o"
-    const spanElement = document.createElement("span")
-    spanElement.classList.add("x-odoo-technical-print-option")
-    const spanIcon = document.createElement("i")
-    spanIcon.className = `fa ${iconClass}`
-    spanElement.appendChild(spanIcon)
+    const iconClass = reportType === "html" ? "fa-html5" : "fa-file-pdf-o";
+    const spanElement = document.createElement("span");
+    spanElement.classList.add("x-odoo-technical-print-option");
+    const spanIcon = document.createElement("i");
+    spanIcon.className = `fa ${iconClass}`;
+    spanElement.appendChild(spanIcon);
     spanElement.addEventListener("click", (event) => {
-        event.stopPropagation()
+        event.stopPropagation();
         window.open(
             `/report/${reportType}/${reportName}/${recordId}?context={"allowed_company_ids":${JSON.stringify(companies)}}`,
-            "_blank"
-        )
-    })
+            "_blank",
+        );
+    });
 
-    return spanElement
-}
+    return spanElement;
+};
 
 /**
  * Adds a loading spinner icon to each print option element within the target node.
@@ -151,46 +151,46 @@ const generateTechnicalPrintOptionElement = (
 const _addLoadingIconOnPrintOption = (
     targetNode: Element,
     isVersion15: boolean,
-    hasSinglePrintOption: boolean = false
+    hasSinglePrintOption: boolean = false,
 ) => {
     const elementsToProcess = hasSinglePrintOption
         ? [targetNode]
-        : Array.from(targetNode.children)
+        : Array.from(targetNode.children);
     elementsToProcess.forEach((spanReportRow) => {
         const nodeNameCondition = isVersion15
             ? spanReportRow.nodeName === "LI"
-            : spanReportRow.nodeName === "SPAN"
+            : spanReportRow.nodeName === "SPAN";
         if (
             !nodeNameCondition ||
             spanReportRow.querySelector(
-                ".x-odoo-technical-print-option-loading-spinner"
+                ".x-odoo-technical-print-option-loading-spinner",
             ) ||
             spanReportRow.querySelector(".x-odoo-technical-print-options")
         )
-            return
+            return;
 
-        const loadingIconContainer = document.createElement("div")
-        const loadingIcon = document.createElement("i")
+        const loadingIconContainer = document.createElement("div");
+        const loadingIcon = document.createElement("i");
         loadingIconContainer.className =
-            "x-odoo-technical-print-option-loading-spinner"
-        loadingIcon.className = "fa fa-spinner fa-spin"
-        loadingIconContainer.appendChild(loadingIcon)
+            "x-odoo-technical-print-option-loading-spinner";
+        loadingIcon.className = "fa fa-spinner fa-spin";
+        loadingIconContainer.appendChild(loadingIcon);
 
         if (isVersion15) {
-            const anchorChildReportRow = spanReportRow.querySelector("a")
-            if (!anchorChildReportRow) return
-            anchorChildReportRow.appendChild(loadingIconContainer)
-            anchorChildReportRow.style.display = "flex"
-            anchorChildReportRow.style.justifyContent = "space-between"
+            const anchorChildReportRow = spanReportRow.querySelector("a");
+            if (!anchorChildReportRow) return;
+            anchorChildReportRow.appendChild(loadingIconContainer);
+            anchorChildReportRow.style.display = "flex";
+            anchorChildReportRow.style.justifyContent = "space-between";
         } else {
-            spanReportRow.appendChild(loadingIconContainer)
-            ;(spanReportRow as HTMLSpanElement).style.display = "flex"
-            ;(spanReportRow as HTMLSpanElement).style.gap = "4px"
-            ;(spanReportRow as HTMLSpanElement).style.alignItems = "center"
-            ;(loadingIconContainer as HTMLDivElement).style.marginLeft = "auto"
+            spanReportRow.appendChild(loadingIconContainer);
+            (spanReportRow as HTMLSpanElement).style.display = "flex";
+            (spanReportRow as HTMLSpanElement).style.gap = "4px";
+            (spanReportRow as HTMLSpanElement).style.alignItems = "center";
+            (loadingIconContainer as HTMLDivElement).style.marginLeft = "auto";
         }
-    })
-}
+    });
+};
 
 /**
  * Adds print options (HTML or PDF) to a given container element for a specific report.
@@ -210,9 +210,9 @@ const _addPrintOption = (
     showPrintOptionsHTML: boolean,
     showPrintOptionsPDF: boolean,
     currentResId: number,
-    companies: number[]
+    companies: number[],
 ) => {
-    ;["pdf", "html"].forEach((type) => {
+    ["pdf", "html"].forEach((type) => {
         if (
             (type === "pdf" && showPrintOptionsPDF) ||
             (type === "html" && showPrintOptionsHTML)
@@ -221,12 +221,12 @@ const _addPrintOption = (
                 type,
                 report.report_name,
                 currentResId,
-                companies
-            )
-            container.appendChild(optionElement)
+                companies,
+            );
+            container.appendChild(optionElement);
         }
-    })
-}
+    });
+};
 
 /**
  * Appends print options to the target node based on the available reports.
@@ -250,52 +250,52 @@ const _addPrintOptionsToNode = (
     currentResId: number,
     isVersion15: boolean,
     companies: number[],
-    hasSinglePrintOption: boolean = false
+    hasSinglePrintOption: boolean = false,
 ) => {
     const elementsToProcess = hasSinglePrintOption
         ? [targetNode]
-        : Array.from(targetNode.children)
+        : Array.from(targetNode.children);
     elementsToProcess.forEach((spanReportRow) => {
         const nodeNameCondition = isVersion15
             ? spanReportRow.nodeName === "LI"
-            : spanReportRow.nodeName === "SPAN"
-        if (!nodeNameCondition) return
-        const spanReportName = spanReportRow.textContent?.trim()
+            : spanReportRow.nodeName === "SPAN";
+        if (!nodeNameCondition) return;
+        const spanReportName = spanReportRow.textContent?.trim();
         const correspondingTechnicalReport = reports.find(
-            (report) => report.display_name === spanReportName
-        )
+            (report) => report.display_name === spanReportName,
+        );
         if (
             !correspondingTechnicalReport ||
             spanReportRow.querySelector(".x-odoo-technical-print-options")
         )
-            return
+            return;
 
-        const divPrintOptions = document.createElement("div")
-        divPrintOptions.classList.add("x-odoo-technical-print-options")
+        const divPrintOptions = document.createElement("div");
+        divPrintOptions.classList.add("x-odoo-technical-print-options");
         _addPrintOption(
             correspondingTechnicalReport,
             divPrintOptions,
             showPrintOptionsHTML,
             showPrintOptionsPDF,
             currentResId,
-            companies
-        )
+            companies,
+        );
 
         if (isVersion15) {
-            const anchorChildReportRow = spanReportRow.querySelector("a")
-            if (!anchorChildReportRow) return
-            anchorChildReportRow.appendChild(divPrintOptions)
-            anchorChildReportRow.style.display = "flex"
-            anchorChildReportRow.style.justifyContent = "space-between"
+            const anchorChildReportRow = spanReportRow.querySelector("a");
+            if (!anchorChildReportRow) return;
+            anchorChildReportRow.appendChild(divPrintOptions);
+            anchorChildReportRow.style.display = "flex";
+            anchorChildReportRow.style.justifyContent = "space-between";
         } else {
-            spanReportRow.appendChild(divPrintOptions)
-            ;(spanReportRow as HTMLSpanElement).style.display = "flex"
-            ;(spanReportRow as HTMLSpanElement).style.gap = "4px"
-            ;(spanReportRow as HTMLSpanElement).style.alignItems = "center"
-            ;(divPrintOptions as HTMLDivElement).style.marginLeft = "auto"
+            spanReportRow.appendChild(divPrintOptions);
+            (spanReportRow as HTMLSpanElement).style.display = "flex";
+            (spanReportRow as HTMLSpanElement).style.gap = "4px";
+            (spanReportRow as HTMLSpanElement).style.alignItems = "center";
+            (divPrintOptions as HTMLDivElement).style.marginLeft = "auto";
         }
-    })
-}
+    });
+};
 
 /**
  * Appends technical print options to a given target node based on the available print options for the current record.
@@ -318,16 +318,16 @@ const _addPrintOptionsToNode = (
 const appendTechnicalPrintOptions = async (
     targetNode: Element,
     printOptions: PrintOptionsReturn,
-    hasSinglePrintOption: boolean = false
+    hasSinglePrintOption: boolean = false,
 ): Promise<void> => {
-    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true"
-    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true"
-    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return
+    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true";
+    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true";
+    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return;
 
-    const odooVersion = getOdooVersion()
-    const isVersion15 = parseFloat(odooVersion) === 15
+    const odooVersion = getOdooVersion();
+    const isVersion15 = parseFloat(odooVersion) === 15;
 
-    const { reports, currentResId, companies } = printOptions
+    const { reports, currentResId, companies } = printOptions;
 
     _addPrintOptionsToNode(
         targetNode,
@@ -337,28 +337,28 @@ const appendTechnicalPrintOptions = async (
         currentResId,
         isVersion15,
         companies,
-        hasSinglePrintOption
-    )
-}
+        hasSinglePrintOption,
+    );
+};
 
 const _removeLoadingIconOnPrintOption = (
     targetNode: Element,
     isVersion15: boolean,
-    hasSinglePrintOption: boolean = false
+    hasSinglePrintOption: boolean = false,
 ) => {
     const elementsToProcess = hasSinglePrintOption
         ? [targetNode]
-        : Array.from(targetNode.children)
+        : Array.from(targetNode.children);
     return elementsToProcess.forEach((spanReportRow) => {
         if (isVersion15) {
-            spanReportRow = spanReportRow.querySelector("a") as Element
+            spanReportRow = spanReportRow.querySelector("a") as Element;
         }
         const loadingIcon = spanReportRow.querySelector(
-            ".x-odoo-technical-print-option-loading-spinner"
-        )
-        if (loadingIcon) spanReportRow.removeChild(loadingIcon)
-    })
-}
+            ".x-odoo-technical-print-option-loading-spinner",
+        );
+        if (loadingIcon) spanReportRow.removeChild(loadingIcon);
+    });
+};
 
 /**
  * Handles the addition of technical print options for Odoo versions 15 and 16.
@@ -379,19 +379,19 @@ const _removeLoadingIconOnPrintOption = (
  * });
  */
 const handleTechnicalReportsVersion15and16 = async (
-    targetNode: Element
+    targetNode: Element,
 ): Promise<void> => {
-    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true"
-    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true"
-    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return
+    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true";
+    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true";
+    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return;
 
     const isPrintingOption =
-        targetNode.parentElement?.querySelector("button i.fa-print") !== null
+        targetNode.parentElement?.querySelector("button i.fa-print") !== null;
     // in v15, the dropdown menu is a UL element, in v16 it is a DIV element
     if (!isPrintingOption || !["UL", "DIV"].includes(targetNode.nodeName))
-        return
+        return;
 
-    const dropdownMenu = targetNode
+    const dropdownMenu = targetNode;
 
     if (
         (dropdownMenu.nodeName === "UL" &&
@@ -400,20 +400,20 @@ const handleTechnicalReportsVersion15and16 = async (
             !dropdownMenu.classList.contains("o-dropdown--menu")) ||
         dropdownMenu.querySelector(".x-odoo-technical-print-options") !== null
     )
-        return
+        return;
 
-    const odooVersion = getOdooVersion()
-    const isVersion15 = parseFloat(odooVersion) === 15
-    _addLoadingIconOnPrintOption(dropdownMenu, isVersion15)
+    const odooVersion = getOdooVersion();
+    const isVersion15 = parseFloat(odooVersion) === 15;
+    _addLoadingIconOnPrintOption(dropdownMenu, isVersion15);
 
-    const printOptions = await getPrintOptionsList(true)
-    _removeLoadingIconOnPrintOption(dropdownMenu, isVersion15)
+    const printOptions = await getPrintOptionsList(true);
+    _removeLoadingIconOnPrintOption(dropdownMenu, isVersion15);
     if (!printOptions) {
-        return
+        return;
     }
 
-    await appendTechnicalPrintOptions(dropdownMenu, printOptions)
-}
+    await appendTechnicalPrintOptions(dropdownMenu, printOptions);
+};
 
 /**
  * Handles the addition of technical print options for Odoo versions 17 and above.
@@ -433,60 +433,60 @@ const handleTechnicalReportsVersion15and16 = async (
  * });
  */
 const handleTechnicalReportsVersion17andAbove = async (
-    targetNode: Element
+    targetNode: Element,
 ): Promise<void> => {
-    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true"
-    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true"
-    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return
+    const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true";
+    const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true";
+    if (!showPrintOptionsHTML && !showPrintOptionsPDF) return;
     const isPrintingOption =
         targetNode.parentElement?.querySelector("button.focus i.fa-print") !==
-        null
+        null;
     const hasSinglePrintOption =
         !isPrintingOption &&
-        targetNode.querySelector("span i.fa-print") !== null
+        targetNode.querySelector("span i.fa-print") !== null;
     if (
         (!isPrintingOption && !hasSinglePrintOption) ||
         (isPrintingOption && targetNode.nodeName !== "DIV") ||
         (hasSinglePrintOption && targetNode.nodeName !== "SPAN")
     )
-        return
-    let printOptionsEntries
+        return;
+    let printOptionsEntries;
     if (hasSinglePrintOption) {
         printOptionsEntries = targetNode.parentElement?.querySelector(
-            "span.dropdown-item.o_menu_item i.fa-print"
-        )?.parentElement
+            "span.dropdown-item.o_menu_item i.fa-print",
+        )?.parentElement;
     } else {
         printOptionsEntries = targetNode.parentElement?.querySelector(
-            "div.o-dropdown--menu.o-dropdown--menu-submenu"
-        )
+            "div.o-dropdown--menu.o-dropdown--menu-submenu",
+        );
     }
     if (
         !printOptionsEntries ||
         targetNode.querySelector("span.x-odoo-technical-print-option") !== null
     )
-        return
+        return;
     _addLoadingIconOnPrintOption(
         printOptionsEntries,
         false,
-        hasSinglePrintOption
-    )
-    const printOptions = await getPrintOptionsList()
+        hasSinglePrintOption,
+    );
+    const printOptions = await getPrintOptionsList();
     _removeLoadingIconOnPrintOption(
         printOptionsEntries,
         false,
-        hasSinglePrintOption
-    )
+        hasSinglePrintOption,
+    );
     if (!printOptions) {
-        return
+        return;
     }
     await appendTechnicalPrintOptions(
         printOptionsEntries,
         printOptions,
-        hasSinglePrintOption
-    )
-}
+        hasSinglePrintOption,
+    );
+};
 
 export {
     handleTechnicalReportsVersion15and16,
     handleTechnicalReportsVersion17andAbove,
-}
+};

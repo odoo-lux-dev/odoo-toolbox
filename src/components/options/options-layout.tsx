@@ -1,10 +1,10 @@
-import { ComponentChildren, Fragment } from "preact"
-import { OptionsSidebar } from "./options-sidebar"
+import { ComponentChildren, Fragment } from "preact";
+import { OptionsSidebar } from "./options-sidebar";
 
 export const OptionsLayout = ({
     children,
 }: {
-    children: ComponentChildren
+    children: ComponentChildren;
 }) => {
     return (
         <Fragment>
@@ -13,5 +13,5 @@ export const OptionsLayout = ({
                 {children}
             </div>
         </Fragment>
-    )
-}
+    );
+};

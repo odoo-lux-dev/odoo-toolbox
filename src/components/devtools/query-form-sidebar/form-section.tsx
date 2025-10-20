@@ -1,15 +1,15 @@
-import { ComponentChildren } from "preact"
+import { ComponentChildren } from "preact";
 
 interface FormSectionProps {
-    label?: string
+    label?: string;
     /** Indicates if the field is required (adds a red asterisk) */
-    required?: boolean
+    required?: boolean;
     /** Help text below the label */
-    helpText?: string
+    helpText?: string;
     /** Indicates if the help text is a warning (orange color) */
-    helpTextWarning?: boolean
-    className?: string
-    children: ComponentChildren
+    helpTextWarning?: boolean;
+    className?: string;
+    children: ComponentChildren;
 }
 
 export const FormSection = ({
@@ -20,7 +20,7 @@ export const FormSection = ({
     className = "",
     children,
 }: FormSectionProps) => {
-    const sectionClasses = `form-section${className ? ` ${className}` : ""}`
+    const sectionClasses = `form-section${className ? ` ${className}` : ""}`;
 
     return (
         <div className={sectionClasses}>
@@ -38,5 +38,5 @@ export const FormSection = ({
             )}
             {children}
         </div>
-    )
-}
+    );
+};

@@ -1,5 +1,5 @@
-import { SquareDashedMousePointer, X } from "lucide-preact"
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
+import { SquareDashedMousePointer, X } from "lucide-preact";
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
 
 export const SidePanelHeader = () => {
     const {
@@ -8,7 +8,7 @@ export const SidePanelHeader = () => {
         hasFields,
         toggleSelectionMode,
         handleClose,
-    } = useTechnicalSidebar()
+    } = useTechnicalSidebar();
 
     return (
         <div className="x-odoo-technical-list-info-side-panel-header">
@@ -38,5 +38,5 @@ export const SidePanelHeader = () => {
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};

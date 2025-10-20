@@ -1,13 +1,13 @@
-import { GripVertical } from "lucide-preact"
-import { QuickDomain } from "@/types"
+import { GripVertical } from "lucide-preact";
+import { QuickDomain } from "@/types";
 
 interface QuickDomainRowProps {
-    domain: QuickDomain
-    slotId: string
-    itemId: string
-    onDomainClick: (domain: string) => void
-    onEdit: (domain: QuickDomain) => void
-    onDelete: (domainId: string) => void
+    domain: QuickDomain;
+    slotId: string;
+    itemId: string;
+    onDomainClick: (domain: string) => void;
+    onEdit: (domain: QuickDomain) => void;
+    onDelete: (domainId: string) => void;
 }
 
 export const QuickDomainRow = ({
@@ -61,5 +61,5 @@ export const QuickDomainRow = ({
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

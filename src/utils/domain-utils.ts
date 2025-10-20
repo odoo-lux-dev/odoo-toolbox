@@ -1,4 +1,4 @@
-import type { DomainValidationResult } from "@/types/utils.types"
+import type { DomainValidationResult } from "@/types/utils.types";
 
 /**
  * Validates a single domain condition [field, operator, value]
@@ -8,17 +8,17 @@ const validateCondition = (condition: unknown[]): DomainValidationResult => {
         return {
             isValid: false,
             error: `Invalid condition: must have exactly 3 elements [field, operator, value], found ${condition.length}`,
-        }
+        };
     }
 
-    const [field, operator] = condition
+    const [field, operator] = condition;
 
     // Field validation
     if (typeof field !== "string" || field.trim() === "") {
         return {
             isValid: false,
             error: `Invalid field: field name must be a non-empty string, found ${typeof field}`,
-        }
+        };
     }
 
     // Operator validation - just check it's a non-empty string, let Odoo handle validity
@@ -26,11 +26,11 @@ const validateCondition = (condition: unknown[]): DomainValidationResult => {
         return {
             isValid: false,
             error: `Invalid operator: operator must be a non-empty string, found ${typeof operator}`,
-        }
+        };
     }
 
-    return { isValid: true }
-}
+    return { isValid: true };
+};
 
 /**
  * Validates Odoo domain structure with detailed error information
@@ -38,10 +38,10 @@ const validateCondition = (condition: unknown[]): DomainValidationResult => {
  * @returns validation result with details
  */
 export const validateDomainStructure = (
-    domain: unknown[]
+    domain: unknown[],
 ): DomainValidationResult => {
     if (domain.length === 0) {
-        return { isValid: true } // Empty domain [] is valid
+        return { isValid: true }; // Empty domain [] is valid
     }
 
     // Special case: simple domain [field, operator, value]
@@ -51,21 +51,21 @@ export const validateDomainStructure = (
         typeof domain[1] === "string" &&
         !["&", "|", "!"].includes(domain[0])
     ) {
-        return validateCondition(domain)
+        return validateCondition(domain);
     }
 
     // Validate complex domain
     for (const item of domain) {
         // Skip logical operators
         if (typeof item === "string" && ["&", "|", "!"].includes(item)) {
-            continue
+            continue;
         }
 
         // Validate condition arrays
         if (Array.isArray(item)) {
-            const result = validateCondition(item)
-            if (!result.isValid) return result
-            continue
+            const result = validateCondition(item);
+            if (!result.isValid) return result;
+            continue;
         }
 
         // Invalid item
@@ -73,14 +73,14 @@ export const validateDomainStructure = (
             return {
                 isValid: false,
                 error: `Invalid domain item: "${item}" is not a valid logical operator (&, |, !). Use condition arrays like [["field", "operator", "value"]] or direct conditions like ["field", "operator", "value"].`,
-            }
+            };
         }
 
         return {
             isValid: false,
             error: `Invalid domain item: expected logical operator (&, |, !) or condition array [field, operator, value], found ${typeof item}`,
-        }
+        };
     }
 
-    return { isValid: true }
-}
+    return { isValid: true };
+};

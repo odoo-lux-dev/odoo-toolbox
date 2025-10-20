@@ -1,12 +1,12 @@
-import type { Signal } from "@preact/signals"
-import type { HistoryActionType } from "@/types"
+import type { Signal } from "@preact/signals";
+import type { HistoryActionType } from "@/types";
 
 interface HistoryFiltersProps {
-    searchTerm: Signal<string>
-    selectedType: Signal<HistoryActionType | "all">
-    selectedModel: Signal<string | "all">
-    availableModels: string[]
-    totalActions: number
+    searchTerm: Signal<string>;
+    selectedType: Signal<HistoryActionType | "all">;
+    selectedModel: Signal<string | "all">;
+    availableModels: string[];
+    totalActions: number;
 }
 
 const ACTION_TYPE_LABELS: Record<HistoryActionType | "all", string> = {
@@ -16,7 +16,7 @@ const ACTION_TYPE_LABELS: Record<HistoryActionType | "all", string> = {
     create: "Create",
     "call-method": "Call Method",
     unlink: "Delete/Archive",
-}
+};
 
 /**
  * Filters component for history list
@@ -30,30 +30,30 @@ export const HistoryFilters = ({
     totalActions,
 }: HistoryFiltersProps) => {
     const handleSearchChange = (e: Event) => {
-        const target = e.target as HTMLInputElement
-        searchTerm.value = target.value
-    }
+        const target = e.target as HTMLInputElement;
+        searchTerm.value = target.value;
+    };
 
     const handleTypeChange = (e: Event) => {
-        const target = e.target as HTMLSelectElement
-        selectedType.value = target.value as HistoryActionType | "all"
-    }
+        const target = e.target as HTMLSelectElement;
+        selectedType.value = target.value as HistoryActionType | "all";
+    };
 
     const handleModelChange = (e: Event) => {
-        const target = e.target as HTMLSelectElement
-        selectedModel.value = target.value
-    }
+        const target = e.target as HTMLSelectElement;
+        selectedModel.value = target.value;
+    };
 
     const clearFilters = () => {
-        searchTerm.value = ""
-        selectedType.value = "all"
-        selectedModel.value = "all"
-    }
+        searchTerm.value = "";
+        selectedType.value = "all";
+        selectedModel.value = "all";
+    };
 
     const hasActiveFilters =
         searchTerm.value.trim() !== "" ||
         selectedType.value !== "all" ||
-        selectedModel.value !== "all"
+        selectedModel.value !== "all";
 
     return (
         <div className="history-filters">
@@ -139,5 +139,5 @@ export const HistoryFilters = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

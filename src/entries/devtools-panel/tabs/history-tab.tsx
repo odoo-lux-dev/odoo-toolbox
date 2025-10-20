@@ -1,60 +1,60 @@
-import "@/components/devtools/history/history.style.scss"
-import { useComputed, useSignal } from "@preact/signals"
-import { useEffect } from "preact/hooks"
-import { HistoryActionItem } from "@/components/devtools/history/history-action-item"
-import { HistoryFilters } from "@/components/devtools/history/history-filters"
-import { useHistoryState } from "@/contexts/history-signals-hook"
-import type { HistoryActionType } from "@/types"
+import "@/components/devtools/history/history.style.scss";
+import { useComputed, useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { HistoryActionItem } from "@/components/devtools/history/history-action-item";
+import { HistoryFilters } from "@/components/devtools/history/history-filters";
+import { useHistoryState } from "@/contexts/history-signals-hook";
+import type { HistoryActionType } from "@/types";
 
 export const HistoryTab = () => {
-    const { state, actions, loadHistory, clearHistory } = useHistoryState()
-    const searchTerm = useSignal("")
-    const selectedType = useSignal<HistoryActionType | "all">("all")
-    const selectedModel = useSignal<string | "all">("all")
+    const { state, actions, loadHistory, clearHistory } = useHistoryState();
+    const searchTerm = useSignal("");
+    const selectedType = useSignal<HistoryActionType | "all">("all");
+    const selectedModel = useSignal<string | "all">("all");
 
     useEffect(() => {
-        loadHistory()
-    }, [])
+        loadHistory();
+    }, []);
 
     const availableModels = useComputed(() => {
-        const models = new Set(actions.value.map((action) => action.model))
-        return Array.from(models).sort()
-    })
+        const models = new Set(actions.value.map((action) => action.model));
+        return Array.from(models).sort();
+    });
 
     const filteredActions = useComputed(() => {
-        let filtered = actions.value
+        let filtered = actions.value;
 
         if (selectedType.value !== "all") {
             filtered = filtered.filter(
-                (action) => action.type === selectedType.value
-            )
+                (action) => action.type === selectedType.value,
+            );
         }
 
         if (selectedModel.value !== "all") {
             filtered = filtered.filter(
-                (action) => action.model === selectedModel.value
-            )
+                (action) => action.model === selectedModel.value,
+            );
         }
 
         if (searchTerm.value.trim()) {
-            const term = searchTerm.value.toLowerCase()
+            const term = searchTerm.value.toLowerCase();
             filtered = filtered.filter((action) =>
-                action.model.toLowerCase().includes(term)
-            )
+                action.model.toLowerCase().includes(term),
+            );
         }
 
-        return filtered
-    })
+        return filtered;
+    });
 
     const handleClearHistory = async () => {
         if (
             confirm(
-                "Are you sure you want to clear all history? This action cannot be undone."
+                "Are you sure you want to clear all history? This action cannot be undone.",
             )
         ) {
-            await clearHistory()
+            await clearHistory();
         }
-    }
+    };
 
     if (state.loading) {
         return (
@@ -62,7 +62,7 @@ export const HistoryTab = () => {
                 <div className="loading-spinner"></div>
                 <span>Loading history...</span>
             </div>
-        )
+        );
     }
 
     if (state.error) {
@@ -79,7 +79,7 @@ export const HistoryTab = () => {
                     </button>
                 </div>
             </div>
-        )
+        );
     }
 
     return (
@@ -156,5 +156,5 @@ export const HistoryTab = () => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+};

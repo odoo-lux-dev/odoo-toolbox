@@ -1,17 +1,17 @@
-import "./notifications.style.scss"
-import { X } from "lucide-preact"
-import { useEffect, useRef, useState } from "preact/hooks"
-import { Logger } from "@/services/logger"
-import { NotificationData } from "./notifications.types"
+import "./notifications.style.scss";
+import { X } from "lucide-preact";
+import { useEffect, useRef, useState } from "preact/hooks";
+import { Logger } from "@/services/logger";
+import { NotificationData } from "./notifications.types";
 
 interface NotificationProps {
-    notification: NotificationData
-    onClose: (id: string) => void
-    onAnimationComplete: (id: string) => void
-    isClosing?: boolean
+    notification: NotificationData;
+    onClose: (id: string) => void;
+    onAnimationComplete: (id: string) => void;
+    isClosing?: boolean;
 }
 
-export const ERROR_NOTIFICATION_TIMEOUT = 10000
+export const ERROR_NOTIFICATION_TIMEOUT = 10000;
 
 export const Notification = ({
     notification,
@@ -19,13 +19,13 @@ export const Notification = ({
     onAnimationComplete,
     isClosing = false,
 }: NotificationProps) => {
-    const { id, message, type, duration = 5000, actionButton } = notification
-    const [progress, setProgress] = useState(100)
-    const [isPaused, setIsPaused] = useState(false)
+    const { id, message, type, duration = 5000, actionButton } = notification;
+    const [progress, setProgress] = useState(100);
+    const [isPaused, setIsPaused] = useState(false);
 
-    const startTimeRef = useRef<number>(0)
-    const pausedTimeRef = useRef<number>(0)
-    const pauseStartTimeRef = useRef<number | null>(null)
+    const startTimeRef = useRef<number>(0);
+    const pausedTimeRef = useRef<number>(0);
+    const pauseStartTimeRef = useRef<number | null>(null);
 
     const typeConfig = {
         success: {
@@ -40,77 +40,77 @@ export const Notification = ({
             className: "notification-warning",
         },
         info: { icon: "ℹ️", label: "Info", className: "notification-info" },
-    }
+    };
 
     useEffect(() => {
-        if (duration <= 0 || isClosing) return
+        if (duration <= 0 || isClosing) return;
 
         if (startTimeRef.current === 0) {
-            startTimeRef.current = Date.now()
-            pausedTimeRef.current = 0
-            pauseStartTimeRef.current = null
+            startTimeRef.current = Date.now();
+            pausedTimeRef.current = 0;
+            pauseStartTimeRef.current = null;
         }
 
         const interval = setInterval(() => {
             if (isPaused) {
                 if (pauseStartTimeRef.current === null) {
-                    pauseStartTimeRef.current = Date.now()
+                    pauseStartTimeRef.current = Date.now();
                 }
-                return
+                return;
             } else {
                 if (pauseStartTimeRef.current !== null) {
                     pausedTimeRef.current +=
-                        Date.now() - pauseStartTimeRef.current
-                    pauseStartTimeRef.current = null
+                        Date.now() - pauseStartTimeRef.current;
+                    pauseStartTimeRef.current = null;
                 }
             }
 
             const elapsed =
-                Date.now() - startTimeRef.current - pausedTimeRef.current
-            const remaining = Math.max(0, duration - elapsed)
-            const progressPercent = (remaining / duration) * 100
+                Date.now() - startTimeRef.current - pausedTimeRef.current;
+            const remaining = Math.max(0, duration - elapsed);
+            const progressPercent = (remaining / duration) * 100;
 
-            setProgress(progressPercent)
+            setProgress(progressPercent);
 
             if (remaining === 0) {
-                clearInterval(interval)
-                onClose(id)
+                clearInterval(interval);
+                onClose(id);
             }
-        }, 50)
+        }, 50);
 
-        return () => clearInterval(interval)
-    }, [duration, isClosing, onClose, id, isPaused])
+        return () => clearInterval(interval);
+    }, [duration, isClosing, onClose, id, isPaused]);
 
     const handleMouseEnter = () => {
-        setIsPaused(true)
-    }
+        setIsPaused(true);
+    };
 
     const handleMouseLeave = () => {
-        setIsPaused(false)
-    }
+        setIsPaused(false);
+    };
 
     const handleClose = () => {
-        onClose(id)
-    }
+        onClose(id);
+    };
 
     const handleActionButtonClick = () => {
-        if (!actionButton) return
+        if (!actionButton) return;
 
         try {
-            actionButton.action()
+            actionButton.action();
             if (actionButton.autoClose !== false) {
-                onClose(id)
+                onClose(id);
             }
         } catch (error) {
-            Logger.error("Error executing notification action:", error)
+            Logger.error("Error executing notification action:", error);
         }
-    }
+    };
 
     const handleAnimationEnd = (e: AnimationEvent) => {
         if (e.animationName === "bounceOutRight") {
-            onAnimationComplete(id)
+            onAnimationComplete(id);
         }
-    }
+    };
 
     return (
         <div
@@ -166,5 +166,5 @@ export const Notification = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

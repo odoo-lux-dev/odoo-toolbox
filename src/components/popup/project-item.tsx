@@ -1,5 +1,5 @@
-import { ChevronRight } from "lucide-preact"
-import { Favorite } from "@/types"
+import { ChevronRight } from "lucide-preact";
+import { Favorite } from "@/types";
 
 export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
     const handleClick = (event: MouseEvent) => {
@@ -10,14 +10,14 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
             !event.altKey
         ) {
             // Left Click only without any modifiers
-            event.preventDefault()
+            event.preventDefault();
             browser.tabs.update({
                 url: `https://www.odoo.sh/project/${favorite.name}`,
-            })
+            });
             // Close the popup once we click on the link
-            window.close()
+            window.close();
         }
-    }
+    };
 
     return (
         <div className="x-odoo-favorite-popup-row">
@@ -33,5 +33,5 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
                 </span>
             </a>
         </div>
-    )
-}
+    );
+};

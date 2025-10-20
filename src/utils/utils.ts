@@ -1,17 +1,18 @@
-import { DebugModeType } from "@/types"
+import { DebugModeType } from "@/types";
 
 const getDefaultDebugMode = () =>
-    document.body.dataset.defaultDebugMode as DebugModeType | undefined
-const getShowTechnicalModel = () => document.body.dataset.showTechnicalModel
-const getShowPrintOptionsHTML = () => document.body.dataset.showPrintOptionsHTML
-const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF
-const getDefaultDarkMode = () => document.body.dataset.defaultDarkMode
-const getShowTechnicalList = () => document.body.dataset.showTechnicalList
+    document.body.dataset.defaultDebugMode as DebugModeType | undefined;
+const getShowTechnicalModel = () => document.body.dataset.showTechnicalModel;
+const getShowPrintOptionsHTML = () =>
+    document.body.dataset.showPrintOptionsHTML;
+const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF;
+const getDefaultDarkMode = () => document.body.dataset.defaultDarkMode;
+const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
 
 const isOnSpecificRecordPage = () => {
-    const odooWindowObject = window.odoo
+    const odooWindowObject = window.odoo;
     const recordLocalState =
-        odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.getLocalState?.()
+        odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.getLocalState?.();
 
     return (
         (!!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService
@@ -19,26 +20,26 @@ const isOnSpecificRecordPage = () => {
             !!recordLocalState?.resId) &&
         !!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService
             ?.currentController?.props?.resModel
-    )
-}
+    );
+};
 
 const hasNewOdooURL = () => {
-    const odooWindowObject = window.odoo
-    if (!odooWindowObject) return false
+    const odooWindowObject = window.odoo;
+    if (!odooWindowObject) return false;
 
     const currentVersion = odooWindowObject.info?.server_version_info
         ?.slice(0, 2)
         .join(".")
         .replace(/^saas~/, "")
-        .replace(/\.0$/, "")
+        .replace(/\.0$/, "");
 
-    if (!currentVersion) return false
+    if (!currentVersion) return false;
 
-    return parseFloat(currentVersion) >= 17.2
-}
+    return parseFloat(currentVersion) >= 17.2;
+};
 
 const getOdooVersion = () => {
-    const odooWindowObject = window.odoo
+    const odooWindowObject = window.odoo;
 
     return (
         odooWindowObject?.info || odooWindowObject?.session_info
@@ -46,50 +47,50 @@ const getOdooVersion = () => {
         ?.slice(0, 2)
         .join(".")
         .replace(/^saas~/, "")
-        .replace(/\.0$/, "")
-}
+        .replace(/\.0$/, "");
+};
 
 const isOnNewURLPos = () => {
-    if (!hasNewOdooURL()) return false
-    const odooWindowObject = window.odoo
-    if (!odooWindowObject) return false
+    if (!hasNewOdooURL()) return false;
+    const odooWindowObject = window.odoo;
+    if (!odooWindowObject) return false;
 
     return (
         odooWindowObject.__WOWL_DEBUG__?.root &&
         "pos" in odooWindowObject.__WOWL_DEBUG__.root
-    )
-}
+    );
+};
 
 interface ConfigFile {
     settings?: {
-        enableDebugMode: string
-        enablePrintOptionsPDF: boolean
-        enablePrintOptionsHTML: boolean
-        showTechnicalModel: boolean
-        renameShProjectPage: boolean
-        extensionTheme: string
-        taskUrl: string
-        taskUrlRegex: string
-        nostalgiaMode: boolean
-        colorBlindMode: boolean
-    }
+        enableDebugMode: string;
+        enablePrintOptionsPDF: boolean;
+        enablePrintOptionsHTML: boolean;
+        showTechnicalModel: boolean;
+        renameShProjectPage: boolean;
+        extensionTheme: string;
+        taskUrl: string;
+        taskUrlRegex: string;
+        nostalgiaMode: boolean;
+        colorBlindMode: boolean;
+    };
     favorites?: Array<{
-        name: string
-        display_name: string
-        sequence: number
-        task_link: string
-    }>
+        name: string;
+        display_name: string;
+        sequence: number;
+        task_link: string;
+    }>;
 }
 
 const validateConfigFile = (
-    config: ConfigFile
+    config: ConfigFile,
 ): { valid: boolean; message: string } => {
     if (!config.settings && !config.favorites) {
         return {
             valid: false,
             message:
                 "File must contain at least 'settings' or 'favorites' properties.",
-        }
+        };
     }
 
     if (config.settings) {
@@ -97,7 +98,7 @@ const validateConfigFile = (
             return {
                 valid: false,
                 message: "'settings' must be an object.",
-            }
+            };
         }
 
         const requiredSettingsProps = [
@@ -111,29 +112,29 @@ const validateConfigFile = (
             "taskUrlRegex",
             "nostalgiaMode",
             "colorBlindMode",
-        ]
+        ];
 
         const missingProps = requiredSettingsProps.filter(
-            (prop) => !Object.hasOwn(config.settings!, prop)
-        )
+            (prop) => !Object.hasOwn(config.settings!, prop),
+        );
 
         if (missingProps.length > 0) {
             return {
                 valid: false,
                 message: `Settings missing required properties: ${missingProps.join(", ")}`,
-            }
+            };
         }
 
         if (
             !["1", "disabled", "assets"].includes(
-                config.settings.enableDebugMode
+                config.settings.enableDebugMode,
             )
         ) {
             return {
                 valid: false,
                 message:
                     "Invalid 'debugMode' value. Expected '1', 'disabled', or 'assets'.",
-            }
+            };
         }
 
         const booleanProps = [
@@ -143,14 +144,14 @@ const validateConfigFile = (
             "renameShProjectPage",
             "nostalgiaMode",
             "colorBlindMode",
-        ] as const
+        ] as const;
 
         for (const prop of booleanProps) {
             if (typeof config.settings[prop] !== "boolean") {
                 return {
                     valid: false,
                     message: `Property '${prop}' must be a boolean.`,
-                }
+                };
             }
         }
 
@@ -159,21 +160,21 @@ const validateConfigFile = (
                 valid: false,
                 message:
                     "Invalid 'extensionTheme' value. Expected 'dark' or 'light'.",
-            }
+            };
         }
 
         if (typeof config.settings.taskUrl !== "string") {
             return {
                 valid: false,
                 message: "'taskUrl' must be a string.",
-            }
+            };
         }
 
         if (typeof config.settings.taskUrlRegex !== "string") {
             return {
                 valid: false,
                 message: "'taskUrlRegex' must be a string.",
-            }
+            };
         }
     }
 
@@ -182,17 +183,17 @@ const validateConfigFile = (
             return {
                 valid: false,
                 message: "'favorites' must be an array.",
-            }
+            };
         }
 
         for (let i = 0; i < config.favorites.length; i++) {
-            const favorite = config.favorites[i]
+            const favorite = config.favorites[i];
 
             if (typeof favorite !== "object" || favorite === null) {
                 return {
                     valid: false,
                     message: `Favorite at index ${i} must be an object.`,
-                }
+                };
             }
 
             const requiredFavoriteProps = [
@@ -200,17 +201,17 @@ const validateConfigFile = (
                 "display_name",
                 "sequence",
                 "task_link",
-            ]
+            ];
 
             const missingFavoriteProps = requiredFavoriteProps.filter(
-                (prop) => !Object.hasOwn(favorite, prop)
-            )
+                (prop) => !Object.hasOwn(favorite, prop),
+            );
 
             if (missingFavoriteProps.length > 0) {
                 return {
                     valid: false,
                     message: `Favorite at index ${i} is missing required properties: ${missingFavoriteProps.join(", ")}`,
-                }
+                };
             }
 
             if (
@@ -220,40 +221,40 @@ const validateConfigFile = (
                 return {
                     valid: false,
                     message: `Favorite at index ${i}: 'name' and 'display_name' must be strings.`,
-                }
+                };
             }
 
             if (typeof favorite.sequence !== "number") {
                 return {
                     valid: false,
                     message: `Favorite at index ${i}: 'sequence' must be a number.`,
-                }
+                };
             }
 
             if (typeof favorite.task_link !== "string") {
                 return {
                     valid: false,
                     message: `Favorite at index ${i}: 'task_link' must be a string.`,
-                }
+                };
             }
         }
     }
 
-    return { valid: true, message: "" }
-}
+    return { valid: true, message: "" };
+};
 
 const simpleDebounce = (func: Function, timeout: number) => {
-    let timeoutId: NodeJS.Timeout | null = null
+    let timeoutId: NodeJS.Timeout | null = null;
 
     return (...args: unknown[]) => {
         if (timeoutId) {
-            clearTimeout(timeoutId)
+            clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(() => {
-            func(...args)
-        }, timeout)
-    }
-}
+            func(...args);
+        }, timeout);
+    };
+};
 
 export {
     getDefaultDebugMode,
@@ -268,4 +269,4 @@ export {
     getDefaultDarkMode,
     simpleDebounce,
     getShowTechnicalList,
-}
+};

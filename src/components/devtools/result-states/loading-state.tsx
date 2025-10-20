@@ -5,4 +5,4 @@ export const LoadingState = () => (
             <span>Executing query...</span>
         </div>
     </div>
-)
+);

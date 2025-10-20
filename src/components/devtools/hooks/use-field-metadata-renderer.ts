@@ -1,32 +1,32 @@
-import { ComponentChildren } from "preact"
-import { FieldMetadata } from "@/types"
+import { ComponentChildren } from "preact";
+import { FieldMetadata } from "@/types";
 
 export const useFieldMetadataRenderer = () => {
     const getValueClasses = (value: unknown): string => {
-        if (typeof value === "boolean") return "cell-boolean"
-        if (typeof value === "number") return "cell-number"
-        if (typeof value === "string") return "cell-string"
-        if (value === null || value === undefined) return "cell-object"
-        if (typeof value === "object") return "cell-object"
-        return ""
-    }
+        if (typeof value === "boolean") return "cell-boolean";
+        if (typeof value === "number") return "cell-number";
+        if (typeof value === "string") return "cell-string";
+        if (value === null || value === undefined) return "cell-object";
+        if (typeof value === "object") return "cell-object";
+        return "";
+    };
 
     const formatSimpleValue = (value: unknown): string => {
-        if (value === null || value === undefined) return "null"
-        if (typeof value === "boolean") return value.toString()
-        if (typeof value === "number") return value.toString()
-        if (typeof value === "string") return `"${value}"`
-        return String(value)
-    }
+        if (value === null || value === undefined) return "null";
+        if (typeof value === "boolean") return value.toString();
+        if (typeof value === "number") return value.toString();
+        if (typeof value === "string") return `"${value}"`;
+        return String(value);
+    };
 
     const prepareMetadataItems = (metadata: FieldMetadata) => {
         const items: Array<{
-            key: string
-            value: unknown
-            classes: string
-            isComplexType: boolean
-            formattedValue: string | ComponentChildren
-        }> = []
+            key: string;
+            value: unknown;
+            classes: string;
+            isComplexType: boolean;
+            formattedValue: string | ComponentChildren;
+        }> = [];
 
         if (
             metadata.help &&
@@ -36,7 +36,7 @@ export const useFieldMetadataRenderer = () => {
         ) {
             const isComplex =
                 Array.isArray(metadata.help) ||
-                (typeof metadata.help === "object" && metadata.help !== null)
+                (typeof metadata.help === "object" && metadata.help !== null);
             items.push({
                 key: "Help",
                 value: metadata.help,
@@ -45,7 +45,7 @@ export const useFieldMetadataRenderer = () => {
                 formattedValue: isComplex
                     ? metadata.help
                     : formatSimpleValue(metadata.help),
-            })
+            });
         }
 
         Object.entries(metadata).forEach(([key, value]) => {
@@ -58,10 +58,10 @@ export const useFieldMetadataRenderer = () => {
             ) {
                 const displayKey = key
                     .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())
+                    .replace(/\b\w/g, (l) => l.toUpperCase());
                 const isComplex =
                     Array.isArray(value) ||
-                    (typeof value === "object" && value !== null)
+                    (typeof value === "object" && value !== null);
                 items.push({
                     key: displayKey,
                     value,
@@ -70,16 +70,16 @@ export const useFieldMetadataRenderer = () => {
                     formattedValue: isComplex
                         ? value
                         : formatSimpleValue(value),
-                })
+                });
             }
-        })
+        });
 
-        return items
-    }
+        return items;
+    };
 
     return {
         prepareMetadataItems,
         getValueClasses,
         formatSimpleValue,
-    }
-}
+    };
+};
