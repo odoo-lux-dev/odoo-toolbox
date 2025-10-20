@@ -117,6 +117,22 @@ export const useRecordContextMenu = () => {
                     const modelName = getRelatedModel(fieldMetadata)
                     const ids = extractIds(fieldValue)
 
+                    if (modelName && ids.length >= 1) {
+                        items.push({
+                            label: `Copy record${ids.length > 1 ? "s" : ""} (JSON)`,
+                            action: async () => {
+                                const result = await odooRpcService.read(
+                                    modelName,
+                                    ids,
+                                );
+                                copyToClipboardWithFallback(
+                                    JSON.stringify(result, null, 2),
+                                );
+                            },
+                            separator: true,
+                        });
+                    }
+
                     if (modelName && ids.length > 0) {
                         items.push({
                             label: "Focus on record",
