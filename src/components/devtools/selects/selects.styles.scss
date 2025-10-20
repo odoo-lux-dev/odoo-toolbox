@@ -54,6 +54,10 @@
     position: relative;
 }
 
+.input-wrapper {
+    position: relative;
+}
+
 .select-dropdown {
     position: absolute;
     top: 100%;
@@ -68,6 +72,16 @@
     overflow-x: hidden;
     z-index: 1000;
     box-shadow: var(--devtools-shadow-lg);
+}
+
+.select-container.dropdown-above {
+    .select-dropdown {
+        top: auto;
+        bottom: 100%;
+        border-top: 1px solid var(--devtools-border);
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+    }
 }
 
 .select-option {
