@@ -95,7 +95,7 @@ export const WriteTab = () => {
             const confirmed = await openConfirmation({
                 title: "Execute Write Operation",
                 message:
-                    "Are you sure you want to update these records? This action will modify the selected records permanently.",
+                    `Are you sure you want to update ${targetIds.split(",").filter(id => id.trim()).length} record(s)? This action will modify the selected records permanently.`,
                 variant: "warning",
             })
 
@@ -160,7 +160,7 @@ export const WriteTab = () => {
 
             if (result) {
                 showNotification(
-                    `Successfully updated ${ids.length} record${ids.length > 1 ? "s" : ""} in ${rpcQuery.model}`,
+                    `Successfully updated ${ids.length} record(s) in ${rpcQuery.model}`,
                     "success"
                 )
 

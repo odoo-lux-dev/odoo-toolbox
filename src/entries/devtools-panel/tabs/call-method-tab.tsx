@@ -89,7 +89,7 @@ export const CallMethodTab = () => {
         try {
             const confirmed = await openConfirmation({
                 title: "Call Method",
-                message: `Are you sure you want to call method "${callMethodName.value.trim()}" on the selected records? This action may modify the data.`,
+                message: `Are you sure you want to call method "${callMethodName.value.trim()}" on ${idsToUse.split(",").filter(id => id.trim()).length} record(s)? This action may modify the data.`,
                 variant: "warning",
             })
 
