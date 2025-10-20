@@ -4,9 +4,7 @@ import { InfoSection } from "./info-section"
 import { ModelActions } from "./model-actions"
 
 export const RecordInfo = () => {
-    const {
-        viewInfo,
-    } = useTechnicalSidebar()
+    const { viewInfo } = useTechnicalSidebar()
     const items = []
 
     if (viewInfo?.currentModel) {
@@ -16,7 +14,7 @@ export const RecordInfo = () => {
                 label="Model"
                 value={viewInfo?.currentModel}
                 copyable
-            />
+            />,
         )
     }
 
@@ -27,7 +25,7 @@ export const RecordInfo = () => {
                 label="Record ID"
                 value={viewInfo?.currentRecordId.toString()}
                 copyable
-            />
+            />,
         )
     }
 
@@ -38,7 +36,7 @@ export const RecordInfo = () => {
                 label="View Type"
                 value={viewInfo?.viewType}
                 copyable
-            />
+            />,
         )
     }
 
@@ -49,7 +47,7 @@ export const RecordInfo = () => {
                 label="Action Type"
                 value={viewInfo?.actionType}
                 copyable
-            />
+            />,
         )
     }
 
@@ -60,7 +58,7 @@ export const RecordInfo = () => {
                 label="Action Name"
                 value={viewInfo?.actionName}
                 copyable
-            />
+            />,
         )
     }
 
@@ -71,7 +69,7 @@ export const RecordInfo = () => {
                 label="Action XML ID"
                 value={viewInfo?.actionXmlId}
                 copyable
-            />
+            />,
         )
     }
 
@@ -82,7 +80,7 @@ export const RecordInfo = () => {
                 label="Action Context"
                 value={viewInfo?.actionContext}
                 copyable
-            />
+            />,
         )
     }
 
@@ -93,7 +91,7 @@ export const RecordInfo = () => {
                 label="Action Domain"
                 value={viewInfo?.actionDomain}
                 copyable
-            />
+            />,
         )
     }
 
@@ -101,7 +99,12 @@ export const RecordInfo = () => {
         <InfoSection icon="fa-cogs" title="Record Information">
             <>
                 {items}
-                {viewInfo?.currentModel ? <ModelActions currentModel={viewInfo?.currentModel} /> : null}
+                {viewInfo?.currentModel ? (
+                    <ModelActions
+                        currentModel={viewInfo?.currentModel}
+                        currentRecordId={viewInfo?.currentRecordId}
+                    />
+                ) : null}
             </>
         </InfoSection>
     )
