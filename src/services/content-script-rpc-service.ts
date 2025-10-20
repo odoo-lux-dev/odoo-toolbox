@@ -56,6 +56,18 @@ async function searchReadRecords(
     return result.map((record) => record.id)
 }
 
+async function readRecord(
+    model: string,
+    id: number,
+): Promise<Record<string, unknown>[]> {
+    const result = await executeOdooRpc<Record<string, unknown>[]>(
+        model,
+        "read",
+        [[id]],
+    );
+    return result;
+}
+
 export async function getModelFieldIds(model: string): Promise<number[]> {
     return searchReadRecords("ir.model.fields", [["model", "=", model]])
 }
@@ -68,6 +80,13 @@ export async function getModelAccessIds(model: string): Promise<number[]> {
     return searchReadRecords("ir.model.access", [
         ["model_id.model", "=", model],
     ])
+}
+
+export async function getRecordData(
+    model: string,
+    id: number,
+): Promise<Record<string, unknown>[]> {
+    return readRecord(model, id);
 }
 
 /**
@@ -102,7 +121,7 @@ export async function openViewWithIds(
                 [false, "list"],
                 [false, "kanban"],
                 [false, "form"],
-            ]
+            ];
             action.domain = [["id", "in", recordIds]]
         }
     } else {
