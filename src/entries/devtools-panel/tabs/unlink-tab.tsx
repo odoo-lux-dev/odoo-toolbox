@@ -62,7 +62,7 @@ export const UnlinkTab = () => {
             const confirmed = await openConfirmation({
                 title: "Archive Records",
                 message:
-                    "Are you sure you want to archive these records? Archived records will be hidden from normal views but can be unarchived later.",
+                    `Are you sure you want to archive ${queryIds.split(",").filter(id => id.trim()).length} record(s)? Archived records will be hidden from normal views but can be unarchived later.`,
                 variant: "warning",
             })
 
@@ -126,7 +126,7 @@ export const UnlinkTab = () => {
             const confirmed = await openConfirmation({
                 title: "Unarchive Records",
                 message:
-                    "Are you sure you want to unarchive these records? They will become visible again in normal views.",
+                    `Are you sure you want to unarchive ${queryIds.split(",").filter(id => id.trim()).length} record(s)? They will become visible again in normal views.`,
                 variant: "success",
             })
 
@@ -191,8 +191,8 @@ export const UnlinkTab = () => {
                 title: "⚠️ Delete Records",
                 message: (
                     <>
-                        Are you sure you want to permanently delete these
-                        records? This action cannot be undone and the data will
+                        Are you sure you want to permanently delete {queryIds.split(",").filter(id => id.trim()).length}{" "}
+                        record(s)? This action cannot be undone and the data will
                         be lost <strong>forever</strong>.
                     </>
                 ),
