@@ -6,6 +6,7 @@ import { useGetCurrentPage } from "@/components/devtools/hooks/use-get-current-p
 import { FormSection } from "@/components/devtools/query-form-sidebar/form-section";
 import { FieldSelect } from "@/components/devtools/selects/field-select";
 import { ModelSelect } from "@/components/devtools/selects/model-select";
+import { OrderBySelect } from "@/components/devtools/selects/order-by-select";
 import {
     idsSignal,
     limitSignal,
@@ -241,18 +242,11 @@ export const QueryFormSidebar = ({
             )}
 
             {showOrderBySection && (
-                <FormSection label="Order By">
-                    <input
-                        type="text"
-                        value={orderBySignal.value}
-                        disabled={rpcResult.loading || isLoading}
-                        onInput={(e) => {
-                            const target = e.target as HTMLInputElement;
-                            orderBySignal.value = target.value;
-                        }}
-                        placeholder={orderByPlaceholder}
-                        className="form-input"
-                    />
+                <FormSection
+                    label="Order By"
+                    helpText="Select fields to sort by. Multiple selections will be applied in order."
+                >
+                    <OrderBySelect placeholder={orderByPlaceholder} />
                 </FormSection>
             )}
 

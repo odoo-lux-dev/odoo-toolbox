@@ -1,5 +1,6 @@
 import "@/components/devtools/selects/selects.styles.scss";
 import { effect, useComputed, useSignal } from "@preact/signals";
+import { useRef } from "preact/hooks";
 import { useDropdownNavigation } from "@/hooks/use-dropdown-navigation";
 import { RefreshButton } from "./refresh-button";
 import { SelectOption } from "./select-option";
@@ -59,6 +60,10 @@ export const GenericSelect = ({
     const searchValue = useSignal("");
     const isOpen = useSignal(false);
     const optionsSignal = useSignal<GenericSelectOption[]>(options || []);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputWrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const shouldRenderAbove = useSignal(false);
 
     effect(() => {
         optionsSignal.value = options || [];
@@ -257,6 +262,24 @@ export const GenericSelect = ({
               : "";
         resetFocus();
         isOpen.value = true;
+
+        // Calculate if dropdown should render above or below
+        setTimeout(() => {
+            if (inputWrapperRef.current) {
+                const rect = inputWrapperRef.current.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const spaceAbove = rect.top;
+                const estimatedDropdownHeight = Math.min(
+                    200,
+                    filteredOptions.value.length * 40,
+                );
+
+                // Render above if not enough space below and more space above
+                shouldRenderAbove.value =
+                    spaceBelow < estimatedDropdownHeight &&
+                    spaceAbove > spaceBelow;
+            }
+        }, 0);
     };
 
     const handleInputBlur = () => {
@@ -300,7 +323,8 @@ export const GenericSelect = ({
 
     return (
         <div
-            className={`select-container ${className} ${multiple ? "multiple" : ""}`}
+            ref={containerRef}
+            className={`select-container ${className} ${multiple ? "multiple" : ""} ${shouldRenderAbove.value ? "dropdown-above" : ""}`}
         >
             {multiple && (
                 <SelectedFieldBadges
@@ -310,63 +334,68 @@ export const GenericSelect = ({
                 />
             )}
 
-            <input
-                type="text"
-                value={displayValue}
-                onInput={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-                placeholder={placeholder}
-                className="form-input"
-                disabled={disabled || loading}
-            />
+            <div ref={inputWrapperRef} className="input-wrapper">
+                <input
+                    type="text"
+                    value={displayValue}
+                    onInput={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    placeholder={placeholder}
+                    className="form-input"
+                    disabled={disabled || loading}
+                />
 
-            <RefreshButton
-                loading={loading}
-                error={error}
-                hasOptions={optionsSignal.value.length > 0}
-                onRefresh={onRefresh}
-                disabled={disabled || loading}
-            />
+                <RefreshButton
+                    loading={loading}
+                    error={error}
+                    hasOptions={optionsSignal.value.length > 0}
+                    onRefresh={onRefresh}
+                    disabled={disabled || loading}
+                />
 
-            {isOpen.value && (filteredOptions.value.length > 0 || loading) ? (
-                <div className="select-dropdown">
-                    <>
-                        {loading ? (
-                            <div className="select-loading">Loading...</div>
-                        ) : (
-                            visibleOptions.value.map((option, index) => {
-                                const isSelected =
-                                    multiple &&
-                                    getCurrentValues().includes(option.value);
-                                return (
-                                    <SelectOption
-                                        key={option.value}
-                                        option={option}
-                                        index={index}
-                                        focusedIndex={focusedIndex}
-                                        isSelected={isSelected}
-                                        isMultiple={multiple}
-                                        searchValue={searchValue.value}
-                                        onSelect={handleOptionSelect}
-                                        highlightMatch={highlightMatch}
-                                    />
-                                );
-                            })
-                        )}
-                        {!loading &&
-                            filteredOptions.value.length >
-                                maxDisplayedOptions && (
-                                <div className="select-more">
-                                    Showing first {maxDisplayedOptions} results.
-                                    Refine your search for more specific
-                                    results.
-                                </div>
+                {isOpen.value &&
+                (filteredOptions.value.length > 0 || loading) ? (
+                    <div ref={dropdownRef} className="select-dropdown">
+                        <>
+                            {loading ? (
+                                <div className="select-loading">Loading...</div>
+                            ) : (
+                                visibleOptions.value.map((option, index) => {
+                                    const isSelected =
+                                        multiple &&
+                                        getCurrentValues().includes(
+                                            option.value,
+                                        );
+                                    return (
+                                        <SelectOption
+                                            key={option.value}
+                                            option={option}
+                                            index={index}
+                                            focusedIndex={focusedIndex}
+                                            isSelected={isSelected}
+                                            isMultiple={multiple}
+                                            searchValue={searchValue.value}
+                                            onSelect={handleOptionSelect}
+                                            highlightMatch={highlightMatch}
+                                        />
+                                    );
+                                })
                             )}
-                    </>
-                </div>
-            ) : null}
+                            {!loading &&
+                                filteredOptions.value.length >
+                                    maxDisplayedOptions && (
+                                    <div className="select-more">
+                                        Showing first {maxDisplayedOptions}{" "}
+                                        results. Refine your search for more
+                                        specific results.
+                                    </div>
+                                )}
+                        </>
+                    </div>
+                ) : null}
+            </div>
         </div>
     );
 };
