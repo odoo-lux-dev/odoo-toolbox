@@ -1,14 +1,14 @@
 interface FieldFiltersProps {
-    searchTerm: string
-    onSearchChange: (term: string) => void
-    showOnlyRequired: boolean
-    onRequiredChange: (show: boolean) => void
-    showOnlyReadonly: boolean
-    onReadonlyChange: (show: boolean) => void
-    showOnlyFields: boolean
-    onFieldsChange: (show: boolean) => void
-    showOnlyButtons: boolean
-    onButtonsChange: (show: boolean) => void
+    searchTerm: string;
+    onSearchChange: (term: string) => void;
+    showOnlyRequired: boolean;
+    onRequiredChange: (show: boolean) => void;
+    showOnlyReadonly: boolean;
+    onReadonlyChange: (show: boolean) => void;
+    showOnlyFields: boolean;
+    onFieldsChange: (show: boolean) => void;
+    showOnlyButtons: boolean;
+    onButtonsChange: (show: boolean) => void;
 }
 
 export const FieldFilters = ({
@@ -43,7 +43,9 @@ export const FieldFilters = ({
                         type="checkbox"
                         checked={showOnlyRequired}
                         onInput={(e) =>
-                            onRequiredChange((e.target as HTMLInputElement).checked)
+                            onRequiredChange(
+                                (e.target as HTMLInputElement).checked,
+                            )
                         }
                     />
                     <span>Required only</span>
@@ -53,7 +55,9 @@ export const FieldFilters = ({
                         type="checkbox"
                         checked={showOnlyReadonly}
                         onInput={(e) =>
-                            onReadonlyChange((e.target as HTMLInputElement).checked)
+                            onReadonlyChange(
+                                (e.target as HTMLInputElement).checked,
+                            )
                         }
                     />
                     <span>Readonly only</span>
@@ -65,7 +69,9 @@ export const FieldFilters = ({
                         type="checkbox"
                         checked={showOnlyFields}
                         onInput={(e) =>
-                            onFieldsChange((e.target as HTMLInputElement).checked)
+                            onFieldsChange(
+                                (e.target as HTMLInputElement).checked,
+                            )
                         }
                     />
                     <span>Fields only</span>
@@ -75,7 +81,9 @@ export const FieldFilters = ({
                         type="checkbox"
                         checked={showOnlyButtons}
                         onInput={(e) =>
-                            onButtonsChange((e.target as HTMLInputElement).checked)
+                            onButtonsChange(
+                                (e.target as HTMLInputElement).checked,
+                            )
                         }
                     />
                     <span>Buttons only</span>
@@ -83,4 +91,4 @@ export const FieldFilters = ({
             </div>
         </div>
     </div>
-)
+);

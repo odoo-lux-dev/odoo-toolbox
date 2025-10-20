@@ -1,19 +1,18 @@
-import { FieldItem } from "@/components/technical-list/field-item"
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
-import { EmptyState } from "@/components/technical-list/states"
+import { FieldItem } from "@/components/technical-list/field-item";
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
+import { EmptyState } from "@/components/technical-list/states";
 
 export const SelectedFieldContent = () => {
-    const {
-        selectedFieldInfo,
-        highlightField,
-        clearFieldHighlight,
-    } = useTechnicalSidebar()
+    const { selectedFieldInfo, highlightField, clearFieldHighlight } =
+        useTechnicalSidebar();
 
     if (!selectedFieldInfo) {
-        return <EmptyState
-            icon="fa-mouse-pointer"
-            message="Click on a field in the page to see its details"
-        />
+        return (
+            <EmptyState
+                icon="fa-mouse-pointer"
+                message="Click on a field in the page to see its details"
+            />
+        );
     }
 
     return (
@@ -28,5 +27,5 @@ export const SelectedFieldContent = () => {
                 onClearHighlight={clearFieldHighlight}
             />
         </div>
-    )
-}
+    );
+};

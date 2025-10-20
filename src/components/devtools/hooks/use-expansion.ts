@@ -1,33 +1,33 @@
-import { useState } from "preact/hooks"
+import { useState } from "preact/hooks";
 
 export const useExpansion = (
     onExpandToggle?: (index: number) => void,
-    externalExpandedRecords?: Set<number>
+    externalExpandedRecords?: Set<number>,
 ) => {
     const [localExpandedRecords, setLocalExpandedRecords] = useState<
         Set<number>
-    >(new Set())
+    >(new Set());
 
     const currentExpanded = onExpandToggle
         ? externalExpandedRecords || new Set()
-        : localExpandedRecords
+        : localExpandedRecords;
 
     const toggleExpansion = (index: number) => {
         if (onExpandToggle) {
-            onExpandToggle(index)
+            onExpandToggle(index);
         } else {
-            const newExpanded = new Set(localExpandedRecords)
+            const newExpanded = new Set(localExpandedRecords);
             if (newExpanded.has(index)) {
-                newExpanded.delete(index)
+                newExpanded.delete(index);
             } else {
-                newExpanded.add(index)
+                newExpanded.add(index);
             }
-            setLocalExpandedRecords(newExpanded)
+            setLocalExpandedRecords(newExpanded);
         }
-    }
+    };
 
     return {
         currentExpanded,
         toggleExpansion,
-    }
-}
+    };
+};

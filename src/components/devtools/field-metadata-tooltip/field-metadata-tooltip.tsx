@@ -1,15 +1,15 @@
-import "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip.style.scss"
-import { ComponentChildren } from "preact"
-import { useFieldMetadataRenderer } from "@/components/devtools/hooks/use-field-metadata-renderer"
-import { usePortalTooltip } from "@/components/devtools/hooks/use-portal-tooltip"
-import { FieldMetadata } from "@/types"
-import { Portal } from "./portal"
+import "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip.style.scss";
+import { ComponentChildren } from "preact";
+import { useFieldMetadataRenderer } from "@/components/devtools/hooks/use-field-metadata-renderer";
+import { usePortalTooltip } from "@/components/devtools/hooks/use-portal-tooltip";
+import { FieldMetadata } from "@/types";
+import { Portal } from "./portal";
 
 interface FieldMetadataTooltipProps {
-    fieldMetadata: FieldMetadata | null
-    fieldName: string
-    children: ComponentChildren
-    className?: string
+    fieldMetadata: FieldMetadata | null;
+    fieldName: string;
+    children: ComponentChildren;
+    className?: string;
 }
 
 const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
@@ -18,7 +18,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
             <span key={keyPrefix} className="field-metadata-value cell-string">
                 "{value}"
             </span>
-        )
+        );
     }
 
     if (Array.isArray(value)) {
@@ -33,7 +33,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
                 ))}
                 ]
             </span>
-        )
+        );
     }
 
     if (typeof value === "boolean") {
@@ -41,7 +41,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
             <span key={keyPrefix} className="field-metadata-value cell-boolean">
                 {value.toString()}
             </span>
-        )
+        );
     }
 
     if (typeof value === "number") {
@@ -49,7 +49,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
             <span key={keyPrefix} className="field-metadata-value cell-number">
                 {value.toString()}
             </span>
-        )
+        );
     }
 
     if (value === null || value === undefined) {
@@ -57,11 +57,11 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
             <span key={keyPrefix} className="field-metadata-value cell-object">
                 null
             </span>
-        )
+        );
     }
 
     if (typeof value === "object") {
-        const entries = Object.entries(value)
+        const entries = Object.entries(value);
         return (
             <span key={keyPrefix} className="field-metadata-value cell-object">
                 {"{"}
@@ -77,11 +77,11 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
                 ))}
                 {"}"}
             </span>
-        )
+        );
     }
 
-    return <span key={keyPrefix}>{String(value)}</span>
-}
+    return <span key={keyPrefix}>{String(value)}</span>;
+};
 
 export const FieldMetadataTooltip = ({
     fieldMetadata,
@@ -96,8 +96,8 @@ export const FieldMetadataTooltip = ({
         tooltipRef,
         showTooltip,
         hideTooltip,
-    } = usePortalTooltip()
-    const { prepareMetadataItems } = useFieldMetadataRenderer()
+    } = usePortalTooltip();
+    const { prepareMetadataItems } = useFieldMetadataRenderer();
 
     if (!fieldMetadata) {
         return (
@@ -121,17 +121,19 @@ export const FieldMetadataTooltip = ({
                         >
                             <div className="field-metadata-tooltip-message">
                                 <div className="field-metadata-key">
-                                    Field metadata is not available. If this is a new field, please restart devtools or modify the model to force a refresh.
+                                    Field metadata is not available. If this is
+                                    a new field, please restart devtools or
+                                    modify the model to force a refresh.
                                 </div>
                             </div>
                         </div>
                     </Portal>
                 )}
             </div>
-        )
+        );
     }
 
-    const metadataItems = prepareMetadataItems(fieldMetadata)
+    const metadataItems = prepareMetadataItems(fieldMetadata);
 
     return (
         <div
@@ -170,9 +172,9 @@ export const FieldMetadataTooltip = ({
                                         >
                                             {item.isComplexType
                                                 ? renderValue(
-                                                    item.value,
-                                                    `item-${index}`
-                                                )
+                                                      item.value,
+                                                      `item-${index}`,
+                                                  )
                                                 : item.formattedValue}
                                         </span>
                                     </div>
@@ -183,5 +185,5 @@ export const FieldMetadataTooltip = ({
                 </Portal>
             )}
         </div>
-    )
-}
+    );
+};

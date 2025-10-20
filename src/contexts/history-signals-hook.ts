@@ -5,7 +5,7 @@ import {
     loadHistory,
     recentHistoryActionsSignal,
     removeHistoryAction,
-} from "@/contexts/history-signals"
+} from "@/contexts/history-signals";
 
 export const useHistoryState = () => {
     return {
@@ -17,5 +17,5 @@ export const useHistoryState = () => {
 
         actions: historyActionsSignal,
         recent: recentHistoryActionsSignal,
-    }
-}
+    };
+};

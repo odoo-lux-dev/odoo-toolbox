@@ -1,89 +1,88 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss"
-import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
-import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
-import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
-import { useQueryIds } from "@/components/devtools/hooks/use-query-ids"
-import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar"
-import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer"
-import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
-import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook"
+import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
+import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
+import { useQueryIds } from "@/components/devtools/hooks/use-query-ids";
+import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
+import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
+import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
     executeQuery,
     resetRpcQuery,
     resetRpcResult,
-} from "@/contexts/devtools-signals"
+} from "@/contexts/devtools-signals";
 import {
     useDatabase,
     useRpcQuery,
     useRpcResult,
-} from "@/contexts/devtools-signals-hook"
-import { Logger } from "@/services/logger"
-import { odooRpcService } from "@/services/odoo-rpc-service"
-import { addUnlinkToHistory } from "@/utils/history-helpers"
-import { generateRecordText, parseIds } from "@/utils/tab-utils"
+} from "@/contexts/devtools-signals-hook";
+import { Logger } from "@/services/logger";
+import { odooRpcService } from "@/services/odoo-rpc-service";
+import { addUnlinkToHistory } from "@/utils/history-helpers";
+import { generateRecordText, parseIds } from "@/utils/tab-utils";
 
 export const UnlinkTab = () => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { database } = useDatabase()
-    const { actionLoading, setActionLoading } = useDevToolsLoading()
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { database } = useDatabase();
+    const { actionLoading, setActionLoading } = useDevToolsLoading();
 
-    const { showNotification } = useDevToolsNotifications()
+    const { showNotification } = useDevToolsNotifications();
     const { isOpen, config, openConfirmation, handleConfirm, handleCancel } =
-        useConfirmationModal()
+        useConfirmationModal();
 
-    const { queryIds, clearIds } = useQueryIds()
+    const { queryIds, clearIds } = useQueryIds();
 
     const hasActiveField = Object.keys(rpcQuery.fieldsMetadata || {}).includes(
-        "active"
-    )
+        "active",
+    );
 
     const handleExecuteQuery = async () => {
-        await executeQuery(true, { offset: 0 })
-    }
+        await executeQuery(true, { offset: 0 });
+    };
 
     const handleClearForm = () => {
-        resetRpcQuery()
-        resetRpcResult()
-        clearIds()
-    }
+        resetRpcQuery();
+        resetRpcResult();
+        clearIds();
+    };
 
     const handleArchive = async () => {
         if (!rpcQuery.model || !queryIds.trim()) {
             showNotification(
                 "Model and IDs are required for archive operation",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         try {
             const confirmed = await openConfirmation({
                 title: "Archive Records",
-                message:
-                    `Are you sure you want to archive ${queryIds.split(",").filter(id => id.trim()).length} record(s)? Archived records will be hidden from normal views but can be unarchived later.`,
+                message: `Are you sure you want to archive ${queryIds.split(",").filter((id) => id.trim()).length} record(s)? Archived records will be hidden from normal views but can be unarchived later.`,
                 variant: "warning",
-            })
+            });
 
-            if (!confirmed) return
+            if (!confirmed) return;
         } catch {
-            return
+            return;
         }
 
         try {
-            setActionLoading("archive")
-            const ids = parseIds(queryIds)
+            setActionLoading("archive");
+            const ids = parseIds(queryIds);
 
             await odooRpcService.archive({
                 model: rpcQuery.model,
                 ids,
-            })
+            });
 
             showNotification(
                 `Successfully archived ${ids.length} record(s)`,
-                "success"
-            )
+                "success",
+            );
 
             try {
                 await addUnlinkToHistory(
@@ -91,63 +90,62 @@ export const UnlinkTab = () => {
                     queryIds,
                     "archive",
                     ids.length,
-                    database
-                )
+                    database,
+                );
             } catch (historyError) {
-                Logger.warn("Failed to add archive to history:", historyError)
+                Logger.warn("Failed to add archive to history:", historyError);
             }
 
-            await executeQuery(true, { offset: rpcQuery.offset })
+            await executeQuery(true, { offset: rpcQuery.offset });
         } catch (error) {
-            let errorMessage = "Archive operation failed"
+            let errorMessage = "Archive operation failed";
             if (error instanceof Error) {
-                errorMessage = `Archive operation failed: ${error.message}`
+                errorMessage = `Archive operation failed: ${error.message}`;
             } else if (typeof error === "string") {
-                errorMessage = `Archive operation failed: ${error}`
+                errorMessage = `Archive operation failed: ${error}`;
             }
 
-            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
         } finally {
-            setActionLoading(null)
+            setActionLoading(null);
         }
-    }
+    };
 
     const handleUnarchive = async () => {
         if (!rpcQuery.model || !queryIds.trim()) {
             showNotification(
                 "Model and IDs are required for unarchive operation",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         try {
             const confirmed = await openConfirmation({
                 title: "Unarchive Records",
-                message:
-                    `Are you sure you want to unarchive ${queryIds.split(",").filter(id => id.trim()).length} record(s)? They will become visible again in normal views.`,
+                message: `Are you sure you want to unarchive ${queryIds.split(",").filter((id) => id.trim()).length} record(s)? They will become visible again in normal views.`,
                 variant: "success",
-            })
+            });
 
-            if (!confirmed) return
+            if (!confirmed) return;
         } catch {
-            return
+            return;
         }
 
         try {
-            setActionLoading("unarchive")
-            const ids = parseIds(queryIds)
+            setActionLoading("unarchive");
+            const ids = parseIds(queryIds);
 
             await odooRpcService.unarchive({
                 model: rpcQuery.model,
                 ids,
-            })
+            });
 
             showNotification(
                 `Successfully unarchived ${ids.length} record(s)`,
-                "success"
-            )
+                "success",
+            );
 
             try {
                 await addUnlinkToHistory(
@@ -155,35 +153,38 @@ export const UnlinkTab = () => {
                     queryIds,
                     "unarchive",
                     ids.length,
-                    database
-                )
+                    database,
+                );
             } catch (historyError) {
-                Logger.warn("Failed to add unarchive to history:", historyError)
+                Logger.warn(
+                    "Failed to add unarchive to history:",
+                    historyError,
+                );
             }
 
-            await executeQuery(true, { offset: rpcQuery.offset })
+            await executeQuery(true, { offset: rpcQuery.offset });
         } catch (error) {
-            let errorMessage = "Unarchive operation failed"
+            let errorMessage = "Unarchive operation failed";
             if (error instanceof Error) {
-                errorMessage = `Unarchive operation failed: ${error.message}`
+                errorMessage = `Unarchive operation failed: ${error.message}`;
             } else if (typeof error === "string") {
-                errorMessage = `Unarchive operation failed: ${error}`
+                errorMessage = `Unarchive operation failed: ${error}`;
             }
 
-            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
         } finally {
-            setActionLoading(null)
+            setActionLoading(null);
         }
-    }
+    };
 
     const handleUnlink = async () => {
         if (!rpcQuery.model || !queryIds.trim()) {
             showNotification(
                 "Model and IDs are required for unlink operation",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         try {
@@ -191,32 +192,33 @@ export const UnlinkTab = () => {
                 title: "⚠️ Delete Records",
                 message: (
                     <>
-                        Are you sure you want to permanently delete {queryIds.split(",").filter(id => id.trim()).length}{" "}
-                        record(s)? This action cannot be undone and the data will
-                        be lost <strong>forever</strong>.
+                        Are you sure you want to permanently delete{" "}
+                        {queryIds.split(",").filter((id) => id.trim()).length}{" "}
+                        record(s)? This action cannot be undone and the data
+                        will be lost <strong>forever</strong>.
                     </>
                 ),
                 variant: "danger",
-            })
+            });
 
-            if (!confirmed) return
+            if (!confirmed) return;
         } catch {
-            return
+            return;
         }
 
         try {
-            setActionLoading("unlink")
-            const ids = parseIds(queryIds)
+            setActionLoading("unlink");
+            const ids = parseIds(queryIds);
 
             await odooRpcService.unlink({
                 model: rpcQuery.model,
                 ids,
-            })
+            });
 
             showNotification(
                 `Successfully deleted ${ids.length} record(s)`,
-                "success"
-            )
+                "success",
+            );
 
             try {
                 await addUnlinkToHistory(
@@ -224,26 +226,26 @@ export const UnlinkTab = () => {
                     queryIds,
                     "delete",
                     ids.length,
-                    database
-                )
+                    database,
+                );
             } catch (historyError) {
-                Logger.warn("Failed to add delete to history:", historyError)
+                Logger.warn("Failed to add delete to history:", historyError);
             }
 
-            await executeQuery(true, { offset: rpcQuery.offset })
+            await executeQuery(true, { offset: rpcQuery.offset });
         } catch (error) {
-            let errorMessage = "Delete operation failed"
+            let errorMessage = "Delete operation failed";
             if (error instanceof Error) {
-                errorMessage = `Delete operation failed: ${error.message}`
+                errorMessage = `Delete operation failed: ${error.message}`;
             } else if (typeof error === "string") {
-                errorMessage = `Delete operation failed: ${error}`
+                errorMessage = `Delete operation failed: ${error}`;
             }
 
-            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
         } finally {
-            setActionLoading(null)
+            setActionLoading(null);
         }
-    }
+    };
 
     return (
         <div className="rpc-query-form">
@@ -332,12 +334,12 @@ export const UnlinkTab = () => {
                                 hideRecordPagingData
                                 customText={
                                     rpcResult.data &&
-                                        rpcResult.data.length > 0 ? (
+                                    rpcResult.data.length > 0 ? (
                                         <div className="tab-section-header">
                                             <h4>
                                                 {generateRecordText(
                                                     rpcQuery.model,
-                                                    rpcResult.data.length
+                                                    rpcResult.data.length,
                                                 )}
                                             </h4>
                                         </div>
@@ -355,5 +357,5 @@ export const UnlinkTab = () => {
                 onCancel={handleCancel}
             />
         </div>
-    )
-}
+    );
+};

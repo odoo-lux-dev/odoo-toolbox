@@ -1,15 +1,15 @@
-import { Info } from "lucide-preact"
-import { ComponentChildren } from "preact"
+import { Info } from "lucide-preact";
+import { ComponentChildren } from "preact";
 
 export const DebugModeTips = ({
     children,
 }: {
-    children: ComponentChildren
+    children: ComponentChildren;
 }) => {
     return (
         <div className="debug-mode-tips">
             <Info />
             {children}
         </div>
-    )
-}
+    );
+};

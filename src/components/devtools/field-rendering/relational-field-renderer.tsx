@@ -1,4 +1,4 @@
-import { useSignal } from "@preact/signals"
+import { useSignal } from "@preact/signals";
 import {
     ArrowUpRight,
     ChevronDown,
@@ -6,20 +6,20 @@ import {
     Crosshair,
     Layers2,
     TriangleAlert,
-} from "lucide-preact"
-import { ContextMenu } from "@/components/devtools/context-menu/context-menu"
-import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip"
-import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields"
-import { useRecordActions } from "@/components/devtools/hooks/use-record-actions"
-import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu"
-import { RecordRenderer } from "@/components/devtools/record-renderer"
-import { odooRpcService } from "@/services/odoo-rpc-service"
-import { FieldMetadata } from "@/types"
-import { extractIds, getRelatedModel } from "./field-utils"
-import type { BaseFieldProps } from "./types"
+} from "lucide-preact";
+import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
+import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip";
+import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields";
+import { useRecordActions } from "@/components/devtools/hooks/use-record-actions";
+import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
+import { RecordRenderer } from "@/components/devtools/record-renderer";
+import { odooRpcService } from "@/services/odoo-rpc-service";
+import { FieldMetadata } from "@/types";
+import { extractIds, getRelatedModel } from "./field-utils";
+import type { BaseFieldProps } from "./types";
 
 interface RelationalFieldProps extends BaseFieldProps {
-    level?: number
+    level?: number;
 }
 
 export const RelationalFieldRenderer = ({
@@ -29,107 +29,111 @@ export const RelationalFieldRenderer = ({
     onContextMenu,
     level = 0,
 }: RelationalFieldProps) => {
-    const { hasModelExcludedFields, getModelExcludedFields } = useModelExcludedFields()
+    const { hasModelExcludedFields, getModelExcludedFields } =
+        useModelExcludedFields();
     const { openRecord, focusOnRecord, openRecords, focusOnRecords } =
-        useRecordActions()
+        useRecordActions();
     const {
         contextMenu,
         handleRecordContextMenu,
         closeContextMenu,
         getContextMenuItems,
-    } = useRecordContextMenu()
+    } = useRecordContextMenu();
 
-    const isExpanded = useSignal(false)
-    const relatedData = useSignal<Record<string, unknown>[] | null>(null)
+    const isExpanded = useSignal(false);
+    const relatedData = useSignal<Record<string, unknown>[] | null>(null);
     const relatedFieldsMetadata = useSignal<Record<
         string,
         FieldMetadata
-    > | null>(null)
-    const loading = useSignal(false)
-    const error = useSignal<string | null>(null)
-    const relatedRecordsExpanded = useSignal<Set<number>>(new Set())
+    > | null>(null);
+    const loading = useSignal(false);
+    const error = useSignal<string | null>(null);
+    const relatedRecordsExpanded = useSignal<Set<number>>(new Set());
 
-    const ids = extractIds(value)
-    const modelName = getRelatedModel(fieldMetadata)
+    const ids = extractIds(value);
+    const modelName = getRelatedModel(fieldMetadata);
 
-    const modelHasExcludedFields = modelName ? hasModelExcludedFields(modelName) : false
-    const excludedFields = modelName ? getModelExcludedFields(modelName) : []
+    const modelHasExcludedFields = modelName
+        ? hasModelExcludedFields(modelName)
+        : false;
+    const excludedFields = modelName ? getModelExcludedFields(modelName) : [];
 
     const handleExpand = async () => {
         if (!isExpanded.value && !relatedData.value) {
-            await loadRelatedData()
+            await loadRelatedData();
         }
-        isExpanded.value = !isExpanded.value
-    }
+        isExpanded.value = !isExpanded.value;
+    };
 
     const loadRelatedData = async () => {
-        loading.value = true
-        error.value = null
+        loading.value = true;
+        error.value = null;
 
         try {
             if (ids.length === 0) {
-                error.value = "No valid IDs found"
-                return
+                error.value = "No valid IDs found";
+                return;
             }
 
             if (!modelName) {
-                error.value = "Cannot determine related model"
-                return
+                error.value = "Cannot determine related model";
+                return;
             }
 
-            const data = await odooRpcService.read(modelName, ids, [])
-            relatedData.value = Array.isArray(data) ? data : [data]
+            const data = await odooRpcService.read(modelName, ids, []);
+            relatedData.value = Array.isArray(data) ? data : [data];
 
-            const fieldsResponse = await odooRpcService.getFieldsInfo(modelName)
+            const fieldsResponse =
+                await odooRpcService.getFieldsInfo(modelName);
             if (fieldsResponse && typeof fieldsResponse === "object") {
                 relatedFieldsMetadata.value = fieldsResponse as Record<
                     string,
                     FieldMetadata
-                >
+                >;
             }
         } catch (err) {
-            error.value = err instanceof Error ? err.message : "Unknown error"
+            error.value = err instanceof Error ? err.message : "Unknown error";
         } finally {
-            loading.value = false
+            loading.value = false;
         }
-    }
+    };
 
     const handleRelatedRecordToggle = (index: number) => {
-        const newExpanded = new Set(relatedRecordsExpanded.value)
+        const newExpanded = new Set(relatedRecordsExpanded.value);
         if (newExpanded.has(index)) {
-            newExpanded.delete(index)
+            newExpanded.delete(index);
         } else {
-            newExpanded.add(index)
+            newExpanded.add(index);
         }
-        relatedRecordsExpanded.value = newExpanded
-    }
+        relatedRecordsExpanded.value = newExpanded;
+    };
 
     const handleOpenRelatedRecord = async (
         record: Record<string, unknown>,
         event: Event,
-        asPopup = false
+        asPopup = false,
     ) => {
-        if (!modelName) return
-        await openRecord(record, modelName, event, asPopup)
-    }
+        if (!modelName) return;
+        await openRecord(record, modelName, event, asPopup);
+    };
 
     const handleOpenRelationalField = async (event: Event, asPopup = false) => {
-        if (!modelName) return
-        await openRecords(ids, modelName, event, asPopup)
-    }
+        if (!modelName) return;
+        await openRecords(ids, modelName, event, asPopup);
+    };
 
     const handleFocusRelationalField = async (event: Event) => {
-        if (!modelName) return
-        await focusOnRecords(ids, modelName, event)
-    }
+        if (!modelName) return;
+        await focusOnRecords(ids, modelName, event);
+    };
 
     const handleFocusRelatedRecord = async (
         record: Record<string, unknown>,
-        event: Event
+        event: Event,
     ) => {
-        if (!modelName) return
-        await focusOnRecord(record, modelName, event)
-    }
+        if (!modelName) return;
+        await focusOnRecord(record, modelName, event);
+    };
 
     const renderRelationalContent = () => {
         if (loading.value) {
@@ -137,15 +141,15 @@ export const RelationalFieldRenderer = ({
                 <div className="relational-loading">
                     Loading relational data...
                 </div>
-            )
+            );
         }
 
         if (error.value) {
-            return <div className="relational-error">Error: {error.value}</div>
+            return <div className="relational-error">Error: {error.value}</div>;
         }
 
         if (!relatedData.value || relatedData.value.length === 0) {
-            return <div className="no-data">No related data found</div>
+            return <div className="no-data">No related data found</div>;
         }
 
         // If a single record: display it directly
@@ -159,15 +163,15 @@ export const RelationalFieldRenderer = ({
                     expandedRecords={new Set([0])}
                     renderAsList={false}
                 />
-            )
+            );
         }
 
         // If multiple records: display a list with individual controls
         return (
             <div className="relational-records-list">
                 {relatedData.value.map((record, index) => {
-                    const recordId = record.id as number
-                    const isExpanded = relatedRecordsExpanded.value.has(index)
+                    const recordId = record.id as number;
+                    const isExpanded = relatedRecordsExpanded.value.has(index);
 
                     return (
                         <div
@@ -181,7 +185,7 @@ export const RelationalFieldRenderer = ({
                                     handleRecordContextMenu(
                                         e as unknown as MouseEvent,
                                         record,
-                                        modelName || undefined
+                                        modelName || undefined,
                                     )
                                 }
                             >
@@ -192,22 +196,35 @@ export const RelationalFieldRenderer = ({
                                         <ChevronRight />
                                     )}
                                 </span>
-                                <span className="record-id" data-level={level} data-searchable={recordId ? String(recordId) : ''}>
+                                <span
+                                    className="record-id"
+                                    data-level={level}
+                                    data-searchable={
+                                        recordId ? String(recordId) : ""
+                                    }
+                                >
                                     {recordId ? `#${recordId}` : "No ID"}
                                 </span>
-                                <span className="record-name" data-level={level} data-searchable={record.name ||
-                                    record.display_name ||
-                                    `Record ${index + 1}`}>
+                                <span
+                                    className="record-name"
+                                    data-level={level}
+                                    data-searchable={
+                                        record.name ||
+                                        record.display_name ||
+                                        `Record ${index + 1}`
+                                    }
+                                >
                                     {record.name ||
                                         record.display_name ||
                                         `Record ${index + 1}`}
                                 </span>
-                                {(recordId && modelName) ? (
+                                {recordId && modelName ? (
                                     <div className="record-actions">
-                                        {modelHasExcludedFields && isExpanded ? (
+                                        {modelHasExcludedFields &&
+                                        isExpanded ? (
                                             <span
                                                 className="excluded-fields-indicator"
-                                                title={`Excluded fields from ${modelName}: ${excludedFields.join(', ')}`}
+                                                title={`Excluded fields from ${modelName}: ${excludedFields.join(", ")}`}
                                             >
                                                 <TriangleAlert size={16} />
                                             </span>
@@ -218,7 +235,7 @@ export const RelationalFieldRenderer = ({
                                             onClick={(e) =>
                                                 handleFocusRelatedRecord(
                                                     record,
-                                                    e as unknown as Event
+                                                    e as unknown as Event,
                                                 )
                                             }
                                         >
@@ -231,7 +248,7 @@ export const RelationalFieldRenderer = ({
                                                 handleOpenRelatedRecord(
                                                     record,
                                                     e as unknown as Event,
-                                                    false
+                                                    false,
                                                 )
                                             }
                                         >
@@ -244,7 +261,7 @@ export const RelationalFieldRenderer = ({
                                                 handleOpenRelatedRecord(
                                                     record,
                                                     e as unknown as Event,
-                                                    true
+                                                    true,
                                                 )
                                             }
                                         >
@@ -269,14 +286,14 @@ export const RelationalFieldRenderer = ({
                                 </div>
                             )}
                         </div>
-                    )
+                    );
                 })}
             </div>
-        )
-    }
+        );
+    };
 
     if (!modelName) {
-        return <span className="detail-values">Invalid relational field</span>
+        return <span className="detail-values">Invalid relational field</span>;
     }
 
     return (
@@ -287,14 +304,14 @@ export const RelationalFieldRenderer = ({
                 onContextMenu={
                     onContextMenu
                         ? (e) => {
-                            e.preventDefault()
-                            onContextMenu(
-                                e as unknown as MouseEvent,
-                                fieldName,
-                                value,
-                                fieldMetadata
-                            )
-                        }
+                              e.preventDefault();
+                              onContextMenu(
+                                  e as unknown as MouseEvent,
+                                  fieldName,
+                                  value,
+                                  fieldMetadata,
+                              );
+                          }
                         : undefined
                 }
             >
@@ -309,19 +326,29 @@ export const RelationalFieldRenderer = ({
                     fieldMetadata={fieldMetadata}
                     fieldName={fieldName}
                 >
-                    <span className="detail-label" data-searchable={fieldName} data-level={level}>{fieldName}:</span>
+                    <span
+                        className="detail-label"
+                        data-searchable={fieldName}
+                        data-level={level}
+                    >
+                        {fieldName}:
+                    </span>
                 </FieldMetadataTooltip>
-                <span className="detail-values relational-summary"
+                <span
+                    className="detail-values relational-summary"
                     data-level={level}
                     data-field={fieldName}
-                    data-searchable={Array.isArray(value) &&
+                    data-searchable={
+                        Array.isArray(value) &&
                         value.length === 2 &&
                         fieldMetadata?.type === "many2one"
-                        ? `(${modelName}) [${value[0]}, "${value[1]}"]`
-                        : `(${modelName}, ${ids.length}) [${ids.join(", ")}]`}>
+                            ? `(${modelName}) [${value[0]}, "${value[1]}"]`
+                            : `(${modelName}, ${ids.length}) [${ids.join(", ")}]`
+                    }
+                >
                     {Array.isArray(value) &&
-                        value.length === 2 &&
-                        fieldMetadata?.type === "many2one"
+                    value.length === 2 &&
+                    fieldMetadata?.type === "many2one"
                         ? `(${modelName}) [${value[0]}, "${value[1]}"]`
                         : `(${modelName}, ${ids.length}) [${ids.join(", ")}]`}
                 </span>
@@ -330,7 +357,7 @@ export const RelationalFieldRenderer = ({
                         {modelHasExcludedFields && isExpanded.value ? (
                             <span
                                 className="excluded-fields-indicator"
-                                title={`Excluded fields from ${modelName}: ${excludedFields.join(', ')}`}
+                                title={`Excluded fields from ${modelName}: ${excludedFields.join(", ")}`}
                             >
                                 <TriangleAlert size={12} />
                             </span>
@@ -340,7 +367,7 @@ export const RelationalFieldRenderer = ({
                             title="Focus on this record"
                             onClick={(e) =>
                                 handleFocusRelationalField(
-                                    e as unknown as Event
+                                    e as unknown as Event,
                                 )
                             }
                         >
@@ -352,7 +379,7 @@ export const RelationalFieldRenderer = ({
                             onClick={(e) =>
                                 handleOpenRelationalField(
                                     e as unknown as Event,
-                                    false
+                                    false,
                                 )
                             }
                         >
@@ -364,7 +391,7 @@ export const RelationalFieldRenderer = ({
                             onClick={(e) =>
                                 handleOpenRelationalField(
                                     e as unknown as Event,
-                                    true
+                                    true,
                                 )
                             }
                         >
@@ -386,5 +413,5 @@ export const RelationalFieldRenderer = ({
                 onClose={closeContextMenu}
             />
         </div>
-    )
-}
+    );
+};

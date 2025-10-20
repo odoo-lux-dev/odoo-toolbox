@@ -1,24 +1,24 @@
-import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip"
-import { FieldRenderer } from "@/components/devtools/field-renderer"
-import { useLevel } from "@/components/devtools/level-context"
-import { FieldMetadata } from "@/types"
-import { isRelationalField } from "./field-utils"
+import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip";
+import { FieldRenderer } from "@/components/devtools/field-renderer";
+import { useLevel } from "@/components/devtools/level-context";
+import { FieldMetadata } from "@/types";
+import { isRelationalField } from "./field-utils";
 
 interface RecordFieldProps {
-    fieldKey: string
-    fieldValue: unknown
-    record: Record<string, unknown>
-    fieldsMetadata?: Record<string, FieldMetadata>
-    level: number
-    parentModel?: string
+    fieldKey: string;
+    fieldValue: unknown;
+    record: Record<string, unknown>;
+    fieldsMetadata?: Record<string, FieldMetadata>;
+    level: number;
+    parentModel?: string;
     onFieldContextMenu: (
         event: MouseEvent,
         record: Record<string, unknown>,
         fieldName: string,
         fieldValue: unknown,
         fieldMetadata?: FieldMetadata,
-        parentModel?: string
-    ) => void
+        parentModel?: string,
+    ) => void;
 }
 
 export const RecordFieldRenderer = ({
@@ -30,11 +30,11 @@ export const RecordFieldRenderer = ({
     parentModel,
     onFieldContextMenu,
 }: RecordFieldProps) => {
-    const contextLevel = useLevel()
-    const actualLevel = contextLevel || level
+    const contextLevel = useLevel();
+    const actualLevel = contextLevel || level;
 
-    const fieldMetadata = fieldsMetadata?.[fieldKey]
-    const isRelational = isRelationalField(fieldMetadata || null)
+    const fieldMetadata = fieldsMetadata?.[fieldKey];
+    const isRelational = isRelationalField(fieldMetadata || null);
 
     if (isRelational) {
         return (
@@ -56,12 +56,12 @@ export const RecordFieldRenderer = ({
                             fieldName,
                             value,
                             fieldMetadata || undefined,
-                            parentModel
+                            parentModel,
                         )
                     }
                 />
             </div>
-        )
+        );
     }
 
     return (
@@ -76,7 +76,7 @@ export const RecordFieldRenderer = ({
                         fieldKey,
                         fieldValue,
                         fieldMetadata,
-                        parentModel
+                        parentModel,
                     )
                 }
             >
@@ -103,5 +103,5 @@ export const RecordFieldRenderer = ({
                 />
             </div>
         </div>
-    )
-}
+    );
+};

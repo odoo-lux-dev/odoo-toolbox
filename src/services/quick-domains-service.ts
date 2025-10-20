@@ -1,22 +1,22 @@
-import { StorageItemKey, storage, WatchCallback } from "wxt/utils/storage"
-import { Logger } from "@/services/logger"
-import { QuickDomain } from "@/types"
-import { CHROME_STORAGE_QUICK_DOMAINS_KEY } from "@/utils/constants"
+import { StorageItemKey, storage, WatchCallback } from "wxt/utils/storage";
+import { Logger } from "@/services/logger";
+import { QuickDomain } from "@/types";
+import { CHROME_STORAGE_QUICK_DOMAINS_KEY } from "@/utils/constants";
 
 /**
  * Service for managing DevTools quick domains
  * Handles quick domain storage, ordering, and CRUD operations
  */
 export class QuickDomainsService {
-    private static instance: QuickDomainsService | null = null
+    private static instance: QuickDomainsService | null = null;
 
     private quickDomainsLocalStorage = storage.defineItem<QuickDomain[]>(
         <StorageItemKey>`local:${CHROME_STORAGE_QUICK_DOMAINS_KEY}`,
         {
             init: () => [],
             version: 1,
-        }
-    )
+        },
+    );
 
     private quickDomainsSyncStorage = storage.defineItem<QuickDomain[]>(
         <StorageItemKey>`sync:${CHROME_STORAGE_QUICK_DOMAINS_KEY}`,
@@ -36,14 +36,14 @@ export class QuickDomainsService {
                 },
             ],
             version: 1,
-        }
-    )
+        },
+    );
 
     static getInstance(): QuickDomainsService {
         if (!QuickDomainsService.instance) {
-            QuickDomainsService.instance = new QuickDomainsService()
+            QuickDomainsService.instance = new QuickDomainsService();
         }
-        return QuickDomainsService.instance
+        return QuickDomainsService.instance;
     }
 
     // ===== CORE QUICK DOMAINS OPERATIONS =====
@@ -52,33 +52,33 @@ export class QuickDomainsService {
      * Get quick domains from local storage (unordered)
      */
     async getQuickDomains(): Promise<QuickDomain[]> {
-        return this.quickDomainsLocalStorage.getValue()
+        return this.quickDomainsLocalStorage.getValue();
     }
 
     /**
      * Set quick domains to local storage
      */
     async setQuickDomains(domains: QuickDomain[]): Promise<void> {
-        return this.quickDomainsLocalStorage.setValue(domains)
+        return this.quickDomainsLocalStorage.setValue(domains);
     }
 
     /**
      * Watch for quick domains changes
      */
     watchQuickDomains(
-        callback: WatchCallback<QuickDomain[] | null>
+        callback: WatchCallback<QuickDomain[] | null>,
     ): () => void {
         return storage.watch<QuickDomain[]>(
             <StorageItemKey>`local:${CHROME_STORAGE_QUICK_DOMAINS_KEY}`,
-            callback
-        )
+            callback,
+        );
     }
 
     /**
      * Watch for quick domains changes with automatic ordering
      */
     watchQuickDomainsOrdered(
-        callback: WatchCallback<QuickDomain[] | null>
+        callback: WatchCallback<QuickDomain[] | null>,
     ): () => void {
         return storage.watch<QuickDomain[]>(
             <StorageItemKey>`local:${CHROME_STORAGE_QUICK_DOMAINS_KEY}`,
@@ -86,13 +86,13 @@ export class QuickDomainsService {
                 // Always sort by sequence before calling callback
                 const sortedNewValue =
                     newValue?.toSorted((a, b) => a.sequence - b.sequence) ||
-                    null
+                    null;
                 const sortedOldValue =
                     oldValue?.toSorted((a, b) => a.sequence - b.sequence) ||
-                    null
-                callback(sortedNewValue, sortedOldValue)
-            }
-        )
+                    null;
+                callback(sortedNewValue, sortedOldValue);
+            },
+        );
     }
 
     // ===== ORDERED QUICK DOMAINS OPERATIONS =====
@@ -101,8 +101,8 @@ export class QuickDomainsService {
      * Get quick domains ordered by sequence
      */
     async getQuickDomainsOrdered(): Promise<QuickDomain[]> {
-        const domains = await this.getQuickDomains()
-        return domains.toSorted((a, b) => a.sequence - b.sequence)
+        const domains = await this.getQuickDomains();
+        return domains.toSorted((a, b) => a.sequence - b.sequence);
     }
 
     /**
@@ -112,17 +112,17 @@ export class QuickDomainsService {
         // Remove duplicates by ID (keep latest)
         const uniqueDomains = Object.values(
             domains.reduce((acc: { [key: string]: QuickDomain }, obj) => {
-                acc[obj.id] = obj
-                return acc
-            }, {})
-        )
+                acc[obj.id] = obj;
+                return acc;
+            }, {}),
+        );
 
         // Sort by sequence after deduplication
         const sortedDomains = uniqueDomains.toSorted(
-            (a, b) => a.sequence - b.sequence
-        )
+            (a, b) => a.sequence - b.sequence,
+        );
 
-        return this.setQuickDomains(sortedDomains)
+        return this.setQuickDomains(sortedDomains);
     }
 
     // ===== CRUD OPERATIONS =====
@@ -131,21 +131,21 @@ export class QuickDomainsService {
      * Add a new quick domain
      */
     async addQuickDomain(domain: Omit<QuickDomain, "sequence">): Promise<void> {
-        const domains = await this.getQuickDomainsOrdered()
+        const domains = await this.getQuickDomainsOrdered();
 
         // Check if ID already exists
         if (domains.some((d) => d.id === domain.id)) {
             throw new Error(
-                `Quick domain with ID "${domain.id}" already exists`
-            )
+                `Quick domain with ID "${domain.id}" already exists`,
+            );
         }
 
         const newDomain: QuickDomain = {
             ...domain,
             sequence: domains.length,
-        }
+        };
 
-        return this.setQuickDomainsOrdered([newDomain, ...domains])
+        return this.setQuickDomainsOrdered([newDomain, ...domains]);
     }
 
     /**
@@ -153,50 +153,50 @@ export class QuickDomainsService {
      */
     async updateQuickDomain(
         domainId: string,
-        updates: Partial<Omit<QuickDomain, "id">>
+        updates: Partial<Omit<QuickDomain, "id">>,
     ): Promise<void> {
-        const domains = await this.getQuickDomainsOrdered()
-        const domainExists = domains.some((d) => d.id === domainId)
+        const domains = await this.getQuickDomainsOrdered();
+        const domainExists = domains.some((d) => d.id === domainId);
 
         if (!domainExists) {
-            throw new Error(`Quick domain with ID "${domainId}" not found`)
+            throw new Error(`Quick domain with ID "${domainId}" not found`);
         }
 
         const updatedDomains = domains.map((domain) => {
             if (domain.id === domainId) {
-                return { ...domain, ...updates }
+                return { ...domain, ...updates };
             }
-            return domain
-        })
+            return domain;
+        });
 
-        return this.setQuickDomainsOrdered(updatedDomains)
+        return this.setQuickDomainsOrdered(updatedDomains);
     }
 
     /**
      * Delete a quick domain
      */
     async deleteQuickDomain(domainId: string): Promise<void> {
-        const domains = await this.getQuickDomainsOrdered()
+        const domains = await this.getQuickDomainsOrdered();
         const updatedDomains = domains.filter(
-            (domain) => domain.id !== domainId
-        )
+            (domain) => domain.id !== domainId,
+        );
 
         if (updatedDomains.length === domains.length) {
             Logger.warn(
-                `Quick domain with ID "${domainId}" not found for deletion`
-            )
-            return
+                `Quick domain with ID "${domainId}" not found for deletion`,
+            );
+            return;
         }
 
-        return this.setQuickDomainsOrdered(updatedDomains)
+        return this.setQuickDomainsOrdered(updatedDomains);
     }
 
     /**
      * Get quick domain by ID
      */
     async getQuickDomainById(domainId: string): Promise<QuickDomain | null> {
-        const domains = await this.getQuickDomainsOrdered()
-        return domains.find((d) => d.id === domainId) || null
+        const domains = await this.getQuickDomainsOrdered();
+        return domains.find((d) => d.id === domainId) || null;
     }
 
     /**
@@ -206,26 +206,26 @@ export class QuickDomainsService {
         const domainsWithSequence = orderedDomains.map((domain, index) => ({
             ...domain,
             sequence: index,
-        }))
-        return this.setQuickDomainsOrdered(domainsWithSequence)
+        }));
+        return this.setQuickDomainsOrdered(domainsWithSequence);
     }
 
     /**
      * Generate unique ID for new domain
      */
     async generateUniqueId(baseName: string): Promise<string> {
-        const domains = await this.getQuickDomainsOrdered()
-        const baseId = baseName.toLowerCase().replace(/[^a-z0-9]/g, "-")
+        const domains = await this.getQuickDomainsOrdered();
+        const baseId = baseName.toLowerCase().replace(/[^a-z0-9]/g, "-");
 
-        let id = baseId
-        let counter = 1
+        let id = baseId;
+        let counter = 1;
 
         while (domains.some((d) => d.id === id)) {
-            id = `${baseId}-${counter}`
-            counter++
+            id = `${baseId}-${counter}`;
+            counter++;
         }
 
-        return id
+        return id;
     }
 
     // ===== SYNC OPERATIONS =====
@@ -234,25 +234,25 @@ export class QuickDomainsService {
      * Get quick domains from sync storage
      */
     async getSyncedQuickDomains(): Promise<QuickDomain[]> {
-        return this.quickDomainsSyncStorage.getValue()
+        return this.quickDomainsSyncStorage.getValue();
     }
 
     /**
      * Save quick domains to sync storage
      */
     async persistQuickDomainsToSync(): Promise<void> {
-        const domains = await this.getQuickDomainsOrdered()
-        await this.quickDomainsSyncStorage.setValue(domains)
+        const domains = await this.getQuickDomainsOrdered();
+        await this.quickDomainsSyncStorage.setValue(domains);
     }
 
     /**
      * Align local quick domains with synced domains
      */
     async alignLocalQuickDomainsWithSync(): Promise<void> {
-        Logger.info("Aligning local quick domains with cloud data")
-        const syncedDomains = await this.getSyncedQuickDomains()
-        await this.setQuickDomains(syncedDomains)
-        Logger.info("Local quick domains aligned with cloud data")
+        Logger.info("Aligning local quick domains with cloud data");
+        const syncedDomains = await this.getSyncedQuickDomains();
+        await this.setQuickDomains(syncedDomains);
+        Logger.info("Local quick domains aligned with cloud data");
     }
 
     // ===== CONFIGURATION IMPORT/EXPORT =====
@@ -261,17 +261,17 @@ export class QuickDomainsService {
      * Export current quick domains for backup
      */
     async exportQuickDomains(): Promise<QuickDomain[]> {
-        return this.getQuickDomainsOrdered()
+        return this.getQuickDomainsOrdered();
     }
 
     /**
      * Import quick domains from backup
      */
     async importQuickDomains(domains: QuickDomain[]): Promise<void> {
-        Logger.info("Importing quick domains from configuration")
-        await this.setQuickDomainsOrdered(domains)
-        Logger.info("Quick domains imported successfully")
+        Logger.info("Importing quick domains from configuration");
+        await this.setQuickDomainsOrdered(domains);
+        Logger.info("Quick domains imported successfully");
     }
 }
 
-export const quickDomainsService = QuickDomainsService.getInstance()
+export const quickDomainsService = QuickDomainsService.getInstance();

@@ -8,4 +8,4 @@ export const Header = () => (
             projects
         </h2>
     </header>
-)
+);

@@ -1,22 +1,22 @@
-import { FieldMetadata } from "@/types"
-import { EmptyRelationalFieldRenderer } from "./empty-relational-field-renderer"
-import { extractIds, getRelatedModel, isRelationalField } from "./field-utils"
-import { RelationalFieldRenderer } from "./relational-field-renderer"
-import { SimpleFieldRenderer } from "./simple-field-renderer"
+import { FieldMetadata } from "@/types";
+import { EmptyRelationalFieldRenderer } from "./empty-relational-field-renderer";
+import { extractIds, getRelatedModel, isRelationalField } from "./field-utils";
+import { RelationalFieldRenderer } from "./relational-field-renderer";
+import { SimpleFieldRenderer } from "./simple-field-renderer";
 
 interface FieldRenderSwitchProps {
-    value: unknown
-    fieldName: string
-    fieldMetadata: FieldMetadata | null
-    level?: number
-    showAsRowWithLabel?: boolean
-    additionalClasses?: string
+    value: unknown;
+    fieldName: string;
+    fieldMetadata: FieldMetadata | null;
+    level?: number;
+    showAsRowWithLabel?: boolean;
+    additionalClasses?: string;
     onContextMenu?: (
         event: MouseEvent,
         fieldName: string,
         value: unknown,
-        fieldMetadata: FieldMetadata | null
-    ) => void
+        fieldMetadata: FieldMetadata | null,
+    ) => void;
 }
 
 export const FieldRenderSwitch = ({
@@ -28,7 +28,7 @@ export const FieldRenderSwitch = ({
     additionalClasses = "",
     onContextMenu,
 }: FieldRenderSwitchProps) => {
-    const isRelational = isRelationalField(fieldMetadata)
+    const isRelational = isRelationalField(fieldMetadata);
 
     // Field without label
     if (!isRelational && !showAsRowWithLabel) {
@@ -41,7 +41,7 @@ export const FieldRenderSwitch = ({
                 additionalClasses={additionalClasses}
                 onContextMenu={onContextMenu}
             />
-        )
+        );
     }
 
     // Non relational field without label (treated as empty)
@@ -54,13 +54,13 @@ export const FieldRenderSwitch = ({
                 level={level}
                 onContextMenu={onContextMenu}
             />
-        )
+        );
     }
 
     // Relational field with label
     if (showAsRowWithLabel && isRelational) {
-        const ids = extractIds(value)
-        const modelName = getRelatedModel(fieldMetadata)
+        const ids = extractIds(value);
+        const modelName = getRelatedModel(fieldMetadata);
 
         // If model is undetermined, treat as simple
         if (!modelName) {
@@ -73,7 +73,7 @@ export const FieldRenderSwitch = ({
                     additionalClasses={additionalClasses}
                     onContextMenu={onContextMenu}
                 />
-            )
+            );
         }
 
         // If relational field is empty
@@ -85,7 +85,7 @@ export const FieldRenderSwitch = ({
                     fieldMetadata={fieldMetadata}
                     onContextMenu={onContextMenu}
                 />
-            )
+            );
         }
 
         // Relational field with data
@@ -97,7 +97,7 @@ export const FieldRenderSwitch = ({
                 onContextMenu={onContextMenu}
                 level={level}
             />
-        )
+        );
     }
 
     // Fallback: treat as simple
@@ -110,5 +110,5 @@ export const FieldRenderSwitch = ({
             additionalClasses={additionalClasses}
             onContextMenu={onContextMenu}
         />
-    )
-}
+    );
+};

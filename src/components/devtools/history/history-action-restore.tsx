@@ -1,7 +1,7 @@
-import { History } from "lucide-preact"
-import { route } from "preact-router"
-import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
-import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
+import { History } from "lucide-preact";
+import { route } from "preact-router";
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
+import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import {
     resetRpcQuery,
     resetRpcResult,
@@ -9,11 +9,11 @@ import {
     setCreateValues,
     setRpcQuery,
     setWriteValues,
-} from "@/contexts/devtools-signals"
-import type { HistoryAction } from "@/types"
+} from "@/contexts/devtools-signals";
+import type { HistoryAction } from "@/types";
 
 interface HistoryActionRestoreProps {
-    action: HistoryAction
+    action: HistoryAction;
 }
 
 /**
@@ -21,49 +21,49 @@ interface HistoryActionRestoreProps {
  * Navigates to the appropriate tab and restores the parameters
  */
 export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
-    const { showNotification } = useDevToolsNotifications()
+    const { showNotification } = useDevToolsNotifications();
 
     const handleRestore = async () => {
         try {
-            resetRpcQuery()
-            resetRpcResult()
+            resetRpcQuery();
+            resetRpcResult();
 
             switch (action.type) {
                 case "search":
-                    await restoreSearchAction(action)
-                    break
+                    await restoreSearchAction(action);
+                    break;
                 case "write":
-                    await restoreWriteAction(action)
-                    break
+                    await restoreWriteAction(action);
+                    break;
                 case "create":
-                    await restoreCreateAction(action)
-                    break
+                    await restoreCreateAction(action);
+                    break;
                 case "call-method":
-                    await restoreCallMethodAction(action)
-                    break
+                    await restoreCallMethodAction(action);
+                    break;
                 case "unlink":
-                    await restoreUnlinkAction(action)
-                    break
+                    await restoreUnlinkAction(action);
+                    break;
             }
 
             showNotification(
                 `Restored ${action.type} action for ${action.model}`,
-                "success"
-            )
+                "success",
+            );
         } catch (error) {
             showNotification(
                 `Failed to restore action: ${error instanceof Error ? error.message : "Unknown error"}`,
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
         }
-    }
+    };
 
     const restoreSearchAction = async (action: HistoryAction) => {
-        if (action.type !== "search") return
+        if (action.type !== "search") return;
 
         const { model, domain, selectedFields, ids, limit, offset, orderBy } =
-            action.parameters
+            action.parameters;
 
         setRpcQuery({
             model,
@@ -73,15 +73,15 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
             limit,
             offset,
             orderBy,
-        })
+        });
 
-        route("/search")
-    }
+        route("/search");
+    };
 
     const restoreWriteAction = async (action: HistoryAction) => {
-        if (action.type !== "write") return
+        if (action.type !== "write") return;
 
-        const { model, ids, values } = action.parameters
+        const { model, ids, values } = action.parameters;
 
         setRpcQuery({
             model,
@@ -91,17 +91,17 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
             limit: 80,
             offset: 0,
             orderBy: "",
-        })
+        });
 
-        setWriteValues(JSON.stringify(values, null, 2))
+        setWriteValues(JSON.stringify(values, null, 2));
 
-        route("/write")
-    }
+        route("/write");
+    };
 
     const restoreCreateAction = async (action: HistoryAction) => {
-        if (action.type !== "create") return
+        if (action.type !== "create") return;
 
-        const { model, values } = action.parameters
+        const { model, values } = action.parameters;
 
         setRpcQuery({
             model,
@@ -111,17 +111,17 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
             limit: 80,
             offset: 0,
             orderBy: "",
-        })
+        });
 
-        setCreateValues(JSON.stringify(values, null, 2))
+        setCreateValues(JSON.stringify(values, null, 2));
 
-        route("/create")
-    }
+        route("/create");
+    };
 
     const restoreCallMethodAction = async (action: HistoryAction) => {
-        if (action.type !== "call-method") return
+        if (action.type !== "call-method") return;
 
-        const { model, ids, method } = action.parameters
+        const { model, ids, method } = action.parameters;
 
         setRpcQuery({
             model,
@@ -131,17 +131,17 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
             limit: 80,
             offset: 0,
             orderBy: "",
-        })
+        });
 
-        setCallMethodName(method)
+        setCallMethodName(method);
 
-        route("/call-method")
-    }
+        route("/call-method");
+    };
 
     const restoreUnlinkAction = async (action: HistoryAction) => {
-        if (action.type !== "unlink") return
+        if (action.type !== "unlink") return;
 
-        const { model, ids } = action.parameters
+        const { model, ids } = action.parameters;
 
         setRpcQuery({
             model,
@@ -151,10 +151,10 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
             limit: 80,
             offset: 0,
             orderBy: "",
-        })
+        });
 
-        route("/unlink")
-    }
+        route("/unlink");
+    };
 
     return (
         <div className="history-action-restore">
@@ -168,5 +168,5 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
                 Restore
             </button>
         </div>
-    )
-}
+    );
+};

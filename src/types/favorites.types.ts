@@ -1,16 +1,16 @@
-export type FavoritesV1 = string
+export type FavoritesV1 = string;
 
 export type FavoritesV2 = {
-    name: string
-    display_name: string
-    sequence: number
-}
+    name: string;
+    display_name: string;
+    sequence: number;
+};
 
 export type FavoritesV3 = {
-    name: string
-    display_name: string
-    sequence: number
-    task_link: string
-}
+    name: string;
+    display_name: string;
+    sequence: number;
+    task_link: string;
+};
 
-export type Favorite = FavoritesV3
+export type Favorite = FavoritesV3;

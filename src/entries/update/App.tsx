@@ -1,54 +1,54 @@
-import { BookOpen, Settings } from "lucide-preact"
-import { useState } from "preact/hooks"
-import { GithubIcon } from "@/components/shared/icons/github-icon"
-import { Logger } from "@/services/logger"
-import { updateService } from "@/services/update-service"
-import { ActivationMethod } from "@/types"
+import { BookOpen, Settings } from "lucide-preact";
+import { useState } from "preact/hooks";
+import { GithubIcon } from "@/components/shared/icons/github-icon";
+import { Logger } from "@/services/logger";
+import { updateService } from "@/services/update-service";
+import { ActivationMethod } from "@/types";
 
 export const App = () => {
-    const currentVersion = browser.runtime.getManifest().version
-    const updateInfo = updateService.getUpdateInfo(currentVersion)
+    const currentVersion = browser.runtime.getManifest().version;
+    const updateInfo = updateService.getUpdateInfo(currentVersion);
     const [buttonStates, setButtonStates] = useState<
         Record<
             number,
             {
-                text: string
-                icon: string
-                disabled?: boolean
+                text: string;
+                icon: string;
+                disabled?: boolean;
             }
         >
-    >({})
+    >({});
 
     const openOptions = () => {
-        browser.runtime.openOptionsPage()
-    }
+        browser.runtime.openOptionsPage();
+    };
 
     const openGitHub = () => {
         browser.tabs.create({
             url: "https://github.com/odoo-lux-dev/odoo-toolbox",
-        })
-    }
+        });
+    };
 
     const openChangelog = () => {
         browser.tabs.create({
             url: `https://github.com/odoo-lux-dev/odoo-toolbox/releases/tag/v${currentVersion}`,
-        })
-    }
+        });
+    };
 
     const handleActivationMethodClick = (
         method: ActivationMethod,
-        index: number
+        index: number,
     ) => {
         switch (method.action) {
             case "openSettings":
-                openOptions()
-                break
+                openOptions();
+                break;
             case "openUrl":
                 if (method.url) {
-                    browser.tabs.create({ url: method.url })
-                    window.close()
+                    browser.tabs.create({ url: method.url });
+                    window.close();
                 }
-                break
+                break;
             case "custom":
                 if (
                     method.customHandler &&
@@ -56,18 +56,18 @@ export const App = () => {
                 ) {
                     try {
                         const updateButtonState = (newState: {
-                            text: string
-                            icon: string
-                            disabled?: boolean
+                            text: string;
+                            icon: string;
+                            disabled?: boolean;
                         }) => {
                             setButtonStates((prev) => ({
                                 ...prev,
                                 [index]: newState,
-                            }))
-                        }
-                        method.customHandler(updateButtonState)
+                            }));
+                        };
+                        method.customHandler(updateButtonState);
                     } catch (error) {
-                        Logger.error("Error executing custom handler:", error)
+                        Logger.error("Error executing custom handler:", error);
                         setButtonStates((prev) => ({
                             ...prev,
                             [index]: {
@@ -75,21 +75,21 @@ export const App = () => {
                                 icon: "❌",
                                 disabled: true,
                             },
-                        }))
+                        }));
                         setTimeout(() => {
                             setButtonStates((prev) => {
-                                const newStates = { ...prev }
-                                delete newStates[index]
-                                return newStates
-                            })
-                        }, 3000)
+                                const newStates = { ...prev };
+                                delete newStates[index];
+                                return newStates;
+                            });
+                        }, 3000);
                     }
                 }
-                break
+                break;
             default:
-                break
+                break;
         }
-    }
+    };
 
     return (
         <div className="update-card">
@@ -125,13 +125,13 @@ export const App = () => {
                         <div className="activation-methods">
                             {updateInfo.activationMethods.map(
                                 (method, index) => {
-                                    const currentState = buttonStates[index]
+                                    const currentState = buttonStates[index];
                                     const displayText =
-                                        currentState?.text || method.text
+                                        currentState?.text || method.text;
                                     const displayIcon =
-                                        currentState?.icon || method.icon
+                                        currentState?.icon || method.icon;
                                     const isDisabled =
-                                        currentState?.disabled || false
+                                        currentState?.disabled || false;
 
                                     return (
                                         <div
@@ -142,7 +142,7 @@ export const App = () => {
                                                 method.action &&
                                                 handleActivationMethodClick(
                                                     method,
-                                                    index
+                                                    index,
                                                 )
                                             }
                                             role={
@@ -161,11 +161,11 @@ export const App = () => {
                                                     method.action &&
                                                     e.key === "Enter"
                                                 ) {
-                                                    e.preventDefault()
+                                                    e.preventDefault();
                                                     handleActivationMethodClick(
                                                         method,
-                                                        index
-                                                    )
+                                                        index,
+                                                    );
                                                 }
                                             }}
                                         >
@@ -174,8 +174,8 @@ export const App = () => {
                                             </span>
                                             <span>{displayText}</span>
                                         </div>
-                                    )
-                                }
+                                    );
+                                },
                             )}
                         </div>
                     </div>
@@ -205,11 +205,11 @@ export const App = () => {
                     <h3>🚀 What's New</h3>
                     <ul>
                         {updateInfo.notes.map((note, index) => {
-                            const emojiMatch = note.match(/^(\p{Emoji})\s*/u)
-                            const emoji = emojiMatch ? emojiMatch[1] : ""
+                            const emojiMatch = note.match(/^(\p{Emoji})\s*/u);
+                            const emoji = emojiMatch ? emojiMatch[1] : "";
                             const text = emojiMatch
                                 ? note.slice(emojiMatch[0].length)
-                                : note
+                                : note;
 
                             return (
                                 <li key={index} className="update-note-item">
@@ -220,7 +220,7 @@ export const App = () => {
                                     )}
                                     <span className="note-text">{text}</span>
                                 </li>
-                            )
+                            );
                         })}
                     </ul>
                 </div>
@@ -241,5 +241,5 @@ export const App = () => {
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};

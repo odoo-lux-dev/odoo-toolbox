@@ -1,22 +1,22 @@
-import { DebugModeTips } from "@/components/options/debug-mode-tips"
-import { OptionItem } from "@/components/options/option-item"
-import { useOptions } from "@/contexts/options-signals-hook"
-import { settingsService } from "@/services/settings-service"
-import { DebugModeType } from "@/types"
-import { CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY } from "@/utils/constants"
+import { DebugModeTips } from "@/components/options/debug-mode-tips";
+import { OptionItem } from "@/components/options/option-item";
+import { useOptions } from "@/contexts/options-signals-hook";
+import { settingsService } from "@/services/settings-service";
+import { DebugModeType } from "@/types";
+import { CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY } from "@/utils/constants";
 
 export const DebugModeOption = () => {
-    const { settings } = useOptions()
+    const { settings } = useOptions();
 
     const selectedMode =
         (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) ||
-        "disabled"
+        "disabled";
 
     const handleChange = async (event: Event) => {
-        const target = event.target as HTMLInputElement
-        const value = target.value as DebugModeType
-        await settingsService.setDebugMode(value)
-    }
+        const target = event.target as HTMLInputElement;
+        const value = target.value as DebugModeType;
+        await settingsService.setDebugMode(value);
+    };
 
     const additionalTooltipContent = (
         <ul>
@@ -40,7 +40,7 @@ export const DebugModeOption = () => {
                 [Tests assets] Debug mode will always be enabled to tests assets
             </li>
         </ul>
-    )
+    );
 
     return (
         <OptionItem
@@ -110,5 +110,5 @@ export const DebugModeOption = () => {
                 </label>
             </div>
         </OptionItem>
-    )
-}
+    );
+};

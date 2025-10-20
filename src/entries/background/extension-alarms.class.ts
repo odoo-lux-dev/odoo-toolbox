@@ -1,29 +1,29 @@
-import { AlarmOption } from "@/types"
+import { AlarmOption } from "@/types";
 
 export class ExtensionAlarm {
-    private readonly name: string
-    private readonly options: Partial<AlarmOption>
-    private readonly process: () => void
+    private readonly name: string;
+    private readonly options: Partial<AlarmOption>;
+    private readonly process: () => void;
 
     constructor(
         name: string,
         options: Partial<AlarmOption>,
-        process: () => void
+        process: () => void,
     ) {
-        this.name = name
-        this.options = options
-        this.process = process
+        this.name = name;
+        this.options = options;
+        this.process = process;
     }
 
     getName() {
-        return this.name
+        return this.name;
     }
 
     getOptions() {
-        return this.options
+        return this.options;
     }
 
     execute() {
-        this.process()
+        this.process();
     }
 }

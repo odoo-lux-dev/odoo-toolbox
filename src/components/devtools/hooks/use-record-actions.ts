@@ -1,13 +1,13 @@
-import { focusRecord } from "@/contexts/devtools-signals"
-import { useRpcQuery } from "@/contexts/devtools-signals-hook"
-import { Logger } from "@/services/logger"
-import { odooRpcService } from "@/services/odoo-rpc-service"
+import { focusRecord } from "@/contexts/devtools-signals";
+import { useRpcQuery } from "@/contexts/devtools-signals-hook";
+import { Logger } from "@/services/logger";
+import { odooRpcService } from "@/services/odoo-rpc-service";
 
 /**
  * Custom hook to centralize record actions (open, focus)
  */
 export const useRecordActions = () => {
-    const { query: rpcQuery } = useRpcQuery()
+    const { query: rpcQuery } = useRpcQuery();
 
     /**
      * Opens a single record in Odoo
@@ -20,20 +20,20 @@ export const useRecordActions = () => {
         record: Record<string, unknown>,
         model: string | undefined,
         event: Event,
-        asPopup = false
+        asPopup = false,
     ) => {
-        event.stopPropagation()
+        event.stopPropagation();
 
-        const recordId = record.id as number
-        const modelToUse = model || rpcQuery.model
+        const recordId = record.id as number;
+        const modelToUse = model || rpcQuery.model;
 
         if (!recordId || !modelToUse) {
             Logger.warn("Cannot open record: missing ID or model", {
                 recordId,
                 model,
                 queryModel: rpcQuery.model,
-            })
-            return
+            });
+            return;
         }
 
         try {
@@ -41,11 +41,11 @@ export const useRecordActions = () => {
                 model: modelToUse,
                 recordIds: recordId,
                 asPopup,
-            })
+            });
         } catch (error) {
-            Logger.error("Failed to open record:", error)
+            Logger.error("Failed to open record:", error);
         }
-    }
+    };
 
     /**
      * Focus on a single record
@@ -56,28 +56,28 @@ export const useRecordActions = () => {
     const focusOnRecord = async (
         record: Record<string, unknown>,
         model: string | undefined,
-        event: Event
+        event: Event,
     ) => {
-        event.stopPropagation()
+        event.stopPropagation();
 
-        const recordId = record.id as number
-        const modelToUse = model || rpcQuery.model
+        const recordId = record.id as number;
+        const modelToUse = model || rpcQuery.model;
 
         if (!recordId || !modelToUse) {
             Logger.warn("Cannot focus record: missing ID or model", {
                 recordId,
                 model,
                 queryModel: rpcQuery.model,
-            })
-            return
+            });
+            return;
         }
 
         try {
-            await focusRecord(modelToUse, recordId)
+            await focusRecord(modelToUse, recordId);
         } catch (error) {
-            Logger.error("Failed to focus record:", error)
+            Logger.error("Failed to focus record:", error);
         }
-    }
+    };
 
     /**
      * Opens multiple records in Odoo (for relational fields)
@@ -90,16 +90,16 @@ export const useRecordActions = () => {
         ids: number[],
         model: string,
         event: Event,
-        asPopup = false
+        asPopup = false,
     ) => {
-        event.stopPropagation()
+        event.stopPropagation();
 
         if (!model || ids.length === 0) {
             Logger.warn("Cannot open records: missing model or IDs", {
                 model,
                 ids,
-            })
-            return
+            });
+            return;
         }
 
         try {
@@ -107,11 +107,11 @@ export const useRecordActions = () => {
                 model,
                 recordIds: ids,
                 asPopup,
-            })
+            });
         } catch (error) {
-            Logger.error("Failed to open records:", error)
+            Logger.error("Failed to open records:", error);
         }
-    }
+    };
 
     /**
      * Focus on multiple records (for relational fields)
@@ -122,29 +122,29 @@ export const useRecordActions = () => {
     const focusOnRecords = async (
         ids: number[],
         model: string,
-        event: Event
+        event: Event,
     ) => {
-        event.stopPropagation()
+        event.stopPropagation();
 
         if (ids.length === 0 || !model) {
             Logger.warn("Cannot focus records: no IDs or model", {
                 ids,
                 model,
-            })
-            return
+            });
+            return;
         }
 
         try {
-            await focusRecord(model, ids)
+            await focusRecord(model, ids);
         } catch (error) {
-            Logger.error("Failed to focus records:", error)
+            Logger.error("Failed to focus records:", error);
         }
-    }
+    };
 
     return {
         openRecord,
         focusOnRecord,
         openRecords,
         focusOnRecords,
-    }
-}
+    };
+};

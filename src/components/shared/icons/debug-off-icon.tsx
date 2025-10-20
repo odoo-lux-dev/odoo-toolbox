@@ -1,9 +1,9 @@
-import { BugOff } from "lucide-preact"
+import { BugOff } from "lucide-preact";
 
 export const DebugModeOffIcon = ({
     isNostalgia = false,
 }: {
-    isNostalgia: boolean
+    isNostalgia: boolean;
 }) => {
     if (isNostalgia) {
         return (
@@ -79,8 +79,8 @@ export const DebugModeOffIcon = ({
                     stroke-width="1"
                 />
             </svg>
-        )
+        );
     }
 
-    return <BugOff size={16} />
-}
+    return <BugOff size={16} />;
+};

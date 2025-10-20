@@ -1,17 +1,17 @@
-import { OptionItem } from "@/components/options/option-item"
-import { ToggleSwitch } from "@/components/options/toggle-switch"
-import { useOptions } from "@/contexts/options-signals-hook"
-import { settingsService } from "@/services/settings-service"
-import { CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST } from "@/utils/constants"
+import { OptionItem } from "@/components/options/option-item";
+import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { useOptions } from "@/contexts/options-signals-hook";
+import { settingsService } from "@/services/settings-service";
+import { CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST } from "@/utils/constants";
 
 export const TechnicalListOption = () => {
-    const { settings } = useOptions()
+    const { settings } = useOptions();
 
     const handleChange = async (checked: boolean) => {
-        await settingsService.setShowTechnicalList(checked)
-    }
+        await settingsService.setShowTechnicalList(checked);
+    };
 
-    const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]
+    const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST];
 
     const additionalTooltipContent = (
         <div>
@@ -58,7 +58,7 @@ export const TechnicalListOption = () => {
                 </li>
             </ul>
         </div>
-    )
+    );
 
     return (
         <OptionItem
@@ -69,5 +69,5 @@ export const TechnicalListOption = () => {
         >
             <ToggleSwitch isChecked={isEnabled} onInput={handleChange} />
         </OptionItem>
-    )
-}
+    );
+};

@@ -1,15 +1,15 @@
-import { JSX } from "preact"
-import { route } from "preact-router"
+import { JSX } from "preact";
+import { route } from "preact-router";
 
 interface DevToolsLayoutProps {
-    children: JSX.Element
-    currentPath: string
+    children: JSX.Element;
+    currentPath: string;
 }
 
 interface NavItem {
-    id: string
-    label: string
-    path: string
+    id: string;
+    label: string;
+    path: string;
 }
 
 const navItems: NavItem[] = [
@@ -19,15 +19,15 @@ const navItems: NavItem[] = [
     { id: "call-method", label: "Call Method", path: "/call-method" },
     { id: "unlink", label: "Unlink", path: "/unlink" },
     { id: "history", label: "History", path: "/history" },
-]
+];
 
 export const DevToolsLayout = ({
     children,
     currentPath,
 }: DevToolsLayoutProps) => {
     const handleNavigation = (path: string) => {
-        route(path)
-    }
+        route(path);
+    };
 
     return (
         <div className="devtools-app">
@@ -45,5 +45,5 @@ export const DevToolsLayout = ({
 
             <main className="devtools-content">{children}</main>
         </div>
-    )
-}
+    );
+};

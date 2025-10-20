@@ -1,5 +1,5 @@
 interface ErrorStateProps {
-    message: string
+    message: string;
 }
 
 export const ErrorState = ({ message }: ErrorStateProps) => (
@@ -7,4 +7,4 @@ export const ErrorState = ({ message }: ErrorStateProps) => (
         <i className="fa fa-exclamation-triangle" />
         <span>{message}</span>
     </div>
-)
+);

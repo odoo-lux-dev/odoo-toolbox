@@ -1,18 +1,18 @@
-import "@/components/devtools/result-states/pagination-components.style.scss"
-import { ArrowLeft, ArrowRight } from "lucide-preact"
-import { usePagination } from "@/components/devtools/hooks/use-pagination"
+import "@/components/devtools/result-states/pagination-components.style.scss";
+import { ArrowLeft, ArrowRight } from "lucide-preact";
+import { usePagination } from "@/components/devtools/hooks/use-pagination";
 
 interface PaginationControlsProps {
-    loading?: boolean
+    loading?: boolean;
 }
 
 export const PaginationControls = ({
     loading = false,
 }: PaginationControlsProps) => {
-    const pagination = usePagination()
+    const pagination = usePagination();
 
     if (pagination.totalPages <= 1) {
-        return null
+        return null;
     }
 
     return (
@@ -37,19 +37,19 @@ export const PaginationControls = ({
                 <ArrowRight size={16} />
             </button>
         </div>
-    )
-}
+    );
+};
 
 export const PaginationInfo = () => {
-    const pagination = usePagination()
+    const pagination = usePagination();
 
     return (
         <span className="record-count">
             {pagination.totalPages > 1 &&
-                pagination.startRecord &&
-                pagination.endRecord
+            pagination.startRecord &&
+            pagination.endRecord
                 ? `${pagination.startRecord}-${pagination.endRecord} / ${pagination.totalCount || 0} record(s)`
                 : `${pagination.data?.length || 0} record(s) found`}
         </span>
-    )
-}
+    );
+};

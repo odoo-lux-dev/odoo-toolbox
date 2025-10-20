@@ -1,24 +1,24 @@
-import { useRef, useState } from "preact/hooks"
+import { useRef, useState } from "preact/hooks";
 
 interface Position {
-    top: number
-    left: number
+    top: number;
+    left: number;
 }
 
 export const usePortalTooltip = () => {
-    const [isVisible, setIsVisible] = useState(false)
-    const [position, setPosition] = useState<Position>({ top: 0, left: 0 })
-    const anchorRef = useRef<HTMLDivElement>(null)
-    const tooltipRef = useRef<HTMLDivElement>(null)
+    const [isVisible, setIsVisible] = useState(false);
+    const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
+    const anchorRef = useRef<HTMLDivElement>(null);
+    const tooltipRef = useRef<HTMLDivElement>(null);
 
     const showTooltip = () => {
-        setPosition({ top: -9999, left: -9999 })
-        setIsVisible(true)
+        setPosition({ top: -9999, left: -9999 });
+        setIsVisible(true);
 
         setTimeout(() => {
             if (anchorRef.current && tooltipRef.current) {
-                const anchorRect = anchorRef.current.getBoundingClientRect()
-                const tooltipRect = tooltipRef.current.getBoundingClientRect()
+                const anchorRect = anchorRef.current.getBoundingClientRect();
+                const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
                 const positions = {
                     right: {
@@ -37,7 +37,7 @@ export const usePortalTooltip = () => {
                         top: anchorRect.top - tooltipRect.height - 8,
                         left: anchorRect.left,
                     },
-                }
+                };
 
                 const isPositionValid = (pos: Position) => {
                     return (
@@ -45,31 +45,31 @@ export const usePortalTooltip = () => {
                         pos.left >= 0 &&
                         pos.top + tooltipRect.height <= window.innerHeight &&
                         pos.left + tooltipRect.width <= window.innerWidth
-                    )
-                }
+                    );
+                };
 
-                let finalPosition = positions.right
+                let finalPosition = positions.right;
 
                 if (isPositionValid(positions.right)) {
-                    finalPosition = positions.right
+                    finalPosition = positions.right;
                 } else if (isPositionValid(positions.left)) {
-                    finalPosition = positions.left
+                    finalPosition = positions.left;
                 } else if (isPositionValid(positions.bottom)) {
-                    finalPosition = positions.bottom
+                    finalPosition = positions.bottom;
                 } else if (isPositionValid(positions.top)) {
-                    finalPosition = positions.top
+                    finalPosition = positions.top;
                 } else {
-                    finalPosition = positions.right
+                    finalPosition = positions.right;
 
                     if (
                         finalPosition.left + tooltipRect.width >
                         window.innerWidth
                     ) {
                         finalPosition.left =
-                            window.innerWidth - tooltipRect.width - 8
+                            window.innerWidth - tooltipRect.width - 8;
                     }
                     if (finalPosition.left < 0) {
-                        finalPosition.left = 8
+                        finalPosition.left = 8;
                     }
 
                     if (
@@ -77,21 +77,21 @@ export const usePortalTooltip = () => {
                         window.innerHeight
                     ) {
                         finalPosition.top =
-                            window.innerHeight - tooltipRect.height - 8
+                            window.innerHeight - tooltipRect.height - 8;
                     }
                     if (finalPosition.top < 0) {
-                        finalPosition.top = 8
+                        finalPosition.top = 8;
                     }
                 }
 
-                setPosition(finalPosition)
+                setPosition(finalPosition);
             }
-        }, 0)
-    }
+        }, 0);
+    };
 
     const hideTooltip = () => {
-        setIsVisible(false)
-    }
+        setIsVisible(false);
+    };
 
     return {
         isVisible,
@@ -100,5 +100,5 @@ export const usePortalTooltip = () => {
         tooltipRef,
         showTooltip,
         hideTooltip,
-    }
-}
+    };
+};

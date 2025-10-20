@@ -1,9 +1,9 @@
-import { DatabaseInfo } from "@/types"
-import { InfoItem } from "./info-item"
-import { InfoSection } from "./info-section"
+import { DatabaseInfo } from "@/types";
+import { InfoItem } from "./info-item";
+import { InfoSection } from "./info-section";
 
 interface DatabaseInfoComponentProps {
-    dbInfo: DatabaseInfo
+    dbInfo: DatabaseInfo;
 }
 
 export const DatabaseInfoComponent = ({
@@ -41,11 +41,11 @@ export const DatabaseInfoComponent = ({
             valueClass="x-odoo-debug-active"
             copyable={false}
         />,
-    ]
+    ];
 
     return (
         <InfoSection icon="fa-database" title="Database Information">
             {items}
         </InfoSection>
-    )
-}
+    );
+};

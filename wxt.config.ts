@@ -1,6 +1,6 @@
-import preact from "@preact/preset-vite"
-import { defineConfig, UserManifest, WxtViteConfig } from "wxt"
-import pkg from "./package.json"
+import preact from "@preact/preset-vite";
+import { defineConfig, UserManifest, WxtViteConfig } from "wxt";
+import pkg from "./package.json";
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -36,53 +36,53 @@ export default defineConfig({
                     },
                 },
             },
-        }
+        };
 
         if (browser === "firefox") {
             manifest.browser_specific_settings = {
                 gecko: {
                     id: "odoo_toolbox@thcl-saju",
                 },
-            }
+            };
 
-            const { _execute_action, ...restCommands } = manifest.commands!
+            const { _execute_action, ...restCommands } = manifest.commands!;
             manifest.commands = {
                 ...restCommands,
                 _execute_browser_action: {
                     description: "Open the extension popup",
                 },
-            }
+            };
 
-            manifest.permissions = [...manifest.permissions!, "<all_urls>"]
+            manifest.permissions = [...manifest.permissions!, "<all_urls>"];
         }
 
         if (browser === "chrome") {
-            manifest.host_permissions = ["*://*/*"]
+            manifest.host_permissions = ["*://*/*"];
         }
 
-        return manifest
+        return manifest;
     },
     hooks: {
         "build:manifestGenerated": (wxt, manifest) => {
             if (wxt.config.mode === "development") {
-                manifest.name += " (DEV)"
+                manifest.name += " (DEV)";
             }
         },
         "build:before": (wxt) => {
             if (wxt.config.mode === "development") {
-                wxt.config.manifest.version = "0.0.1"
+                wxt.config.manifest.version = "0.0.1";
             }
         },
     },
     vite: ({ mode }) => {
-        const build: Partial<WxtViteConfig["build"]> = {}
+        const build: Partial<WxtViteConfig["build"]> = {};
         if (mode === "development") {
-            build.minify = false
+            build.minify = false;
             build.commonjsOptions = {
                 transformMixedEsModules: true,
-            }
+            };
         } else {
-            build.minify = "esbuild"
+            build.minify = "esbuild";
         }
         return {
             plugins: [preact()],
@@ -90,6 +90,6 @@ export default defineConfig({
             esbuild: {
                 minifyIdentifiers: false, // Keep variable names
             },
-        }
+        };
     },
-})
+});

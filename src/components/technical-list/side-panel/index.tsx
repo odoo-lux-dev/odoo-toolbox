@@ -1,14 +1,14 @@
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
-import { SidePanelHeader } from "@/components/technical-list/side-panel/header"
-import { SidePanelSummary } from "@/components/technical-list/side-panel/summary"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
+import { SidePanelHeader } from "@/components/technical-list/side-panel/header";
+import { SidePanelSummary } from "@/components/technical-list/side-panel/summary";
 import {
     EmptyState,
     ErrorState,
     LoadingState,
-} from "@/components/technical-list/states"
-import { PanelContent } from "./content"
-import { SelectedButtonContent } from "./selected-button-content"
-import { SelectedFieldContent } from "./selected-field-content"
+} from "@/components/technical-list/states";
+import { PanelContent } from "./content";
+import { SelectedButtonContent } from "./selected-button-content";
+import { SelectedFieldContent } from "./selected-field-content";
 
 export const SidePanel = () => {
     const {
@@ -20,7 +20,7 @@ export const SidePanel = () => {
         selectedFieldInfo,
         selectedButtonInfo,
         viewInfo,
-    } = useTechnicalSidebar()
+    } = useTechnicalSidebar();
 
     return (
         <div
@@ -52,5 +52,5 @@ export const SidePanel = () => {
                 )}
             </div>
         </div>
-    )
-}
+    );
+};

@@ -1,10 +1,10 @@
 interface ToggleSwitchProps {
-    isChecked: boolean
-    onInput: (checked: boolean) => Promise<void> | void
-    labelOn?: string
-    labelOff?: string
-    disabled?: boolean
-    className?: string
+    isChecked: boolean;
+    onInput: (checked: boolean) => Promise<void> | void;
+    labelOn?: string;
+    labelOff?: string;
+    disabled?: boolean;
+    className?: string;
 }
 
 export const ToggleSwitch = ({
@@ -16,10 +16,10 @@ export const ToggleSwitch = ({
     className = "default-switch",
 }: ToggleSwitchProps) => {
     const handleChange = async (e: Event) => {
-        const target = e.target as HTMLInputElement
-        const newChecked = target.checked
-        await onInput(newChecked)
-    }
+        const target = e.target as HTMLInputElement;
+        const newChecked = target.checked;
+        await onInput(newChecked);
+    };
 
     return (
         <label className={`switch ${className}`}>
@@ -33,5 +33,5 @@ export const ToggleSwitch = ({
             <span className="x-odoo-options-page-label-on">{labelOn}</span>
             <span className="x-odoo-options-page-label-off">{labelOff}</span>
         </label>
-    )
-}
+    );
+};

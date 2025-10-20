@@ -1,8 +1,8 @@
-import { WebsiteInfo as WebsiteInfoType } from "@/types"
-import { InfoItem } from "./info-item"
+import { WebsiteInfo as WebsiteInfoType } from "@/types";
+import { InfoItem } from "./info-item";
 
 interface WebsiteInfoProps {
-    websiteInfo: WebsiteInfoType
+    websiteInfo: WebsiteInfoType;
 }
 
 export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
@@ -21,7 +21,7 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
             valueClass="code"
             copyable={true}
         />,
-    ]
+    ];
 
     if (websiteInfo.viewXmlId) {
         items.push(
@@ -31,8 +31,8 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
                 value={websiteInfo.viewXmlId}
                 valueClass="code"
                 copyable={true}
-            />
-        )
+            />,
+        );
     }
 
     if (websiteInfo.viewId) {
@@ -43,8 +43,8 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
                 value={websiteInfo.viewId}
                 valueClass="code"
                 copyable={true}
-            />
-        )
+            />,
+        );
     }
 
     return (
@@ -70,5 +70,5 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
 
             <div className="x-odoo-website-info-content">{items}</div>
         </div>
-    )
-}
+    );
+};

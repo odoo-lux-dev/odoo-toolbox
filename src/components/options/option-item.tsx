@@ -1,14 +1,14 @@
-import { ComponentChildren } from "preact"
-import { Tooltip } from "./tooltip"
+import { ComponentChildren } from "preact";
+import { Tooltip } from "./tooltip";
 
 interface OptionItemProps {
-    id: string
-    title: string
-    description?: string
-    tooltipContent?: ComponentChildren
-    additionalTooltipContent?: ComponentChildren
-    children: ComponentChildren
-    className?: string
+    id: string;
+    title: string;
+    description?: string;
+    tooltipContent?: ComponentChildren;
+    additionalTooltipContent?: ComponentChildren;
+    children: ComponentChildren;
+    className?: string;
 }
 
 export const OptionItem = ({
@@ -34,5 +34,5 @@ export const OptionItem = ({
             {description && <p>{description}</p>}
             <div className="x-odoo-options-page-option-content">{children}</div>
         </div>
-    )
-}
+    );
+};

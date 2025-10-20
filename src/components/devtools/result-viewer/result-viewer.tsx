@@ -1,36 +1,36 @@
-import "@/components/devtools/result-viewer/result-viewer.style.scss"
-import { useSignal } from "@preact/signals"
-import { Copy, FileJson, List, Table } from "lucide-preact"
-import { useCallback, useEffect, useMemo, useRef } from "preact/hooks"
-import { JSX } from "preact/jsx-runtime"
-import { ContextMenu } from "@/components/devtools/context-menu/context-menu"
-import { usePagination } from "@/components/devtools/hooks/use-pagination"
-import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu"
-import { RecordRenderer } from "@/components/devtools/record-renderer"
-import { RecordSearch } from "@/components/devtools/record-search/record-search"
-import { useRecordSearch } from "@/components/devtools/record-search/record-search.hook"
-import { EmptyQueryState } from "@/components/devtools/result-states/empty-query-state"
-import { ErrorState } from "@/components/devtools/result-states/error-state"
-import { LoadingState } from "@/components/devtools/result-states/loading-state"
-import { NoResultsState } from "@/components/devtools/result-states/no-results-state"
+import "@/components/devtools/result-viewer/result-viewer.style.scss";
+import { useSignal } from "@preact/signals";
+import { Copy, FileJson, List, Table } from "lucide-preact";
+import { useCallback, useEffect, useMemo, useRef } from "preact/hooks";
+import { JSX } from "preact/jsx-runtime";
+import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
+import { usePagination } from "@/components/devtools/hooks/use-pagination";
+import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
+import { RecordRenderer } from "@/components/devtools/record-renderer";
+import { RecordSearch } from "@/components/devtools/record-search/record-search";
+import { useRecordSearch } from "@/components/devtools/record-search/record-search.hook";
+import { EmptyQueryState } from "@/components/devtools/result-states/empty-query-state";
+import { ErrorState } from "@/components/devtools/result-states/error-state";
+import { LoadingState } from "@/components/devtools/result-states/loading-state";
+import { NoResultsState } from "@/components/devtools/result-states/no-results-state";
 import {
     PaginationControls,
     PaginationInfo,
-} from "@/components/devtools/result-states/pagination-components"
-import { VirtualTable } from "@/components/devtools/virtual-table/virtual-table"
-import { useRpcQuery, useRpcResult } from "@/contexts/devtools-signals-hook"
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
+} from "@/components/devtools/result-states/pagination-components";
+import { VirtualTable } from "@/components/devtools/virtual-table/virtual-table";
+import { useRpcQuery, useRpcResult } from "@/contexts/devtools-signals-hook";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
-type ViewMode = "table" | "list"
+type ViewMode = "table" | "list";
 
 interface ResultViewerProps {
-    hideCopyButton?: boolean
-    hideDownloadButton?: boolean
-    hideSwitchViewButton?: boolean
-    hideFieldNumber?: boolean
-    hideRecordPagingData?: boolean
-    hidePaging?: boolean
-    customText?: JSX.Element
+    hideCopyButton?: boolean;
+    hideDownloadButton?: boolean;
+    hideSwitchViewButton?: boolean;
+    hideFieldNumber?: boolean;
+    hideRecordPagingData?: boolean;
+    hidePaging?: boolean;
+    customText?: JSX.Element;
 }
 
 export const ResultViewer = ({
@@ -42,27 +42,28 @@ export const ResultViewer = ({
     hidePaging = false,
     customText = undefined,
 }: ResultViewerProps) => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { data, loading, error, errorDetails, isNewQuery, fieldsMetadata } = rpcResult
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { data, loading, error, errorDetails, isNewQuery, fieldsMetadata } =
+        rpcResult;
 
-    const { copyToClipboard } = useCopyToClipboard()
-    const copyButtonRef = useRef<HTMLButtonElement>(null)
-    const pagination = usePagination()
+    const { copyToClipboard } = useCopyToClipboard();
+    const copyButtonRef = useRef<HTMLButtonElement>(null);
+    const pagination = usePagination();
 
-    const viewMode = useSignal<ViewMode>("list")
-    const expandedRows = useSignal<Set<number>>(new Set())
-    const { clearHighlights } = useRecordSearch()
+    const viewMode = useSignal<ViewMode>("list");
+    const expandedRows = useSignal<Set<number>>(new Set());
+    const { clearHighlights } = useRecordSearch();
 
     const {
         contextMenu,
         handleFieldContextMenu,
         closeContextMenu,
         getContextMenuItems,
-    } = useRecordContextMenu()
+    } = useRecordContextMenu();
 
     const contextMenuItems = useMemo(() => {
-        return contextMenu.visible ? getContextMenuItems() : []
+        return contextMenu.visible ? getContextMenuItems() : [];
     }, [
         contextMenu.visible,
         contextMenu.fieldName,
@@ -70,27 +71,27 @@ export const ResultViewer = ({
         contextMenu.fieldMetadata?.relation,
         contextMenu.fieldMetadata?.type,
         getContextMenuItems,
-    ])
+    ]);
 
     const handleTableContextMenu = useCallback(
         (e: Event) => {
-            const target = e.target as HTMLElement
+            const target = e.target as HTMLElement;
             const cell = target.closest(
-                "td[data-field]"
-            ) as HTMLTableCellElement
-            if (!cell) return
+                "td[data-field]",
+            ) as HTMLTableCellElement;
+            if (!cell) return;
 
-            e.preventDefault()
-            e.stopPropagation()
+            e.preventDefault();
+            e.stopPropagation();
 
             const rowIndex = parseInt(
-                cell.closest("tr")?.dataset.rowIndex || "0"
-            )
-            const fieldName = cell.dataset.field || ""
+                cell.closest("tr")?.dataset.rowIndex || "0",
+            );
+            const fieldName = cell.dataset.field || "";
 
             if (data && data[rowIndex]) {
-                const record = data[rowIndex]
-                const fieldMetadata = rpcQuery.fieldsMetadata?.[fieldName]
+                const record = data[rowIndex];
+                const fieldMetadata = rpcQuery.fieldsMetadata?.[fieldName];
 
                 handleFieldContextMenu(
                     e as MouseEvent,
@@ -98,89 +99,89 @@ export const ResultViewer = ({
                     fieldName,
                     record[fieldName],
                     fieldMetadata,
-                    rpcQuery.model
-                )
+                    rpcQuery.model,
+                );
             }
         },
-        [data, handleFieldContextMenu, rpcQuery.fieldsMetadata, rpcQuery.model]
-    )
+        [data, handleFieldContextMenu, rpcQuery.fieldsMetadata, rpcQuery.model],
+    );
 
     useEffect(() => {
-        const newExpanded = new Set<number>()
+        const newExpanded = new Set<number>();
 
         if (data && data.length === 1) {
-            newExpanded.add(0)
+            newExpanded.add(0);
         }
 
-        expandedRows.value = newExpanded
-        clearHighlights()
-    }, [rpcQuery.model, rpcQuery.offset, data, clearHighlights])
+        expandedRows.value = newExpanded;
+        clearHighlights();
+    }, [rpcQuery.model, rpcQuery.offset, data, clearHighlights]);
 
     if (loading && isNewQuery) {
-        return <LoadingState />
+        return <LoadingState />;
     }
 
     if (error) {
-        return <ErrorState error={error} errorDetails={errorDetails} />
+        return <ErrorState error={error} errorDetails={errorDetails} />;
     }
 
     if (!data && !loading) {
-        return <EmptyQueryState />
+        return <EmptyQueryState />;
     }
 
     if (data && data.length === 0 && !loading) {
-        return <NoResultsState />
+        return <NoResultsState />;
     }
 
     const toggleRowExpansion = (index: number) => {
-        const newExpanded = new Set(expandedRows.value)
+        const newExpanded = new Set(expandedRows.value);
         if (newExpanded.has(index)) {
-            newExpanded.delete(index)
+            newExpanded.delete(index);
         } else {
-            newExpanded.add(index)
+            newExpanded.add(index);
         }
-        expandedRows.value = newExpanded
-    }
+        expandedRows.value = newExpanded;
+    };
 
     const copyJson = () => {
         if (copyButtonRef.current && data) {
-            const dataToCopy = data.length === 1 ? data[0] : data
+            const dataToCopy = data.length === 1 ? data[0] : data;
             copyToClipboard(
                 JSON.stringify(dataToCopy, null, 2),
-                copyButtonRef.current
-            )
+                copyButtonRef.current,
+            );
         }
-    }
+    };
 
     const downloadJson = () => {
         if (data) {
-            const dataToDownload = data.length === 1 ? data[0] : data
+            const dataToDownload = data.length === 1 ? data[0] : data;
             const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], {
                 type: "application/json",
-            })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement("a")
-            a.href = url
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
             a.download =
                 data.length === 1
                     ? "odoo_record.json"
-                    : "odoo_query_results.json"
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(url)
+                    : "odoo_query_results.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
-    }
+    };
 
     const allKeys = data
         ? Array.from(
-            new Set(data.flatMap((record) => Object.keys(record)))
-        ).sort((a, b) => {
-            if (a === "id" && b !== "id") return -1
-            if (b === "id" && a !== "id") return 1
-            return a.localeCompare(b)
-        })
-        : []
+              new Set(data.flatMap((record) => Object.keys(record))),
+          ).sort((a, b) => {
+              if (a === "id" && b !== "id") return -1;
+              if (b === "id" && a !== "id") return 1;
+              return a.localeCompare(b);
+          })
+        : [];
 
     if (!data) {
         return (
@@ -199,7 +200,7 @@ export const ResultViewer = ({
                     </div>
                 )}
             </div>
-        )
+        );
     }
 
     return (
@@ -222,8 +223,8 @@ export const ResultViewer = ({
                     ) : null}
                 </div>
                 {!hideDownloadButton ||
-                    !hideSwitchViewButton ||
-                    !hideCopyButton ? (
+                !hideSwitchViewButton ||
+                !hideCopyButton ? (
                     <div className="result-buttons">
                         {!hideCopyButton || !hideDownloadButton ? (
                             <div className="result-actions">
@@ -314,5 +315,5 @@ export const ResultViewer = ({
                 />
             )}
         </div>
-    )
-}
+    );
+};

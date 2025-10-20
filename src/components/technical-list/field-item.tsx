@@ -1,13 +1,13 @@
-import { Info } from "lucide-preact"
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
-import { EnhancedTechnicalFieldInfo } from "@/types"
-import { isDynamicCondition } from "@/utils/field-utils"
-import { FieldBadge } from "./field-badge"
+import { Info } from "lucide-preact";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { EnhancedTechnicalFieldInfo } from "@/types";
+import { isDynamicCondition } from "@/utils/field-utils";
+import { FieldBadge } from "./field-badge";
 
 interface FieldItemProps {
-    field: EnhancedTechnicalFieldInfo
-    onHighlight: (fieldName: string) => void
-    onClearHighlight: (fieldName: string) => void
+    field: EnhancedTechnicalFieldInfo;
+    onHighlight: (fieldName: string) => void;
+    onClearHighlight: (fieldName: string) => void;
 }
 
 export const FieldItem = ({
@@ -15,15 +15,15 @@ export const FieldItem = ({
     onHighlight,
     onClearHighlight,
 }: FieldItemProps) => {
-    const { copyToClipboard } = useCopyToClipboard()
+    const { copyToClipboard } = useCopyToClipboard();
 
     const handleCopyFieldName = async (
         fieldName: string,
-        event: MouseEvent
+        event: MouseEvent,
     ) => {
-        const target = event.target as HTMLElement
-        await copyToClipboard(fieldName, target)
-    }
+        const target = event.target as HTMLElement;
+        await copyToClipboard(fieldName, target);
+    };
 
     return (
         <div
@@ -103,13 +103,13 @@ export const FieldItem = ({
             {(isDynamicCondition(field.debugInfo?.required) ||
                 isDynamicCondition(field.debugInfo?.readonly) ||
                 isDynamicCondition(field.debugInfo?.invisible)) && (
-                    <div className="x-odoo-technical-list-info-conditional-note">
-                        <Info size={10} />
-                        <span>
-                            * indicates conditional behavior based on field state
-                        </span>
-                    </div>
-                )}
+                <div className="x-odoo-technical-list-info-conditional-note">
+                    <Info size={10} />
+                    <span>
+                        * indicates conditional behavior based on field state
+                    </span>
+                </div>
+            )}
 
             {field.debugInfo && (
                 <div className="x-odoo-technical-list-info-debug-details">
@@ -165,7 +165,7 @@ export const FieldItem = ({
                         },
                     ]
                         .filter((item) =>
-                            item.condition ? item.condition() : item.value
+                            item.condition ? item.condition() : item.value,
                         )
                         .map((item) => (
                             <div
@@ -190,14 +190,14 @@ export const FieldItem = ({
                     <button
                         className="x-odoo-technical-list-info-toggle-value"
                         onClick={(e) => {
-                            e.stopPropagation()
+                            e.stopPropagation();
                             const content = e.currentTarget
-                                .nextElementSibling as HTMLElement
+                                .nextElementSibling as HTMLElement;
                             if (content) {
                                 content.style.display =
                                     content.style.display === "none"
                                         ? "block"
-                                        : "none"
+                                        : "none";
                             }
                         }}
                     >
@@ -213,5 +213,5 @@ export const FieldItem = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

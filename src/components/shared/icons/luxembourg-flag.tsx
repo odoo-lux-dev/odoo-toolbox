@@ -9,4 +9,4 @@ export const LuxembourgFlag = () => (
         <path fill="#fff" d="M0,1H5V2H0Z" />
         <path fill="#00a3e0" d="M0,2H5V3H0Z" />
     </svg>
-)
+);

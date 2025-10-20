@@ -1,20 +1,20 @@
-import { favoritesService } from "@/services/favorites-service"
-import { Favorite } from "@/types"
-import { NON_STARRED_CLASS, STARRED_CLASS } from "@/utils/constants"
-import { simpleDebounce } from "@/utils/utils"
+import { favoritesService } from "@/services/favorites-service";
+import { Favorite } from "@/types";
+import { NON_STARRED_CLASS, STARRED_CLASS } from "@/utils/constants";
+import { simpleDebounce } from "@/utils/utils";
 
 const addFavorite = (projectName: string) =>
-    favoritesService.addToFavorites(projectName)
+    favoritesService.addToFavorites(projectName);
 
 const removeFavorite = (projectName: string) =>
-    favoritesService.deleteFromFavorites(projectName)
+    favoritesService.deleteFromFavorites(projectName);
 
 const extractProjectName = (element: Element): string =>
-    element.getAttribute("onclick")?.match(/\/project\/([^']+)/)?.[1] || ""
+    element.getAttribute("onclick")?.match(/\/project\/([^']+)/)?.[1] || "";
 
 const renameProjectName = (favoriteName: string, element: HTMLElement) => {
-    element.innerText = favoriteName
-}
+    element.innerText = favoriteName;
+};
 
 /**
  * Generates a favorite element (star icon) for a project in either card or list view.
@@ -28,28 +28,28 @@ const renameProjectName = (favoriteName: string, element: HTMLElement) => {
  */
 const generateFavoriteElement = (
     type: "card" | "list",
-    isStarred: boolean = false
+    isStarred: boolean = false,
 ): HTMLElement => {
-    const currentClass = isStarred ? STARRED_CLASS : NON_STARRED_CLASS
+    const currentClass = isStarred ? STARRED_CLASS : NON_STARRED_CLASS;
     if (type === "card") {
-        const star = document.createElement("div")
-        star.innerHTML = `<i class="fa ${currentClass}" aria-hidden="true"></i>`
-        star.className = "x-odoo-sh-favorite-icon p-2"
-        star.title = "Click to star project"
-        return star
+        const star = document.createElement("div");
+        star.innerHTML = `<i class="fa ${currentClass}" aria-hidden="true"></i>`;
+        star.className = "x-odoo-sh-favorite-icon p-2";
+        star.title = "Click to star project";
+        return star;
     }
 
-    const star = document.createElement("i")
+    const star = document.createElement("i");
     star.classList.add(
         "fa",
         currentClass,
         "pr-2",
-        "x-odoo-sh-favorite-icon-list"
-    )
-    star.ariaHidden = "true"
-    star.title = "Click to star project"
-    return star
-}
+        "x-odoo-sh-favorite-icon-list",
+    );
+    star.ariaHidden = "true";
+    star.title = "Click to star project";
+    return star;
+};
 
 /**
  * Sorts two project elements based on their favorite status and names.
@@ -61,15 +61,15 @@ const generateFavoriteElement = (
  * @returns {number} A negative value if `a` should come before `b`, a positive value if `a` should come after `b`, or 0 if they are considered equal in the sort order.
  */
 const sortProjects = (a: Element, b: Element): number => {
-    const aHasStar = a.querySelector(".fa-star") !== null
-    const bHasStar = b.querySelector(".fa-star") !== null
+    const aHasStar = a.querySelector(".fa-star") !== null;
+    const bHasStar = b.querySelector(".fa-star") !== null;
     if (aHasStar === bHasStar) {
-        const aName = (a as HTMLElement).dataset.name
-        const bName = (b as HTMLElement).dataset.name
-        if (aName && bName) return aName.localeCompare(bName)
+        const aName = (a as HTMLElement).dataset.name;
+        const bName = (b as HTMLElement).dataset.name;
+        if (aName && bName) return aName.localeCompare(bName);
     }
-    return Number(bHasStar) - Number(aHasStar)
-}
+    return Number(bHasStar) - Number(aHasStar);
+};
 
 /**
  * Toggles the favorite status of a project by updating the star icon appearance and modifying the favorites list.
@@ -85,23 +85,23 @@ const sortProjects = (a: Element, b: Element): number => {
  */
 const toggleStar = (
     stars: HTMLElement[],
-    projectName: string
+    projectName: string,
 ): Promise<void> => {
-    const isStarred = stars[0].classList.contains(STARRED_CLASS)
+    const isStarred = stars[0].classList.contains(STARRED_CLASS);
     if (isStarred) {
         stars.forEach((star) => {
-            star.classList.remove(STARRED_CLASS)
-            star.classList.add(NON_STARRED_CLASS)
-        })
-        return removeFavorite(projectName)
+            star.classList.remove(STARRED_CLASS);
+            star.classList.add(NON_STARRED_CLASS);
+        });
+        return removeFavorite(projectName);
     } else {
         stars.forEach((star) => {
-            star.classList.remove(NON_STARRED_CLASS)
-            star.classList.add(STARRED_CLASS)
-        })
-        return addFavorite(projectName)
+            star.classList.remove(NON_STARRED_CLASS);
+            star.classList.add(STARRED_CLASS);
+        });
+        return addFavorite(projectName);
     }
-}
+};
 
 /**
  * Handles the click event on a favorite star icon, toggling the favorite status of a project.
@@ -116,44 +116,44 @@ const toggleStar = (
  */
 const handleFavoriteClick = async (
     event: Event,
-    projectName: string
+    projectName: string,
 ): Promise<void> => {
-    const projectsContainer = document.querySelector(".o_project_cards")
+    const projectsContainer = document.querySelector(".o_project_cards");
     const tableBody = projectsContainer?.querySelector(
-        "div.o_sh_display_list > table > tbody"
-    )
+        "div.o_sh_display_list > table > tbody",
+    );
 
-    const starContainer = event.currentTarget as HTMLElement
-    const star = starContainer.querySelector("i") || starContainer
-    let otherStar: HTMLElement
+    const starContainer = event.currentTarget as HTMLElement;
+    const star = starContainer.querySelector("i") || starContainer;
+    let otherStar: HTMLElement;
     if (starContainer.nodeName === "I") {
         // Event comes from list view
         otherStar = document.querySelector(
-            `div.o_project_card_container[data-name="${projectName}"] .x-odoo-sh-favorite-icon i`
-        ) as HTMLElement
+            `div.o_project_card_container[data-name="${projectName}"] .x-odoo-sh-favorite-icon i`,
+        ) as HTMLElement;
     } else {
         // Event comes from cards view
         otherStar = document.querySelector(
-            `tr.o_project_card_container[data-name="${projectName}"] th i`
-        ) as HTMLElement
+            `tr.o_project_card_container[data-name="${projectName}"] th i`,
+        ) as HTMLElement;
     }
 
-    await toggleStar([star, otherStar], projectName)
+    await toggleStar([star, otherStar], projectName);
     const projectsCardsNodes = document.querySelectorAll(
-        "div.o_project_card_container"
-    )
+        "div.o_project_card_container",
+    );
     const projectsListNodes = document.querySelectorAll(
-        "tr.o_project_card_container"
-    )
-    const projectsCards = Array.from(projectsCardsNodes)
-    const projectsList = Array.from(projectsListNodes)
+        "tr.o_project_card_container",
+    );
+    const projectsCards = Array.from(projectsCardsNodes);
+    const projectsList = Array.from(projectsListNodes);
     projectsCards
         .toSorted(sortProjects)
-        .forEach((element) => projectsContainer?.appendChild(element))
+        .forEach((element) => projectsContainer?.appendChild(element));
     projectsList
         .toSorted(sortProjects)
-        .forEach((element_1) => tableBody?.appendChild(element_1))
-}
+        .forEach((element_1) => tableBody?.appendChild(element_1));
+};
 
 /**
  * Updates the search bar on the project list page to filter projects based on user input
@@ -163,41 +163,41 @@ const handleFavoriteClick = async (
  * and adds a custom event listener, close to the default one.
  */
 const updateSearchBar = () => {
-    const projectsSearchBar = document.querySelector(".o_sh_projects_search")
-    const projectsSearchBarInput = projectsSearchBar?.querySelector("input")
+    const projectsSearchBar = document.querySelector(".o_sh_projects_search");
+    const projectsSearchBarInput = projectsSearchBar?.querySelector("input");
 
-    if (!projectsSearchBar || !projectsSearchBarInput) return
+    if (!projectsSearchBar || !projectsSearchBarInput) return;
 
     // Replace the class name to ignore the default search
     projectsSearchBar.classList.replace(
         "o_sh_projects_search",
-        "x-odoo-sh-projects-search"
-    )
+        "x-odoo-sh-projects-search",
+    );
 
     projectsSearchBarInput.addEventListener(
         "input",
         simpleDebounce((event: InputEvent) => {
-            const input = event.target as HTMLInputElement
-            const searchQuery = input.value.toLowerCase()
+            const input = event.target as HTMLInputElement;
+            const searchQuery = input.value.toLowerCase();
             const cards = Array.from(
                 document.querySelectorAll<HTMLElement>(
-                    ".o_project_card_container"
-                )
-            )
+                    ".o_project_card_container",
+                ),
+            );
             for (const card of cards) {
-                card.classList.remove("d-none")
+                card.classList.remove("d-none");
                 const projectDefaultName = (
                     card.dataset.name || ""
-                ).toLowerCase()
+                ).toLowerCase();
                 const subscriptionCode = (
                     card.dataset.subscriptionCode || ""
-                ).toLowerCase()
+                ).toLowerCase();
                 const projectNameElement = card.querySelector(
-                    ".x-odoo-sh-project-name"
-                ) as HTMLElement | null
+                    ".x-odoo-sh-project-name",
+                ) as HTMLElement | null;
                 const projectName = (
                     projectNameElement?.innerText || ""
-                ).toLowerCase()
+                ).toLowerCase();
 
                 if (
                     searchQuery &&
@@ -205,11 +205,11 @@ const updateSearchBar = () => {
                     !subscriptionCode.includes(searchQuery) &&
                     !projectName.includes(searchQuery)
                 ) {
-                    card.classList.add("d-none")
+                    card.classList.add("d-none");
                 }
             }
-        }, 350)
-    )
+        }, 350),
+    );
 
     projectsSearchBarInput.addEventListener(
         "keydown",
@@ -217,9 +217,9 @@ const updateSearchBar = () => {
             if (event.key === "Enter") {
                 const visibleCards = Array.from(
                     document.querySelectorAll<HTMLElement>(
-                        ".o_project_card_container"
-                    )
-                ).filter((card) => !card.classList.contains("d-none"))
+                        ".o_project_card_container",
+                    ),
+                ).filter((card) => !card.classList.contains("d-none"));
                 /**
                  * Check if only one favorite matches the search and, if so, open it
                  *
@@ -228,20 +228,20 @@ const updateSearchBar = () => {
                  * and its corresponding row in the list view
                  */
                 if (visibleCards.length === 2) {
-                    const cardElement = visibleCards[0]
+                    const cardElement = visibleCards[0];
                     const linkElement = Array.from(
-                        cardElement.querySelectorAll("a")
+                        cardElement.querySelectorAll("a"),
                     ).find(
                         (a) =>
                             a.getAttribute("href")?.startsWith("/project/") &&
-                            a.textContent?.includes("Open")
-                    )
-                    linkElement?.click()
+                            a.textContent?.includes("Open"),
+                    );
+                    linkElement?.click();
                 }
             }
-        }
-    )
-}
+        },
+    );
+};
 
 /**
  * Handles the initialization and dynamic updates of the project list page. This function is responsible for:
@@ -258,95 +258,95 @@ const updateSearchBar = () => {
  */
 const handleProjectListPageFavorites = async (): Promise<void> => {
     const projectsCardsNodes = document.querySelectorAll(
-        "div.o_project_card_container"
-    )
+        "div.o_project_card_container",
+    );
     const projectsListNodes = document.querySelectorAll(
-        "tr.o_project_card_container"
-    )
+        "tr.o_project_card_container",
+    );
 
     if (projectsCardsNodes.length === 0 && projectsListNodes.length === 0) {
-        return
+        return;
     }
 
-    updateSearchBar()
+    updateSearchBar();
 
-    const projectsCards = Array.from(projectsCardsNodes)
-    const projectsList = Array.from(projectsListNodes)
-    const projectsContainer = document.querySelector(".o_project_cards")
+    const projectsCards = Array.from(projectsCardsNodes);
+    const projectsList = Array.from(projectsListNodes);
+    const projectsContainer = document.querySelector(".o_project_cards");
     const tableBody = projectsContainer?.querySelector(
-        "div.o_sh_display_list > table > tbody"
-    )
-    const favorites = await favoritesService.getFavoritesProjects()
+        "div.o_sh_display_list > table > tbody",
+    );
+    const favorites = await favoritesService.getFavoritesProjects();
 
     // Add star to each cards
     for (const projectCard of projectsCards) {
-        const projectName = (projectCard as HTMLElement).dataset.name as string
-        const buttonsRow = projectCard.querySelector("div.card > div > div")
+        const projectName = (projectCard as HTMLElement).dataset.name as string;
+        const buttonsRow = projectCard.querySelector("div.card > div > div");
 
         if (buttonsRow) {
-            buttonsRow.classList.add("x-odoo-sh-fix-card-buttons-row") // Attempt to fix misalignement
-            const dropdown = buttonsRow.querySelector(".o_project_dropdown")
-            dropdown?.classList.remove("p-2")
-            dropdown?.classList.add("x-odoo-sh-fix-card-dropdown")
+            buttonsRow.classList.add("x-odoo-sh-fix-card-buttons-row"); // Attempt to fix misalignement
+            const dropdown = buttonsRow.querySelector(".o_project_dropdown");
+            dropdown?.classList.remove("p-2");
+            dropdown?.classList.add("x-odoo-sh-fix-card-dropdown");
             const currentFavorite = favorites.find(
-                (favorite) => favorite.name === projectName
-            )
+                (favorite) => favorite.name === projectName,
+            );
             const star = generateFavoriteElement(
                 "card",
-                currentFavorite !== undefined
-            )
-            buttonsRow.appendChild(star)
+                currentFavorite !== undefined,
+            );
+            buttonsRow.appendChild(star);
 
-            const projectCardTopBar = buttonsRow.parentElement
-            const projectLinkNameTopBar = projectCardTopBar?.querySelector("a")
+            const projectCardTopBar = buttonsRow.parentElement;
+            const projectLinkNameTopBar = projectCardTopBar?.querySelector("a");
             if (projectLinkNameTopBar) {
-                projectLinkNameTopBar.classList.add("x-odoo-sh-project-name")
+                projectLinkNameTopBar.classList.add("x-odoo-sh-project-name");
                 if (currentFavorite) {
                     renameProjectName(
                         currentFavorite.display_name,
-                        projectLinkNameTopBar
-                    )
+                        projectLinkNameTopBar,
+                    );
                 }
             }
 
             star.addEventListener("click", (event) =>
-                handleFavoriteClick(event, projectName)
-            )
+                handleFavoriteClick(event, projectName),
+            );
         }
     }
     projectsCards
         .toSorted(sortProjects)
-        .forEach((element) => projectsContainer?.appendChild(element))
+        .forEach((element) => projectsContainer?.appendChild(element));
 
     for (const projectRow of projectsList) {
-        const projectName = (projectRow as HTMLElement).dataset.name as string
+        const projectName = (projectRow as HTMLElement).dataset.name as string;
 
-        const nameCell = projectRow.querySelector("th")
+        const nameCell = projectRow.querySelector("th");
         const currentFavorite = favorites.find(
-            (favorite: Favorite) => favorite.name === projectName
-        )
+            (favorite: Favorite) => favorite.name === projectName,
+        );
         if (nameCell) {
             const star = generateFavoriteElement(
                 "list",
-                currentFavorite !== undefined
-            )
-            nameCell.classList.add("x-odoo-sh-project-name")
+                currentFavorite !== undefined,
+            );
+            nameCell.classList.add("x-odoo-sh-project-name");
 
             if (currentFavorite) {
-                renameProjectName(currentFavorite.display_name, nameCell)
+                renameProjectName(currentFavorite.display_name, nameCell);
             }
 
-            nameCell.prepend(star)
+            nameCell.prepend(star);
 
             star.addEventListener("click", (event) =>
-                handleFavoriteClick(event, projectName)
-            )
+                handleFavoriteClick(event, projectName),
+            );
         }
     }
     projectsList
         .toSorted(sortProjects)
-        .forEach((element) => tableBody?.appendChild(element))
-}
+        .forEach((element) => tableBody?.appendChild(element));
+};
 
 /**
  * Updates the project list by sorting projects based on their favorite status and adding a star icon to favorite projects.
@@ -355,47 +355,47 @@ const handleProjectListPageFavorites = async (): Promise<void> => {
  */
 const updateProjectList = (favorites: Favorite[]): void => {
     const projectMenu = document.querySelector(
-        "div.project-menu"
-    ) as HTMLElement
-    const tableBody = projectMenu.querySelector("table tbody") as HTMLElement
-    const projects = Array.from(tableBody.children)
+        "div.project-menu",
+    ) as HTMLElement;
+    const tableBody = projectMenu.querySelector("table tbody") as HTMLElement;
+    const projects = Array.from(tableBody.children);
     const sortedProjects = projects.toSorted((a, b) => {
-        const aRealName = extractProjectName(a)
-        const bRealName = extractProjectName(b)
-        const aFavorite = favorites.find((fav) => aRealName === fav.name)
-        const bFavorite = favorites.find((fav) => bRealName === fav.name)
-        const aIsFavorite = aFavorite !== undefined
-        const bIsFavorite = bFavorite !== undefined
+        const aRealName = extractProjectName(a);
+        const bRealName = extractProjectName(b);
+        const aFavorite = favorites.find((fav) => aRealName === fav.name);
+        const bFavorite = favorites.find((fav) => bRealName === fav.name);
+        const aIsFavorite = aFavorite !== undefined;
+        const bIsFavorite = bFavorite !== undefined;
 
-        if (!aIsFavorite && !bIsFavorite) return 0
+        if (!aIsFavorite && !bIsFavorite) return 0;
 
-        const targettedChild = aIsFavorite ? a.children[0] : b.children[0]
-        const parentTargettedChild = targettedChild.parentElement
-        const tdProjectName = parentTargettedChild?.querySelectorAll("td")[1]
+        const targettedChild = aIsFavorite ? a.children[0] : b.children[0];
+        const parentTargettedChild = targettedChild.parentElement;
+        const tdProjectName = parentTargettedChild?.querySelectorAll("td")[1];
         const favoriteDisplayName = aIsFavorite
             ? aFavorite!.display_name
-            : bFavorite!.display_name
+            : bFavorite!.display_name;
 
         if (targettedChild.children.length === 0) {
-            const star = document.createElement("i")
-            star.className = "fa fa-star text-warning"
-            targettedChild.append(star)
+            const star = document.createElement("i");
+            star.className = "fa fa-star text-warning";
+            targettedChild.append(star);
 
             if (tdProjectName)
-                renameProjectName(favoriteDisplayName, tdProjectName)
+                renameProjectName(favoriteDisplayName, tdProjectName);
         } else if (
             targettedChild.children.length === 1 &&
             !targettedChild.children[0].className.includes("fa-star")
         ) {
-            targettedChild.children[0].classList.remove("fa-check")
-            targettedChild.children[0].classList.add("fa-star")
+            targettedChild.children[0].classList.remove("fa-check");
+            targettedChild.children[0].classList.add("fa-star");
 
             if (tdProjectName)
-                renameProjectName(favoriteDisplayName, tdProjectName)
+                renameProjectName(favoriteDisplayName, tdProjectName);
         }
-        return Number(bIsFavorite) - Number(aIsFavorite)
-    })
-    tableBody.append(...sortedProjects)
-}
+        return Number(bIsFavorite) - Number(aIsFavorite);
+    });
+    tableBody.append(...sortedProjects);
+};
 
-export { handleProjectListPageFavorites, updateProjectList }
+export { handleProjectListPageFavorites, updateProjectList };

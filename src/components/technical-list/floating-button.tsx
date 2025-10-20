@@ -1,7 +1,7 @@
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
 
 export const FloatingButton = () => {
-    const { isExpanded, handleToggle } = useTechnicalSidebar()
+    const { isExpanded, handleToggle } = useTechnicalSidebar();
 
     return (
         <button
@@ -13,5 +13,5 @@ export const FloatingButton = () => {
             <i className="fa fa-code" />
             <span className="button-text">Technical List</span>
         </button>
-    )
-}
+    );
+};

@@ -1,36 +1,36 @@
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks"
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import {
     type CursorPosition,
     getCursorPosition,
-} from "@/components/devtools/json-autocomplete/utils/cursor-position"
+} from "@/components/devtools/json-autocomplete/utils/cursor-position";
 import {
     analyzeJsonContext,
     extractUsedFields,
-} from "@/components/devtools/json-autocomplete/utils/json-parser"
+} from "@/components/devtools/json-autocomplete/utils/json-parser";
 import {
     buildSuggestions,
     calculateInsertionParams,
     createRequiredFieldsSuggestion,
     getMissingRequiredFields,
     type Suggestion,
-} from "@/components/devtools/json-autocomplete/utils/suggestion-builder"
-import { useDropdownNavigation } from "@/hooks/use-dropdown-navigation"
-import { FieldMetadata } from "@/types"
+} from "@/components/devtools/json-autocomplete/utils/suggestion-builder";
+import { useDropdownNavigation } from "@/hooks/use-dropdown-navigation";
+import { FieldMetadata } from "@/types";
 
 export interface UseJsonSuggestionsProps {
-    value: string
-    onChange: (value: string) => void
-    fieldsMetadata: Record<string, FieldMetadata>
-    textareaRef: React.RefObject<HTMLTextAreaElement>
-    dropdownRef: React.RefObject<HTMLDivElement>
-    mode?: "create" | "write" // Renommé pour éviter confusion avec JsonContext
-    onAddRequiredFields?: () => void
+    value: string;
+    onChange: (value: string) => void;
+    fieldsMetadata: Record<string, FieldMetadata>;
+    textareaRef: React.RefObject<HTMLTextAreaElement>;
+    dropdownRef: React.RefObject<HTMLDivElement>;
+    mode?: "create" | "write"; // Renommé pour éviter confusion avec JsonContext
+    onAddRequiredFields?: () => void;
 }
 
 export interface JsonSuggestionsActions {
-    generateSuggestions: (forced?: boolean) => void
-    insertSuggestion: (suggestion: Suggestion) => void
-    handleBraceInsertion: (e: KeyboardEvent) => void
+    generateSuggestions: (forced?: boolean) => void;
+    insertSuggestion: (suggestion: Suggestion) => void;
+    handleBraceInsertion: (e: KeyboardEvent) => void;
 }
 
 export const useJsonSuggestions = ({
@@ -42,13 +42,13 @@ export const useJsonSuggestions = ({
     mode,
     onAddRequiredFields,
 }: UseJsonSuggestionsProps) => {
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([])
-    const [showSuggestions, setShowSuggestions] = useState(false)
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [cursorPosition, setCursorPosition] = useState<CursorPosition | null>(
-        null
-    )
+        null,
+    );
 
-    const usedFields = useMemo(() => extractUsedFields(value), [value])
+    const usedFields = useMemo(() => extractUsedFields(value), [value]);
 
     const generateSuggestions = useCallback(
         (forced = false) => {
@@ -56,28 +56,28 @@ export const useJsonSuggestions = ({
                 !textareaRef.current ||
                 Object.keys(fieldsMetadata).length === 0
             ) {
-                setShowSuggestions(false)
-                setCursorPosition(null)
-                return
+                setShowSuggestions(false);
+                setCursorPosition(null);
+                return;
             }
 
-            const position = textareaRef.current.selectionStart || 0
-            const context = analyzeJsonContext(value, position)
+            const position = textareaRef.current.selectionStart || 0;
+            const context = analyzeJsonContext(value, position);
 
             // Special case: Ctrl+Space on empty textarea
             if (forced && value.trim() === "") {
-                onChange("{}")
+                onChange("{}");
 
                 setTimeout(() => {
                     if (textareaRef.current) {
-                        textareaRef.current.setSelectionRange(1, 1)
-                        textareaRef.current.focus()
+                        textareaRef.current.setSelectionRange(1, 1);
+                        textareaRef.current.focus();
                     }
-                }, 0)
-                return
+                }, 0);
+                return;
             }
 
-            let specialSuggestion: Suggestion | undefined
+            let specialSuggestion: Suggestion | undefined;
 
             // Add special suggestion for required fields
             if (
@@ -87,13 +87,13 @@ export const useJsonSuggestions = ({
             ) {
                 const missingRequiredFields = getMissingRequiredFields(
                     value,
-                    fieldsMetadata
-                )
+                    fieldsMetadata,
+                );
                 if (missingRequiredFields.length > 0) {
                     specialSuggestion = createRequiredFieldsSuggestion(
                         missingRequiredFields,
-                        onAddRequiredFields
-                    )
+                        onAddRequiredFields,
+                    );
                 }
             }
 
@@ -101,16 +101,16 @@ export const useJsonSuggestions = ({
             // Automatic display only for empty or typing keys
             // Ctrl+Space (forced) allows display everywhere structurally possible
             if (!forced && !context.canSuggest) {
-                setShowSuggestions(false)
-                setCursorPosition(null)
-                return
+                setShowSuggestions(false);
+                setCursorPosition(null);
+                return;
             }
 
             // For forced suggestions, check that we are at least in a valid JSON structure
             if (forced && context.braceCount === 0) {
-                setShowSuggestions(false)
-                setCursorPosition(null)
-                return
+                setShowSuggestions(false);
+                setCursorPosition(null);
+                return;
             }
 
             const newSuggestions = buildSuggestions(
@@ -118,91 +118,91 @@ export const useJsonSuggestions = ({
                 usedFields,
                 context.partialText,
                 10,
-                specialSuggestion
-            )
+                specialSuggestion,
+            );
 
-            setSuggestions(newSuggestions)
+            setSuggestions(newSuggestions);
 
             if (newSuggestions.length > 0) {
                 const cursorPos = getCursorPosition(
                     textareaRef.current,
-                    position
-                )
-                setCursorPosition(cursorPos)
-                setShowSuggestions(true)
-                resetFocus()
+                    position,
+                );
+                setCursorPosition(cursorPos);
+                setShowSuggestions(true);
+                resetFocus();
             } else {
-                setShowSuggestions(false)
-                setCursorPosition(null)
+                setShowSuggestions(false);
+                setCursorPosition(null);
             }
         },
-        [value, fieldsMetadata, usedFields, onChange, textareaRef]
-    )
+        [value, fieldsMetadata, usedFields, onChange, textareaRef],
+    );
 
     const insertSuggestion = useCallback(
         (suggestion: Suggestion) => {
-            if (!textareaRef.current) return
+            if (!textareaRef.current) return;
 
             if (suggestion.isSpecial && suggestion.specialAction) {
-                suggestion.specialAction()
-                setShowSuggestions(false)
-                return
+                suggestion.specialAction();
+                setShowSuggestions(false);
+                return;
             }
 
-            const position = textareaRef.current.selectionStart || 0
-            const textBefore = value.substring(0, position)
-            const textAfter = value.substring(position)
-            const context = analyzeJsonContext(value, position)
+            const position = textareaRef.current.selectionStart || 0;
+            const textBefore = value.substring(0, position);
+            const textAfter = value.substring(position);
+            const context = analyzeJsonContext(value, position);
 
             const { newValue, cursorPosition } = calculateInsertionParams(
                 suggestion,
                 textBefore,
                 textAfter,
                 context.isPartialReplacement,
-                context.partialText
-            )
+                context.partialText,
+            );
 
-            onChange(newValue)
-            setShowSuggestions(false)
+            onChange(newValue);
+            setShowSuggestions(false);
 
             setTimeout(() => {
                 if (textareaRef.current) {
                     textareaRef.current.setSelectionRange(
                         cursorPosition,
-                        cursorPosition
-                    )
-                    textareaRef.current.focus()
+                        cursorPosition,
+                    );
+                    textareaRef.current.focus();
                 }
-            }, 0)
+            }, 0);
         },
-        [value, onChange, textareaRef]
-    )
+        [value, onChange, textareaRef],
+    );
 
     const handleBraceInsertion = useCallback(
         (e: KeyboardEvent) => {
-            if (e.key !== "{" || !textareaRef.current) return
+            if (e.key !== "{" || !textareaRef.current) return;
 
-            const position = textareaRef.current.selectionStart || 0
-            const textAfter = value.substring(position)
+            const position = textareaRef.current.selectionStart || 0;
+            const textAfter = value.substring(position);
 
             if (!textAfter.trim().startsWith("}")) {
-                e.preventDefault()
-                const textBefore = value.substring(0, position)
-                const newValue = textBefore + "{}" + textAfter
-                onChange(newValue)
+                e.preventDefault();
+                const textBefore = value.substring(0, position);
+                const newValue = textBefore + "{}" + textAfter;
+                onChange(newValue);
 
                 setTimeout(() => {
                     if (textareaRef.current) {
                         textareaRef.current.setSelectionRange(
                             position + 1,
-                            position + 1
-                        )
+                            position + 1,
+                        );
                     }
-                }, 0)
+                }, 0);
             }
         },
-        [value, onChange, textareaRef]
-    )
+        [value, onChange, textareaRef],
+    );
 
     const {
         handleKeyDown: navigationKeyDown,
@@ -219,69 +219,70 @@ export const useJsonSuggestions = ({
         triggerKey: "Ctrl+Space",
         containerRef: dropdownRef,
         itemSelector: ".json-autocomplete-suggestion",
-    })
+    });
 
     useEffect(() => {
-        generateSuggestions()
-    }, [generateSuggestions])
+        generateSuggestions();
+    }, [generateSuggestions]);
 
     useEffect(() => {
         const handleInput = () => {
-            generateSuggestions()
-        }
+            generateSuggestions();
+        };
 
         const handleSelectionChange = () => {
             if (
                 textareaRef.current &&
                 document.activeElement === textareaRef.current
             ) {
-                generateSuggestions()
+                generateSuggestions();
             }
-        }
+        };
 
-        const textarea = textareaRef.current
+        const textarea = textareaRef.current;
         if (textarea) {
-            textarea.addEventListener("input", handleInput)
-            document.addEventListener("selectionchange", handleSelectionChange)
+            textarea.addEventListener("input", handleInput);
+            document.addEventListener("selectionchange", handleSelectionChange);
 
             return () => {
-                textarea.removeEventListener("input", handleInput)
+                textarea.removeEventListener("input", handleInput);
                 document.removeEventListener(
                     "selectionchange",
-                    handleSelectionChange
-                )
-            }
+                    handleSelectionChange,
+                );
+            };
         }
-    }, [generateSuggestions, textareaRef])
+    }, [generateSuggestions, textareaRef]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (!showSuggestions) return
+            if (!showSuggestions) return;
 
-            const target = event.target as Node
+            const target = event.target as Node;
 
-            if (dropdownRef.current?.contains(target)) return
+            if (dropdownRef.current?.contains(target)) return;
 
             if (textareaRef.current?.contains(target)) {
                 setTimeout(() => {
                     if (textareaRef.current) {
-                        const position = textareaRef.current.selectionStart || 0
-                        const context = analyzeJsonContext(value, position)
+                        const position =
+                            textareaRef.current.selectionStart || 0;
+                        const context = analyzeJsonContext(value, position);
                         if (!context.canSuggest) {
-                            setShowSuggestions(false)
+                            setShowSuggestions(false);
                         }
                     }
-                }, 0)
-                return
+                }, 0);
+                return;
             }
 
-            setShowSuggestions(false)
-        }
+            setShowSuggestions(false);
+        };
 
-        document.addEventListener("mousedown", handleClickOutside)
+        document.addEventListener("mousedown", handleClickOutside);
         return () =>
-            document.removeEventListener("mousedown", handleClickOutside)
-    }, [showSuggestions, value, textareaRef, dropdownRef])
+            document.removeEventListener("mousedown", handleClickOutside);
+    }, [showSuggestions, value, textareaRef, dropdownRef]);
 
     return {
         suggestions,
@@ -292,5 +293,5 @@ export const useJsonSuggestions = ({
         insertSuggestion,
         handleBraceInsertion,
         navigationKeyDown,
-    }
-}
+    };
+};

@@ -1,17 +1,17 @@
-import { useComputed } from "@preact/signals"
-import { JSX } from "preact"
+import { useComputed } from "@preact/signals";
+import { JSX } from "preact";
 import {
     expandedSectionsSignal,
     setSectionExpanded,
     useTechnicalListSections,
-} from "@/contexts/technical-list-signals"
+} from "@/contexts/technical-list-signals";
 
 interface InfoSectionProps {
-    icon: string
-    title: string
-    children: JSX.Element | JSX.Element[] | (JSX.Element | null | false)[]
-    defaultExpanded?: boolean
-    sectionId?: string
+    icon: string;
+    title: string;
+    children: JSX.Element | JSX.Element[] | (JSX.Element | null | false)[];
+    defaultExpanded?: boolean;
+    sectionId?: string;
 }
 
 export const InfoSection = ({
@@ -21,25 +21,25 @@ export const InfoSection = ({
     defaultExpanded = false,
     sectionId,
 }: InfoSectionProps) => {
-    const { toggleSectionExpanded } = useTechnicalListSections()
+    const { toggleSectionExpanded } = useTechnicalListSections();
 
     const effectiveSectionId =
-        sectionId || title.toLowerCase().replace(/\s+/g, "-")
+        sectionId || title.toLowerCase().replace(/\s+/g, "-");
 
     if (
         defaultExpanded &&
         !expandedSectionsSignal.value.has(effectiveSectionId)
     ) {
-        setSectionExpanded(effectiveSectionId, true)
+        setSectionExpanded(effectiveSectionId, true);
     }
 
     const isExpanded = useComputed(() =>
-        expandedSectionsSignal.value.has(effectiveSectionId)
-    )
+        expandedSectionsSignal.value.has(effectiveSectionId),
+    );
 
     const toggleExpanded = () => {
-        toggleSectionExpanded(effectiveSectionId)
-    }
+        toggleSectionExpanded(effectiveSectionId);
+    };
 
     return (
         <div className="x-odoo-technical-list-info-record-info">
@@ -64,5 +64,5 @@ export const InfoSection = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

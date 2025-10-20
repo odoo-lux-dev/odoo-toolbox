@@ -1,11 +1,11 @@
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 interface InfoItemProps {
-    label: string
-    value: string
-    valueClass?: string
-    icon?: string
-    copyable?: boolean
+    label: string;
+    value: string;
+    valueClass?: string;
+    icon?: string;
+    copyable?: boolean;
 }
 
 export const InfoItem = ({
@@ -15,22 +15,22 @@ export const InfoItem = ({
     icon,
     copyable = false,
 }: InfoItemProps) => {
-    const { copyToClipboard } = useCopyToClipboard()
+    const { copyToClipboard } = useCopyToClipboard();
 
     const handleCopyValue = async (event: MouseEvent) => {
         if (copyable) {
-            const target = event.target as HTMLElement
-            await copyToClipboard(value, target)
+            const target = event.target as HTMLElement;
+            await copyToClipboard(value, target);
         }
-    }
+    };
 
     const getValueClasses = () => {
         const baseClass = copyable
             ? "x-odoo-info-value-copyable"
-            : "x-odoo-info-value-static"
+            : "x-odoo-info-value-static";
 
-        return `x-odoo-technical-list-info-value ${baseClass} ${valueClass || ""}`
-    }
+        return `x-odoo-technical-list-info-value ${baseClass} ${valueClass || ""}`;
+    };
 
     return (
         <div className="x-odoo-technical-list-info-item">
@@ -46,5 +46,5 @@ export const InfoItem = ({
                 {value}
             </div>
         </div>
-    )
-}
+    );
+};

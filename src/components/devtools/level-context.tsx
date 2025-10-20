@@ -1,15 +1,15 @@
-import { createContext } from "preact"
-import { useContext } from "preact/hooks"
+import { createContext } from "preact";
+import { useContext } from "preact/hooks";
 
 interface LevelContextValue {
-    level: number
+    level: number;
 }
 
-const LevelContext = createContext<LevelContextValue | undefined>(undefined)
+const LevelContext = createContext<LevelContextValue | undefined>(undefined);
 
 interface LevelProviderProps {
-    level: number
-    children: preact.ComponentChildren
+    level: number;
+    children: preact.ComponentChildren;
 }
 
 export const LevelProvider = ({ level, children }: LevelProviderProps) => {
@@ -17,13 +17,13 @@ export const LevelProvider = ({ level, children }: LevelProviderProps) => {
         <LevelContext.Provider value={{ level }}>
             {children}
         </LevelContext.Provider>
-    )
-}
+    );
+};
 
 export const useLevel = (): number => {
-    const context = useContext(LevelContext)
+    const context = useContext(LevelContext);
     if (context === undefined) {
-        return 0 // Default level if no provider
+        return 0; // Default level if no provider
     }
-    return context.level
-}
+    return context.level;
+};

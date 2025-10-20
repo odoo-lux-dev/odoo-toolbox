@@ -1,4 +1,4 @@
-import type { OdooActionParams } from "@/types"
+import type { OdooActionParams } from "@/types";
 
 /**
  * Forward a DevTools request to the target tab's page context and return its result.
@@ -16,7 +16,7 @@ import type { OdooActionParams } from "@/types"
  */
 export async function handleDevToolsMessage(
     request: { tabId: number; scriptId: string; params?: unknown },
-    sendResponse: (response: unknown) => void
+    sendResponse: (response: unknown) => void,
 ) {
     try {
         // Execute script in the content script context with unified error handling
@@ -25,11 +25,11 @@ export async function handleDevToolsMessage(
             func: executeInContentScript,
             world: "MAIN",
             args: [request.scriptId, request.params ?? null],
-        })
+        });
 
-        sendResponse(result.result)
+        sendResponse(result.result);
     } catch (error) {
-        sendResponse(error)
+        sendResponse(error);
     }
 }
 
@@ -53,7 +53,7 @@ export async function handleDevToolsMessage(
  */
 async function executeInContentScript(
     scriptId: string,
-    params?: unknown | null
+    params?: unknown | null,
 ): Promise<unknown> {
     // All required functions must be declared inside this function
     /**
@@ -67,9 +67,9 @@ async function executeInContentScript(
      * @returns An object with `version`, `majorVersion`, and optional `database`.
      */
     function getOdooInfo(): {
-        version: number | null
-        majorVersion: number | null
-        database?: string
+        version: number | null;
+        majorVersion: number | null;
+        database?: string;
     } {
         const serverInfoVersion = (
             window.odoo?.info || window.odoo?.session_info
@@ -77,18 +77,18 @@ async function executeInContentScript(
             ?.slice(0, 2)
             .join(".")
             .replace(/^saas~/, "")
-            .replace(/\.0$/, "")
+            .replace(/\.0$/, "");
 
-        const version = Number(serverInfoVersion)
-        const majorVersion = Number(serverInfoVersion?.split(".")[0])
+        const version = Number(serverInfoVersion);
+        const majorVersion = Number(serverInfoVersion?.split(".")[0]);
 
-        const database = window.odoo?.info?.db || window.odoo?.session_info?.db
+        const database = window.odoo?.info?.db || window.odoo?.session_info?.db;
 
         return {
             version: isNaN(version) ? null : version,
             majorVersion: isNaN(majorVersion) ? null : majorVersion,
             database,
-        }
+        };
     }
 
     /**
@@ -101,19 +101,19 @@ async function executeInContentScript(
      */
     function getOdooContext(): Record<string, unknown> {
         try {
-            const { version, majorVersion } = getOdooInfo()
-            const odoo = window.odoo
+            const { version, majorVersion } = getOdooInfo();
+            const odoo = window.odoo;
             if (!version || !majorVersion) {
-                return {}
+                return {};
             }
 
             const context =
                 odoo?.__WOWL_DEBUG__?.root?.user?.context ??
-                odoo?.__DEBUG__?.services?.user?.context?.user_context
+                odoo?.__DEBUG__?.services?.user?.context?.user_context;
 
-            return context || {}
+            return context || {};
         } catch {
-            return {}
+            return {};
         }
     }
 
@@ -121,14 +121,14 @@ async function executeInContentScript(
         const hashMap = hashUrl
             .replace(/^#?/, "")
             .split("&")
-            .map((str_param) => str_param.split("="))
-        const hashDict = Object.fromEntries(hashMap)
+            .map((str_param) => str_param.split("="));
+        const hashDict = Object.fromEntries(hashMap);
 
-        const hashContext: Record<string, unknown> = {}
+        const hashContext: Record<string, unknown> = {};
         if (hashDict.cids) {
             hashContext.allowed_company_ids = hashDict.cids
                 .split(",")
-                .map((cid: string) => Number(cid))
+                .map((cid: string) => Number(cid));
         }
 
         if (hashDict.id && hashDict.model) {
@@ -138,12 +138,12 @@ async function executeInContentScript(
                 context: hashContext,
                 viewType: hashDict.viewType || "form",
                 domain: [],
-            }
+            };
         }
 
         // If we don't get the ID, try to parse the new URL format
-        const pathnames = Number(location.pathname.split("/").pop())
-        const urlId = isNaN(pathnames) ? null : pathnames
+        const pathnames = Number(location.pathname.split("/").pop());
+        const urlId = isNaN(pathnames) ? null : pathnames;
 
         return {
             ids: urlId,
@@ -151,76 +151,76 @@ async function executeInContentScript(
             context: hashContext,
             viewType: hashDict.viewType || "form",
             domain: [],
-        }
-    }
+        };
+    };
 
     const retrieveMatchingOwlComponentRecursively = (
         parentComponent: Record<string, unknown>,
-        matchingRegex: RegExp
+        matchingRegex: RegExp,
     ): Record<string, unknown> | undefined => {
-        if (!parentComponent) return undefined
+        if (!parentComponent) return undefined;
 
         if (
             typeof parentComponent.name === "string" &&
             matchingRegex.test(parentComponent.name)
         ) {
-            return parentComponent
+            return parentComponent;
         }
 
-        const children = parentComponent.children
-        if (!children || typeof children !== "object") return undefined
+        const children = parentComponent.children;
+        if (!children || typeof children !== "object") return undefined;
 
-        const childrenObj = children as Record<string, unknown>
+        const childrenObj = children as Record<string, unknown>;
 
         for (const key in childrenObj) {
-            const childComponent = childrenObj[key]
-            if (!childComponent || typeof childComponent !== "object") continue
+            const childComponent = childrenObj[key];
+            if (!childComponent || typeof childComponent !== "object") continue;
 
             const foundComponent = retrieveMatchingOwlComponentRecursively(
                 childComponent as Record<string, unknown>,
-                matchingRegex
-            )
-            if (foundComponent) return foundComponent
+                matchingRegex,
+            );
+            if (foundComponent) return foundComponent;
         }
 
-        return undefined
-    }
+        return undefined;
+    };
 
     const getCurrentSearchValues = () => {
-        const urlData = parseOdooUrl(location.hash)
+        const urlData = parseOdooUrl(location.hash);
 
-        if (urlData.ids && urlData.model) return urlData
+        if (urlData.ids && urlData.model) return urlData;
 
         try {
             const owlDebug = window.odoo?.__WOWL_DEBUG__ as Record<
                 string,
                 unknown
-            >
-            const owlRoot = owlDebug?.root as Record<string, unknown>
-            const baseComponent = owlRoot?.__owl__ as Record<string, unknown>
-            if (!baseComponent) return { context: urlData.context }
+            >;
+            const owlRoot = owlDebug?.root as Record<string, unknown>;
+            const baseComponent = owlRoot?.__owl__ as Record<string, unknown>;
+            if (!baseComponent) return { context: urlData.context };
 
             const mainController = retrieveMatchingOwlComponentRecursively(
                 baseComponent,
-                /^ControllerComponent$/
-            )
-            if (!mainController) return { context: urlData.context }
+                /^ControllerComponent$/,
+            );
+            if (!mainController) return { context: urlData.context };
 
             // Controller component should have "Controller" at the end
             // but in version 18, some components like "FormControllerWithHTMLExpander" may appear.
             // These are renamed in later versions, but let's keep a permissive fallback strategy.
             const controller = (retrieveMatchingOwlComponentRecursively(
                 mainController,
-                /Controller$/
+                /Controller$/,
             ) ??
                 retrieveMatchingOwlComponentRecursively(
                     mainController,
-                    /^(?!Controller).*Controller.*/
-                )) as Record<string, unknown> | undefined
+                    /^(?!Controller).*Controller.*/,
+                )) as Record<string, unknown> | undefined;
 
-            const controllerProps = controller?.props
+            const controllerProps = controller?.props;
 
-            if (!controllerProps) return { context: urlData.context }
+            if (!controllerProps) return { context: urlData.context };
 
             const {
                 resModel,
@@ -228,59 +228,61 @@ async function executeInContentScript(
                 domain,
                 context: owlContext,
             } = controllerProps as {
-                resModel?: string
-                resId?: number
-                domain?: unknown[]
-                context?: Record<string, unknown>
-            }
+                resModel?: string;
+                resId?: number;
+                domain?: unknown[];
+                context?: Record<string, unknown>;
+            };
 
-            const finalId = urlData.ids || resId
-            const finalContext = { ...urlData.context, ...owlContext }
+            const finalId = urlData.ids || resId;
+            const finalContext = { ...urlData.context, ...owlContext };
 
             const mainControllerProps = mainController.props as
                 | Record<string, unknown>
-                | undefined
-            const viewType = mainControllerProps?.type as string | undefined
+                | undefined;
+            const viewType = mainControllerProps?.type as string | undefined;
             if (viewType === "form") {
                 return {
                     model: resModel,
                     ids: finalId,
                     context: finalContext,
                     viewType: "form",
-                }
+                };
             }
 
             // For list views, try to get selected record IDs
-            let selectedIds: number[] | undefined = undefined
+            let selectedIds: number[] | undefined = undefined;
             if (viewType === "list") {
                 try {
                     const listRenderer =
                         retrieveMatchingOwlComponentRecursively(
                             mainController,
-                            /ListRenderer$/
-                        )
+                            /ListRenderer$/,
+                        );
                     if (listRenderer) {
                         const listRendererTyped = listRenderer as Record<
                             string,
                             unknown
-                        >
+                        >;
                         const listProps = listRendererTyped?.props as
                             | Record<string, unknown>
-                            | undefined
+                            | undefined;
                         const listData = listProps?.list as
                             | Record<string, unknown>
-                            | undefined
-                        const { selection } = listData || {}
+                            | undefined;
+                        const { selection } = listData || {};
                         if (Array.isArray(selection) && selection.length > 0) {
                             selectedIds = selection
                                 .map((record: unknown) => {
                                     const recordTyped = record as Record<
                                         string,
                                         unknown
-                                    >
-                                    return recordTyped.resId as number
+                                    >;
+                                    return recordTyped.resId as number;
                                 })
-                                .filter((id: unknown) => typeof id === "number")
+                                .filter(
+                                    (id: unknown) => typeof id === "number",
+                                );
                         }
                     }
                 } catch {
@@ -294,11 +296,11 @@ async function executeInContentScript(
                 domain,
                 context: finalContext,
                 viewType: viewType || "list",
-            }
+            };
         } catch {
-            return { context: urlData.context }
+            return { context: urlData.context };
         }
-    }
+    };
 
     /**
      * Summarizes the current Odoo page (model, record IDs, domain, view type, and title).
@@ -316,62 +318,62 @@ async function executeInContentScript(
      * empty object when page information cannot be determined.
      */
     function getCurrentPageInfo(): {
-        model?: string
-        recordIds?: number[]
-        domain?: unknown[]
-        viewType?: string
-        title?: string
+        model?: string;
+        recordIds?: number[];
+        domain?: unknown[];
+        viewType?: string;
+        title?: string;
     } {
         try {
-            const { majorVersion } = getOdooInfo()
+            const { majorVersion } = getOdooInfo();
 
             if (!majorVersion) {
-                return {}
+                return {};
             }
 
-            const searchValues = getCurrentSearchValues()
-            if (!searchValues) return {}
+            const searchValues = getCurrentSearchValues();
+            if (!searchValues) return {};
 
             const result: {
-                model?: string
-                recordIds?: number[]
-                domain?: unknown[]
-                viewType?: string
-                title?: string
-            } = {}
+                model?: string;
+                recordIds?: number[];
+                domain?: unknown[];
+                viewType?: string;
+                title?: string;
+            } = {};
 
             if (searchValues.model) {
-                result.model = searchValues.model
+                result.model = searchValues.model;
             }
 
             if (typeof searchValues.ids === "number") {
-                result.recordIds = [searchValues.ids]
-                result.viewType = searchValues.viewType || "form"
+                result.recordIds = [searchValues.ids];
+                result.viewType = searchValues.viewType || "form";
             } else if (
                 Array.isArray(searchValues.ids) &&
                 searchValues.ids.length > 0
             ) {
-                result.recordIds = searchValues.ids
-                result.viewType = searchValues.viewType || "list"
+                result.recordIds = searchValues.ids;
+                result.viewType = searchValues.viewType || "list";
             }
 
             if (
                 Array.isArray(searchValues.domain) &&
                 searchValues.domain.length > 0
             ) {
-                result.domain = searchValues.domain
-                result.viewType = searchValues.viewType || "list"
+                result.domain = searchValues.domain;
+                result.viewType = searchValues.viewType || "list";
             }
 
             if (searchValues.viewType) {
-                result.viewType = searchValues.viewType
+                result.viewType = searchValues.viewType;
             }
 
-            result.title = document.title
+            result.title = document.title;
 
-            return result
+            return result;
         } catch {
-            return {}
+            return {};
         }
     }
 
@@ -387,54 +389,54 @@ async function executeInContentScript(
      * @throws Error - If an action service (`doAction`) is not available on the page.
      */
     async function executeOdooAction(
-        params: OdooActionParams
+        params: OdooActionParams,
     ): Promise<unknown> {
-        const { version, majorVersion } = getOdooInfo()
-        const odoo = window.odoo
+        const { version, majorVersion } = getOdooInfo();
+        const odoo = window.odoo;
 
         if (!version) {
-            throw new Error("Odoo not detected on this page")
+            throw new Error("Odoo not detected on this page");
         }
 
         if (!majorVersion) {
-            throw new Error("Odoo version not supported.")
+            throw new Error("Odoo version not supported.");
         }
         const doActionFunction =
             odoo?.__WOWL_DEBUG__?.root?.actionService?.doAction ??
             odoo?.__WOWL_DEBUG__?.root?.env?.services?.action?.doAction ??
-            odoo?.__DEBUG__?.services?.["web.web_client"]?.do_action
+            odoo?.__DEBUG__?.services?.["web.web_client"]?.do_action;
 
         if (!doActionFunction || typeof doActionFunction !== "function") {
-            throw new Error("Action service not available")
+            throw new Error("Action service not available");
         }
 
-        return await doActionFunction(params.action, params.options || {})
+        return await doActionFunction(params.action, params.options || {});
     }
 
     try {
         switch (scriptId) {
             case "GET_ODOO_INFO":
-                return getOdooInfo()
+                return getOdooInfo();
 
             case "GET_ODOO_CONTEXT":
-                return getOdooContext()
+                return getOdooContext();
 
             case "GET_CURRENT_PAGE_INFO":
-                return getCurrentPageInfo()
+                return getCurrentPageInfo();
 
             case "EXECUTE_ODOO_ACTION":
                 if (!params || typeof params !== "object") {
-                    throw new Error("Invalid action parameters")
+                    throw new Error("Invalid action parameters");
                 }
-                return await executeOdooAction(params as OdooActionParams)
+                return await executeOdooAction(params as OdooActionParams);
 
             default:
-                throw new Error(`Unknown script ID: ${scriptId}`)
+                throw new Error(`Unknown script ID: ${scriptId}`);
         }
     } catch (error) {
         // Return the complete error object that can be serialized back to the background script
         // This preserves Odoo's detailed error structure (code, data, debug, etc.)
         // We have to destructure the error object to make it work on Firefox
-        return { ...(error || {}) }
+        return { ...(error || {}) };
     }
 }

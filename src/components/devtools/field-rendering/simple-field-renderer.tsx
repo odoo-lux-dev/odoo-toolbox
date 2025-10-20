@@ -1,9 +1,9 @@
-import type { BaseFieldProps } from "./types"
-import { getValueClasses, ValueRenderer } from "./value-renderer"
+import type { BaseFieldProps } from "./types";
+import { getValueClasses, ValueRenderer } from "./value-renderer";
 
 interface SimpleFieldProps extends BaseFieldProps {
-    additionalClasses?: string
-    level?: number
+    additionalClasses?: string;
+    level?: number;
 }
 
 export const SimpleFieldRenderer = ({
@@ -19,5 +19,5 @@ export const SimpleFieldRenderer = ({
             fieldName={fieldName}
             className={`${additionalClasses} ${getValueClasses(value)}`}
         />
-    )
-}
+    );
+};

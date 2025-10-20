@@ -1,19 +1,19 @@
 import {
     addCopyIconToBranchTitle,
     addCopyIconToBranchTitleBuildPage,
-} from "@/features/odoo-sh/handle-sh-branch-name-copy"
-import { addColorBlindClass } from "@/features/odoo-sh/handle-sh-colorblind-mode"
-import { updateProjectList } from "@/features/odoo-sh/handle-sh-favorites"
-import { addGithubIconToBranchTitle } from "@/features/odoo-sh/handle-sh-github-link"
+} from "@/features/odoo-sh/handle-sh-branch-name-copy";
+import { addColorBlindClass } from "@/features/odoo-sh/handle-sh-colorblind-mode";
+import { updateProjectList } from "@/features/odoo-sh/handle-sh-favorites";
+import { addGithubIconToBranchTitle } from "@/features/odoo-sh/handle-sh-github-link";
 import {
     addProjectTaskLinkBranchTitle,
     addProjectTaskLinkBranchTitleBuildPage,
-} from "@/features/odoo-sh/handle-sh-project-task-link"
-import { renameShProjectPageTitle } from "@/features/odoo-sh/handle-sh-rename-project-page"
-import { favoritesService } from "@/services/favorites-service"
-import { settingsService } from "@/services/settings-service"
+} from "@/features/odoo-sh/handle-sh-project-task-link";
+import { renameShProjectPageTitle } from "@/features/odoo-sh/handle-sh-rename-project-page";
+import { favoritesService } from "@/services/favorites-service";
+import { settingsService } from "@/services/settings-service";
 
-const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/
+const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/;
 
 /**
  * Monitors the project page for changes and dynamically updates the project list based on favorite status.
@@ -31,23 +31,23 @@ const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/
  * @returns {Promise<void>} A promise that resolves once the observer has been set up and is monitoring for changes.
  */
 const handleProjectPage = async (): Promise<void> => {
-    const wrapper = document.querySelector("#wrapwrap")
-    if (!wrapper) return
-    const favorites = await favoritesService.getFavoritesProjects()
+    const wrapper = document.querySelector("#wrapwrap");
+    if (!wrapper) return;
+    const favorites = await favoritesService.getFavoritesProjects();
     const {
         renameShProjectPage,
         taskUrl: globalTaskUrl,
         colorBlindMode,
-    } = await settingsService.getSettings()
+    } = await settingsService.getSettings();
 
-    let favoritesDone = false
+    let favoritesDone = false;
     const currentProjectName = window.location.href.match(
-        REGEX_CURRENT_PROJECT_NAME
-    )?.groups?.project_name
+        REGEX_CURRENT_PROJECT_NAME,
+    )?.groups?.project_name;
     const currentFavoriteProject =
         currentProjectName !== undefined
             ? favorites.find((favorite) => favorite.name === currentProjectName)
-            : currentProjectName
+            : currentProjectName;
 
     const observer = new MutationObserver((mutations) => {
         if (renameShProjectPage)
@@ -55,32 +55,32 @@ const handleProjectPage = async (): Promise<void> => {
                 currentFavoriteProject?.display_name ||
                     currentProjectName ||
                     "",
-                currentProjectName || ""
-            )
+                currentProjectName || "",
+            );
         mutations.forEach((mutation) => {
             if (mutation.type === "childList") {
                 for (const node of mutation.addedNodes) {
                     if (node.nodeName === "HEADER" && !favoritesDone) {
-                        updateProjectList(favorites)
-                        favoritesDone = true
+                        updateProjectList(favorites);
+                        favoritesDone = true;
                     } else if (
                         node.nodeName === "DIV" &&
                         // @ts-expect-error - TS doesn't recognize classList
                         node.classList.contains("o_sh_panel_right")
                     ) {
-                        addCopyIconToBranchTitle()
-                        addGithubIconToBranchTitle()
+                        addCopyIconToBranchTitle();
+                        addGithubIconToBranchTitle();
                         addProjectTaskLinkBranchTitle(
-                            currentFavoriteProject?.task_link || globalTaskUrl
-                        )
+                            currentFavoriteProject?.task_link || globalTaskUrl,
+                        );
                     } else if (
                         node.nodeName === "DIV" &&
                         (node as Element).classList.contains(
-                            "o_branches_listing"
+                            "o_branches_listing",
                         )
                     ) {
                         if (colorBlindMode) {
-                            addColorBlindClass(node)
+                            addColorBlindClass(node);
                         }
                     } else if (
                         node.nodeName === "DIV" &&
@@ -88,33 +88,33 @@ const handleProjectPage = async (): Promise<void> => {
                         node.classList.contains("o_builds_view")
                     ) {
                         if (colorBlindMode) {
-                            addColorBlindClass(node)
+                            addColorBlindClass(node);
                         }
                         const buildLines = (node as Element).querySelectorAll(
-                            ".o_builds_branch"
-                        )
-                        if (!buildLines.length) return
+                            ".o_builds_branch",
+                        );
+                        if (!buildLines.length) return;
                         for (const buildLine of buildLines) {
                             addCopyIconToBranchTitleBuildPage(
-                                buildLine as HTMLDivElement
-                            )
+                                buildLine as HTMLDivElement,
+                            );
                             addProjectTaskLinkBranchTitleBuildPage(
                                 buildLine as HTMLDivElement,
                                 currentFavoriteProject?.task_link ||
-                                    globalTaskUrl
-                            )
+                                    globalTaskUrl,
+                            );
                         }
                     }
                 }
             }
-        })
-    })
+        });
+    });
 
     observer.observe(wrapper, {
         attributes: true,
         childList: true,
         subtree: true,
-    })
-}
+    });
+};
 
-export { handleProjectPage }
+export { handleProjectPage };

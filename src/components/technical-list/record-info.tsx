@@ -1,11 +1,11 @@
-import { useTechnicalSidebar } from "./hooks/use-technical-sidebar"
-import { InfoItem } from "./info-item"
-import { InfoSection } from "./info-section"
-import { ModelActions } from "./model-actions"
+import { useTechnicalSidebar } from "./hooks/use-technical-sidebar";
+import { InfoItem } from "./info-item";
+import { InfoSection } from "./info-section";
+import { ModelActions } from "./model-actions";
 
 export const RecordInfo = () => {
-    const { viewInfo } = useTechnicalSidebar()
-    const items = []
+    const { viewInfo } = useTechnicalSidebar();
+    const items = [];
 
     if (viewInfo?.currentModel) {
         items.push(
@@ -15,7 +15,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.currentModel}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.currentRecordId) {
@@ -26,7 +26,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.currentRecordId.toString()}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.viewType) {
@@ -37,7 +37,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.viewType}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.actionType) {
@@ -48,7 +48,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.actionType}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.actionName) {
@@ -59,7 +59,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.actionName}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.actionXmlId) {
@@ -70,7 +70,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.actionXmlId}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.actionContext) {
@@ -81,7 +81,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.actionContext}
                 copyable
             />,
-        )
+        );
     }
 
     if (viewInfo?.actionDomain) {
@@ -92,7 +92,7 @@ export const RecordInfo = () => {
                 value={viewInfo?.actionDomain}
                 copyable
             />,
-        )
+        );
     }
 
     return (
@@ -107,5 +107,5 @@ export const RecordInfo = () => {
                 ) : null}
             </>
         </InfoSection>
-    )
-}
+    );
+};

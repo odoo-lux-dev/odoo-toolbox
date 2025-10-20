@@ -1,5 +1,5 @@
-import { DebugModeType } from "@/types"
-import { getDefaultDebugMode } from "@/utils/utils"
+import { DebugModeType } from "@/types";
+import { getDefaultDebugMode } from "@/utils/utils";
 
 /**
  * Sets the debug mode for the Odoo application based on the URL parameters and the default debug mode.
@@ -14,14 +14,14 @@ import { getDefaultDebugMode } from "@/utils/utils"
  * If the conditions for changing the debug mode are not met, the function completes without action.
  */
 const setDebugMode = async (
-    url: URL
+    url: URL,
 ): Promise<{ reload: boolean; url?: string }> => {
-    const defaultDebugMode = getDefaultDebugMode()
-    const odooWindowObject = window.odoo
+    const defaultDebugMode = getDefaultDebugMode();
+    const odooWindowObject = window.odoo;
 
     if (odooWindowObject?.debug !== undefined && defaultDebugMode) {
-        const params = url.searchParams
-        const urlDebugMode = params.get("debug")
+        const params = url.searchParams;
+        const urlDebugMode = params.get("debug");
 
         // We need to reload the page if :
         // - The default debug mode is not "disabled" and the URL debug mode is not set (so debug mode disabled)
@@ -31,26 +31,26 @@ const setDebugMode = async (
         const needReload =
             defaultDebugMode !== "disabled" &&
             (urlDebugMode !== odooWindowObject.debug ||
-                urlDebugMode !== defaultDebugMode)
+                urlDebugMode !== defaultDebugMode);
 
         return {
             reload: needReload,
             url: generateDebugModeUrl(url, defaultDebugMode),
-        }
+        };
     }
 
     return {
         reload: false,
-    }
-}
+    };
+};
 
 const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
-    const params = url.searchParams
+    const params = url.searchParams;
 
     if (debugMode === "disabled") {
-        params.set("debug", "0")
+        params.set("debug", "0");
     } else {
-        params.set("debug", debugMode)
+        params.set("debug", debugMode);
     }
 
     return (
@@ -58,7 +58,7 @@ const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
         url.pathname +
         (params.size > 0 ? `?${params.toString()}` : "") +
         url.hash
-    )
-}
+    );
+};
 
-export { setDebugMode, generateDebugModeUrl }
+export { setDebugMode, generateDebugModeUrl };

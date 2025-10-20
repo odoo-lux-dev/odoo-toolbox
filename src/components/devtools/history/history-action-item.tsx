@@ -1,4 +1,4 @@
-import { useSignal } from "@preact/signals"
+import { useSignal } from "@preact/signals";
 import {
     Archive,
     ArchiveRestore,
@@ -9,36 +9,36 @@ import {
     Search,
     SquareFunction,
     Trash,
-} from "lucide-preact"
-import { JSX } from "preact/jsx-runtime"
-import { removeHistoryAction } from "@/contexts/history-signals"
-import { Logger } from "@/services/logger"
-import type { HistoryAction } from "@/types"
-import { HistoryActionRestore } from "./history-action-restore"
+} from "lucide-preact";
+import { JSX } from "preact/jsx-runtime";
+import { removeHistoryAction } from "@/contexts/history-signals";
+import { Logger } from "@/services/logger";
+import type { HistoryAction } from "@/types";
+import { HistoryActionRestore } from "./history-action-restore";
 
 interface HistoryActionItemProps {
-    action: HistoryAction
+    action: HistoryAction;
 }
 
 const getActionOperation = (action: HistoryAction): string => {
     if (action.type === "unlink") {
-        return action.parameters.operation
+        return action.parameters.operation;
     }
-    return action.type
-}
+    return action.type;
+};
 
 const getActionIcon = (action: HistoryAction): JSX.Element => {
     if (action.type === "unlink") {
-        const operation = action.parameters.operation
+        const operation = action.parameters.operation;
         switch (operation) {
             case "archive":
-                return <Archive size={18} />
+                return <Archive size={18} />;
             case "unarchive":
-                return <ArchiveRestore size={18} />
+                return <ArchiveRestore size={18} />;
             case "delete":
-                return <Trash size={18} />
+                return <Trash size={18} />;
             default:
-                return <Trash size={18} />
+                return <Trash size={18} />;
         }
     }
 
@@ -50,10 +50,12 @@ const getActionIcon = (action: HistoryAction): JSX.Element => {
         write: <Pencil size={18} />,
         create: <CirclePlus size={18} />,
         "call-method": <SquareFunction size={18} />,
-    }
+    };
 
-    return defaultIcons[action.type as Exclude<HistoryAction["type"], "unlink">]
-}
+    return defaultIcons[
+        action.type as Exclude<HistoryAction["type"], "unlink">
+    ];
+};
 
 const ACTION_TYPE_COLORS: Record<HistoryAction["type"], string> = {
     search: "history-action-search",
@@ -61,64 +63,64 @@ const ACTION_TYPE_COLORS: Record<HistoryAction["type"], string> = {
     create: "history-action-create",
     "call-method": "history-action-method",
     unlink: "history-action-unlink",
-}
+};
 
 /**
  * Individual history action item component
  * Shows action details and provides restore/delete functionality
  */
 export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
-    const isExpanded = useSignal(false)
-    const isDeleting = useSignal(false)
+    const isExpanded = useSignal(false);
+    const isDeleting = useSignal(false);
 
     const handleDelete = async () => {
         if (
             !confirm(
-                "Are you sure you want to remove this action from history?"
+                "Are you sure you want to remove this action from history?",
             )
         ) {
-            return
+            return;
         }
 
         try {
-            isDeleting.value = true
-            await removeHistoryAction(action.id)
+            isDeleting.value = true;
+            await removeHistoryAction(action.id);
         } catch (error) {
-            Logger.error("Failed to delete history action:", error)
+            Logger.error("Failed to delete history action:", error);
         } finally {
-            isDeleting.value = false
+            isDeleting.value = false;
         }
-    }
+    };
 
     const toggleExpanded = () => {
-        isExpanded.value = !isExpanded.value
-    }
+        isExpanded.value = !isExpanded.value;
+    };
 
     const formatTimestamp = (timestamp: number) => {
-        const now = Date.now()
-        const diff = now - timestamp
+        const now = Date.now();
+        const diff = now - timestamp;
 
-        const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" })
+        const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
         if (diff < 60000) {
-            return rtf.format(-Math.floor(diff / 1000), "second")
+            return rtf.format(-Math.floor(diff / 1000), "second");
         }
 
         if (diff < 3600000) {
-            return rtf.format(-Math.floor(diff / 60000), "minute")
+            return rtf.format(-Math.floor(diff / 60000), "minute");
         }
 
         if (diff < 86400000) {
-            return rtf.format(-Math.floor(diff / 3600000), "hour")
+            return rtf.format(-Math.floor(diff / 3600000), "hour");
         }
 
         if (diff < 604800000) {
-            return rtf.format(-Math.floor(diff / 86400000), "day")
+            return rtf.format(-Math.floor(diff / 86400000), "day");
         }
 
-        const date = new Date(timestamp)
-        return date.toLocaleDateString() + " " + date.toLocaleTimeString()
-    }
+        const date = new Date(timestamp);
+        return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    };
 
     return (
         <div
@@ -130,8 +132,8 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                         type="button"
                         className="btn-icon expand-btn"
                         onClick={(e) => {
-                            e.stopPropagation()
-                            toggleExpanded()
+                            e.stopPropagation();
+                            toggleExpanded();
                         }}
                         title={isExpanded.value ? "Collapse" : "Expand"}
                     >
@@ -194,5 +196,5 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

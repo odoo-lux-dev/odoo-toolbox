@@ -2,13 +2,13 @@ import {
     isDebugTrue,
     isDynamicCondition,
     shouldUseCSSFallback,
-} from "@/utils/field-utils"
+} from "@/utils/field-utils";
 
 interface FieldBadgeProps {
-    debugValue: boolean | string | null | undefined
-    cssValue: boolean | undefined
-    hasDebugInfo: boolean
-    badgeType: "required" | "readonly"
+    debugValue: boolean | string | null | undefined;
+    cssValue: boolean | undefined;
+    hasDebugInfo: boolean;
+    badgeType: "required" | "readonly";
 }
 
 export const FieldBadge = ({
@@ -25,7 +25,7 @@ export const FieldBadge = ({
             >
                 {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}*
             </span>
-        )
+        );
     } else if (isDebugTrue(debugValue)) {
         return (
             <span
@@ -33,7 +33,7 @@ export const FieldBadge = ({
             >
                 {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}
             </span>
-        )
+        );
     } else if (cssValue && shouldUseCSSFallback(debugValue, hasDebugInfo)) {
         return (
             <span
@@ -41,7 +41,7 @@ export const FieldBadge = ({
             >
                 {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}
             </span>
-        )
+        );
     }
-    return null
-}
+    return null;
+};

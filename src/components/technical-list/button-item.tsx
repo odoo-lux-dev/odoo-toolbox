@@ -1,16 +1,16 @@
-import { Info } from "lucide-preact"
-import { useCallback } from "preact/hooks"
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
-import { EnhancedTechnicalButtonInfo } from "@/types"
-import { isDynamicCondition } from "@/utils/field-utils"
+import { Info } from "lucide-preact";
+import { useCallback } from "preact/hooks";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { EnhancedTechnicalButtonInfo } from "@/types";
+import { isDynamicCondition } from "@/utils/field-utils";
 
 interface ButtonItemProps {
-    button: EnhancedTechnicalButtonInfo
-    onHighlight: (buttonName: string, buttonType: "object" | "action") => void
+    button: EnhancedTechnicalButtonInfo;
+    onHighlight: (buttonName: string, buttonType: "object" | "action") => void;
     onClearHighlight: (
         buttonName: string,
-        buttonType: "object" | "action"
-    ) => void
+        buttonType: "object" | "action",
+    ) => void;
 }
 
 export const ButtonItem = ({
@@ -18,15 +18,15 @@ export const ButtonItem = ({
     onHighlight,
     onClearHighlight,
 }: ButtonItemProps) => {
-    const { copyToClipboard } = useCopyToClipboard()
+    const { copyToClipboard } = useCopyToClipboard();
 
     const handleCopyButtonName = useCallback(
         async (buttonName: string, event: MouseEvent) => {
-            const target = event.target as HTMLElement
-            await copyToClipboard(buttonName, target)
+            const target = event.target as HTMLElement;
+            await copyToClipboard(buttonName, target);
         },
-        [copyToClipboard]
-    )
+        [copyToClipboard],
+    );
 
     return (
         <div
@@ -118,7 +118,7 @@ export const ButtonItem = ({
                         },
                     ]
                         .filter((item) =>
-                            item.condition ? item.condition() : item.value
+                            item.condition ? item.condition() : item.value,
                         )
                         .map((item) => (
                             <div
@@ -146,5 +146,5 @@ export const ButtonItem = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

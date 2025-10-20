@@ -1,11 +1,10 @@
-import { Info } from "lucide-preact"
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
+import { Info } from "lucide-preact";
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
 
 export const SidePanelSummary = () => {
-    const { viewInfo, isSelectionMode, isWebsite } =
-        useTechnicalSidebar()
+    const { viewInfo, isSelectionMode, isWebsite } = useTechnicalSidebar();
 
-    if (!viewInfo || isSelectionMode) return null
+    if (!viewInfo || isSelectionMode) return null;
 
     return (
         <div className="x-odoo-technical-list-info-summary">
@@ -36,5 +35,5 @@ export const SidePanelSummary = () => {
                 </>
             )}
         </div>
-    )
-}
+    );
+};

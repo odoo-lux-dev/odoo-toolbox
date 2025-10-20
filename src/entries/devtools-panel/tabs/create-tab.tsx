@@ -1,51 +1,51 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss"
-import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal"
-import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook"
-import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications"
-import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor"
-import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete"
+import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
+import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
+import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
+import { useJsonEditor } from "@/components/devtools/json-autocomplete/hooks/use-json-editor";
+import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-autocomplete";
 import {
     createFieldValidationErrorNotification,
     createRequiredFieldsActionNotification,
     generateRequiredFieldsTemplate,
-} from "@/components/devtools/json-autocomplete/utils/json-autocomplete-utils"
-import { mergeWithTemplate } from "@/components/devtools/json-autocomplete/utils/json-extraction"
-import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar"
-import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer"
-import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications"
-import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook"
+} from "@/components/devtools/json-autocomplete/utils/json-autocomplete-utils";
+import { mergeWithTemplate } from "@/components/devtools/json-autocomplete/utils/json-extraction";
+import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
+import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
+import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
     clearTabValues,
     executeQuery,
     setCreateValues,
     setRpcQuery,
-} from "@/contexts/devtools-signals"
+} from "@/contexts/devtools-signals";
 import {
     useDatabase,
     useRpcQuery,
     useRpcResult,
     useTabValues,
-} from "@/contexts/devtools-signals-hook"
-import { Logger } from "@/services/logger"
-import { isOdooError } from "@/services/odoo-error"
-import { odooRpcService } from "@/services/odoo-rpc-service"
-import { FieldMetadata } from "@/types"
-import { addCreateToHistory } from "@/utils/history-helpers"
+} from "@/contexts/devtools-signals-hook";
+import { Logger } from "@/services/logger";
+import { isOdooError } from "@/services/odoo-error";
+import { odooRpcService } from "@/services/odoo-rpc-service";
+import { FieldMetadata } from "@/types";
+import { addCreateToHistory } from "@/utils/history-helpers";
 import {
     validateFieldsExistence,
     validateRequiredFields,
-} from "@/utils/query-validation"
+} from "@/utils/query-validation";
 
 export const CreateTab = () => {
-    const { query: rpcQuery } = useRpcQuery()
-    const { result: rpcResult } = useRpcResult()
-    const { createValues } = useTabValues()
-    const { database } = useDatabase()
-    const { createLoading, setCreateLoading } = useDevToolsLoading()
+    const { query: rpcQuery } = useRpcQuery();
+    const { result: rpcResult } = useRpcResult();
+    const { createValues } = useTabValues();
+    const { database } = useDatabase();
+    const { createLoading, setCreateLoading } = useDevToolsLoading();
 
-    const { showNotification } = useDevToolsNotifications()
+    const { showNotification } = useDevToolsNotifications();
     const { isOpen, config, openConfirmation, handleConfirm, handleCancel } =
-        useConfirmationModal()
+        useConfirmationModal();
 
     const {
         jsonData: createData,
@@ -56,75 +56,75 @@ export const CreateTab = () => {
     } = useJsonEditor({
         initialValue: createValues.value || "",
         onValueChange: (value) => setCreateValues(value),
-    })
+    });
 
     const handleJsonChange = (newValue: string) => {
-        handleJsonChangeBase(newValue)
-        setCreateValues(newValue)
-    }
+        handleJsonChangeBase(newValue);
+        setCreateValues(newValue);
+    };
 
     const handleClearForm = () => {
         setRpcQuery({
             model: "",
             fieldsMetadata: {},
-        })
-        clearJson()
-        clearTabValues()
-    }
+        });
+        clearJson();
+        clearTabValues();
+    };
 
     const handleAddRequiredFieldsFromAutocomplete = () => {
-        if (!rpcQuery.fieldsMetadata) return
+        if (!rpcQuery.fieldsMetadata) return;
 
         const missingRequiredFields = Object.entries(
-            rpcQuery.fieldsMetadata || {}
+            rpcQuery.fieldsMetadata || {},
         )
             .filter(
                 ([, meta]) =>
                     (meta as FieldMetadata).required &&
-                    !(meta as FieldMetadata).readonly
+                    !(meta as FieldMetadata).readonly,
             )
             .map(([field]) => field)
             .filter((field) => {
                 if (!createData.trim() || createData.trim() === "{}")
-                    return true
+                    return true;
                 try {
-                    const parsedJson = JSON.parse(createData)
-                    return !(field in parsedJson)
+                    const parsedJson = JSON.parse(createData);
+                    return !(field in parsedJson);
                 } catch {
-                    return true
+                    return true;
                 }
-            })
+            });
 
         if (missingRequiredFields.length > 0) {
-            handleAddRequiredFields(missingRequiredFields)
+            handleAddRequiredFields(missingRequiredFields);
         }
-    }
+    };
 
     const handleAddRequiredFields = (missingFields: string[]) => {
         try {
             const requiredTemplate = generateRequiredFieldsTemplate(
                 missingFields,
-                rpcQuery.fieldsMetadata || {}
-            )
+                rpcQuery.fieldsMetadata || {},
+            );
 
-            let updatedData: Record<string, unknown>
+            let updatedData: Record<string, unknown>;
 
             if (createData.trim() === "") {
-                updatedData = requiredTemplate
+                updatedData = requiredTemplate;
             } else {
-                updatedData = mergeWithTemplate(createData, requiredTemplate)
+                updatedData = mergeWithTemplate(createData, requiredTemplate);
             }
 
-            const formattedJson = JSON.stringify(updatedData, null, 2)
-            handleJsonChange(formattedJson)
+            const formattedJson = JSON.stringify(updatedData, null, 2);
+            handleJsonChange(formattedJson);
         } catch {
             showNotification(
                 "Failed to add required fields",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
         }
-    }
+    };
 
     const validateFields = () => {
         if (
@@ -132,68 +132,68 @@ export const CreateTab = () => {
             !jsonValidation.isValid ||
             !rpcQuery.fieldsMetadata
         ) {
-            return true
+            return true;
         }
 
         const fieldsValidation = validateFieldsExistence(
             createData,
-            rpcQuery.fieldsMetadata
-        )
+            rpcQuery.fieldsMetadata,
+        );
         if (!fieldsValidation.isValid) {
             const notification = createFieldValidationErrorNotification(
-                fieldsValidation.invalidFields
-            )
-            showNotification(notification, "error", ERROR_NOTIFICATION_TIMEOUT)
-            return false
+                fieldsValidation.invalidFields,
+            );
+            showNotification(notification, "error", ERROR_NOTIFICATION_TIMEOUT);
+            return false;
         }
 
         const requiredValidation = validateRequiredFields(
             createData,
-            rpcQuery.fieldsMetadata
-        )
+            rpcQuery.fieldsMetadata,
+        );
         if (!requiredValidation.isValid) {
             const { message, actionButton } =
                 createRequiredFieldsActionNotification(
                     requiredValidation.missingRequiredFields,
                     () =>
                         handleAddRequiredFields(
-                            requiredValidation.missingRequiredFields
-                        )
-                )
+                            requiredValidation.missingRequiredFields,
+                        ),
+                );
             showNotification(
                 message,
                 "error",
                 ERROR_NOTIFICATION_TIMEOUT,
-                actionButton
-            )
-            return false
+                actionButton,
+            );
+            return false;
         }
 
-        return true
-    }
+        return true;
+    };
 
     const handleCreateRecord = async () => {
         if (!rpcQuery.model) {
-            showNotification("Please select a model first", "warning")
-            return
+            showNotification("Please select a model first", "warning");
+            return;
         }
 
         if (!createData.trim()) {
-            showNotification("Please provide data to create", "warning")
-            return
+            showNotification("Please provide data to create", "warning");
+            return;
         }
 
         if (!jsonValidation.isValid) {
             showNotification(
                 jsonValidation.error || "Invalid JSON format",
                 "error",
-                ERROR_NOTIFICATION_TIMEOUT
-            )
-            return
+                ERROR_NOTIFICATION_TIMEOUT,
+            );
+            return;
         }
 
         if (!validateFields()) {
-            return
+            return;
         }
 
         try {
@@ -201,66 +201,66 @@ export const CreateTab = () => {
                 title: "Create New Record",
                 message: `Are you sure you want to create a new record in ${rpcQuery.model}? This action will permanently add data to the database.`,
                 variant: "success",
-            })
+            });
 
-            if (!confirmed) return
+            if (!confirmed) return;
         } catch {
-            return
+            return;
         }
 
-        setCreateLoading(true)
+        setCreateLoading(true);
         try {
             const createParams = {
                 model: rpcQuery.model,
                 values: [JSON.parse(createData)],
-            }
-            const createdIds = await odooRpcService.create(createParams)
+            };
+            const createdIds = await odooRpcService.create(createParams);
 
             if (createdIds && createdIds.length > 0) {
                 showNotification(
                     `Successfully created record in ${rpcQuery.model} (ID: ${createdIds[0]})`,
-                    "success"
-                )
+                    "success",
+                );
 
                 try {
                     await addCreateToHistory(
                         rpcQuery.model,
                         JSON.parse(createData),
                         createdIds[0],
-                        database
-                    )
+                        database,
+                    );
                 } catch (historyError) {
                     Logger.warn(
                         "Failed to add create to history:",
-                        historyError
-                    )
+                        historyError,
+                    );
                 }
 
-                setRpcQuery({ ids: createdIds[0].toString() })
+                setRpcQuery({ ids: createdIds[0].toString() });
 
-                await executeQuery(false, { ids: createdIds[0].toString() })
+                await executeQuery(false, { ids: createdIds[0].toString() });
             } else {
                 showNotification(
                     "Create operation completed but no ID returned",
-                    "warning"
-                )
+                    "warning",
+                );
             }
         } catch (error) {
-            let errorMessage = "Failed to create record"
+            let errorMessage = "Failed to create record";
 
             if (isOdooError(error)) {
-                errorMessage = error.getUserMessage()
+                errorMessage = error.getUserMessage();
             } else if (error instanceof Error) {
-                errorMessage = error.message
+                errorMessage = error.message;
             } else if (typeof error === "string") {
-                errorMessage = error
+                errorMessage = error;
             }
 
-            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT)
+            showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
         } finally {
-            setCreateLoading(false)
+            setCreateLoading(false);
         }
-    }
+    };
 
     const generateInformativeText = (model: string | null) => {
         return (
@@ -268,8 +268,8 @@ export const CreateTab = () => {
                 A new{model ? <span> {model}</span> : ""} record will be
                 created.
             </>
-        )
-    }
+        );
+    };
 
     return (
         <div className="rpc-query-form">
@@ -368,7 +368,7 @@ export const CreateTab = () => {
                                     <div className="tab-section-header">
                                         <h4>
                                             {generateInformativeText(
-                                                rpcResult.model
+                                                rpcResult.model,
                                             )}
                                         </h4>
                                     </div>
@@ -385,5 +385,5 @@ export const CreateTab = () => {
                 onCancel={handleCancel}
             />
         </div>
-    )
-}
+    );
+};

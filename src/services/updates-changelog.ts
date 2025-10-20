@@ -1,5 +1,5 @@
-import { settingsService } from "@/services/settings-service"
-import { UpdateConfig } from "@/types"
+import { settingsService } from "@/services/settings-service";
+import { UpdateConfig } from "@/types";
 
 export const MAJOR_UPDATES: UpdateConfig[] = [
     {
@@ -73,32 +73,32 @@ export const MAJOR_UPDATES: UpdateConfig[] = [
                 action: "custom",
                 customHandler: (
                     updateButtonState?: (newState: {
-                        text: string
-                        icon: string
-                        disabled?: boolean
-                    }) => void
+                        text: string;
+                        icon: string;
+                        disabled?: boolean;
+                    }) => void,
                 ) => {
                     if (updateButtonState) {
                         updateButtonState({
                             text: "Enabling...",
                             icon: "⏳",
                             disabled: true,
-                        })
+                        });
                         settingsService.setShowTechnicalList(true).then(() => {
                             updateButtonState({
                                 text: "Enabled !",
                                 icon: "✅",
                                 disabled: true,
-                            })
+                            });
 
                             setTimeout(() => {
                                 updateButtonState({
                                     text: "By clicking here",
                                     icon: "🚀",
                                     disabled: false,
-                                })
-                            }, 2000)
-                        })
+                                });
+                            }, 2000);
+                        });
                     }
                 },
             },
@@ -113,4 +113,4 @@ export const MAJOR_UPDATES: UpdateConfig[] = [
             "🔧 Enhanced debugging with field states and conditions",
         ],
     },
-]
+];

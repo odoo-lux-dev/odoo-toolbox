@@ -1,5 +1,5 @@
-import { addHistoryAction } from "@/services/history-service"
-import { RpcQueryState } from "@/types"
+import { addHistoryAction } from "@/services/history-service";
+import { RpcQueryState } from "@/types";
 
 /**
  * Helper functions to create and add history actions for each DevTools operation
@@ -8,7 +8,7 @@ import { RpcQueryState } from "@/types"
 export const addSearchToHistory = async (
     query: RpcQueryState,
     resultCount?: number,
-    database?: string
+    database?: string,
 ) => {
     await addHistoryAction<"search">({
         type: "search",
@@ -24,15 +24,15 @@ export const addSearchToHistory = async (
             orderBy: query.orderBy,
             resultCount,
         },
-    })
-}
+    });
+};
 
 export const addWriteToHistory = async (
     model: string,
     ids: string,
     values: Record<string, unknown>,
     recordsAffected?: number,
-    database?: string
+    database?: string,
 ) => {
     await addHistoryAction<"write">({
         type: "write",
@@ -44,14 +44,14 @@ export const addWriteToHistory = async (
             values,
             recordsAffected,
         },
-    })
-}
+    });
+};
 
 export const addCreateToHistory = async (
     model: string,
     values: Record<string, unknown>,
     createdId?: number,
-    database?: string
+    database?: string,
 ) => {
     await addHistoryAction<"create">({
         type: "create",
@@ -62,8 +62,8 @@ export const addCreateToHistory = async (
             values,
             createdId,
         },
-    })
-}
+    });
+};
 
 export const addCallMethodToHistory = async (
     model: string,
@@ -72,7 +72,7 @@ export const addCallMethodToHistory = async (
     kwargs: Record<string, unknown>,
     ids: string,
     result?: unknown,
-    database?: string
+    database?: string,
 ) => {
     await addHistoryAction<"call-method">({
         type: "call-method",
@@ -86,15 +86,15 @@ export const addCallMethodToHistory = async (
             ids,
             result,
         },
-    })
-}
+    });
+};
 
 export const addUnlinkToHistory = async (
     model: string,
     ids: string,
     operation: "archive" | "unarchive" | "delete",
     recordsAffected?: number,
-    database?: string
+    database?: string,
 ) => {
     await addHistoryAction<"unlink">({
         type: "unlink",
@@ -106,5 +106,5 @@ export const addUnlinkToHistory = async (
             operation,
             recordsAffected,
         },
-    })
-}
+    });
+};

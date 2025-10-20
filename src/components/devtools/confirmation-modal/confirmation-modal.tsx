@@ -1,14 +1,14 @@
-import "./confirmation-modal.style.scss"
-import { X } from "lucide-preact"
-import { JSX } from "preact"
-import { useEffect } from "preact/hooks"
-import type { ConfirmationConfig } from "./confirmation-modal.types"
+import "./confirmation-modal.style.scss";
+import { X } from "lucide-preact";
+import { JSX } from "preact";
+import { useEffect } from "preact/hooks";
+import type { ConfirmationConfig } from "./confirmation-modal.types";
 
 interface ConfirmationModalProps {
-    isOpen: boolean
-    config: ConfirmationConfig | null
-    onConfirm: () => void
-    onCancel: () => void
+    isOpen: boolean;
+    config: ConfirmationConfig | null;
+    onConfirm: () => void;
+    onCancel: () => void;
 }
 
 export const ConfirmationModal = ({
@@ -18,32 +18,32 @@ export const ConfirmationModal = ({
     onCancel,
 }: ConfirmationModalProps): JSX.Element | null => {
     useEffect(() => {
-        if (!isOpen) return
+        if (!isOpen) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
-                onCancel()
+                onCancel();
             }
-        }
+        };
 
-        document.addEventListener("keydown", handleKeyDown)
-        return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [isOpen, onCancel])
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [isOpen, onCancel]);
 
     useEffect(() => {
         if (isOpen) {
-            document.body.style.overflow = "hidden"
+            document.body.style.overflow = "hidden";
         } else {
-            document.body.style.overflow = ""
+            document.body.style.overflow = "";
         }
 
         return () => {
-            document.body.style.overflow = ""
-        }
-    }, [isOpen])
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
 
     if (!isOpen || !config) {
-        return null
+        return null;
     }
 
     const {
@@ -53,13 +53,13 @@ export const ConfirmationModal = ({
         cancelText = "Cancel",
         variant = "default",
         details,
-    } = config
+    } = config;
 
     const handleBackdropClick = (e: MouseEvent) => {
         if (e.target === e.currentTarget) {
-            onCancel()
+            onCancel();
         }
-    }
+    };
 
     return (
         <div
@@ -114,5 +114,5 @@ export const ConfirmationModal = ({
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

@@ -1,6 +1,6 @@
 interface EmptyStateProps {
-    icon: string
-    message: string
+    icon: string;
+    message: string;
 }
 
 export const EmptyState = ({ icon, message }: EmptyStateProps) => (
@@ -8,4 +8,4 @@ export const EmptyState = ({ icon, message }: EmptyStateProps) => (
         <i className={`fa ${icon}`} />
         <span>{message}</span>
     </div>
-)
+);

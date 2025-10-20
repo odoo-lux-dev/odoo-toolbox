@@ -1,92 +1,93 @@
-import { useComputed, useSignal } from "@preact/signals"
-import { useEffect } from "preact/hooks"
-import { OptionItem } from "@/components/options/option-item"
-import { useOptions } from "@/contexts/options-signals-hook"
-import { settingsService } from "@/services/settings-service"
+import { useComputed, useSignal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
+import { OptionItem } from "@/components/options/option-item";
+import { useOptions } from "@/contexts/options-signals-hook";
+import { settingsService } from "@/services/settings-service";
 import {
     CHROME_STORAGE_SETTINGS_TASK_URL,
     CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
     URL_CHECK_REGEX,
-} from "@/utils/constants"
-import { isValidRegex } from "@/utils/regex"
+} from "@/utils/constants";
+import { isValidRegex } from "@/utils/regex";
 
 export const TaskLinkOption = () => {
-    const taskUrl = useSignal("")
-    const regexPattern = useSignal("")
-    const initialTaskUrl = useSignal("")
-    const initialRegexPattern = useSignal("")
+    const taskUrl = useSignal("");
+    const regexPattern = useSignal("");
+    const initialTaskUrl = useSignal("");
+    const initialRegexPattern = useSignal("");
 
     const urlHasError = useComputed(() => {
-        const value = taskUrl.value
-        return !URL_CHECK_REGEX.test(value) && value !== "" && value.length > 10
-    })
+        const value = taskUrl.value;
+        return (
+            !URL_CHECK_REGEX.test(value) && value !== "" && value.length > 10
+        );
+    });
 
     const regexHasError = useComputed(() => {
-        const value = regexPattern.value
-        return !isValidRegex(value) && value.length > 10
-    })
+        const value = regexPattern.value;
+        return !isValidRegex(value) && value.length > 10;
+    });
 
     const showUrlSaveButton = useComputed(() => {
-        const value = taskUrl.value
-        const hasChanged = value !== initialTaskUrl.value
-        const isValidUrl = URL_CHECK_REGEX.test(value) || value === ""
-        return hasChanged && isValidUrl
-    })
+        const value = taskUrl.value;
+        const hasChanged = value !== initialTaskUrl.value;
+        const isValidUrl = URL_CHECK_REGEX.test(value) || value === "";
+        return hasChanged && isValidUrl;
+    });
 
     const showRegexSaveButton = useComputed(() => {
-        const value = regexPattern.value
-        const hasChanged = value !== initialRegexPattern.value
-        const isValid = isValidRegex(value)
-        return hasChanged && isValid
-    })
+        const value = regexPattern.value;
+        const hasChanged = value !== initialRegexPattern.value;
+        const isValid = isValidRegex(value);
+        return hasChanged && isValid;
+    });
 
-    const { settings } = useOptions()
+    const { settings } = useOptions();
 
     useEffect(() => {
-        const savedTaskUrl =
-            settings?.[CHROME_STORAGE_SETTINGS_TASK_URL] || ""
-        taskUrl.value = savedTaskUrl
-        initialTaskUrl.value = savedTaskUrl
-    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL]])
+        const savedTaskUrl = settings?.[CHROME_STORAGE_SETTINGS_TASK_URL] || "";
+        taskUrl.value = savedTaskUrl;
+        initialTaskUrl.value = savedTaskUrl;
+    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL]]);
 
     useEffect(() => {
         const savedRegexPattern =
-            settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX] || ""
-        regexPattern.value = savedRegexPattern
-        initialRegexPattern.value = savedRegexPattern
-    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX]])
+            settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX] || "";
+        regexPattern.value = savedRegexPattern;
+        initialRegexPattern.value = savedRegexPattern;
+    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX]]);
 
     const handleTaskUrlChange = (e: Event) => {
-        const value = (e.target as HTMLInputElement).value
-        taskUrl.value = value
-    }
+        const value = (e.target as HTMLInputElement).value;
+        taskUrl.value = value;
+    };
 
     const handleRegexChange = (e: Event) => {
-        const value = (e.target as HTMLInputElement).value
-        regexPattern.value = value
-    }
+        const value = (e.target as HTMLInputElement).value;
+        regexPattern.value = value;
+    };
 
     const handleUrlSave = async (e: Event) => {
-        e.preventDefault()
+        e.preventDefault();
 
         if (!URL_CHECK_REGEX.test(taskUrl.value) && taskUrl.value !== "") {
-            return
+            return;
         }
 
-        await settingsService.setGlobalTaskUrl(taskUrl.value)
-        initialTaskUrl.value = taskUrl.value
-    }
+        await settingsService.setGlobalTaskUrl(taskUrl.value);
+        initialTaskUrl.value = taskUrl.value;
+    };
 
     const handleRegexSave = async (e: Event) => {
-        e.preventDefault()
+        e.preventDefault();
 
         if (!isValidRegex(regexPattern.value)) {
-            return
+            return;
         }
 
-        await settingsService.setTaskRegex(regexPattern.value)
-        initialRegexPattern.value = regexPattern.value
-    }
+        await settingsService.setTaskRegex(regexPattern.value);
+        initialRegexPattern.value = regexPattern.value;
+    };
 
     const additionalTooltipContent = (
         <ul>
@@ -114,7 +115,7 @@ export const TaskLinkOption = () => {
                 can set it from the "SH Favorites" page
             </li>
         </ul>
-    )
+    );
 
     return (
         <OptionItem
@@ -199,5 +200,5 @@ export const TaskLinkOption = () => {
                 </div>
             </div>
         </OptionItem>
-    )
-}
+    );
+};

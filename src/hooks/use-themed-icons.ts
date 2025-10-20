@@ -1,22 +1,22 @@
-import { useEffect, useState } from "preact/hooks"
-import { Logger } from "@/services/logger"
-import { settingsService } from "@/services/settings-service"
+import { useEffect, useState } from "preact/hooks";
+import { Logger } from "@/services/logger";
+import { settingsService } from "@/services/settings-service";
 
 export const useThemedIcons = () => {
-    const [isNostalgia, setIsNostalgia] = useState(false)
+    const [isNostalgia, setIsNostalgia] = useState(false);
 
     useEffect(() => {
         const loadNostalgiaMode = async () => {
             try {
-                const nostalgiaMode = await settingsService.getNostalgiaMode()
-                setIsNostalgia(!!nostalgiaMode)
+                const nostalgiaMode = await settingsService.getNostalgiaMode();
+                setIsNostalgia(!!nostalgiaMode);
             } catch (error) {
-                Logger.error("Error loading nostalgia mode:", error)
+                Logger.error("Error loading nostalgia mode:", error);
             }
-        }
+        };
 
-        loadNostalgiaMode()
-    }, [])
+        loadNostalgiaMode();
+    }, []);
 
     return {
         isNostalgia,
@@ -28,5 +28,5 @@ export const useThemedIcons = () => {
                 stroke: isNostalgia ? "#FCEA2B" : "currentColor",
             },
         },
-    }
-}
+    };
+};

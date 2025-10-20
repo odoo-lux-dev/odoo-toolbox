@@ -4,4 +4,4 @@ export const EmptyQueryState = () => (
             Configure your query and click "Execute" to see results
         </div>
     </div>
-)
+);

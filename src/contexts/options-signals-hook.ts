@@ -3,7 +3,7 @@ import {
     initializeOptions,
     loadingSignal,
     settingsSignal,
-} from "./options-signals"
+} from "./options-signals";
 
 export const useOptions = () => {
     return {
@@ -11,5 +11,5 @@ export const useOptions = () => {
         favorites: favoritesSignal.value,
         loading: loadingSignal.value,
         initializeOptions,
-    }
-}
+    };
+};

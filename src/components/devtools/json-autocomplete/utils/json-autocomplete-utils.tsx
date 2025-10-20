@@ -1,12 +1,12 @@
-import { JSX } from "preact"
-import type { ActionButton } from "@/components/shared/notifications/notifications.types"
-import { FieldMetadata } from "@/types"
+import { JSX } from "preact";
+import type { ActionButton } from "@/components/shared/notifications/notifications.types";
+import { FieldMetadata } from "@/types";
 
 export const createFieldValidationErrorNotification = (
-    invalidFields: string[]
+    invalidFields: string[],
 ): JSX.Element => {
-    const fieldCount = invalidFields.length
-    const isPlural = fieldCount > 1
+    const fieldCount = invalidFields.length;
+    const isPlural = fieldCount > 1;
 
     return (
         <div className="field-validation-error">
@@ -29,14 +29,14 @@ export const createFieldValidationErrorNotification = (
                 💡 Use the autocomplete suggestions or check the model fields
             </div>
         </div>
-    )
-}
+    );
+};
 
 export const createRequiredFieldsErrorNotification = (
-    missingFields: string[]
+    missingFields: string[],
 ): JSX.Element => {
-    const fieldCount = missingFields.length
-    const isPlural = fieldCount > 1
+    const fieldCount = missingFields.length;
+    const isPlural = fieldCount > 1;
 
     return (
         <div className="field-validation-error">
@@ -59,70 +59,70 @@ export const createRequiredFieldsErrorNotification = (
                 💡 These fields must be provided when creating a record
             </div>
         </div>
-    )
-}
+    );
+};
 
 export const generateDefaultFieldValue = (
     field: string,
-    metadata?: FieldMetadata
+    metadata?: FieldMetadata,
 ): unknown => {
     if (!metadata) {
-        return ""
+        return "";
     }
 
-    const fieldType = metadata.type
+    const fieldType = metadata.type;
 
     switch (fieldType) {
         case "char":
         case "text":
         case "html":
-            return ""
+            return "";
         case "integer":
-            return 0
+            return 0;
         case "float":
         case "monetary":
-            return 0.0
+            return 0.0;
         case "boolean":
-            return false
+            return false;
         case "date":
-            return new Date().toISOString().split("T")[0] // YYYY-MM-DD format
+            return new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
         case "datetime":
-            return new Date().toISOString().slice(0, 19).replace("T", " ") // YYYY-MM-DD HH:MM:SS format
+            return new Date().toISOString().slice(0, 19).replace("T", " "); // YYYY-MM-DD HH:MM:SS format
         case "selection":
-            return "" // Empty, user will need to choose
+            return ""; // Empty, user will need to choose
         case "many2one":
-            return null // Could be false or integer (id)
+            return null; // Could be false or integer (id)
         case "many2many":
         case "one2many":
-            return []
+            return [];
         default:
-            return ""
+            return "";
     }
-}
+};
 
 export const generateRequiredFieldsTemplate = (
     missingFields: string[],
-    fieldsMetadata: Record<string, FieldMetadata>
+    fieldsMetadata: Record<string, FieldMetadata>,
 ): Record<string, unknown> => {
-    const template: Record<string, unknown> = {}
+    const template: Record<string, unknown> = {};
 
     for (const field of missingFields) {
-        const metadata = fieldsMetadata[field]
-        template[field] = generateDefaultFieldValue(field, metadata)
+        const metadata = fieldsMetadata[field];
+        template[field] = generateDefaultFieldValue(field, metadata);
     }
 
-    return template
-}
+    return template;
+};
 
 export const createRequiredFieldsActionNotification = (
     missingFields: string[],
-    onAddFields: () => void
+    onAddFields: () => void,
 ): {
-    message: JSX.Element
-    actionButton: ActionButton
+    message: JSX.Element;
+    actionButton: ActionButton;
 } => {
-    const fieldCount = missingFields.length
-    const isPlural = fieldCount > 1
+    const fieldCount = missingFields.length;
+    const isPlural = fieldCount > 1;
 
     const message = (
         <div className="field-validation-error">
@@ -145,7 +145,7 @@ export const createRequiredFieldsActionNotification = (
                 💡 Click below to add these fields with default values
             </div>
         </div>
-    )
+    );
 
     const actionButton: ActionButton = {
         label: isPlural ? "Add Required Fields" : "Add Required Field",
@@ -153,7 +153,7 @@ export const createRequiredFieldsActionNotification = (
         icon: "➕",
         action: onAddFields,
         autoClose: true,
-    }
+    };
 
-    return { message, actionButton }
-}
+    return { message, actionButton };
+};

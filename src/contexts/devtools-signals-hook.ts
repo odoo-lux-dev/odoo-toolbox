@@ -37,7 +37,7 @@ import {
     setWriteValues,
     totalCountSignal,
     writeValuesSignal,
-} from "./devtools-signals"
+} from "./devtools-signals";
 
 export const useRpcQuery = () => {
     return {
@@ -53,8 +53,8 @@ export const useRpcQuery = () => {
         offset: offsetSignal,
         orderBy: orderBySignal,
         fieldsMetadata: fieldsMetadataSignal,
-    }
-}
+    };
+};
 
 export const useRpcResult = () => {
     return {
@@ -70,8 +70,8 @@ export const useRpcResult = () => {
         lastQuery: lastQuerySignal,
         isNewQuery: isNewQuerySignal,
         model: resultModelSignal,
-    }
-}
+    };
+};
 
 export const useModelsState = () => {
     return {
@@ -81,25 +81,25 @@ export const useModelsState = () => {
         loading: modelsLoadingSignal,
         error: modelsErrorSignal,
         lastLoaded: modelsLastLoadedSignal,
-    }
-}
+    };
+};
 
 export const useSupportCheck = () => {
     return {
         isSupported: isSupportedSignal.value,
         odooVersion: odooVersionSignal.value,
         hasHostPermission: hasHostPermission.value,
-    }
-}
+    };
+};
 
 export const useDatabase = () => {
     return {
         database: databaseSignal.value,
         setDatabase: (database: string | undefined) => {
-            databaseSignal.value = database
+            databaseSignal.value = database;
         },
-    }
-}
+    };
+};
 
 export const useTabValues = () => {
     return {
@@ -110,5 +110,5 @@ export const useTabValues = () => {
         setCreateValues,
         setCallMethodName,
         clearTabValues,
-    }
-}
+    };
+};

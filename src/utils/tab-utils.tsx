@@ -2,26 +2,26 @@
  * Parse IDs from string input (comma-separated or JSON array)
  */
 export const parseIds = (idsString: string): number[] => {
-    if (!idsString.trim()) return []
+    if (!idsString.trim()) return [];
 
     try {
         // Try to parse as JSON array first
         if (idsString.trim().startsWith("[")) {
-            return JSON.parse(idsString)
+            return JSON.parse(idsString);
         }
 
         // Otherwise, parse as comma-separated values
         return idsString.split(",").map((id) => {
-            const parsed = parseInt(id.trim())
+            const parsed = parseInt(id.trim());
             if (isNaN(parsed)) {
-                throw new Error(`Invalid ID: ${id.trim()}`)
+                throw new Error(`Invalid ID: ${id.trim()}`);
             }
-            return parsed
-        })
+            return parsed;
+        });
     } catch (err) {
-        throw new Error(`Invalid IDs format: ${err}`)
+        throw new Error(`Invalid IDs format: ${err}`);
     }
-}
+};
 
 /**
  * Generate informative text for record operations
@@ -29,9 +29,9 @@ export const parseIds = (idsString: string): number[] => {
 export const generateRecordText = (
     model: string | null,
     count: number,
-    action?: string
+    action?: string,
 ) => {
-    const modelText = model ? ` ${model}` : ""
+    const modelText = model ? ` ${model}` : "";
 
     if (count === 1) {
         if (action) {
@@ -39,9 +39,9 @@ export const generateRecordText = (
                 <>
                     This{modelText} record will be {action}.
                 </>
-            )
+            );
         }
-        return <>This{modelText} record will be impacted.</>
+        return <>This{modelText} record will be impacted.</>;
     }
 
     if (action) {
@@ -54,7 +54,7 @@ export const generateRecordText = (
                 </span>{" "}
                 records will be {action}.
             </>
-        )
+        );
     }
     return (
         <>
@@ -65,8 +65,8 @@ export const generateRecordText = (
             </span>{" "}
             records will be impacted.
         </>
-    )
-}
+    );
+};
 
 /**
  * Generate informative text specifically for method calls
@@ -74,9 +74,9 @@ export const generateRecordText = (
 export const generateMethodCallText = (
     model: string | null,
     count: number,
-    method: string
+    method: string,
 ) => {
-    const methodName = method.trim() === "" ? "-" : method
+    const methodName = method.trim() === "" ? "-" : method;
 
     if (count === 1) {
         return (
@@ -86,7 +86,7 @@ export const generateMethodCallText = (
                 {model ? <span className="model-name"> {model}</span> : ""}{" "}
                 record.
             </>
-        )
+        );
     }
 
     return (
@@ -99,5 +99,5 @@ export const generateMethodCallText = (
             </span>{" "}
             records.
         </>
-    )
-}
+    );
+};

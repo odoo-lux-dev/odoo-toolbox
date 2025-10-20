@@ -1,5 +1,5 @@
 interface LoadingStateProps {
-    message?: string
+    message?: string;
 }
 
 export const LoadingState = ({
@@ -9,4 +9,4 @@ export const LoadingState = ({
         <i className="fa fa-spinner fa-spin" />
         <span>{message}</span>
     </div>
-)
+);

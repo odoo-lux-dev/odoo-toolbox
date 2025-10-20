@@ -1,5 +1,5 @@
-import { ToggleDebugCommand } from "@/entries/background/commands/toggle-debug"
+import { ToggleDebugCommand } from "@/entries/background/commands/toggle-debug";
 
-const commands = [ToggleDebugCommand]
+const commands = [ToggleDebugCommand];
 
-export { commands }
+export { commands };

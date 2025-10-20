@@ -1,13 +1,13 @@
-import { List, MousePointerClick } from "lucide-preact"
-import { ButtonItem } from "@/components/technical-list/button-item"
-import { DatabaseInfoComponent } from "@/components/technical-list/database-info"
-import { FieldItem } from "@/components/technical-list/field-item"
-import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar"
-import { RecordInfo } from "@/components/technical-list/record-info"
-import { EmptyState } from "@/components/technical-list/states"
-import { WebsiteInfo } from "@/components/technical-list/website-info"
-import { useTechnicalListFilters } from "@/contexts/technical-list-signals"
-import { FieldFilters } from "./field-filters"
+import { List, MousePointerClick } from "lucide-preact";
+import { ButtonItem } from "@/components/technical-list/button-item";
+import { DatabaseInfoComponent } from "@/components/technical-list/database-info";
+import { FieldItem } from "@/components/technical-list/field-item";
+import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
+import { RecordInfo } from "@/components/technical-list/record-info";
+import { EmptyState } from "@/components/technical-list/states";
+import { WebsiteInfo } from "@/components/technical-list/website-info";
+import { useTechnicalListFilters } from "@/contexts/technical-list-signals";
+import { FieldFilters } from "./field-filters";
 
 export const PanelContent = () => {
     const {
@@ -20,7 +20,7 @@ export const PanelContent = () => {
         hasFields,
         hasButtons,
         dbInfo,
-    } = useTechnicalSidebar()
+    } = useTechnicalSidebar();
 
     const {
         searchTerm,
@@ -33,29 +33,29 @@ export const PanelContent = () => {
         setShowOnlyReadonly,
         setShowOnlyFields,
         setShowOnlyButtons,
-    } = useTechnicalListFilters()
+    } = useTechnicalListFilters();
 
-    if (!viewInfo) return null
+    if (!viewInfo) return null;
 
     const filteredFields = viewInfo.technicalFields.filter((field) => {
         const matchesSearch =
             field.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            field.label?.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesRequired = !showOnlyRequired || field.canBeRequired
-        const matchesReadonly = !showOnlyReadonly || field.canBeReadonly
-        const matchesType = !showOnlyButtons // Show fields when "buttons only" is not active
+            field.label?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesRequired = !showOnlyRequired || field.canBeRequired;
+        const matchesReadonly = !showOnlyReadonly || field.canBeReadonly;
+        const matchesType = !showOnlyButtons; // Show fields when "buttons only" is not active
         return (
             matchesSearch && matchesRequired && matchesReadonly && matchesType
-        )
-    })
+        );
+    });
 
     const filteredButtons = viewInfo.technicalButtons.filter((button) => {
         const matchesSearch =
             button.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            button.label?.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesType = !showOnlyFields // Show buttons when "fields only" is not active
-        return matchesSearch && matchesType
-    })
+            button.label?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesType = !showOnlyFields; // Show buttons when "fields only" is not active
+        return matchesSearch && matchesType;
+    });
 
     return (
         <>
@@ -130,5 +130,5 @@ export const PanelContent = () => {
                 ) : null
             ) : null}
         </>
-    )
-}
+    );
+};

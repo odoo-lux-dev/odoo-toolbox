@@ -1,9 +1,9 @@
-import { JSX } from "preact/jsx-runtime"
+import { JSX } from "preact/jsx-runtime";
 
-export type NotificationType = "success" | "error" | "warning" | "info"
+export type NotificationType = "success" | "error" | "warning" | "info";
 
 export interface ActionButton {
-    label: string
+    label: string;
     variant?:
         | "primary"
         | "primary-outline"
@@ -14,16 +14,16 @@ export interface ActionButton {
         | "warning"
         | "warning-outline"
         | "danger"
-        | "danger-outline"
-    icon?: string | JSX.Element
-    action: () => void
-    autoClose?: boolean
+        | "danger-outline";
+    icon?: string | JSX.Element;
+    action: () => void;
+    autoClose?: boolean;
 }
 
 export interface NotificationData {
-    id: string
-    message: string | JSX.Element
-    type: NotificationType
-    duration?: number
-    actionButton?: ActionButton
+    id: string;
+    message: string | JSX.Element;
+    type: NotificationType;
+    duration?: number;
+    actionButton?: ActionButton;
 }

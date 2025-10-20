@@ -1,25 +1,25 @@
-import { useComputed, useSignal } from "@preact/signals"
-import { useEffect, useRef } from "preact/hooks"
-import { createSwapy, Swapy, utils } from "swapy"
-import { FavoriteRow } from "@/components/options/favorite-row"
-import { FavoriteTaskLinkModal } from "@/components/options/favorite-task-link-modal"
-import { useOptions } from "@/contexts/options-signals-hook"
-import { favoritesService } from "@/services/favorites-service"
-import { Favorite } from "@/types"
+import { useComputed, useSignal } from "@preact/signals";
+import { useEffect, useRef } from "preact/hooks";
+import { createSwapy, Swapy, utils } from "swapy";
+import { FavoriteRow } from "@/components/options/favorite-row";
+import { FavoriteTaskLinkModal } from "@/components/options/favorite-task-link-modal";
+import { useOptions } from "@/contexts/options-signals-hook";
+import { favoritesService } from "@/services/favorites-service";
+import { Favorite } from "@/types";
 
 export const FavoritesPage = () => {
-    const { favorites, loading } = useOptions()
-    const showModal = useSignal(false)
-    const selectedFavorite = useSignal<Favorite | null>(null)
-    const editingRowName = useSignal<string | null>(null)
-    const favoritesContainerRef = useRef<HTMLDivElement>(null)
-    const swapy = useRef<Swapy>(null)
+    const { favorites, loading } = useOptions();
+    const showModal = useSignal(false);
+    const selectedFavorite = useSignal<Favorite | null>(null);
+    const editingRowName = useSignal<string | null>(null);
+    const favoritesContainerRef = useRef<HTMLDivElement>(null);
+    const swapy = useRef<Swapy>(null);
     const slotItemMap = useSignal(
-        utils.initSlotItemMap(favorites || [], "name")
-    )
+        utils.initSlotItemMap(favorites || [], "name"),
+    );
     const slottedItems = useComputed(() =>
-        utils.toSlottedItems(favorites || [], "name", slotItemMap.value)
-    )
+        utils.toSlottedItems(favorites || [], "name", slotItemMap.value),
+    );
 
     useEffect(
         () =>
@@ -29,11 +29,11 @@ export const FavoritesPage = () => {
                 "name",
                 slotItemMap.value,
                 (newSlotItemMap) => {
-                    slotItemMap.value = newSlotItemMap
-                }
+                    slotItemMap.value = newSlotItemMap;
+                },
             ),
-        [favorites]
-    )
+        [favorites],
+    );
 
     useEffect(() => {
         if (favoritesContainerRef.current && !loading) {
@@ -42,76 +42,74 @@ export const FavoritesPage = () => {
                 dragAxis: "y",
                 animation: "spring",
                 autoScrollOnDrag: true,
-            })
+            });
 
             swapy.current.onSwap((event) => {
-                slotItemMap.value = event.newSlotItemMap.asArray
-            })
+                slotItemMap.value = event.newSlotItemMap.asArray;
+            });
 
             swapy.current.onSwapEnd(async (event) => {
                 if (event.hasChanged) {
-                    const newOrder = event.slotItemMap.asArray
+                    const newOrder = event.slotItemMap.asArray;
                     const reorderedFavorites = newOrder
                         .map((orderItem, index) => {
                             const favorite = favorites?.find(
-                                (fav) => fav.name === orderItem.item
-                            )
+                                (fav) => fav.name === orderItem.item,
+                            );
                             if (favorite) {
-                                return { ...favorite, sequence: index }
+                                return { ...favorite, sequence: index };
                             }
-                            return favorite
+                            return favorite;
                         })
                         .filter(
-                            (fav: Favorite | undefined) => fav !== undefined
-                        ) as Favorite[]
+                            (fav: Favorite | undefined) => fav !== undefined,
+                        ) as Favorite[];
                     await favoritesService.setFavoritesProjects(
-                        reorderedFavorites
-                    )
+                        reorderedFavorites,
+                    );
                 }
-            })
+            });
         }
 
         return () => {
-            swapy.current?.destroy()
-        }
-    }, [loading, favorites])
+            swapy.current?.destroy();
+        };
+    }, [loading, favorites]);
 
     const handleEditTaskLink = (favorite: Favorite) => {
-        selectedFavorite.value = favorite
-        showModal.value = true
-    }
+        selectedFavorite.value = favorite;
+        showModal.value = true;
+    };
 
     const handleSaveTaskLink = async (name: string, taskLink: string) => {
-        await favoritesService.setProjectTaskUrl(name, taskLink)
-        showModal.value = false
-    }
+        await favoritesService.setProjectTaskUrl(name, taskLink);
+        showModal.value = false;
+    };
 
     const handleEditName = async (name: string, newDisplayName: string) => {
-        if (!favorites) return
+        if (!favorites) return;
 
         const updatedFavorites = favorites.map((fav) =>
-            fav.name === name ? { ...fav, display_name: newDisplayName } : fav
-        )
+            fav.name === name ? { ...fav, display_name: newDisplayName } : fav,
+        );
 
-        await favoritesService.setFavoritesProjects(updatedFavorites)
-    }
+        await favoritesService.setFavoritesProjects(updatedFavorites);
+    };
 
     const handleDelete = async (name: string) => {
-        if (!favorites) return
+        if (!favorites) return;
 
-        const updatedFavorites = favorites.filter(
-            (fav) => fav.name !== name
-        )
-        await favoritesService.setFavoritesProjects(updatedFavorites)
-    }
+        const updatedFavorites = favorites.filter((fav) => fav.name !== name);
+        await favoritesService.setFavoritesProjects(updatedFavorites);
+    };
 
     const handleEdition = (isEditing: boolean, favoriteName?: string) => {
-        editingRowName.value = isEditing ? favoriteName || null : null
-        swapy.current?.enable(!isEditing)
-    }
+        editingRowName.value = isEditing ? favoriteName || null : null;
+        swapy.current?.enable(!isEditing);
+    };
 
     if (loading) {
-        return <div>Loading favorites...</div>
+        return <div>Loading favorites...</div>;
     }
 
     if (!favorites?.length) {
@@ -133,7 +131,7 @@ export const FavoritesPage = () => {
                     Take me to Odoo.sh projects page
                 </a>
             </div>
-        )
+        );
     }
 
     return (
@@ -153,13 +151,18 @@ export const FavoritesPage = () => {
                                 slotId={slotId}
                                 itemId={itemId}
                                 favorite={favorite}
-                                isOtherRowEditing={editingRowName.value !== null && editingRowName.value !== favorite.name}
+                                isOtherRowEditing={
+                                    editingRowName.value !== null &&
+                                    editingRowName.value !== favorite.name
+                                }
                                 onEditName={handleEditName}
                                 onEditTaskLink={handleEditTaskLink}
                                 onDelete={handleDelete}
-                                onEdition={(isEditing) => handleEdition(isEditing, favorite.name)}
+                                onEdition={(isEditing) =>
+                                    handleEdition(isEditing, favorite.name)
+                                }
                             />
-                        ) : null
+                        ) : null,
                 )}
             </div>
 
@@ -171,5 +174,5 @@ export const FavoritesPage = () => {
                 />
             )}
         </div>
-    )
-}
+    );
+};

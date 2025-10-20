@@ -1,27 +1,27 @@
-const CHROME_STORAGE_FAVORITES_KEY = "starredProjects"
-const CHROME_STORAGE_SETTINGS_KEY = "settings"
-const CHROME_STORAGE_QUICK_DOMAINS_KEY = "quickDomains"
-const CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY = "enableDebugMode"
-const CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF = "enablePrintOptionsPDF"
-const CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML = "enablePrintOptionsHTML"
-const CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL = "showTechnicalModel"
-const CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME = "renameShProjectPage"
-const CHROME_STORAGE_SETTINGS_EXTENSION_THEME = "extensionTheme"
-const CHROME_STORAGE_SETTINGS_TASK_URL = "taskUrl"
-const CHROME_STORAGE_SETTINGS_TASK_URL_REGEX = "taskUrlRegex"
-const CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE = "nostalgiaMode"
-const CHROME_STORAGE_SETTINGS_COLORBLIND_MODE = "colorBlindMode"
-const CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE = "defaultDarkMode"
-const CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST = "showTechnicalList"
+const CHROME_STORAGE_FAVORITES_KEY = "starredProjects";
+const CHROME_STORAGE_SETTINGS_KEY = "settings";
+const CHROME_STORAGE_QUICK_DOMAINS_KEY = "quickDomains";
+const CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY = "enableDebugMode";
+const CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF = "enablePrintOptionsPDF";
+const CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML = "enablePrintOptionsHTML";
+const CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL = "showTechnicalModel";
+const CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME = "renameShProjectPage";
+const CHROME_STORAGE_SETTINGS_EXTENSION_THEME = "extensionTheme";
+const CHROME_STORAGE_SETTINGS_TASK_URL = "taskUrl";
+const CHROME_STORAGE_SETTINGS_TASK_URL_REGEX = "taskUrlRegex";
+const CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE = "nostalgiaMode";
+const CHROME_STORAGE_SETTINGS_COLORBLIND_MODE = "colorBlindMode";
+const CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE = "defaultDarkMode";
+const CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST = "showTechnicalList";
 
-const STARRED_CLASS = "fa-star"
-const NON_STARRED_CLASS = "fa-star-o"
+const STARRED_CLASS = "fa-star";
+const NON_STARRED_CLASS = "fa-star-o";
 
 const URL_CHECK_REGEX = new RegExp(
     "^(https?:\\/\\/)" + // protocol (http or https)
         ".*\\..*", // contains at least one dot
-    "i"
-)
+    "i",
+);
 
 export {
     URL_CHECK_REGEX,
@@ -42,4 +42,4 @@ export {
     CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
     CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
     CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
-}
+};

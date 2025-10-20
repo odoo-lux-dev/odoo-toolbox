@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "preact/hooks"
+import { useEffect, useRef } from "preact/hooks";
 
 /**
  * Hook that automatically adds a title when text is truncated with ellipsis
@@ -7,48 +7,48 @@ import { useEffect, useRef } from "preact/hooks"
  */
 export const useEllipsisTitle = <T extends HTMLElement = HTMLElement>(
     text: string,
-    deps: unknown[] = []
+    deps: unknown[] = [],
 ) => {
-    const ref = useRef<T>(null)
+    const ref = useRef<T>(null);
 
     useEffect(() => {
-        const element = ref.current
-        if (!element || !text) return
+        const element = ref.current;
+        if (!element || !text) return;
 
         // Check if text is truncated
-        const isTextTruncated = element.scrollWidth > element.clientWidth
+        const isTextTruncated = element.scrollWidth > element.clientWidth;
 
         if (isTextTruncated) {
-            element.title = text
+            element.title = text;
         } else {
-            element.removeAttribute("title")
+            element.removeAttribute("title");
         }
-    }, [text, ...deps])
+    }, [text, ...deps]);
 
-    return ref
-}
+    return ref;
+};
 
 /**
  * Simplified version that uses the element's textContent directly
  */
 export const useAutoEllipsisTitle = <T extends HTMLElement = HTMLElement>(
-    deps: unknown[] = []
+    deps: unknown[] = [],
 ) => {
-    const ref = useRef<T>(null)
+    const ref = useRef<T>(null);
 
     useEffect(() => {
-        const element = ref.current
-        if (!element) return
+        const element = ref.current;
+        if (!element) return;
 
-        const text = element.textContent || ""
-        const isTextTruncated = element.scrollWidth > element.clientWidth
+        const text = element.textContent || "";
+        const isTextTruncated = element.scrollWidth > element.clientWidth;
 
         if (isTextTruncated && text) {
-            element.title = text
+            element.title = text;
         } else {
-            element.removeAttribute("title")
+            element.removeAttribute("title");
         }
-    }, deps)
+    }, deps);
 
-    return ref
-}
+    return ref;
+};

@@ -2,7 +2,7 @@ import {
     getShowTechnicalModel,
     hasNewOdooURL,
     isOnNewURLPos,
-} from "@/utils/utils"
+} from "@/utils/utils";
 
 /**
  * Creates a span element for displaying the technical model name in the Odoo application.
@@ -17,13 +17,13 @@ import {
  */
 const createTechnicalModelNameSpan = (
     classNames: string[],
-    innerContent: string
+    innerContent: string,
 ): HTMLSpanElement => {
-    const technicalModelNameSpan = document.createElement("span")
-    technicalModelNameSpan.classList.add(...classNames)
-    technicalModelNameSpan.innerHTML = innerContent
-    return technicalModelNameSpan
-}
+    const technicalModelNameSpan = document.createElement("span");
+    technicalModelNameSpan.classList.add(...classNames);
+    technicalModelNameSpan.innerHTML = innerContent;
+    return technicalModelNameSpan;
+};
 
 /**
  * Appends a model name to a breadcrumb element in the Odoo application interface.
@@ -38,22 +38,22 @@ const createTechnicalModelNameSpan = (
 const appendModelNameToBreadcrumb = (
     breadcrumb: Element,
     modelName: string,
-    isGlobal: boolean = false
+    isGlobal: boolean = false,
 ): void => {
     const spanClassNames = [
         "x-odoo-technical-model-name",
         isGlobal ? "x-odoo-technical-model-name-breadcrumb" : "",
-    ].filter(Boolean)
+    ].filter(Boolean);
 
     const innerContent = isGlobal
         ? `(${modelName})`
-        : `<strong>Technical model :</strong> <i>${modelName}</i>`
+        : `<strong>Technical model :</strong> <i>${modelName}</i>`;
     const technicalModelNameSpan = createTechnicalModelNameSpan(
         spanClassNames,
-        innerContent
-    )
-    breadcrumb.appendChild(technicalModelNameSpan)
-}
+        innerContent,
+    );
+    breadcrumb.appendChild(technicalModelNameSpan);
+};
 
 /**
  * Handles the display of the technical model name within the Odoo application interface.
@@ -66,26 +66,30 @@ const appendModelNameToBreadcrumb = (
  *                               (breadcrumbs or control panels) to append the model name.
  */
 const handleTechnicalModelName = (targetNode: Element): void => {
-    const showTechnicalModel = getShowTechnicalModel() === "true"
-    if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return
+    const showTechnicalModel = getShowTechnicalModel() === "true";
+    if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return;
 
-    const odooWindowObject = window.odoo
+    const odooWindowObject = window.odoo;
     const currentModelName =
         odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController
-            ?.props?.resModel
-    if (!currentModelName) return
+            ?.props?.resModel;
+    if (!currentModelName) return;
 
-    const leftModelBreadcrumb = targetNode.querySelector("ol.breadcrumb")
-    const leftGlobalBreadcrumb = targetNode.querySelector("div.o_breadcrumb")
+    const leftModelBreadcrumb = targetNode.querySelector("ol.breadcrumb");
+    const leftGlobalBreadcrumb = targetNode.querySelector("div.o_breadcrumb");
     const rightControlPanelContainer = targetNode.querySelector(
-        "div.o_control_panel_navigation"
-    )
+        "div.o_control_panel_navigation",
+    );
 
     if (
         leftModelBreadcrumb &&
         !leftModelBreadcrumb.querySelector("span.x-odoo-technical-model-name")
     ) {
-        appendModelNameToBreadcrumb(leftModelBreadcrumb, currentModelName, true)
+        appendModelNameToBreadcrumb(
+            leftModelBreadcrumb,
+            currentModelName,
+            true,
+        );
     } else if (
         !leftModelBreadcrumb &&
         leftGlobalBreadcrumb &&
@@ -94,21 +98,21 @@ const handleTechnicalModelName = (targetNode: Element): void => {
         appendModelNameToBreadcrumb(
             leftGlobalBreadcrumb,
             currentModelName,
-            true
-        )
+            true,
+        );
     } else if (
         !leftGlobalBreadcrumb &&
         !leftModelBreadcrumb &&
         rightControlPanelContainer &&
         !rightControlPanelContainer.querySelector(
-            "span.x-odoo-technical-model-name"
+            "span.x-odoo-technical-model-name",
         )
     ) {
         appendModelNameToBreadcrumb(
             rightControlPanelContainer,
-            currentModelName
-        )
+            currentModelName,
+        );
     }
-}
+};
 
-export { handleTechnicalModelName }
+export { handleTechnicalModelName };

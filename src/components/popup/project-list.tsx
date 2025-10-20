@@ -1,5 +1,5 @@
-import { usePopup } from "@/contexts/popup-signals-hook"
-import { ProjectItem } from "./project-item"
+import { usePopup } from "@/contexts/popup-signals-hook";
+import { ProjectItem } from "./project-item";
 
 const EmptyState = () => (
     <div className="no-favorites">
@@ -12,17 +12,17 @@ const EmptyState = () => (
             Take me to Odoo.sh projects page
         </a>
     </div>
-)
+);
 
 export const ProjectList = () => {
-    const { favorites, loading } = usePopup()
+    const { favorites, loading } = usePopup();
 
     if (loading) {
-        return <div id="projects">Loading...</div>
+        return <div id="projects">Loading...</div>;
     }
 
     if (!favorites || favorites.length === 0) {
-        return <EmptyState />
+        return <EmptyState />;
     }
 
     return (
@@ -31,5 +31,5 @@ export const ProjectList = () => {
                 <ProjectItem key={favorite.name} favorite={favorite} />
             ))}
         </div>
-    )
-}
+    );
+};

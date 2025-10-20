@@ -1,21 +1,21 @@
-import "./json-autocomplete.scss"
-import { useSignal } from "@preact/signals"
-import { JSX } from "preact"
-import { useEffect, useRef } from "preact/hooks"
-import { FieldMetadata } from "@/types"
-import { useJsonSuggestions } from "./hooks/use-json-suggestions"
-import { adjustDropdownPosition } from "./utils/cursor-position"
+import "./json-autocomplete.scss";
+import { useSignal } from "@preact/signals";
+import { JSX } from "preact";
+import { useEffect, useRef } from "preact/hooks";
+import { FieldMetadata } from "@/types";
+import { useJsonSuggestions } from "./hooks/use-json-suggestions";
+import { adjustDropdownPosition } from "./utils/cursor-position";
 
 interface JsonAutocompleteProps {
-    value: string
-    onChange: (value: string) => void
-    fieldsMetadata: Record<string, FieldMetadata>
-    placeholder?: string
-    rows?: number
-    disabled?: boolean
-    className?: string
-    mode?: "create" | "write"
-    onAddRequiredFields?: () => void
+    value: string;
+    onChange: (value: string) => void;
+    fieldsMetadata: Record<string, FieldMetadata>;
+    placeholder?: string;
+    rows?: number;
+    disabled?: boolean;
+    className?: string;
+    mode?: "create" | "write";
+    onAddRequiredFields?: () => void;
 }
 
 export const JsonAutocomplete = ({
@@ -29,8 +29,8 @@ export const JsonAutocomplete = ({
     mode,
     onAddRequiredFields,
 }: JsonAutocompleteProps): JSX.Element => {
-    const textareaRef = useRef<HTMLTextAreaElement>(null)
-    const dropdownRef = useRef<HTMLDivElement>(null)
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const {
         suggestions,
@@ -48,22 +48,22 @@ export const JsonAutocomplete = ({
         dropdownRef,
         mode,
         onAddRequiredFields,
-    })
+    });
 
     const dropdownStyle = useSignal<{
-        position: "absolute" | "fixed"
-        top: number
-        left: number
-        zIndex: number
-    } | null>(null)
+        position: "absolute" | "fixed";
+        top: number;
+        left: number;
+        zIndex: number;
+    } | null>(null);
 
     useEffect(() => {
         if (!cursorPosition || !textareaRef.current) {
-            dropdownStyle.value = null
-            return
+            dropdownStyle.value = null;
+            return;
         }
 
-        const textareaRect = textareaRef.current.getBoundingClientRect()
+        const textareaRect = textareaRef.current.getBoundingClientRect();
 
         const viewportRect: DOMRect = {
             top: 0,
@@ -75,10 +75,10 @@ export const JsonAutocomplete = ({
             x: 0,
             y: 0,
             toJSON: () => ({}),
-        }
+        };
 
-        const absoluteTop = textareaRect.top + cursorPosition.top
-        const absoluteLeft = textareaRect.left + cursorPosition.left
+        const absoluteTop = textareaRect.top + cursorPosition.top;
+        const absoluteLeft = textareaRect.left + cursorPosition.left;
 
         const adjustedPosition = adjustDropdownPosition(
             { width: 320, height: 300 },
@@ -87,21 +87,21 @@ export const JsonAutocomplete = ({
                 left: absoluteLeft,
                 lineHeight: cursorPosition.lineHeight,
             },
-            viewportRect
-        )
+            viewportRect,
+        );
 
         dropdownStyle.value = {
             position: "fixed" as const,
             top: adjustedPosition.top,
             left: adjustedPosition.left,
             zIndex: 9999,
-        }
-    }, [cursorPosition])
+        };
+    }, [cursorPosition]);
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        handleBraceInsertion(e)
-        navigationKeyDown(e)
-    }
+        handleBraceInsertion(e);
+        navigationKeyDown(e);
+    };
 
     return (
         <div className="json-autocomplete-container">
@@ -124,11 +124,11 @@ export const JsonAutocomplete = ({
                     style={
                         dropdownStyle.value
                             ? {
-                                position: dropdownStyle.value.position,
-                                top: `${dropdownStyle.value.top}px`,
-                                left: `${dropdownStyle.value.left}px`,
-                                zIndex: dropdownStyle.value.zIndex,
-                            }
+                                  position: dropdownStyle.value.position,
+                                  top: `${dropdownStyle.value.top}px`,
+                                  left: `${dropdownStyle.value.left}px`,
+                                  zIndex: dropdownStyle.value.zIndex,
+                              }
                             : undefined
                     }
                 >
@@ -136,8 +136,9 @@ export const JsonAutocomplete = ({
                         {suggestions.map((suggestion, index) => (
                             <div
                                 key={suggestion.field}
-                                className={`json-autocomplete-suggestion ${index === focusedIndex ? "selected" : ""} ${suggestion.isSpecial ? "special" : ""
-                                    }`}
+                                className={`json-autocomplete-suggestion ${index === focusedIndex ? "selected" : ""} ${
+                                    suggestion.isSpecial ? "special" : ""
+                                }`}
                                 onClick={() => insertSuggestion(suggestion)}
                             >
                                 {suggestion.isSpecial ? (
@@ -178,5 +179,5 @@ export const JsonAutocomplete = ({
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

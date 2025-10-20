@@ -1,15 +1,15 @@
-import { Check } from "lucide-preact"
-import { GenericSelectOption } from "./generic-select"
+import { Check } from "lucide-preact";
+import { GenericSelectOption } from "./generic-select";
 
 interface SelectOptionProps {
-    option: GenericSelectOption
-    index: number
-    focusedIndex: number
-    isSelected: boolean
-    isMultiple: boolean
-    searchValue: string
-    onSelect: (value: string) => void
-    highlightMatch: (text: string, search: string) => preact.ComponentChildren
+    option: GenericSelectOption;
+    index: number;
+    focusedIndex: number;
+    isSelected: boolean;
+    isMultiple: boolean;
+    searchValue: string;
+    onSelect: (value: string) => void;
+    highlightMatch: (text: string, search: string) => preact.ComponentChildren;
 }
 
 export const SelectOption = ({
@@ -41,5 +41,5 @@ export const SelectOption = ({
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

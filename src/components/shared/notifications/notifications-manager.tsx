@@ -1,12 +1,12 @@
-import "./notifications-manager.style.scss"
-import { Notification } from "./notifications"
-import { NotificationData } from "./notifications.types"
+import "./notifications-manager.style.scss";
+import { Notification } from "./notifications";
+import { NotificationData } from "./notifications.types";
 
 interface NotificationManagerProps {
-    notifications: NotificationData[]
-    closingNotifications: Set<string>
-    onClose: (id: string) => void
-    onAnimationComplete: (id: string) => void
+    notifications: NotificationData[];
+    closingNotifications: Set<string>;
+    onClose: (id: string) => void;
+    onAnimationComplete: (id: string) => void;
 }
 
 export const NotificationManager = ({
@@ -16,7 +16,7 @@ export const NotificationManager = ({
     onAnimationComplete,
 }: NotificationManagerProps) => {
     if (notifications.length === 0) {
-        return null
+        return null;
     }
 
     return (
@@ -31,5 +31,5 @@ export const NotificationManager = ({
                 />
             ))}
         </div>
-    )
-}
+    );
+};
