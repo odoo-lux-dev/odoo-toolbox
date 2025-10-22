@@ -3,6 +3,7 @@ import { storage } from "wxt/utils/storage";
 import { Logger } from "@/services/logger";
 import type {
     DebugModeType,
+    DefaultColorScheme,
     StoredSettings,
     StoredSettingsV1,
     StoredSettingsV2,
@@ -14,10 +15,12 @@ import type {
     StoredSettingsV8,
     StoredSettingsV9,
     StoredSettingsV10,
+    StoredSettingsV11,
 } from "@/types";
 import {
     CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
     CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
+    CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
     CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
     CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
     CHROME_STORAGE_SETTINGS_KEY,
@@ -42,14 +45,31 @@ export class SettingsService {
         <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
         {
             init: () => this.getDefaultSettingsInternal(),
-            version: 1,
+            version: 2,
+            migrations: {
+                2: (settings: StoredSettingsV10): StoredSettingsV11 => {
+                    const {
+                        [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]:
+                            oldDarkMode,
+                        ...settingsWithoutOldDarkMode
+                    } = settings;
+                    const newColorScheme: DefaultColorScheme = oldDarkMode
+                        ? "dark"
+                        : "none";
+                    return {
+                        ...settingsWithoutOldDarkMode,
+                        [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
+                            newColorScheme,
+                    };
+                },
+            },
         },
     );
 
     private settingsSyncStorage = storage.defineItem<StoredSettings>(
         <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
         {
-            version: 10,
+            version: 11,
             init: () => {
                 return {
                     [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]:
@@ -64,6 +84,8 @@ export class SettingsService {
                     [CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE]: false,
                     [CHROME_STORAGE_SETTINGS_COLORBLIND_MODE]: false,
                     [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: false,
+                    [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
+                        "none" as DefaultColorScheme,
                     [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
                 } as StoredSettings;
             },
@@ -143,6 +165,15 @@ export class SettingsService {
                         [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
                     };
                 },
+                11: (settings: StoredSettingsV10): StoredSettingsV11 => {
+                    const darkModeEnabled =
+                        settings[CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE];
+                    return {
+                        ...settings,
+                        [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
+                            darkModeEnabled ? "dark" : "none",
+                    };
+                },
             },
         },
     );
@@ -180,6 +211,8 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE]: false,
             [CHROME_STORAGE_SETTINGS_COLORBLIND_MODE]: false,
             [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: false,
+            [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
+                "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
         } as StoredSettings;
     }
@@ -201,6 +234,8 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE]: false,
             [CHROME_STORAGE_SETTINGS_COLORBLIND_MODE]: false,
             [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: false,
+            [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
+                "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
         } as StoredSettings;
     }
@@ -313,16 +348,18 @@ export class SettingsService {
         return this.setSettings(newSettings);
     }
 
-    async getStoredDefaultDarkMode(): Promise<boolean> {
+    async getDefaultColorScheme(): Promise<DefaultColorScheme> {
         const settings = await this.getSettings();
-        return settings[CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE];
+        return settings[CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME];
     }
 
-    async setStoredDefaultDarkMode(defaultDarkMode: boolean): Promise<void> {
+    async setDefaultColorScheme(
+        colorScheme: DefaultColorScheme,
+    ): Promise<void> {
         const settings = await this.getSettings();
         const newSettings = {
             ...settings,
-            [CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE]: defaultDarkMode,
+            [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]: colorScheme,
         };
         return this.setSettings(newSettings);
     }

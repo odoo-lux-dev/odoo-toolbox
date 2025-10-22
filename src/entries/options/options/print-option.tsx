@@ -24,8 +24,12 @@ export const PrintOption = () => {
 
     const additionalTooltipContent = (
         <ul>
-            <li>[PDF] Enable PDF print option</li>
-            <li>[HTML] Enable HTML print option</li>
+            <li>
+                <strong>PDF</strong> : Enable PDF print option
+            </li>
+            <li>
+                <strong>HTML</strong> : Enable HTML print option
+            </li>
         </ul>
     );
 
