@@ -1,4 +1,4 @@
-import { DebugModeType } from "@/types";
+import type { DebugModeType, DefaultColorScheme } from "@/types";
 
 const getDefaultDebugMode = () =>
     document.body.dataset.defaultDebugMode as DebugModeType | undefined;
@@ -6,7 +6,8 @@ const getShowTechnicalModel = () => document.body.dataset.showTechnicalModel;
 const getShowPrintOptionsHTML = () =>
     document.body.dataset.showPrintOptionsHTML;
 const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF;
-const getDefaultDarkMode = () => document.body.dataset.defaultDarkMode;
+const getDefaultColorScheme = () =>
+    document.body.dataset.defaultColorScheme as DefaultColorScheme;
 const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
 
 const isOnSpecificRecordPage = () => {
@@ -266,7 +267,7 @@ export {
     getShowPrintOptionsPDF,
     isOnNewURLPos,
     validateConfigFile,
-    getDefaultDarkMode,
+    getDefaultColorScheme,
     simpleDebounce,
     getShowTechnicalList,
 };

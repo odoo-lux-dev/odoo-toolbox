@@ -1,6 +1,7 @@
 import {
     CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
     CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
+    CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
     CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
     CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
     CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
@@ -14,6 +15,8 @@ import {
 } from "@/utils/constants";
 
 export type DebugModeType = "1" | "disabled" | "assets" | "assets,tests";
+
+export type DefaultColorScheme = "none" | "system" | "light" | "dark";
 
 export type StoredSettingsV1 = {
     [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]: "manual" | "1" | "0" | "assets";
@@ -65,4 +68,11 @@ export type StoredSettingsV10 = StoredSettingsV9 & {
     [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: boolean;
 };
 
-export type StoredSettings = StoredSettingsV10;
+export type StoredSettingsV11 = Omit<
+    StoredSettingsV10,
+    typeof CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE
+> & {
+    [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]: DefaultColorScheme;
+};
+
+export type StoredSettings = StoredSettingsV11;

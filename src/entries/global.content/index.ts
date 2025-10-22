@@ -22,9 +22,8 @@ export default defineContentScript({
         document.body.dataset.showTechnicalModel = (
             settings.showTechnicalModel || false
         ).toString();
-        document.body.dataset.defaultDarkMode = (
-            settings.defaultDarkMode || false
-        ).toString();
+        document.body.dataset.defaultColorScheme =
+            settings.defaultColorScheme || "none";
         document.body.dataset.showTechnicalList = (
             settings.showTechnicalList || false
         ).toString();

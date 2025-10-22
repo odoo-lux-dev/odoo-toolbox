@@ -21,7 +21,7 @@ export const DebugModeOption = () => {
     const additionalTooltipContent = (
         <ul>
             <li>
-                [Disabled] Debug mode won't be forced
+                <strong>Disabled</strong> : Debug mode won't be forced
                 <ul>
                     <li>
                         If it's triggered from the popup's toggle, it'll remove
@@ -34,10 +34,16 @@ export const DebugModeOption = () => {
                     <li>Basically: it's like the monkey extension 🙈</li>
                 </ul>
             </li>
-            <li>[Always] Debug mode will always be enabled</li>
-            <li>[Assets] Debug mode will always be enabled to assets</li>
             <li>
-                [Tests assets] Debug mode will always be enabled to tests assets
+                <strong>Always</strong> : Debug mode will always be enabled
+            </li>
+            <li>
+                <strong>Assets</strong> : Debug mode will always be enabled to
+                assets
+            </li>
+            <li>
+                <strong>Tests assets</strong> : Debug mode will always be
+                enabled to tests assets
             </li>
         </ul>
     );

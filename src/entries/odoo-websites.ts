@@ -1,5 +1,5 @@
 import { setDebugMode } from "@/features/debug-mode";
-import { setDefaultDarkMode } from "@/features/default-dark-mode";
+import { setDefaultColorScheme } from "@/features/default-color-scheme";
 import { initTechnicalList } from "@/features/technical-list";
 import { handleTechnicalModelName } from "@/features/technical-model-name";
 import {
@@ -58,14 +58,14 @@ export default defineUnlistedScript(async () => {
 
     observeMenuOpening();
 
-    const [darkModeSettings, debugModeSettings] = await Promise.all([
-        setDefaultDarkMode(),
+    const [colorSchemeSettings, debugModeSettings] = await Promise.all([
+        setDefaultColorScheme(),
         setDebugMode(tabUrl),
     ]);
 
     if (debugModeSettings.reload && debugModeSettings.url) {
         window.location.href = debugModeSettings.url;
-    } else if (darkModeSettings.reload) {
+    } else if (colorSchemeSettings.reload) {
         window.location.reload();
     }
 
