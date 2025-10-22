@@ -108,15 +108,15 @@ export const useRecordContextMenu = () => {
             if (fieldMetadata?.relation) {
                 const relationIds = extractRelationIds(fieldValue);
                 if (relationIds.length > 0) {
+                    const modelName = getRelatedModel(fieldMetadata);
+                    const ids = extractIds(fieldValue);
+
                     items.push({
                         label: `Copy relation IDs (${relationIds.length})`,
                         action: () =>
                             copyToClipboardWithFallback(relationIds.join(", ")),
-                        separator: true,
+                        separator: !(modelName && ids.length >= 1),
                     });
-
-                    const modelName = getRelatedModel(fieldMetadata);
-                    const ids = extractIds(fieldValue);
 
                     if (modelName && ids.length >= 1) {
                         items.push({
