@@ -1,5 +1,7 @@
-import { DebugModeType } from "@/types";
+import type { DebugModeType } from "@/types";
 import { getDefaultDebugMode } from "@/utils/utils";
+
+const IGNORED_PATHS = ["/thanks/trial"];
 
 /**
  * Sets the debug mode for the Odoo application based on the URL parameters and the default debug mode.
@@ -19,7 +21,11 @@ const setDebugMode = async (
     const defaultDebugMode = getDefaultDebugMode();
     const odooWindowObject = window.odoo;
 
-    if (odooWindowObject?.debug !== undefined && defaultDebugMode) {
+    if (
+        odooWindowObject?.debug !== undefined &&
+        defaultDebugMode &&
+        !IGNORED_PATHS.some((path) => window.location.href.includes(path))
+    ) {
         const params = url.searchParams;
         const urlDebugMode = params.get("debug");
 
