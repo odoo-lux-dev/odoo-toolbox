@@ -4,6 +4,7 @@ import {
     getShowPrintOptionsHTML,
     getShowPrintOptionsPDF,
     isOnSpecificRecordPage,
+    retrieveIdFromAvatar,
 } from "@/utils/utils";
 
 /**
@@ -50,6 +51,7 @@ const getPrintOptionsList = async (
 
     let reports;
     let companies;
+    const companiesDomain = _generatesCompaniesDomain();
     if (legacy) {
         let context;
         // @ts-expect-error odoo is defined on Odoo pages
@@ -80,7 +82,7 @@ const getPrintOptionsList = async (
         companies = await window.odoo.__DEBUG__.services["web.rpc"].query({
             model: "res.company",
             method: "search_read",
-            args: [[], ["id"]],
+            args: [companiesDomain, ["id"]],
             context,
         });
     } else {
@@ -93,7 +95,7 @@ const getPrintOptionsList = async (
         // @ts-expect-error odoo is defined on Odoo pages
         companies = await window.odoo.__WOWL_DEBUG__.root.orm.searchRead(
             "res.company",
-            [],
+            companiesDomain,
             ["id"],
         );
     }
@@ -484,6 +486,18 @@ const handleTechnicalReportsVersion17andAbove = async (
         printOptions,
         hasSinglePrintOption,
     );
+};
+
+const _generatesCompaniesDomain = () => {
+    const { partnerId, userId } = retrieveIdFromAvatar();
+
+    if (!partnerId && !userId) return [];
+
+    if (partnerId) {
+        return [["user_ids.partner_id", "in", [partnerId]]];
+    } else {
+        return [["user_ids", "in", [userId]]];
+    }
 };
 
 export {
