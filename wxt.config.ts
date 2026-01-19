@@ -90,6 +90,12 @@ export default defineConfig({
             esbuild: {
                 minifyIdentifiers: false, // Keep variable names
             },
+            resolve: {
+                alias: {
+                    "wxt/browser": new URL("./src/browser.ts", import.meta.url)
+                        .pathname,
+                },
+            },
         };
     },
 });
