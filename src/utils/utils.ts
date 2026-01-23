@@ -74,6 +74,7 @@ interface ConfigFile {
         taskUrlRegex: string;
         nostalgiaMode: boolean;
         colorBlindMode: boolean;
+        showLoginButtons: boolean;
     };
     favorites?: Array<{
         name: string;

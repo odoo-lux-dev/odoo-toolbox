@@ -7,6 +7,7 @@ import { ShPageRenameOption } from "./sh-page-rename-option";
 import { TaskLinkOption } from "./task-link-option";
 import { TechnicalListOption } from "./technical-list";
 import { TechnicalModelOption } from "./technical-model";
+import { LoginButtonsOption } from "@/entries/options/options/login-buttons";
 
 export const ExtensionOptions = [
     { component: PrintOption, category: "Odoo" },
@@ -15,6 +16,7 @@ export const ExtensionOptions = [
     { component: NostalgiaModeOption, category: "Odoo" },
     { component: DebugModeOption, category: "Odoo" },
     { component: TechnicalListOption, category: "Odoo" },
+    { component: LoginButtonsOption, category: "Odoo" },
     { component: ShPageRenameOption, category: "Odoo.SH" },
     { component: ColorBlindOption, category: "Odoo.SH" },
     { component: TaskLinkOption, category: "Odoo.SH" },

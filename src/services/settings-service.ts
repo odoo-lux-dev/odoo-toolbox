@@ -16,6 +16,7 @@ import type {
     StoredSettingsV9,
     StoredSettingsV10,
     StoredSettingsV11,
+    StoredSettingsV12,
 } from "@/types";
 import {
     CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
@@ -28,6 +29,7 @@ import {
     CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
     CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
     CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
+    CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
     CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
     CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
     CHROME_STORAGE_SETTINGS_TASK_URL,
@@ -69,7 +71,7 @@ export class SettingsService {
     private settingsSyncStorage = storage.defineItem<StoredSettings>(
         <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
         {
-            version: 11,
+            version: 12,
             init: () => {
                 return {
                     [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]:
@@ -87,6 +89,7 @@ export class SettingsService {
                     [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                         "none" as DefaultColorScheme,
                     [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+                    [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
                 } as StoredSettings;
             },
             migrations: {
@@ -174,6 +177,12 @@ export class SettingsService {
                             darkModeEnabled ? "dark" : "none",
                     };
                 },
+                12: (settings: StoredSettingsV11): StoredSettingsV12 => {
+                    return {
+                        ...settings,
+                        [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
+                    };
+                },
             },
         },
     );
@@ -214,6 +223,7 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                 "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+            [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
         } as StoredSettings;
     }
 
@@ -237,7 +247,17 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                 "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+            [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
         } as StoredSettings;
+    }
+
+    async setShowLoginButtons(showLoginButtons: boolean): Promise<void> {
+        const settings = await this.getSettings();
+        const newSettings = {
+            ...settings,
+            [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: showLoginButtons,
+        };
+        return this.setSettings(newSettings);
     }
 
     /**
