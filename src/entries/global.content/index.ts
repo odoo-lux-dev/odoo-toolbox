@@ -27,6 +27,9 @@ export default defineContentScript({
         document.body.dataset.showTechnicalList = (
             settings.showTechnicalList || false
         ).toString();
+        document.body.dataset.showLoginButtons = (
+            settings.showLoginButtons || false
+        ).toString();
 
         await injectScript("/odoo-websites.js", {
             keepInDom: true,
