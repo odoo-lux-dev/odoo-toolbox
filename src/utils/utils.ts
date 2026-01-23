@@ -9,6 +9,7 @@ const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF;
 const getDefaultColorScheme = () =>
     document.body.dataset.defaultColorScheme as DefaultColorScheme;
 const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
+const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
 
 const isOnSpecificRecordPage = () => {
     const odooWindowObject = window.odoo;
@@ -74,6 +75,7 @@ interface ConfigFile {
         taskUrlRegex: string;
         nostalgiaMode: boolean;
         colorBlindMode: boolean;
+        showLoginButtons: boolean;
     };
     favorites?: Array<{
         name: string;
@@ -299,4 +301,5 @@ export {
     simpleDebounce,
     getShowTechnicalList,
     retrieveIdFromAvatar,
+    getShowLoginButtons,
 };

@@ -7,6 +7,7 @@ import {
     handleTechnicalReportsVersion17andAbove,
 } from "@/features/technical-report";
 import { getOdooVersion } from "@/utils/utils";
+import { handleLoginButtons } from "@/features/login-buttons";
 
 const handleVersion17AndAbove = async (targetNode: Element) => {
     handleTechnicalModelName(targetNode);
@@ -57,6 +58,7 @@ export default defineUnlistedScript(async () => {
     const tabUrl = new URL(window.location.href);
 
     observeMenuOpening();
+    handleLoginButtons();
 
     const [colorSchemeSettings, debugModeSettings] = await Promise.all([
         setDefaultColorScheme(),
