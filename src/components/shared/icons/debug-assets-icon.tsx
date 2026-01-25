@@ -1,4 +1,5 @@
-import { BugPlay } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bug02Icon } from "@hugeicons/core-free-icons";
 
 export const DebugModeAssetsIcon = ({
     isNostalgia = false,
@@ -78,5 +79,44 @@ export const DebugModeAssetsIcon = ({
         );
     }
 
-    return <BugPlay size={16} />;
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            version="1.2"
+            viewBox="0 0 26 24"
+            width={16}
+            height={16}
+        >
+            <defs>
+                <mask id="play-mask">
+                    <rect width="26" height="24" fill="white" />
+                    <path
+                        d="m24 18.5c-0.3 0.9-1.4 1.5-3.6 2.8-2.1 1.2-3.2 1.8-4 1.6q-0.6-0.2-1-0.6c-0.6-0.6-0.6-1.9-0.6-4.3 0-2.5 0-3.8 0.6-4.4q0.4-0.4 1-0.5c0.8-0.3 1.9 0.3 4 1.5 2.2 1.3 3.3 1.9 3.6 2.8q0.1 0.6 0 1.1z"
+                        fill="black"
+                        stroke="black"
+                        strokeWidth="2.5"
+                    />
+                </mask>
+            </defs>
+            <style>{`.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-width:${2}}.b{fill:none;stroke:currentColor;stroke-linejoin:round;stroke-width:${2}}`}</style>
+            <path className="a" d="m3 6.6c-0.1 1.1 0.7 3.6 2.9 3.7" />
+            <path className="a" d="m18.3 10.2c1.1 0.1 2.7-1.2 2.7-3.6" />
+            <path className="a" d="m3.9 21c-0.1-1.4 0.9-3.5 2.6-3.6" />
+            <path className="a" d="m3 13.8h2.2" />
+            <path
+                className="a"
+                d="m12 13.8v-2.9m4.5-7.9l-1.8 1.8m-7.2-1.8l1.8 1.8"
+            />
+            <path className="a" d="m7 8.6c1.6 1.2 5.6 2.9 10 0.1" />
+            <path
+                mask="url(#play-mask)"
+                className="a"
+                d="m16.8 7.7c-3.5-5-8.1-2.6-9.7 0.1-1.1 1.8-2.7 6.1 0.4 10.8 3.4 4.1 7.3 2.2 8.9 0 1.6-1.8 3.1-6.6 0.4-10.9z"
+            />
+            <path
+                className="b"
+                d="m24 18.5c-0.3 0.9-1.4 1.5-3.6 2.8-2.1 1.2-3.2 1.8-4 1.6q-0.6-0.2-1-0.6c-0.6-0.6-0.6-1.9-0.6-4.3 0-2.5 0-3.8 0.6-4.4q0.4-0.4 1-0.5c0.8-0.3 1.9 0.3 4 1.5 2.2 1.3 3.3 1.9 3.6 2.8q0.1 0.6 0 1.1z"
+            />
+        </svg>
+    );
 };

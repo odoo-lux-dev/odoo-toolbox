@@ -7,7 +7,11 @@ const TechnicalSidebarContent = () => {
     const { buttonRef } = useTechnicalSidebar();
 
     return (
-        <div className="x-odoo-technical-list-info" ref={buttonRef}>
+        <div
+            ref={buttonRef}
+            className="fixed bottom-6 right-0 z-[9999] flex flex-col items-end gap-2 text-sm leading-6 max-md:bottom-5"
+            data-technical-list-root="true"
+        >
             <FloatingButton />
             <SidePanel />
         </div>

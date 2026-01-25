@@ -1,5 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
-import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST } from "@/utils/constants";
@@ -12,6 +12,7 @@ export const TechnicalListOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST];
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     const additionalTooltipContent = (
         <div>
@@ -67,7 +68,12 @@ export const TechnicalListOption = () => {
             tooltipContent="Enable an advanced technical sidebar with comprehensive field and system information"
             additionalTooltipContent={additionalTooltipContent}
         >
-            <ToggleSwitch isChecked={isEnabled} onInput={handleChange} />
+            <Toggle
+                color={isDarkMode ? "accent" : "primary"}
+                size="sm"
+                checked={isEnabled}
+                onCheckedChange={handleChange}
+            />
         </OptionItem>
     );
 };

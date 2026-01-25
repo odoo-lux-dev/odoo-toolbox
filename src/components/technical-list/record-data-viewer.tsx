@@ -1,4 +1,6 @@
-import { Copy } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon } from "@hugeicons/core-free-icons";
+import { IconButton } from "@/components/ui/icon-button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 interface RecordDataViewerProps {
@@ -8,7 +10,7 @@ interface RecordDataViewerProps {
 }
 
 /**
- * Renders record data as formatted JSON with copy functionality
+ * Renders record data as formatted JSON with copy functionality.
  */
 export const RecordDataViewer = ({
     data,
@@ -19,36 +21,56 @@ export const RecordDataViewer = ({
 
     if (loading) {
         return (
-            <div className="x-odoo-modal-loading">Loading record data...</div>
+            <div className="flex items-center justify-center rounded-lg border border-base-200 bg-base-100 px-4 py-8 text-sm text-base-content/70">
+                Loading record data...
+            </div>
         );
     }
 
     if (error) {
-        return <div className="x-odoo-modal-error">{error}</div>;
+        return (
+            <div className="alert alert-error shadow-sm">
+                <span className="text-sm">{error}</span>
+            </div>
+        );
     }
 
     if (!data) {
-        return <div className="x-odoo-modal-error">No data available</div>;
+        return (
+            <div className="alert alert-warning shadow-sm">
+                <span className="text-sm">No data available</span>
+            </div>
+        );
     }
 
     const jsonString = JSON.stringify(data, null, 2);
 
-    const handleCopy = (e: MouseEvent) => {
-        const target = e.currentTarget as HTMLElement;
+    const handleCopy = (event: MouseEvent) => {
+        const target = event.currentTarget as HTMLElement;
         copyToClipboard(jsonString, target);
     };
 
     return (
-        <div className="x-odoo-record-data-json">
-            <div className="x-odoo-json-container">
-                <button
-                    className="x-odoo-json-copy-btn"
+        <div className="space-y-3">
+            <div className="relative">
+                <IconButton
+                    label="Copy JSON to clipboard"
+                    variant="ghost"
+                    size="sm"
                     onClick={handleCopy}
-                    title="Copy JSON to clipboard"
-                >
-                    <Copy size={14} />
-                </button>
-                <pre className="x-odoo-json-display">{jsonString}</pre>
+                    className="absolute right-3 top-3 bg-base-100/80 shadow-sm backdrop-blur"
+                    icon={
+                        <HugeiconsIcon
+                            icon={Copy01Icon}
+                            size={14}
+                            color="currentColor"
+                            strokeWidth={1.6}
+                        />
+                    }
+                />
+                <pre className="max-h-[420px] overflow-auto rounded-lg border border-base-300 bg-base-200/50 p-4 text-xs leading-6 text-base-content">
+                    {jsonString}
+                </pre>
             </div>
         </div>
     );

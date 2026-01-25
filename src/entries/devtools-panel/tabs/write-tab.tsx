@@ -1,4 +1,5 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Alert02Icon } from "@hugeicons/core-free-icons";
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
 import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
@@ -8,6 +9,9 @@ import { JsonAutocomplete } from "@/components/devtools/json-autocomplete/json-a
 import { createFieldValidationErrorNotification } from "@/components/devtools/json-autocomplete/utils/json-autocomplete-utils";
 import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
@@ -26,6 +30,7 @@ import {
 import { Logger } from "@/services/logger";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { addWriteToHistory } from "@/utils/history-helpers";
+import { parseRpcContext } from "@/utils/context-utils";
 import { validateFieldsExistence } from "@/utils/query-validation";
 import { generateRecordText } from "@/utils/tab-utils";
 
@@ -150,11 +155,19 @@ export const WriteTab = () => {
             }
 
             const values = JSON.parse(writeData);
+            const contextResult = parseRpcContext(rpcQuery.context || "");
+
+            if (!contextResult.isValid) {
+                throw new Error(
+                    `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+                );
+            }
 
             const result = await odooRpcService.write({
                 model: rpcQuery.model,
                 ids,
                 values,
+                context: contextResult.value,
             });
 
             if (result) {
@@ -200,7 +213,7 @@ export const WriteTab = () => {
     };
 
     return (
-        <div className="rpc-query-form">
+        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
             <QueryFormSidebar
                 recordIdsLabel="Record IDs"
                 recordIdsHelpText="Comma-separated IDs or JSON array of records to update."
@@ -210,104 +223,120 @@ export const WriteTab = () => {
                 onPrimaryAction={handleExecuteQuery}
                 onClear={handleClearForm}
                 isLoading={writeLoading}
+                showDomainSection
             />
 
-            <div className="tab-results">
-                <div className="tab-editor-section">
-                    <div className="tab-warning-banner">
-                        <div className="warning-icon">⚠️</div>
-                        <div className="warning-content">
-                            <strong>Warning: Data Modification</strong>
-                            <p>
-                                Write operations will permanently modify the
-                                selected records. Please verify the data and
-                                target records before executing.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="tab-editor-header">
-                        <div className="header-left">
+            <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
+                <div className="flex flex-col gap-3 pt-3">
+                    <Alert
+                        color="warning"
+                        icon={
+                            <HugeiconsIcon
+                                icon={Alert02Icon}
+                                size={18}
+                                color="currentColor"
+                                strokeWidth={1.8}
+                            />
+                        }
+                        title="Warning: Data Modification"
+                        variant="outline"
+                    >
+                        <p className="text-sm">
+                            Write operations will permanently modify the
+                            selected records. Please verify the data and target
+                            records before executing.
+                        </p>
+                    </Alert>
+
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-3">
                             <h3
-                                className={
-                                    jsonValidation.isValid === false
-                                        ? "error"
-                                        : ""
-                                }
+                                className={`text-base font-semibold ${jsonValidation.isValid === false ? "text-error" : ""}`}
                             >
                                 Update Data (JSON Format)
                             </h3>
-                            {jsonValidation.isValid === false && (
-                                <span className="error-message">
-                                    {jsonValidation.error}
-                                </span>
-                            )}
-                        </div>
-                        <div className="header-right">
-                            <button
-                                type="button"
+                            <Button
+                                variant="soft"
+                                size="sm"
                                 onClick={formatJson}
                                 disabled={!writeData.trim() || writeLoading}
-                                className="btn btn-secondary-outline btn-small"
                             >
                                 Format JSON
-                            </button>
+                            </Button>
                         </div>
-                    </div>
-                    <JsonAutocomplete
-                        value={writeData}
-                        onChange={handleJsonChange}
-                        fieldsMetadata={rpcQuery.fieldsMetadata || {}}
-                        placeholder={`Enter the data to update in JSON format, e.g.:
+
+                        <FormField
+                            helpText={
+                                jsonValidation.isValid === false
+                                    ? jsonValidation.error
+                                    : undefined
+                            }
+                            helpTone={
+                                jsonValidation.isValid === false
+                                    ? "error"
+                                    : "neutral"
+                            }
+                        >
+                            <JsonAutocomplete
+                                value={writeData}
+                                onChange={handleJsonChange}
+                                fieldsMetadata={rpcQuery.fieldsMetadata || {}}
+                                placeholder={`Enter the data to update in JSON format, e.g.:
 {
   "name": "New Name",
   "email": "new@email.com",
   "active": true
 }`}
-                        disabled={rpcResult.loading}
-                        className={`form-input tab-editor ${jsonValidation.isValid === false ? "error" : ""}`}
-                    />
-                    <div className="tab-actions">
-                        <button
-                            type="button"
-                            onClick={handleWriteExecute}
-                            disabled={
-                                rpcResult.loading ||
-                                writeLoading ||
-                                !rpcQuery.model ||
-                                !writeData.trim() ||
-                                !jsonValidation.isValid ||
-                                !(rpcQuery.ids?.trim() || queryIds.trim())
-                            }
-                            className="btn btn-primary btn-full-width"
-                        >
-                            {writeLoading ? "Updating..." : "Update Records"}
-                        </button>
+                                disabled={rpcResult.loading}
+                                className={`min-h-44 ${jsonValidation.isValid === false ? "textarea-error" : ""}`}
+                                rows={1}
+                            />
+                        </FormField>
+
+                        <div className="pt-1">
+                            <Button
+                                color="primary"
+                                block
+                                loading={writeLoading}
+                                onClick={handleWriteExecute}
+                                disabled={
+                                    rpcResult.loading ||
+                                    writeLoading ||
+                                    !rpcQuery.model ||
+                                    !writeData.trim() ||
+                                    !jsonValidation.isValid ||
+                                    !(rpcQuery.ids?.trim() || queryIds.trim())
+                                }
+                            >
+                                {writeLoading
+                                    ? "Updating..."
+                                    : "Update Records"}
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="tab-results-section">
-                    <div className="tab-results-section-content">
-                        <ResultViewer
-                            hideCopyButton
-                            hideDownloadButton
-                            hideSwitchViewButton
-                            hideFieldNumber
-                            hideRecordPagingData
-                            customText={
-                                rpcResult.data && rpcResult.data.length > 0 ? (
-                                    <div className="tab-section-header">
-                                        <h4>
-                                            {generateRecordText(
-                                                rpcResult.model,
-                                                rpcResult.data.length,
-                                                "updated",
-                                            )}
-                                        </h4>
-                                    </div>
-                                ) : undefined
-                            }
-                        />
-                    </div>
+                <div className="min-h-0 flex-1">
+                    <ResultViewer
+                        hideCopyButton
+                        hideDownloadButton
+                        hideSwitchViewButton
+                        hideFieldNumber
+                        hideRecordPagingData
+                        customText={
+                            rpcResult.data && rpcResult.data.length > 0 ? (
+                                <div className="py-2 mr-auto">
+                                    <h4 className="text-sm font-semibold">
+                                        {generateRecordText(
+                                            rpcResult.model,
+                                            rpcResult.data.length,
+                                            "updated",
+                                        )}
+                                    </h4>
+                                </div>
+                            ) : undefined
+                        }
+                    />
                 </div>
             </div>
             <ConfirmationModal

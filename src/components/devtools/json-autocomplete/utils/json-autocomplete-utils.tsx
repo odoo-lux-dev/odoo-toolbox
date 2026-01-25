@@ -9,23 +9,25 @@ export const createFieldValidationErrorNotification = (
     const isPlural = fieldCount > 1;
 
     return (
-        <div className="field-validation-error">
-            <div className="validation-summary">
+        <div className="flex flex-col gap-2 text-sm text-base-content">
+            <div className="font-semibold">
                 <strong>
                     {isPlural
                         ? `${fieldCount} invalid fields detected:`
                         : "Invalid field detected:"}
                 </strong>
             </div>
-            <div className="invalid-fields-list">
+            <div className="flex flex-wrap gap-1">
                 {invalidFields.map((field, index) => (
-                    <span key={field} className="invalid-field">
-                        <code>"{field}"</code>
+                    <span key={field} className="inline-flex items-center">
+                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                            "{field}"
+                        </code>
                         {index < invalidFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="validation-hint">
+            <div className="text-xs italic text-base-content/70">
                 💡 Use the autocomplete suggestions or check the model fields
             </div>
         </div>
@@ -39,23 +41,25 @@ export const createRequiredFieldsErrorNotification = (
     const isPlural = fieldCount > 1;
 
     return (
-        <div className="field-validation-error">
-            <div className="validation-summary">
+        <div className="flex flex-col gap-2 text-sm text-base-content">
+            <div className="font-semibold">
                 <strong>
                     {isPlural
                         ? `${fieldCount} required fields missing:`
                         : "Required field missing:"}
                 </strong>
             </div>
-            <div className="invalid-fields-list">
+            <div className="flex flex-wrap gap-1">
                 {missingFields.map((field, index) => (
-                    <span key={field} className="invalid-field">
-                        <code>"{field}"</code>
+                    <span key={field} className="inline-flex items-center">
+                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                            "{field}"
+                        </code>
                         {index < missingFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="validation-hint">
+            <div className="text-xs italic text-base-content/70">
                 💡 These fields must be provided when creating a record
             </div>
         </div>
@@ -125,23 +129,25 @@ export const createRequiredFieldsActionNotification = (
     const isPlural = fieldCount > 1;
 
     const message = (
-        <div className="field-validation-error">
-            <div className="validation-summary">
+        <div className="flex flex-col gap-2 text-sm text-base-content">
+            <div className="font-semibold">
                 <strong>
                     {isPlural
                         ? `${fieldCount} required fields missing:`
                         : "Required field missing:"}
                 </strong>
             </div>
-            <div className="invalid-fields-list">
+            <div className="flex flex-wrap gap-1">
                 {missingFields.map((field, index) => (
-                    <span key={field} className="invalid-field">
-                        <code>"{field}"</code>
+                    <span key={field} className="inline-flex items-center">
+                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                            "{field}"
+                        </code>
                         {index < missingFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="validation-hint">
+            <div className="text-xs italic text-base-content/70">
                 💡 Click below to add these fields with default values
             </div>
         </div>

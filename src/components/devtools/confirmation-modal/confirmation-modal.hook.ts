@@ -24,7 +24,6 @@ export const useConfirmationModal = (): UseConfirmationModalReturn => {
 
     const closeModal = useCallback(() => {
         setIsOpen(false);
-        setConfig(null);
         setResolver(null);
     }, []);
 

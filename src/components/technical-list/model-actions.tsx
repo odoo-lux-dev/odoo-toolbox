@@ -1,5 +1,11 @@
 import { useSignal } from "@preact/signals";
-import { Database, KeyRound, List, Shield } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    DatabaseIcon,
+    Key01Icon,
+    ListViewIcon,
+    Shield02Icon,
+} from "@hugeicons/core-free-icons";
 import {
     getModelAccessIds,
     getModelFieldIds,
@@ -7,7 +13,8 @@ import {
     getRecordData,
     openViewWithIds,
 } from "@/services/content-script-rpc-service";
-import { Modal } from "@/components/common/modal";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { RecordDataViewer } from "./record-data-viewer";
 
 interface ModelActionsProps {
@@ -112,50 +119,79 @@ export const ModelActions = ({
     };
 
     return (
-        <div className="x-odoo-model-actions">
-            <button
-                className="x-odoo-model-action-btn"
+        <div className="flex flex-nowrap items-center justify-center gap-1">
+            <Button
+                className="gap-2 text-xs"
+                variant="ghost"
+                size="sm"
                 onClick={handleViewFields}
                 disabled={loading.value !== null}
                 title="View model fields (ir.model.fields)"
             >
-                <List size={16} />
+                <HugeiconsIcon
+                    icon={ListViewIcon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
                 {loading.value === "fields" ? "Loading..." : "Fields"}
-            </button>
-            <button
-                className="x-odoo-model-action-btn"
+            </Button>
+            <Button
+                className="gap-2 text-xs"
+                variant="ghost"
+                size="sm"
                 onClick={handleViewRules}
                 disabled={loading.value !== null}
                 title="View access rules (ir.rule)"
             >
-                <Shield size={16} />
+                <HugeiconsIcon
+                    icon={Shield02Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
                 {loading.value === "rules" ? "Loading..." : "Rules"}
-            </button>
-            <button
-                className="x-odoo-model-action-btn"
+            </Button>
+            <Button
+                className="gap-2 text-xs"
+                variant="ghost"
+                size="sm"
                 onClick={handleViewAccess}
                 disabled={loading.value !== null}
                 title="View model access (ir.model.access)"
             >
-                <KeyRound size={16} />
+                <HugeiconsIcon
+                    icon={Key01Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
                 {loading.value === "access" ? "Loading..." : "Access"}
-            </button>
+            </Button>
             {currentRecordId && (
-                <button
-                    className="x-odoo-model-action-btn"
+                <Button
+                    className="gap-2 text-xs"
+                    variant="ghost"
+                    size="sm"
                     onClick={handleViewData}
                     disabled={loading.value !== null}
                     title="View current record data"
                 >
-                    <Database size={16} />
+                    <HugeiconsIcon
+                        icon={DatabaseIcon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
                     {loading.value === "data" ? "Loading..." : "Data"}
-                </button>
+                </Button>
             )}
             <Modal
-                isOpen={showDataModal.value}
+                open={showDataModal.value}
                 onClose={handleCloseModal}
                 title={`Record Data - ${currentModel} (ID: ${currentRecordId})`}
-                width="800px"
+                size="xl"
+                boxClassName="max-w-[800px]"
             >
                 <RecordDataViewer
                     data={recordData.value}

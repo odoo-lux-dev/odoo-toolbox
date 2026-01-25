@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "preact/hooks";
+import { effect } from "@preact/signals";
 
 import { useElementSelector } from "@/components/technical-list/hooks/use-element-selector";
 import { useFieldHighlight } from "@/components/technical-list/hooks/use-field-highlight";
@@ -89,16 +90,78 @@ export const useTechnicalSidebar = () => {
     }, [clearAllHighlights, clearSelection, toggleSelectionMode]);
 
     // Handle opening/closing of the sidebar
-    // Effect to offset main content via CSS
+    // Effect to offset main content without legacy CSS classes
     useEffect(() => {
-        const bodyElement = document.body;
+        let disposed = false;
+        let disposeLayout: (() => void) | null = null;
 
-        if (isExpandedSignal.value) {
-            bodyElement.classList.add("x-odoo-side-panel-open");
-        } else {
-            bodyElement.classList.remove("x-odoo-side-panel-open");
-        }
-    }, [isExpandedSignal.value]);
+        const startLayoutEffect = () => {
+            if (disposed) return;
+            const sidebarRoot = buttonRef.current;
+            if (!sidebarRoot) {
+                requestAnimationFrame(startLayoutEffect);
+                return;
+            }
+
+            disposeLayout = effect(() => {
+                const applyLayout = () => {
+                    const isMobile =
+                        window.matchMedia("(max-width: 768px)").matches;
+                    const prefersReducedMotion = window.matchMedia(
+                        "(prefers-reduced-motion: reduce)",
+                    ).matches;
+                    const shouldOffset = isExpandedSignal.value && !isMobile;
+                    const offsetPx = shouldOffset ? "400px" : "0px";
+                    const bodyElement = document.body;
+                    const bodyTransition =
+                        "padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                    bodyElement.style.setProperty(
+                        "transition",
+                        prefersReducedMotion ? "none" : bodyTransition,
+                        "important",
+                    );
+
+                    if (shouldOffset) {
+                        bodyElement.style.setProperty(
+                            "padding-right",
+                            "400px",
+                            "important",
+                        );
+                    } else {
+                        bodyElement.style.removeProperty("padding-right");
+                    }
+
+                    sidebarRoot.style.transition = prefersReducedMotion
+                        ? ""
+                        : "right 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                    sidebarRoot.style.right = isMobile
+                        ? isExpandedSignal.value
+                            ? "20px"
+                            : "0px"
+                        : offsetPx;
+                };
+
+                applyLayout();
+                window.addEventListener("resize", applyLayout);
+
+                return () => {
+                    window.removeEventListener("resize", applyLayout);
+
+                    document.body.style.removeProperty("padding-right");
+
+                    sidebarRoot.style.right = "";
+                    sidebarRoot.style.transition = "";
+                };
+            });
+        };
+
+        startLayoutEffect();
+
+        return () => {
+            disposed = true;
+            disposeLayout?.();
+        };
+    }, []);
 
     useEffect(() => {
         if (selectedElementSignal.value) {

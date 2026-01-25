@@ -1,8 +1,9 @@
-import "./json-autocomplete.scss";
 import { useSignal } from "@preact/signals";
 import { JSX } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import { FieldMetadata } from "@/types";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { useJsonSuggestions } from "./hooks/use-json-suggestions";
 import { adjustDropdownPosition } from "./utils/cursor-position";
 
@@ -104,23 +105,24 @@ export const JsonAutocomplete = ({
     };
 
     return (
-        <div className="json-autocomplete-container">
-            <textarea
+        <div className="relative w-full">
+            <Textarea
                 ref={textareaRef}
                 value={value}
                 onChange={(e) => onChange(e.currentTarget.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
                 rows={rows}
-                className={`json-autocomplete-textarea ${className || ""}`}
+                className={`textarea-bordered font-mono ${className || ""}`}
                 spellcheck={false}
                 disabled={disabled}
+                fullWidth
             />
 
             {showSuggestions && suggestions.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className="json-autocomplete-dropdown"
+                    className={`z-50 flex max-h-75 min-w-[320px] flex-col overflow-hidden rounded-box border border-base-300 bg-base-100 text-xs shadow-lg ${dropdownStyle.value ? "" : "absolute left-0 top-full mt-1"}`}
                     style={
                         dropdownStyle.value
                             ? {
@@ -132,38 +134,40 @@ export const JsonAutocomplete = ({
                             : undefined
                     }
                 >
-                    <div className="json-autocomplete-suggestions">
+                    <div className="max-h-[260px] overflow-y-auto">
                         {suggestions.map((suggestion, index) => (
                             <div
                                 key={suggestion.field}
-                                className={`json-autocomplete-suggestion ${index === focusedIndex ? "selected" : ""} ${
-                                    suggestion.isSpecial ? "special" : ""
-                                }`}
+                                className={`json-autocomplete-suggestion flex cursor-pointer flex-col gap-1 border-l-2 border-transparent px-3 py-2 transition-colors last:border-b-0 hover:bg-base-200 hover:border-primary ${index === focusedIndex ? "bg-base-200 text-base-content !border-primary" : ""} ${suggestion.isSpecial ? "bg-primary/5" : ""}`}
                                 onClick={() => insertSuggestion(suggestion)}
                             >
                                 {suggestion.isSpecial ? (
-                                    <div className="special-suggestion">
-                                        <div className="special-suggestion-title">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="text-sm font-semibold text-primary">
                                             {suggestion.description}
                                         </div>
-                                        <div className="special-suggestion-subtitle">
+                                        <div className="text-xs italic text-base-content/70">
                                             {String(suggestion.example)}
                                         </div>
                                     </div>
                                 ) : (
                                     <>
-                                        <div>
-                                            <span className="suggestion-field">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-semibold text-base-content">
                                                 {suggestion.field}
                                             </span>
-                                            <span className="suggestion-type">
+                                            <Badge
+                                                size="sm"
+                                                variant="outline"
+                                                className="ml-auto uppercase"
+                                            >
                                                 {suggestion.type}
-                                            </span>
+                                            </Badge>
                                         </div>
-                                        <div className="suggestion-description">
+                                        <div className="text-xs text-base-content/70">
                                             {suggestion.description}
                                         </div>
-                                        <div className="suggestion-example">
+                                        <div className="mt-1 truncate rounded bg-base-200/60 px-1.5 py-0.5 text-[11px] text-base-content/60">
                                             Example:{" "}
                                             {JSON.stringify(suggestion.example)}
                                         </div>
@@ -172,7 +176,7 @@ export const JsonAutocomplete = ({
                             </div>
                         ))}
                     </div>
-                    <div className="json-autocomplete-hint">
+                    <div className="border-t border-base-200 bg-base-200/60 px-3 py-2 text-center text-[10px] italic text-base-content/60">
                         ↑↓ to navigate • Enter/Tab to select • Esc to close •
                         Ctrl+Space to force suggestions
                     </div>

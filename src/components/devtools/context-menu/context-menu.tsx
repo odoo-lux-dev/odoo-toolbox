@@ -1,4 +1,3 @@
-import "@/components/devtools/context-menu/context-menu.style.scss";
 import { useEffect, useRef } from "preact/hooks";
 
 interface ContextMenuItem {
@@ -74,7 +73,7 @@ export const ContextMenu = ({
     return (
         <div
             ref={menuRef}
-            className="context-menu"
+            className="rounded-md border border-base-300 bg-base-200 shadow-lg min-w-[180px] overflow-hidden"
             style={{
                 position: "fixed",
                 left: `${position.x}px`,
@@ -85,7 +84,11 @@ export const ContextMenu = ({
             {items.map((item, index) => (
                 <div key={index}>
                     <div
-                        className={`context-menu-item ${item.isTitle ? "context-menu-title" : ""}`}
+                        className={`px-3 py-2 text-xs ${
+                            item.isTitle
+                                ? "cursor-default font-semibold text-base-content/70"
+                                : "cursor-pointer text-base-content hover:bg-primary hover:text-primary-content"
+                        }`}
                         onClick={
                             item.isTitle
                                 ? undefined
@@ -97,9 +100,7 @@ export const ContextMenu = ({
                     >
                         {item.label}
                     </div>
-                    {item.separator && (
-                        <div className="context-menu-separator" />
-                    )}
+                    {item.separator && <div className="h-px bg-base-300" />}
                 </div>
             ))}
         </div>

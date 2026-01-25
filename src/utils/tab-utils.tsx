@@ -36,35 +36,41 @@ export const generateRecordText = (
     if (count === 1) {
         if (action) {
             return (
-                <>
-                    This{modelText} record will be {action}.
-                </>
+                <span>
+                    This<span className="text-accent">{modelText}</span> record
+                    will be {action}
+                </span>
             );
         }
-        return <>This{modelText} record will be impacted.</>;
+        return (
+            <span>
+                This<span className="text-accent">{modelText}</span> record will
+                be impacted
+            </span>
+        );
     }
 
     if (action) {
         return (
-            <>
+            <span>
                 These{" "}
-                <span>
+                <span className="text-accent">
                     {count}
                     {modelText}
                 </span>{" "}
-                records will be {action}.
-            </>
+                records will be {action}
+            </span>
         );
     }
     return (
-        <>
+        <span>
             These{" "}
-            <span>
+            <span className="text-accent">
                 {count}
                 {modelText}
             </span>{" "}
-            records will be impacted.
-        </>
+            records will be impacted
+        </span>
     );
 };
 
@@ -80,24 +86,28 @@ export const generateMethodCallText = (
 
     if (count === 1) {
         return (
-            <>
-                The method <span className="method-name">{methodName}</span>{" "}
+            <span>
+                The method <span className="text-accent">{methodName}</span>{" "}
                 will be applied to this
-                {model ? <span className="model-name"> {model}</span> : ""}{" "}
-                record.
-            </>
+                {model ? (
+                    <span className="text-accent"> {model}</span>
+                ) : (
+                    ""
+                )}{" "}
+                record
+            </span>
         );
     }
 
     return (
-        <>
-            The method <span className="method-name">{methodName}</span> will be
+        <span>
+            The method <span className="text-accent">{methodName}</span> will be
             applied to these{" "}
-            <span className="count-model">
+            <span className="text-accent">
                 {count}
                 {model ? ` ${model}` : ""}
             </span>{" "}
-            records.
-        </>
+            records
+        </span>
     );
 };

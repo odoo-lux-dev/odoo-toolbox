@@ -1,4 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
+import { Radio } from "@/components/ui/radio";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import type { DefaultColorScheme } from "@/types";
@@ -13,6 +14,7 @@ export const DefaultColorSchemeOption = () => {
     };
 
     const currentScheme = getCurrentScheme();
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;
@@ -39,51 +41,43 @@ export const DefaultColorSchemeOption = () => {
             tooltipContent="Choose the default color scheme for Odoo 16 and above."
             additionalTooltipContent={additionalTooltipContent}
         >
-            <div id="default-color-scheme">
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="default-color-scheme"
-                        value="none"
-                        checked={currentScheme === "none"}
-                        onChange={handleChange}
-                    />
-                    <span className="checkmark"></span>
-                    None (Default)
-                </label>
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="default-color-scheme"
-                        value="system"
-                        checked={currentScheme === "system"}
-                        onChange={handleChange}
-                    />
-                    <span className="checkmark"></span>
-                    System
-                </label>
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="default-color-scheme"
-                        value="light"
-                        checked={currentScheme === "light"}
-                        onChange={handleChange}
-                    />
-                    <span className="checkmark"></span>
-                    Light
-                </label>
-                <label className="radio-option">
-                    <input
-                        type="radio"
-                        name="default-color-scheme"
-                        value="dark"
-                        checked={currentScheme === "dark"}
-                        onChange={handleChange}
-                    />
-                    <span className="checkmark"></span>
-                    Dark
-                </label>
+            <div id="default-color-scheme" className="flex flex-col gap-3">
+                <Radio
+                    name="default-color-scheme"
+                    color={isDarkMode ? "accent" : "primary"}
+                    value="none"
+                    checked={currentScheme === "none"}
+                    onChange={handleChange}
+                    label="None (Default)"
+                    size="sm"
+                />
+                <Radio
+                    name="default-color-scheme"
+                    color={isDarkMode ? "accent" : "primary"}
+                    value="system"
+                    checked={currentScheme === "system"}
+                    onChange={handleChange}
+                    label="System"
+                    size="sm"
+                />
+                <Radio
+                    name="default-color-scheme"
+                    color={isDarkMode ? "accent" : "primary"}
+                    value="light"
+                    checked={currentScheme === "light"}
+                    onChange={handleChange}
+                    label="Light"
+                    size="sm"
+                />
+                <Radio
+                    name="default-color-scheme"
+                    color={isDarkMode ? "accent" : "primary"}
+                    value="dark"
+                    checked={currentScheme === "dark"}
+                    onChange={handleChange}
+                    label="Dark"
+                    size="sm"
+                />
             </div>
         </OptionItem>
     );

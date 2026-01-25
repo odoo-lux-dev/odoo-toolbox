@@ -1,5 +1,6 @@
-import { TriangleAlert, X } from "lucide-preact";
-import "./selects.styles.scss";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Alert01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge";
 
 interface SelectedFieldBadgesProps {
     selectedValues: string[];
@@ -17,13 +18,15 @@ export const SelectedFieldBadges = ({
     if (selectedValues.length === 0) return null;
 
     return (
-        <div className={`selected-fields ${className}`}>
+        <div className={`flex flex-wrap gap-2 mb-2 min-h-[24px] ${className}`}>
             {selectedValues.map((selectedValue) => {
                 const isExcluded = excludedFields.includes(selectedValue);
                 return (
-                    <div
+                    <Badge
                         key={selectedValue}
-                        className={`selected-field ${isExcluded ? "excluded" : ""}`}
+                        size="sm"
+                        color={isExcluded ? "warning" : "primary"}
+                        className="inline-flex items-center gap-1.5"
                         onMouseDown={(e) => {
                             if (e.button === 1) {
                                 e.preventDefault();
@@ -37,27 +40,35 @@ export const SelectedFieldBadges = ({
                                 : "Middle-click to remove"
                         }
                     >
-                        <span className="field-name">
+                        <span className="flex items-center gap-1.5 font-medium select-none">
                             {isExcluded && (
-                                <TriangleAlert
+                                <HugeiconsIcon
+                                    icon={Alert01Icon}
                                     size={12}
-                                    className="excluded-indicator"
+                                    color="currentColor"
+                                    strokeWidth={1.6}
+                                    className="animate-pulse"
                                 />
                             )}
                             {selectedValue}
                         </span>
                         <button
                             type="button"
-                            className="remove-field"
+                            className="ml-1 inline-flex items-center text-current/70 hover:text-current"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(selectedValue);
                             }}
                             aria-label={`Remove ${selectedValue}`}
                         >
-                            <X size={12} />
+                            <HugeiconsIcon
+                                icon={Cancel01Icon}
+                                size={12}
+                                color="currentColor"
+                                strokeWidth={1.6}
+                            />
                         </button>
-                    </div>
+                    </Badge>
                 );
             })}
         </div>

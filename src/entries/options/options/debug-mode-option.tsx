@@ -1,4 +1,7 @@
-import { DebugModeTips } from "@/components/options/debug-mode-tips";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { Alert } from "@/components/ui/alert";
+import { Radio } from "@/components/ui/radio";
 import { OptionItem } from "@/components/options/option-item";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
@@ -11,6 +14,8 @@ export const DebugModeOption = () => {
     const selectedMode =
         (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) ||
         "disabled";
+
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;
@@ -55,8 +60,20 @@ export const DebugModeOption = () => {
             tooltipContent="Choose how you want to enable the debug mode"
             additionalTooltipContent={additionalTooltipContent}
         >
-            <div id="debug-mode">
-                <DebugModeTips>
+            <div id="debug-mode" className="flex flex-col gap-4">
+                <Alert
+                    color="info"
+                    icon={
+                        <HugeiconsIcon
+                            icon={InformationCircleIcon}
+                            size={20}
+                            color="currentColor"
+                            strokeWidth={2}
+                        />
+                    }
+                    className="text-sm"
+                    variant="dash"
+                >
                     <span>
                         You can also configure this by clicking the bug icon
                         within the popup.
@@ -65,55 +82,49 @@ export const DebugModeOption = () => {
                         assets debug, and a <strong>triple click</strong> will
                         activate tests assets debug.
                     </span>
-                </DebugModeTips>
+                </Alert>
 
-                <label>
-                    <input
-                        type="radio"
+                <div className="flex flex-col gap-3">
+                    <Radio
                         name="debug-mode"
+                        color={isDarkMode ? "accent" : "primary"}
                         value="disabled"
                         checked={selectedMode === "disabled"}
-                        onInput={handleChange}
+                        onChange={handleChange}
+                        label="Disabled"
+                        size="sm"
                     />
-                    <span className="checkmark"></span>
-                    Disabled
-                </label>
 
-                <label>
-                    <input
-                        type="radio"
+                    <Radio
                         name="debug-mode"
+                        color={isDarkMode ? "accent" : "primary"}
                         value="1"
                         checked={selectedMode === "1"}
-                        onInput={handleChange}
+                        onChange={handleChange}
+                        label="Always"
+                        size="sm"
                     />
-                    <span className="checkmark"></span>
-                    Always
-                </label>
 
-                <label>
-                    <input
-                        type="radio"
+                    <Radio
                         name="debug-mode"
+                        color={isDarkMode ? "accent" : "primary"}
                         value="assets"
                         checked={selectedMode === "assets"}
-                        onInput={handleChange}
+                        onChange={handleChange}
+                        label="Assets"
+                        size="sm"
                     />
-                    <span className="checkmark"></span>
-                    Assets
-                </label>
 
-                <label>
-                    <input
-                        type="radio"
+                    <Radio
                         name="debug-mode"
+                        color={isDarkMode ? "accent" : "primary"}
                         value="assets,tests"
                         checked={selectedMode === "assets,tests"}
-                        onInput={handleChange}
+                        onChange={handleChange}
+                        label="Tests assets"
+                        size="sm"
                     />
-                    <span className="checkmark"></span>
-                    Tests assets
-                </label>
+                </div>
             </div>
         </OptionItem>
     );

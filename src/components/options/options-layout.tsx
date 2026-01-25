@@ -1,4 +1,4 @@
-import { ComponentChildren, Fragment } from "preact";
+import { ComponentChildren } from "preact";
 import { OptionsSidebar } from "./options-sidebar";
 
 export const OptionsLayout = ({
@@ -7,11 +7,16 @@ export const OptionsLayout = ({
     children: ComponentChildren;
 }) => {
     return (
-        <Fragment>
-            <OptionsSidebar />
-            <div id="content-container" class="content">
-                {children}
+        <div class="h-screen overflow-hidden bg-base-300 text-base-content">
+            <div class="flex h-full">
+                <OptionsSidebar />
+                <main
+                    id="content-container"
+                    class="flex-1 h-full overflow-y-auto px-6 py-8"
+                >
+                    {children}
+                </main>
             </div>
-        </Fragment>
+        </div>
     );
 };

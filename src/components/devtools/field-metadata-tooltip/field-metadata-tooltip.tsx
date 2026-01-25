@@ -1,4 +1,3 @@
-import "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip.style.scss";
 import { ComponentChildren } from "preact";
 import { useFieldMetadataRenderer } from "@/components/devtools/hooks/use-field-metadata-renderer";
 import { usePortalTooltip } from "@/components/devtools/hooks/use-portal-tooltip";
@@ -15,7 +14,7 @@ interface FieldMetadataTooltipProps {
 const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
     if (typeof value === "string") {
         return (
-            <span key={keyPrefix} className="field-metadata-value cell-string">
+            <span key={keyPrefix} className="text-xs font-mono text-success">
                 "{value}"
             </span>
         );
@@ -23,7 +22,10 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (Array.isArray(value)) {
         return (
-            <span key={keyPrefix} className="field-metadata-array">
+            <span
+                key={keyPrefix}
+                className="text-xs font-mono text-base-content/70"
+            >
                 [
                 {value.map((item, index) => (
                     <span key={`${keyPrefix}-${index}`}>
@@ -38,7 +40,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (typeof value === "boolean") {
         return (
-            <span key={keyPrefix} className="field-metadata-value cell-boolean">
+            <span key={keyPrefix} className="text-xs font-mono text-warning">
                 {value.toString()}
             </span>
         );
@@ -46,7 +48,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (typeof value === "number") {
         return (
-            <span key={keyPrefix} className="field-metadata-value cell-number">
+            <span key={keyPrefix} className="text-xs font-mono text-primary">
                 {value.toString()}
             </span>
         );
@@ -54,7 +56,10 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (value === null || value === undefined) {
         return (
-            <span key={keyPrefix} className="field-metadata-value cell-object">
+            <span
+                key={keyPrefix}
+                className="text-xs font-mono text-base-content/60"
+            >
                 null
             </span>
         );
@@ -63,12 +68,15 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
     if (typeof value === "object") {
         const entries = Object.entries(value);
         return (
-            <span key={keyPrefix} className="field-metadata-value cell-object">
+            <span
+                key={keyPrefix}
+                className="text-xs font-mono text-base-content/70"
+            >
                 {"{"}
                 {entries.map(([objKey, objValue], index) => (
                     <span key={`${keyPrefix}-obj-${index}`}>
                         {index > 0 && ", "}
-                        <span className="field-metadata-value cell-string">
+                        <span className="text-xs font-mono text-success">
                             "{objKey}"
                         </span>
                         {": "}
@@ -81,6 +89,26 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
     }
 
     return <span key={keyPrefix}>{String(value)}</span>;
+};
+
+const getMetadataValueClasses = (classes?: string) => {
+    const base = "text-xs font-mono";
+    if (!classes) {
+        return `${base} text-base-content`;
+    }
+    if (classes.includes("cell-boolean")) {
+        return `${base} text-warning`;
+    }
+    if (classes.includes("cell-number")) {
+        return `${base} text-accent`;
+    }
+    if (classes.includes("cell-string")) {
+        return `${base} text-success`;
+    }
+    if (classes.includes("cell-object")) {
+        return `${base} text-base-content`;
+    }
+    return `${base} text-base-content`;
 };
 
 export const FieldMetadataTooltip = ({
@@ -103,24 +131,26 @@ export const FieldMetadataTooltip = ({
         return (
             <div
                 ref={anchorRef}
-                className={`field-metadata-tooltip ${className}`}
+                className={`inline-block cursor-help ${className}`}
                 onMouseEnter={showTooltip}
                 onMouseLeave={hideTooltip}
             >
-                <div className="detail-label">{children}</div>
+                <div className="underline decoration-dotted underline-offset-2 decoration-base-content/40 hover:decoration-primary">
+                    {children}
+                </div>
 
                 {isVisible && (
                     <Portal>
                         <div
                             ref={tooltipRef}
-                            className="portal-tooltip field-metadata-tooltip"
+                            className="fixed z-[9999] pointer-events-none"
                             style={{
                                 top: `${position.top}px`,
                                 left: `${position.left}px`,
                             }}
                         >
-                            <div className="field-metadata-tooltip-message">
-                                <div className="field-metadata-key">
+                            <div className="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
+                                <div className="text-base-content/70 font-medium">
                                     Field metadata is not available. If this is
                                     a new field, please restart devtools or
                                     modify the model to force a refresh.
@@ -138,37 +168,41 @@ export const FieldMetadataTooltip = ({
     return (
         <div
             ref={anchorRef}
-            className={`field-metadata-tooltip ${className}`}
+            className={`inline-block cursor-help ${className}`}
             onMouseEnter={showTooltip}
             onMouseLeave={hideTooltip}
         >
-            <div className="detail-label">{children}</div>
+            <div className="underline decoration-dotted underline-offset-2 decoration-base-content/40 hover:decoration-primary">
+                {children}
+            </div>
 
             {isVisible && (
                 <Portal>
                     <div
                         ref={tooltipRef}
-                        className="portal-tooltip field-metadata-tooltip"
+                        className="fixed z-[9999] pointer-events-none"
                         style={{
                             top: `${position.top}px`,
                             left: `${position.left}px`,
                         }}
                     >
-                        <div className="field-metadata-tooltip-message">
-                            <div className="field-metadata-tooltip-title">
+                        <div className="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
+                            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">
                                 Field: {fieldName}
                             </div>
                             <div>
                                 {metadataItems.map((item, index) => (
                                     <div
                                         key={index}
-                                        className="field-metadata-item"
+                                        className="flex flex-wrap items-start gap-x-1"
                                     >
-                                        <span className="field-metadata-key">
+                                        <span className="font-medium text-base-content/70">
                                             {item.key}:
                                         </span>
                                         <span
-                                            className={`field-metadata-value ${item.classes}`}
+                                            className={getMetadataValueClasses(
+                                                item.classes,
+                                            )}
                                         >
                                             {item.isComplexType
                                                 ? renderValue(

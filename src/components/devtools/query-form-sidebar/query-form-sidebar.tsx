@@ -1,17 +1,23 @@
-import "@/components/devtools/query-form-sidebar/query-form-sidebar.styles.scss";
 import { ComponentChildren } from "preact";
+import { useSignal } from "@preact/signals";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MagicWand05Icon } from "@hugeicons/core-free-icons";
 import { useEffect } from "preact/hooks";
 import { DomainEditor } from "@/components/devtools/domain-editor/domain-editor";
 import { useGetCurrentPage } from "@/components/devtools/hooks/use-get-current-page";
-import { FormSection } from "@/components/devtools/query-form-sidebar/form-section";
+import { FormField } from "@/components/ui/form-field";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
+import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
 import { FieldSelect } from "@/components/devtools/selects/field-select";
 import { ModelSelect } from "@/components/devtools/selects/model-select";
 import { OrderBySelect } from "@/components/devtools/selects/order-by-select";
 import {
+    contextSignal,
     idsSignal,
     limitSignal,
     offsetSignal,
-    orderBySignal,
 } from "@/contexts/devtools-signals";
 import {
     useModelsState,
@@ -19,6 +25,8 @@ import {
     useRpcResult,
 } from "@/contexts/devtools-signals-hook";
 import { Logger } from "@/services/logger";
+import { odooRpcService } from "@/services/odoo-rpc-service";
+import { parseRpcContext } from "@/utils/context-utils";
 
 interface QueryFormSidebarProps {
     children?: ComponentChildren;
@@ -38,6 +46,10 @@ interface QueryFormSidebarProps {
 
     showDomainSection?: boolean;
     domainPlaceholder?: string;
+
+    showContextSection?: boolean;
+    contextPlaceholder?: string;
+    contextHelpText?: string;
 
     showLimitOffsetSection?: boolean;
 
@@ -61,7 +73,7 @@ export const QueryFormSidebar = ({
 
     showRecordIdsSection = true,
     recordIdsLabel = "Record IDs",
-    recordIdsHelpText = "Comma-separated IDs or JSON array. Leave empty for all records.",
+    recordIdsHelpText,
     recordIdsPlaceholder = "1,2,3 or [1,2,3]",
     recordIdsValue,
     recordIdsRequired = false,
@@ -72,6 +84,10 @@ export const QueryFormSidebar = ({
 
     showDomainSection = false,
     domainPlaceholder = '["field", "=", "value"]',
+
+    showContextSection = true,
+    contextPlaceholder = '{ "lang": "fr_FR" }',
+    contextHelpText = "Additional context for RPC calls in JSON format.",
 
     showLimitOffsetSection = false,
 
@@ -96,6 +112,66 @@ export const QueryFormSidebar = ({
     const finalPrimaryActionDisabled = computePrimaryActionDisabled
         ? !rpcQuery.model || !rpcQuery.isQueryValid
         : primaryActionDisabled;
+
+    const contextLoading = useSignal(false);
+    const contextValidation = parseRpcContext(contextSignal.value || "");
+    const contextError = contextValidation.isValid
+        ? ""
+        : `Invalid context format: ${contextValidation.error || "Invalid JSON"}`;
+
+    const handleSetDefaultContext = async () => {
+        if (contextLoading.value) return;
+        contextLoading.value = true;
+        try {
+            const [companyRecords, langRecords] = await Promise.all([
+                odooRpcService.searchRead({
+                    model: "res.company",
+                    fields: ["id"],
+                }),
+                odooRpcService.searchRead({
+                    model: "res.lang",
+                    fields: ["code"],
+                }),
+            ]);
+
+            const companyIds = Array.isArray(companyRecords)
+                ? companyRecords
+                      .map((record) =>
+                          Number((record as Record<string, unknown>).id ?? NaN),
+                      )
+                      .filter((id) => !Number.isNaN(id))
+                : [];
+
+            const langCodes = Array.isArray(langRecords)
+                ? langRecords
+                      .map((record) =>
+                          String(
+                              (record as Record<string, unknown>).code ?? "",
+                          ),
+                      )
+                      .filter((code) => code)
+                : [];
+
+            const context: Record<string, unknown> = {};
+
+            // Search for an English language, default to the first one if not found
+            const preferredLang =
+                langCodes.find((code) => code.startsWith("en_")) ||
+                langCodes[0];
+
+            if (preferredLang) {
+                context.lang = preferredLang;
+            }
+
+            context.active_test = true;
+            context.allowed_company_ids = companyIds;
+            contextSignal.value = JSON.stringify(context);
+        } catch (error) {
+            Logger.error("Failed to set default context", error);
+        } finally {
+            contextLoading.value = false;
+        }
+    };
 
     const handleGetCurrent = async () => {
         if (onGetCurrent) {
@@ -145,164 +221,239 @@ export const QueryFormSidebar = ({
     ]);
 
     return (
-        <div className="query-form">
-            {showModelSection && (
-                <FormSection
-                    label="Model"
-                    required
-                    helpText={
-                        modelsState.error
-                            ? "Models couldn't be fetched. Please enter your model name manually."
-                            : "Select your model"
-                    }
-                    helpTextWarning={!!modelsState.error}
-                >
-                    <ModelSelect placeholder={modelPlaceholder} />
-                </FormSection>
-            )}
+        <div className="flex h-full min-h-0 flex-col gap-4 bg-base-300 p-3 shrink-0 ">
+            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto bg-base-300 pr-2 -mr-3 pl-1 -ml-1">
+                {showModelSection && (
+                    <FormField
+                        label="Model"
+                        required
+                        helpText={
+                            modelsState.error
+                                ? "Models couldn't be fetched. Please enter your model name manually."
+                                : ""
+                        }
+                        helpTone={modelsState.error ? "warning" : "neutral"}
+                    >
+                        <ModelSelect placeholder={modelPlaceholder} />
+                    </FormField>
+                )}
 
-            {showRecordIdsSection && (
-                <FormSection
-                    label={recordIdsLabel}
-                    required={recordIdsRequired}
-                    helpText={recordIdsHelpText}
-                >
-                    <input
-                        type="text"
-                        value={recordIdsValue ?? idsSignal.value}
-                        onInput={(e) => {
-                            const target = e.target as HTMLInputElement;
-                            idsSignal.value = target.value;
-                        }}
-                        onBlur={() => {
-                            if (onRecordIdsChange) {
-                                onRecordIdsChange(idsSignal.value);
-                            }
-                        }}
-                        placeholder={recordIdsPlaceholder}
-                        className="form-input"
-                        disabled={rpcResult.loading || isLoading}
-                    />
-                </FormSection>
-            )}
-
-            {showFieldsSection && (
-                <FormSection
-                    label="Fields"
-                    helpText="Leave empty to fetch all fields."
-                >
-                    <FieldSelect placeholder={fieldsPlaceholder} />
-                </FormSection>
-            )}
-
-            {showDomainSection && (
-                <FormSection
-                    label="Domain"
-                    helpText="Filter conditions in Odoo domain format."
-                >
-                    <DomainEditor placeholder={domainPlaceholder} />
-                </FormSection>
-            )}
-
-            {showLimitOffsetSection && (
-                <div className="form-row">
-                    <FormSection label="Limit">
-                        <input
-                            type="number"
-                            value={limitSignal.value}
+                {showRecordIdsSection && (
+                    <FormField
+                        label={recordIdsLabel}
+                        required={recordIdsRequired}
+                        helpText={recordIdsHelpText}
+                    >
+                        <Input
+                            type="text"
+                            value={recordIdsValue ?? idsSignal.value}
                             onInput={(e) => {
                                 const target = e.target as HTMLInputElement;
-                                limitSignal.value =
-                                    parseInt(target.value) || 80;
+                                idsSignal.value = target.value;
                             }}
-                            placeholder="80"
-                            className="form-input"
-                            min="0"
-                            max="10000"
+                            onBlur={() => {
+                                if (onRecordIdsChange) {
+                                    onRecordIdsChange(idsSignal.value);
+                                }
+                            }}
+                            size="sm"
+                            placeholder={recordIdsPlaceholder}
+                            fullWidth
                             disabled={rpcResult.loading || isLoading}
                         />
-                    </FormSection>
+                    </FormField>
+                )}
 
-                    <FormSection label="Offset">
-                        <input
-                            type="number"
-                            value={offsetSignal.value}
-                            onInput={(e) => {
-                                const target = e.target as HTMLInputElement;
-                                offsetSignal.value =
-                                    parseInt(target.value) || 0;
-                            }}
-                            placeholder="0"
-                            className="form-input"
-                            min="0"
-                            disabled={rpcResult.loading || isLoading}
-                        />
-                    </FormSection>
-                </div>
-            )}
+                {showFieldsSection && (
+                    <FormField label="Fields">
+                        <FieldSelect placeholder={fieldsPlaceholder} />
+                    </FormField>
+                )}
 
-            {showOrderBySection && (
-                <FormSection
-                    label="Order By"
-                    helpText="Select fields to sort by. Multiple selections will be applied in order."
-                >
-                    <OrderBySelect placeholder={orderByPlaceholder} />
-                </FormSection>
-            )}
+                {showDomainSection && (
+                    <FormField
+                        label="Domain"
+                        helpText="Filter conditions in Odoo domain format."
+                    >
+                        <DomainEditor placeholder={domainPlaceholder} />
+                    </FormField>
+                )}
 
-            {children}
+                {showLimitOffsetSection && (
+                    <div className="grid grid-cols-2 gap-3">
+                        <FormField label="Limit">
+                            <Input
+                                type="number"
+                                value={limitSignal.value}
+                                onInput={(e) => {
+                                    const target = e.target as HTMLInputElement;
+                                    limitSignal.value =
+                                        parseInt(target.value) || 80;
+                                }}
+                                size="sm"
+                                placeholder="80"
+                                min="0"
+                                max="10000"
+                                fullWidth
+                                disabled={rpcResult.loading || isLoading}
+                            />
+                        </FormField>
 
-            <div className="form-actions">
+                        <FormField label="Offset">
+                            <Input
+                                type="number"
+                                value={offsetSignal.value}
+                                onInput={(e) => {
+                                    const target = e.target as HTMLInputElement;
+                                    offsetSignal.value =
+                                        parseInt(target.value) || 0;
+                                }}
+                                size="sm"
+                                placeholder="0"
+                                min="0"
+                                fullWidth
+                                disabled={rpcResult.loading || isLoading}
+                            />
+                        </FormField>
+                    </div>
+                )}
+
+                {showContextSection && (
+                    <FormField
+                        label="Context"
+                        helpText={contextError || contextHelpText}
+                        helpTone={contextError ? "error" : "neutral"}
+                    >
+                        <div className="relative">
+                            <Input
+                                type="text"
+                                value={contextSignal.value}
+                                onInput={(e) => {
+                                    const target = e.target as HTMLInputElement;
+                                    contextSignal.value = target.value;
+                                }}
+                                placeholder={contextPlaceholder}
+                                size="sm"
+                                fullWidth
+                                className="pr-8"
+                                color={contextError ? "error" : undefined}
+                                disabled={
+                                    rpcResult.loading ||
+                                    isLoading ||
+                                    contextLoading.value
+                                }
+                            />
+                            <IconButton
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
+                                label="Set default context"
+                                type="button"
+                                size="xs"
+                                variant="ghost"
+                                circle={false}
+                                disabled={
+                                    rpcResult.loading ||
+                                    isLoading ||
+                                    contextLoading.value
+                                }
+                                loading={contextLoading.value}
+                                onClick={handleSetDefaultContext}
+                                icon={
+                                    contextLoading.value ? null : (
+                                        <HugeiconsIcon
+                                            icon={MagicWand05Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                        />
+                                    )
+                                }
+                            />
+                        </div>
+                    </FormField>
+                )}
+
+                {showOrderBySection && (
+                    <FormField
+                        label="Order By"
+                        helpText="Multiple selections will be applied in order."
+                    >
+                        <OrderBySelect placeholder={orderByPlaceholder} />
+                    </FormField>
+                )}
+
+                {children}
+            </div>
+
+            <div className="flex flex-col gap-3">
                 {onPrimaryAction && (
-                    <div className="form-actions-row">
-                        <button
-                            type="button"
+                    <div>
+                        <Button
+                            color="primary"
+                            block
                             onClick={onPrimaryAction}
                             disabled={
                                 finalPrimaryActionDisabled ||
                                 rpcResult.loading ||
                                 isLoading
                             }
-                            className="btn btn-primary btn-full-width primary-btn-action"
+                            loading={rpcResult.loading || isLoading}
                             title="Click or press Ctrl+Enter to execute"
+                            className="justify-between"
                         >
-                            <span className="btn-content">
-                                <span className="btn-text">
+                            <span className="flex w-full items-center justify-between">
+                                <span>
                                     {rpcResult.loading || isLoading
                                         ? "Loading..."
                                         : primaryActionLabel}
                                 </span>
-                                {!rpcResult.loading && !isLoading && (
-                                    <span
-                                        className="btn-shortcut"
-                                        title="Ctrl+Enter"
-                                    >
-                                        <kbd>⌃</kbd> + <kbd>⏎</kbd>
+                                {!rpcResult.loading && !isLoading ? (
+                                    <span className="flex items-center gap-1 text-xs opacity-70">
+                                        <Kbd
+                                            size="sm"
+                                            className="not-dark:text-primary"
+                                        >
+                                            ⌃
+                                        </Kbd>
+                                        <span>+</span>
+                                        <Kbd
+                                            size="sm"
+                                            className="not-dark:text-primary"
+                                        >
+                                            ⏎
+                                        </Kbd>
                                     </span>
-                                )}
+                                ) : null}
                             </span>
-                        </button>
+                        </Button>
                     </div>
                 )}
 
-                <div className="form-actions-row">
-                    <button
-                        type="button"
-                        onClick={handleGetCurrent}
-                        disabled={rpcResult.loading || isLoading}
-                        className="btn btn-primary-outline"
-                        title="Get information from the current page"
-                    >
-                        Get Current
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        disabled={rpcResult.loading || isLoading}
-                        className="btn btn-secondary-outline"
-                    >
-                        Clear
-                    </button>
+                <div className="flex w-full gap-2">
+                    <div className="flex-1">
+                        <Button
+                            variant="outline"
+                            color="primary"
+                            onClick={handleGetCurrent}
+                            disabled={rpcResult.loading || isLoading}
+                            className="w-full"
+                            size="sm"
+                            title="Get information from the current page"
+                        >
+                            Get Current
+                        </Button>
+                    </div>
+                    <div className="flex-1">
+                        <Button
+                            variant="outline"
+                            color="secondary"
+                            onClick={handleClear}
+                            disabled={rpcResult.loading || isLoading}
+                            className="w-full"
+                            size="sm"
+                        >
+                            Clear
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

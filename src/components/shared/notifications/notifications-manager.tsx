@@ -1,4 +1,3 @@
-import "./notifications-manager.style.scss";
 import { Notification } from "./notifications";
 import { NotificationData } from "./notifications.types";
 
@@ -20,7 +19,7 @@ export const NotificationManager = ({
     }
 
     return (
-        <div className="notification-manager">
+        <div className="toast toast-top toast-end fixed top-4 right-4 z-9999 flex flex-col gap-2">
             {notifications.map((notification) => (
                 <Notification
                     key={notification.id}

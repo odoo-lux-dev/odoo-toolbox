@@ -1,10 +1,15 @@
-import { Moon, Settings, Sun } from "lucide-preact";
-import { useEffect } from "preact/hooks";
-import { CodeIcon } from "@/components/shared/icons/code-icon";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Moon02Icon,
+    Settings02Icon,
+    Sun03Icon,
+} from "@hugeicons/core-free-icons";
+import { TechnicalSidebarIcon } from "@/components/shared/icons/technical-sidebar-icon";
 import { DebugModeAssetsIcon } from "@/components/shared/icons/debug-assets-icon";
 import { DebugModeOffIcon } from "@/components/shared/icons/debug-off-icon";
 import { DebugModeOnIcon } from "@/components/shared/icons/debug-on-icon";
 import { DebugModeTestsAssetsIcon } from "@/components/shared/icons/debug-tests-assets-icon";
+
 import { usePopup } from "@/contexts/popup-signals-hook";
 import { useThemedIcons } from "@/hooks/use-themed-icons";
 import { settingsService } from "@/services/settings-service";
@@ -20,12 +25,13 @@ export const Footer = () => {
         showTechnicalList,
         updateShowTechnicalList,
     } = usePopup();
-    const { isNostalgia, themeProps } = useThemedIcons();
-    const { moonProps, sunProps } = themeProps;
+    const { isNostalgia } = useThemedIcons();
+    const themeIconColor = isNostalgia
+        ? { sun: "#FCEA2B", moon: "currentColor" }
+        : { sun: "currentColor", moon: "currentColor" };
 
     const handleThemeToggle = async () => {
         const newTheme = theme === "dark" ? "light" : "dark";
-        document.body.className = newTheme;
         await settingsService.toggleExtensionTheme();
         updateTheme(newTheme);
     };
@@ -96,66 +102,98 @@ export const Footer = () => {
         DebugIcon = DebugModeOffIcon;
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-            document
-                .querySelector(".settings-text")
-                ?.classList.add("transition");
-        }, 0);
-    }, []);
+    const themeLabel =
+        theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+    const debugLabel = ["1", "assets,tests", "assets"].includes(debugMode)
+        ? "Disable debug mode"
+        : "Enable debug mode";
+    const technicalLabel = showTechnicalList
+        ? "Disable technical sidebar"
+        : "Enable technical sidebar";
+    const settingsLabel = "Open extension's options";
+    const settingsHoverLabel = "Settings";
 
     return (
-        <footer>
-            <div className="left-side-footer">
-                <span
-                    id="toggle-popup-theme"
-                    title={
-                        theme === "dark"
-                            ? "Switch to light theme"
-                            : "Switch to dark theme"
-                    }
-                    onClick={handleThemeToggle}
+        <footer className="flex items-center justify-between gap-2 border-t border-base-200 bg-base-300 p-2 text-xs text-base-content">
+            <div className="flex items-center">
+                <label
+                    className="btn btn-ghost btn-sm swap swap-rotate px-2"
+                    title={themeLabel}
                 >
-                    {theme === "dark" ? (
-                        <Sun size={18} {...sunProps} />
-                    ) : (
-                        <Moon size={18} {...moonProps} />
-                    )}
-                </span>
-                <span
+                    <input
+                        id="toggle-popup-theme"
+                        type="checkbox"
+                        className="theme-controller"
+                        checked={theme === "dark"}
+                        onChange={handleThemeToggle}
+                        data-toggle-theme="odoolight,odoodark"
+                        aria-label={themeLabel}
+                    />
+                    <span className="swap-on">
+                        <HugeiconsIcon
+                            icon={Sun03Icon}
+                            size={18}
+                            color={themeIconColor.sun}
+                            strokeWidth={2}
+                        />
+                    </span>
+                    <span className="swap-off">
+                        <HugeiconsIcon
+                            icon={Moon02Icon}
+                            size={18}
+                            color={themeIconColor.moon}
+                            strokeWidth={2}
+                        />
+                    </span>
+                </label>
+                <button
                     id="toggle-debug-mode"
-                    title={
-                        ["1", "assets,tests", "assets"].includes(debugMode)
-                            ? "Disable debug mode"
-                            : "Enable debug mode"
-                    }
+                    type="button"
+                    aria-label={debugLabel}
+                    title={debugLabel}
+                    className={`btn btn-ghost btn-sm swap swap-rotate px-2 ${debugMode !== "disabled" ? "swap-active" : ""}`}
                     onClick={handleDebugModeToggle}
                 >
-                    <DebugIcon isNostalgia={isNostalgia} />
-                </span>
-                <span
+                    <span className="swap-on">
+                        <DebugIcon isNostalgia={isNostalgia} />
+                    </span>
+                    <span className="swap-off">
+                        <DebugModeOffIcon isNostalgia={isNostalgia} />
+                    </span>
+                </button>
+                <button
                     id="toggle-technical-list"
-                    title={
-                        showTechnicalList
-                            ? "Disable technical sidebar"
-                            : "Enable technical sidebar"
-                    }
+                    type="button"
+                    aria-label={technicalLabel}
+                    title={technicalLabel}
+                    className="btn btn-ghost btn-sm px-2"
                     onClick={handleShowTechnicalListToggle}
                 >
-                    <CodeIcon
+                    <TechnicalSidebarIcon
                         isEnabled={showTechnicalList}
                         isNostalgia={isNostalgia}
                     />
-                </span>
+                </button>
             </div>
-            <span
-                title="Open extension's options"
+            <button
                 id="icon-settings"
+                type="button"
+                aria-label={settingsLabel}
+                title={settingsLabel}
+                className="btn btn-ghost btn-sm relative group gap-1 overflow-hidden px-2"
                 onClick={openOptions}
             >
-                <span className="settings-text hidden">Settings</span>
-                <Settings size={18} />
-            </span>
+                <span className="max-w-0 whitespace-nowrap text-[11px] text-base-content/80 opacity-0 -translate-x-1 transition-all duration-500 group-hover:max-w-[80px] group-hover:opacity-100 group-hover:translate-x-0">
+                    {settingsHoverLabel}
+                </span>
+                <HugeiconsIcon
+                    icon={Settings02Icon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={2}
+                    className="transition-transform duration-500 group-hover:-rotate-[60deg]"
+                />
+            </button>
         </footer>
     );
 };

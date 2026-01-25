@@ -1,0 +1,57 @@
+@import "@/theme/daisy-theme.css";
+
+.notification {
+    animation: bounceInRight 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.notification.slide-out {
+    animation: bounceOutRight 0.5s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+}
+
+.notification * {
+    pointer-events: none;
+}
+
+.notification-close,
+.notification-action-button {
+    pointer-events: auto;
+}
+
+@keyframes bounceOutRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translateX(-10%);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+}
+
+@keyframes bounceInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateX(-1.5%);
+        opacity: 1;
+    }
+
+    75% {
+        transform: translateX(0.5%);
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

@@ -1,6 +1,14 @@
-import "./notifications.style.scss";
-import { X } from "lucide-preact";
+import "./notifications.style.css";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Alert01Icon,
+    Cancel01Icon,
+    CheckmarkCircle01Icon,
+    InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { useEffect, useRef, useState } from "preact/hooks";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Logger } from "@/services/logger";
 import { NotificationData } from "./notifications.types";
 
@@ -29,17 +37,57 @@ export const Notification = ({
 
     const typeConfig = {
         success: {
-            icon: "✅",
+            icon: (
+                <HugeiconsIcon
+                    icon={CheckmarkCircle01Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+            ),
             label: "Success",
-            className: "notification-success",
+            className: "alert-success",
+            borderLeftColor: "var(--color-success)",
         },
-        error: { icon: "❌", label: "Error", className: "notification-error" },
+        error: {
+            icon: (
+                <HugeiconsIcon
+                    icon={Alert01Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+            ),
+            label: "Error",
+            className: "alert-error",
+            borderLeftColor: "var(--color-error)",
+        },
         warning: {
-            icon: "⚠️",
+            icon: (
+                <HugeiconsIcon
+                    icon={Alert01Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+            ),
             label: "Warning",
-            className: "notification-warning",
+            className: "alert-warning",
+            borderLeftColor: "var(--color-warning)",
         },
-        info: { icon: "ℹ️", label: "Info", className: "notification-info" },
+        info: {
+            icon: (
+                <HugeiconsIcon
+                    icon={InformationCircleIcon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+            ),
+            label: "Info",
+            className: "alert-info",
+            borderLeftColor: "var(--color-info)",
+        },
     };
 
     useEffect(() => {
@@ -112,56 +160,92 @@ export const Notification = ({
         }
     };
 
+    const actionVariantKey = actionButton?.variant || "primary";
+    const actionVariantStyle = actionVariantKey.includes("outline")
+        ? "outline"
+        : "solid";
+    const actionColor = actionVariantKey
+        .replace("-outline", "")
+        .replace("danger", "error") as
+        | "primary"
+        | "secondary"
+        | "success"
+        | "warning"
+        | "error";
+
     return (
         <div
-            className={`notification ${typeConfig[type].className} ${isClosing ? "slide-out" : ""}`}
+            className={`notification alert ${typeConfig[type].className} ${isClosing ? "slide-out" : ""} bg-base-100 border border-base-200 border-l-4 p-0 shadow-lg flex flex-col whitespace-pre-wrap gap-0`}
+            style={{ borderLeftColor: typeConfig[type].borderLeftColor }}
             onAnimationEnd={handleAnimationEnd}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            role="alert"
         >
-            <div className="notification-header">
-                <div className="notification-type">
-                    <span className="notification-icon">
+            <div className="notification-header flex items-center justify-between px-4 pt-3 pb-2 w-full">
+                <div className="notification-type flex items-center gap-2">
+                    <span
+                        className="notification-icon text-base leading-none"
+                        style={{ color: typeConfig[type].borderLeftColor }}
+                    >
                         {typeConfig[type].icon}
                     </span>
-                    <span className="notification-label">
+                    <span className="notification-label text-xs font-semibold uppercase tracking-wide text-base-content">
                         {typeConfig[type].label}
                     </span>
                 </div>
-                <button
-                    className="notification-close"
+                <IconButton
+                    className="notification-close text-base-content/60 hover:text-primary hover:bg-base-200/60"
                     onClick={handleClose}
                     type="button"
-                >
-                    <X size={16} />
-                </button>
+                    label="Close"
+                    variant="ghost"
+                    size="sm"
+                    square
+                    icon={
+                        <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            size={16}
+                            color="currentColor"
+                            strokeWidth={1.6}
+                        />
+                    }
+                />
             </div>
-            <div className="notification-body">
-                <div className="notification-message">{message}</div>
+            <div className="notification-body px-4 pb-3 pt-2">
+                <div className="notification-message text-sm leading-relaxed text-base-content">
+                    {message}
+                </div>
                 {actionButton && (
-                    <div className="notification-actions">
-                        <button
-                            className={`notification-action-button ${actionButton.variant || "primary"}`}
+                    <div className="notification-actions mt-3 flex items-center gap-2">
+                        <Button
+                            className={`notification-action-button inline-flex items-center gap-1 normal-case ${actionButton.variant || "primary"}`}
                             onClick={handleActionButtonClick}
                             type="button"
+                            size="sm"
+                            variant={actionVariantStyle}
+                            color={actionColor}
                         >
                             {actionButton.icon && (
-                                <span className="notification-action-icon">
+                                <span className="notification-action-icon text-sm leading-none">
                                     {actionButton.icon}
                                 </span>
                             )}
-                            <span className="notification-action-label">
+                            <span className="notification-action-label leading-none">
                                 {actionButton.label}
                             </span>
-                        </button>
+                        </Button>
                     </div>
                 )}
             </div>
             {duration > 0 && !isClosing && (
-                <div className="notification-progress">
+                <div className="notification-progress h-1 w-full overflow-hidden bg-base-200">
                     <div
-                        className="notification-progress-bar"
-                        style={{ width: `${progress}%` }}
+                        className="notification-progress-bar h-full transition-[width] duration-150"
+                        style={{
+                            width: `${progress}%`,
+                            backgroundColor: typeConfig[type].borderLeftColor,
+                        }}
                     />
                 </div>
             )}

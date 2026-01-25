@@ -10,6 +10,7 @@ import type {
     RpcResultState,
 } from "@/types";
 import { addSearchToHistory } from "@/utils/history-helpers";
+import { parseRpcContext } from "@/utils/context-utils";
 import { calculateQueryValidity, parseDomain } from "@/utils/query-validation";
 import { parseIds } from "@/utils/tab-utils";
 
@@ -23,6 +24,7 @@ export const idsSignal = signal("");
 export const limitSignal = signal(80);
 export const offsetSignal = signal(0);
 export const orderBySignal = signal("");
+export const contextSignal = signal("");
 export const fieldsMetadataSignal = signal<
     Record<string, FieldMetadata> | undefined
 >(undefined);
@@ -69,6 +71,7 @@ export const isQueryValidSignal = computed(() => {
         limit: limitSignal.value,
         offset: offsetSignal.value,
         orderBy: orderBySignal.value,
+        context: contextSignal.value,
     });
 });
 
@@ -81,6 +84,7 @@ export const rpcQuerySignal = computed(
         limit: limitSignal.value,
         offset: offsetSignal.value,
         orderBy: orderBySignal.value,
+        context: contextSignal.value,
         fieldsMetadata: fieldsMetadataSignal.value,
         isQueryValid: isQueryValidSignal.value,
     }),
@@ -121,6 +125,7 @@ export const setRpcQuery = (updates: Partial<RpcQueryState>) => {
     if (updates.limit !== undefined) limitSignal.value = updates.limit;
     if (updates.offset !== undefined) offsetSignal.value = updates.offset;
     if (updates.orderBy !== undefined) orderBySignal.value = updates.orderBy;
+    if (updates.context !== undefined) contextSignal.value = updates.context;
     if (updates.fieldsMetadata !== undefined)
         fieldsMetadataSignal.value = updates.fieldsMetadata;
 };
@@ -133,6 +138,7 @@ export const resetRpcQuery = () => {
     limitSignal.value = 80;
     offsetSignal.value = 0;
     orderBySignal.value = "";
+    contextSignal.value = "";
     fieldsMetadataSignal.value = undefined;
 };
 
@@ -221,17 +227,25 @@ export const executeQuery = async (
             limit,
             offset,
             orderBy,
+            context: contextString,
         } = queryToUse;
 
         const domain = parseDomain(domainString || "");
         const ids = parseIds(idsInput || "");
+        const contextResult = parseRpcContext(contextString || "");
+
+        if (!contextResult.isValid) {
+            throw new Error(
+                `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+            );
+        }
 
         if (ids.length > 0) {
             const result = await odooRpcService.read(
                 model,
                 ids,
                 selectedFields.length > 0 ? selectedFields : [],
-                undefined,
+                contextResult.value,
                 fieldsMetadataSignal.value,
             );
             const resultArray = Array.isArray(result) ? result : [result];
@@ -272,7 +286,11 @@ export const executeQuery = async (
             return;
         }
 
-        const totalRecords = await odooRpcService.searchCount(model, domain);
+        const totalRecords = await odooRpcService.searchCount(
+            model,
+            domain,
+            contextResult.value,
+        );
 
         const queryParams = {
             model,
@@ -281,6 +299,7 @@ export const executeQuery = async (
             limit,
             offset,
             order: orderBy,
+            context: contextResult.value,
             fieldsMetadata: fieldsMetadataSignal.value,
         };
 

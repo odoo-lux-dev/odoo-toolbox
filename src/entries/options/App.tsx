@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import { createHashHistory } from "history";
 import { useEffect } from "preact/hooks";
 import { CustomHistory, Route, Router } from "preact-router";

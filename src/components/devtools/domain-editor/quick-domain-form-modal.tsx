@@ -1,5 +1,10 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { useEffect } from "preact/hooks";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { QuickDomain } from "@/types";
 import { validateDomain } from "@/utils/query-validation";
 
@@ -42,75 +47,80 @@ export const QuickDomainFormModal = ({
         }
     };
 
-    const handleOverlayClick = (e: Event) => {
-        if (e.target === e.currentTarget) {
-            onCancel();
-        }
-    };
-
-    if (!isOpen) return null;
-
     return (
-        <div className="modal-overlay" onClick={handleOverlayClick}>
-            <div className="modal-content">
-                <form className="quick-domain-form" onSubmit={handleSubmit}>
-                    <h4>{domain ? "Edit Domain" : "Add New Domain"}</h4>
+        <Modal
+            open={isOpen}
+            onClose={onCancel}
+            title={domain ? "Edit Domain" : "Add New Domain"}
+            size="lg"
+            boxClassName="border border-base-300"
+            footer={
+                <>
+                    <Button
+                        variant="outline"
+                        color="error"
+                        size="sm"
+                        onClick={onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        form="quick-domain-form"
+                        color="primary"
+                        size="sm"
+                        disabled={!canSave.value}
+                    >
+                        {domain ? "Update" : "Add"} Domain
+                    </Button>
+                </>
+            }
+        >
+            <form
+                id="quick-domain-form"
+                className="flex flex-col gap-4"
+                onSubmit={handleSubmit}
+            >
+                <FormField label="Name" required className="gap-2">
+                    <Input
+                        type="text"
+                        value={name.value}
+                        onInput={(e) =>
+                            (name.value = (e.target as HTMLInputElement).value)
+                        }
+                        placeholder="e.g., Active Records"
+                        className="input-bordered input-sm"
+                        fullWidth
+                        required
+                    />
+                </FormField>
 
-                    <div className="form-group">
-                        <label>Name:</label>
-                        <input
-                            type="text"
-                            value={name.value}
-                            onInput={(e) =>
-                                (name.value = (
-                                    e.target as HTMLInputElement
-                                ).value)
-                            }
-                            placeholder="e.g., Active Records"
-                            className="form-input"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Domain:</label>
-                        <textarea
-                            value={domainValue.value}
-                            onInput={(e) =>
-                                (domainValue.value = (
-                                    e.target as HTMLTextAreaElement
-                                ).value)
-                            }
-                            placeholder='e.g., [["active", "=", true]]'
-                            className={`form-input ${!isValid.value && domainValue.value ? "error" : ""}`}
-                            rows={3}
-                            required
-                        />
-                        {!isValid.value && domainValue.value && (
-                            <div className="domain-error">
-                                {validation.value.error}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="form-actions">
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                            disabled={!canSave.value}
-                        >
-                            {domain ? "Update" : "Add"} Domain
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-secondary-outline"
-                            onClick={onCancel}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <FormField label="Domain" required className="gap-2">
+                    <Textarea
+                        value={domainValue.value}
+                        onInput={(e) =>
+                            (domainValue.value = (
+                                e.target as HTMLTextAreaElement
+                            ).value)
+                        }
+                        placeholder='e.g., [["active", "=", true]]'
+                        className="textarea-bordered textarea-sm font-mono"
+                        rows={3}
+                        fullWidth
+                        color={
+                            !isValid.value && domainValue.value
+                                ? "error"
+                                : undefined
+                        }
+                        required
+                    />
+                    {!isValid.value && domainValue.value && (
+                        <div className="text-xs text-error">
+                            {validation.value.error}
+                        </div>
+                    )}
+                </FormField>
+            </form>
+        </Modal>
     );
 };

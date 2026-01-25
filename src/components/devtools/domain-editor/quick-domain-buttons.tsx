@@ -1,6 +1,9 @@
 import { useComputed, useSignal } from "@preact/signals";
-import { Settings } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Settings02Icon } from "@hugeicons/core-free-icons";
 import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { loadingSignal } from "@/contexts/devtools-signals";
 import { Logger } from "@/services/logger";
 import { quickDomainsService } from "@/services/quick-domains-service";
@@ -24,12 +27,13 @@ export const QuickDomainButtons = ({
     const maxVisible = useSignal(3);
     const containerRef = useRef<HTMLDivElement>(null);
     const measurementRef = useRef<HTMLDivElement>(null);
+    const settingsRef = useRef<HTMLDivElement>(null);
 
     const visibleDomains = useComputed(() =>
-        domains.value.slice(0, maxVisible.value),
+        domains.value.slice(0, Math.max(0, maxVisible.value)),
     );
     const hiddenCount = useComputed(() =>
-        Math.max(0, domains.value.length - maxVisible.value),
+        Math.max(0, domains.value.length - Math.max(0, maxVisible.value)),
     );
     const showOverflowButton = useComputed(() => hiddenCount.value > 0);
 
@@ -62,65 +66,96 @@ export const QuickDomainButtons = ({
     }, [domains.value]);
 
     const calculateMaxVisible = () => {
-        if (
-            !containerRef.current ||
-            !measurementRef.current ||
-            domains.value.length === 0
-        ) {
+        if (!containerRef.current || !measurementRef.current) {
             return;
         }
 
         const container = containerRef.current;
         const measurement = measurementRef.current;
         const containerWidth = container.offsetWidth;
+        const gap = 8;
+        const rowWidth =
+            container.parentElement?.getBoundingClientRect().width ??
+            containerWidth;
+        const settingsWidth = settingsRef.current?.offsetWidth ?? 0;
+        const availableWidth = Math.max(0, rowWidth - settingsWidth - gap);
 
-        if (containerWidth === 0) {
+        if (availableWidth === 0) {
             return;
         }
+
+        const maxButtonWidth = availableWidth;
 
         measurement.innerHTML = "";
         measurement.style.visibility = "hidden";
         measurement.style.position = "absolute";
         measurement.style.display = "flex";
-        measurement.style.gap = "8px";
+        measurement.style.gap = `${gap}px`;
         measurement.style.whiteSpace = "nowrap";
 
-        let totalWidth = 0;
-        let maxCount = 0;
-
-        for (let i = 0; i < domains.value.length; i++) {
-            const domain = domains.value[i];
-            const button = document.createElement("button");
-            button.className = "quick-domain-btn";
-            button.textContent = domain.name;
-            button.style.visibility = "hidden";
-            measurement.appendChild(button);
-
-            const buttonWidth = button.offsetWidth;
-            const gapWidth = i > 0 ? 8 : 0; // Add gap except for first
-            const newTotalWidth = totalWidth + buttonWidth + gapWidth;
-
-            // Reserve space for overflow/manage button
-            const reservedSpace = 50;
-
-            if (newTotalWidth + reservedSpace <= containerWidth) {
-                totalWidth = newTotalWidth;
-                maxCount = i + 1;
-            } else {
-                break;
-            }
+        if (domains.value.length === 0) {
+            maxVisible.value = 0;
+            measurement.innerHTML = "";
+            return;
         }
 
-        // Ensure at least 1 button is visible if we have domains and enough space
-        if (maxCount === 0 && domains.value.length > 0) {
-            // Check if we can fit at least one button + manage button
-            const firstButton = document.createElement("button");
-            firstButton.className = "quick-domain-btn";
-            firstButton.textContent = domains.value[0].name;
-            measurement.appendChild(firstButton);
+        const buttonWidths = domains.value.map((domain) => {
+            const button = document.createElement("button");
+            button.className = "btn btn-ghost btn-xs";
+            button.textContent = domain.name;
+            button.style.visibility = "hidden";
+            button.style.maxWidth = `${maxButtonWidth}px`;
+            button.style.whiteSpace = "normal";
+            button.style.wordBreak = "break-word";
+            measurement.appendChild(button);
+            return button.offsetWidth;
+        });
 
-            if (firstButton.offsetWidth + 50 <= containerWidth) {
-                maxCount = 1;
+        const measureOverflowWidth = (count: number) => {
+            const button = document.createElement("button");
+            button.className = "btn btn-outline btn-xs";
+            button.textContent = `+${count}`;
+            button.style.visibility = "hidden";
+            measurement.appendChild(button);
+            return button.offsetWidth;
+        };
+
+        const calculateWithReservedWidth = (reservedWidth: number) => {
+            let totalWidth = 0;
+            let count = 0;
+
+            for (let i = 0; i < buttonWidths.length; i++) {
+                const buttonWidth = buttonWidths[i];
+                const gapWidth = count > 0 ? gap : 0;
+                const newTotalWidth = totalWidth + buttonWidth + gapWidth;
+
+                if (newTotalWidth + reservedWidth <= availableWidth) {
+                    totalWidth = newTotalWidth;
+                    count += 1;
+                } else {
+                    break;
+                }
+            }
+
+            return count;
+        };
+
+        let maxCount = calculateWithReservedWidth(0);
+
+        if (maxCount < buttonWidths.length) {
+            let overflowCount = Math.max(1, domains.value.length - maxCount);
+
+            for (let i = 0; i < 2; i++) {
+                const overflowWidth = measureOverflowWidth(overflowCount);
+                const reservedWidth = overflowWidth + (maxCount > 0 ? gap : 0);
+                const nextCount = calculateWithReservedWidth(reservedWidth);
+
+                if (nextCount === maxCount) {
+                    break;
+                }
+
+                maxCount = nextCount;
+                overflowCount = Math.max(1, domains.value.length - maxCount);
             }
         }
 
@@ -154,22 +189,31 @@ export const QuickDomainButtons = ({
 
     if (loading.value) {
         return (
-            <div className="quick-domain-section">
-                <div className="quick-domain-header">
-                    <div className="quick-actions-label">Quick domains:</div>
-                    <button
-                        type="button"
-                        className="quick-domain-btn quick-domain-manage"
-                        onClick={handleOverflowClick}
-                        title="Manage domains"
-                    >
-                        <Settings size={14} />
-                    </button>
-                </div>
-                <div className="quick-actions-buttons">
-                    <div className="quick-domain-loading">
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-2 flex-1">
+                    <div className="text-xs text-base-content/60">
                         Loading domains...
                     </div>
+                </div>
+                <div ref={settingsRef} className="shrink-0">
+                    <IconButton
+                        type="button"
+                        label="Manage domains"
+                        variant="ghost"
+                        size="xs"
+                        circle={false}
+                        className="text-base-content/60 hover:text-base-content"
+                        onClick={handleOverflowClick}
+                        disabled={loadingSignal.value}
+                        icon={
+                            <HugeiconsIcon
+                                icon={Settings02Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.6}
+                            />
+                        }
+                    />
                 </div>
             </div>
         );
@@ -177,71 +221,81 @@ export const QuickDomainButtons = ({
 
     return (
         <>
-            <div className="quick-domain-section">
-                <div className="quick-domain-header">
-                    <div className="quick-actions-label">Quick domains:</div>
-                    <button
-                        type="button"
-                        className="quick-domain-btn quick-domain-manage"
-                        onClick={handleOverflowClick}
-                        title="Manage domains"
-                        disabled={loadingSignal.value}
-                    >
-                        <Settings size={14} />
-                    </button>
-                </div>
-
-                <div className="quick-actions-buttons" ref={containerRef}>
-                    {visibleDomains.value.length > 0 ? (
+            <div className="flex items-center justify-between gap-2">
+                <div
+                    className="flex flex-wrap gap-2 flex-1 min-w-0"
+                    ref={containerRef}
+                >
+                    {domains.value.length > 0 ? (
                         visibleDomains.value.map((domain) => (
-                            <button
+                            <Button
                                 key={domain.id}
                                 type="button"
-                                className="quick-domain-btn"
+                                variant="outline"
+                                size="xs"
+                                className="text-base-content/70 max-w-full whitespace-normal break-words"
                                 onClick={() => handleDomainClick(domain.domain)}
                                 title={`Domain: ${domain.domain}`}
                                 disabled={loadingSignal.value}
                             >
                                 {domain.name}
-                            </button>
+                            </Button>
                         ))
                     ) : (
-                        <span className="quick-actions-label">
-                            No quick domains available. You can create them by
-                            clicking on the gear.
+                        <span className="text-xs text-base-content/60">
+                            No quick domain available
                         </span>
                     )}
 
                     {showOverflowButton.value && (
-                        <button
+                        <Button
                             type="button"
-                            className="quick-domain-btn quick-domain-overflow"
+                            variant="outline"
+                            size="xs"
+                            className="text-base-content/70"
                             onClick={handleOverflowClick}
                             title={`Show ${hiddenCount.value} more domains`}
                             disabled={loadingSignal.value}
                         >
                             +{hiddenCount.value}
-                        </button>
+                        </Button>
                     )}
                 </div>
+                <div ref={settingsRef} className="shrink-0">
+                    <IconButton
+                        type="button"
+                        label="Manage domains"
+                        variant="ghost"
+                        size="xs"
+                        circle={false}
+                        className="text-base-content/60 hover:text-base-content"
+                        onClick={handleOverflowClick}
+                        disabled={loadingSignal.value}
+                        icon={
+                            <HugeiconsIcon
+                                icon={Settings02Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.6}
+                            />
+                        }
+                    />
+                </div>
             </div>
-
             <div
                 ref={measurementRef}
-                className="quick-actions-buttons"
+                className="flex flex-wrap gap-2"
                 style={{
                     visibility: "hidden",
                     position: "absolute",
                     top: "-9999px",
                 }}
             ></div>
-
-            {showManager.value && (
-                <QuickDomainManager
-                    onClose={handleManagerClose}
-                    onDomainSelect={handleDomainClick}
-                />
-            )}
+            <QuickDomainManager
+                open={showManager.value}
+                onClose={handleManagerClose}
+                onDomainSelect={handleDomainClick}
+            />
         </>
     );
 };

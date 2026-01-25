@@ -13,15 +13,17 @@ const ErrorSection = ({
     title: string;
     children: ComponentChildren;
 }) => (
-    <div className="error-section">
-        <h5>{title}</h5>
+    <div className="mb-4 last:mb-0">
+        <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-error/90">
+            {title}
+        </h5>
         {children}
     </div>
 );
 
 const CodeBlock = ({
     data,
-    className = "error-code",
+    className = "rounded-box border border-base-300/60 bg-base-200/50 p-2 text-xs text-base-content/70 whitespace-pre-wrap break-words max-h-48 overflow-y-auto",
 }: {
     data: unknown;
     className?: string;
@@ -33,16 +35,17 @@ const CodeBlock = ({
 
 const Detail = ({ label, value }: { label: string; value: unknown }) =>
     value ? (
-        <div>
-            <strong>{label}:</strong> {String(value)}
+        <div className="text-base-content/80">
+            <span className="font-semibold text-base-content">{label}:</span>{" "}
+            <span className="text-base-content/70">{String(value)}</span>
         </div>
     ) : null;
 
 export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
     if (!errorDetails || typeof errorDetails !== "object") {
         return (
-            <div className="error-simple">
-                <pre>{error}</pre>
+            <div className="rounded-box border border-base-300/60 bg-base-200/50 p-2 text-xs text-base-content/70">
+                <pre className="whitespace-pre-wrap break-words">{error}</pre>
             </div>
         );
     }
@@ -52,9 +55,9 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
     if (errorObj.name === "RPC_ERROR") {
         const odoo = errorDetails as OdooRpcError;
         return (
-            <div className="error-odoo">
+            <div className="space-y-4">
                 <ErrorSection title="Error Summary">
-                    <div className="error-details">
+                    <div className="space-y-1 text-xs text-base-content/80">
                         <Detail
                             label="Type"
                             value={odoo.exceptionName || "Unknown"}
@@ -67,7 +70,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
 
                 {odoo.data && (
                     <ErrorSection title="Error Data">
-                        <div className="error-details">
+                        <div className="space-y-2 text-xs text-base-content/80">
                             {odoo.data.message && (
                                 <div>
                                     <strong>Detailed Message</strong>
@@ -89,7 +92,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                     <ErrorSection title="Debug Traceback">
                         <CodeBlock
                             data={odoo.data.debug}
-                            className="error-traceback"
+                            className="rounded-box border border-error/30 bg-base-200/50 p-2 text-xs text-base-content/70 whitespace-pre-wrap break-words max-h-[40vh] overflow-y-auto leading-relaxed"
                         />
                     </ErrorSection>
                 )}
@@ -105,8 +108,8 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
     }
 
     return (
-        <div className="error-generic">
-            <div className="error-details">
+        <div className="space-y-4">
+            <div className="space-y-1 text-xs text-base-content/80">
                 <Detail label="Type" value={errorObj.name || "Error"} />
                 <Detail label="Message" value={error} />
             </div>
@@ -114,7 +117,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                 <ErrorSection title="Stack Trace">
                     <CodeBlock
                         data={errorObj.stack}
-                        className="error-traceback"
+                        className="rounded-box border border-error/30 bg-base-200/50 p-2 text-xs text-base-content/70 whitespace-pre-wrap break-words max-h-[40vh] overflow-y-auto leading-relaxed"
                     />
                 </ErrorSection>
             )}

@@ -1,9 +1,16 @@
-import "@/components/devtools/result-viewer/result-viewer.style.scss";
 import { useSignal } from "@preact/signals";
-import { Copy, FileJson, List, Table } from "lucide-preact";
-import { useCallback, useEffect, useMemo, useRef } from "preact/hooks";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Copy01Icon,
+    Download04Icon,
+    ListViewIcon,
+    TableIcon,
+} from "@hugeicons/core-free-icons";
+import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { JSX } from "preact/jsx-runtime";
 import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
+import { Button } from "@/components/ui/button";
+import { Join, JoinItem } from "@/components/ui/join";
 import { usePagination } from "@/components/devtools/hooks/use-pagination";
 import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
 import { RecordRenderer } from "@/components/devtools/record-renderer";
@@ -48,7 +55,6 @@ export const ResultViewer = ({
         rpcResult;
 
     const { copyToClipboard } = useCopyToClipboard();
-    const copyButtonRef = useRef<HTMLButtonElement>(null);
     const pagination = usePagination();
 
     const viewMode = useSignal<ViewMode>("list");
@@ -77,16 +83,14 @@ export const ResultViewer = ({
         (e: Event) => {
             const target = e.target as HTMLElement;
             const cell = target.closest(
-                "td[data-field]",
-            ) as HTMLTableCellElement;
+                "[data-field][data-row-index]",
+            ) as HTMLElement;
             if (!cell) return;
 
             e.preventDefault();
             e.stopPropagation();
 
-            const rowIndex = parseInt(
-                cell.closest("tr")?.dataset.rowIndex || "0",
-            );
+            const rowIndex = Number(cell.dataset.rowIndex || "0");
             const fieldName = cell.dataset.field || "";
 
             if (data && data[rowIndex]) {
@@ -143,13 +147,10 @@ export const ResultViewer = ({
         expandedRows.value = newExpanded;
     };
 
-    const copyJson = () => {
-        if (copyButtonRef.current && data) {
+    const copyJson = (target: HTMLButtonElement) => {
+        if (data) {
             const dataToCopy = data.length === 1 ? data[0] : data;
-            copyToClipboard(
-                JSON.stringify(dataToCopy, null, 2),
-                copyButtonRef.current,
-            );
+            copyToClipboard(JSON.stringify(dataToCopy, null, 2), target);
         }
     };
 
@@ -185,16 +186,16 @@ export const ResultViewer = ({
 
     if (!data) {
         return (
-            <div className="result-viewer">
-                <div className="result-header">
-                    <div className="result-stats">
+            <div className="flex h-full min-h-0 flex-col">
+                <div className="result-header sticky top-0 z-20 flex items-center justify-between border-b border-base-200 bg-base-100 px-4 py-3">
+                    <div className="result-stats flex flex-1 items-center gap-4 text-xs text-base-content/70">
                         <span className="record-count">Loading...</span>
                     </div>
                 </div>
                 {loading && (
-                    <div className="content-loading">
-                        <div className="loading-indicator">
-                            <div className="spinner"></div>
+                    <div className="content-loading flex min-h-[200px] items-center justify-center p-10">
+                        <div className="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
+                            <span className="loading loading-spinner loading-md" />
                             <span>Loading records...</span>
                         </div>
                     </div>
@@ -204,15 +205,15 @@ export const ResultViewer = ({
     }
 
     return (
-        <div className="result-viewer success">
-            <div className="result-header">
-                <div className="result-stats">
+        <div className="rounded-box bg-base-100 flex h-full min-h-0 flex-col overflow-hidden pb-3">
+            <div className="result-header sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 bg-base-100 px-4 py-3 flex-col md:flex-row">
+                <div className="result-stats flex flex-1 flex-wrap items-center gap-3 text-sm text-base-content/70">
                     {customText ? <>{customText}</> : null}
                     {!hideRecordPagingData || !hideFieldNumber ? (
-                        <div className="result-informations">
+                        <div className="result-informations flex flex-wrap items-center gap-3 text-sm text-base-content/70">
                             {!hideRecordPagingData ? <PaginationInfo /> : null}
                             {!hideFieldNumber ? (
-                                <span className="field-count">
+                                <span className="field-count badge badge-outline badge-sm">
                                     {allKeys.length} field(s)
                                 </span>
                             ) : null}
@@ -225,52 +226,101 @@ export const ResultViewer = ({
                 {!hideDownloadButton ||
                 !hideSwitchViewButton ||
                 !hideCopyButton ? (
-                    <div className="result-buttons">
+                    <div className="result-buttons flex flex-wrap items-center gap-2 justify-center">
                         {!hideCopyButton || !hideDownloadButton ? (
-                            <div className="result-actions">
+                            <div className="flex items-center gap-2">
                                 {!hideCopyButton ? (
-                                    <button
-                                        type="button"
-                                        className="action-btn download-btn"
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={(event) =>
+                                            copyJson(event.currentTarget)
+                                        }
                                         title="Copy as JSON"
-                                        ref={copyButtonRef}
-                                        onClick={copyJson}
                                     >
-                                        <Copy size={16} /> Copy
-                                    </button>
+                                        <span className="flex items-center gap-2">
+                                            <HugeiconsIcon
+                                                icon={Copy01Icon}
+                                                size={16}
+                                                color="currentColor"
+                                                strokeWidth={1.5}
+                                            />
+                                            <span>Copy</span>
+                                        </span>
+                                    </Button>
                                 ) : null}
 
                                 {!hideDownloadButton ? (
-                                    <button
-                                        type="button"
-                                        className="action-btn download-btn"
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
                                         onClick={downloadJson}
                                         title="Download as JSON"
                                     >
-                                        <FileJson size={16} /> Download
-                                    </button>
+                                        <span className="flex items-center gap-2">
+                                            <HugeiconsIcon
+                                                icon={Download04Icon}
+                                                size={16}
+                                                color="currentColor"
+                                                strokeWidth={1.5}
+                                            />
+                                            <span>Download</span>
+                                        </span>
+                                    </Button>
                                 ) : null}
                             </div>
                         ) : null}
+                        {!hideSwitchViewButton &&
+                        (!hideCopyButton || !hideDownloadButton) ? (
+                            <div className="hidden md:flex divider divider-horizontal mx-1" />
+                        ) : null}
                         {!hideSwitchViewButton ? (
-                            <div className="view-switcher">
-                                <button
-                                    type="button"
-                                    className={`action-btn view-btn ${viewMode.value === "list" ? "active" : ""}`}
-                                    onClick={() => (viewMode.value = "list")}
-                                    title="List view"
-                                >
-                                    <List size={16} /> List
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`action-btn view-btn ${viewMode.value === "table" ? "active" : ""}`}
-                                    onClick={() => (viewMode.value = "table")}
-                                    title="Table view"
-                                >
-                                    <Table size={16} /> Table
-                                </button>
-                            </div>
+                            <Join>
+                                <JoinItem>
+                                    <Button
+                                        size="sm"
+                                        variant="solid"
+                                        active={viewMode.value === "list"}
+                                        onClick={() =>
+                                            (viewMode.value = "list")
+                                        }
+                                        title="List view"
+                                        className="rounded-r-none"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <HugeiconsIcon
+                                                icon={ListViewIcon}
+                                                size={16}
+                                                color="currentColor"
+                                                strokeWidth={1.5}
+                                            />
+                                            <span>List</span>
+                                        </span>
+                                    </Button>
+                                </JoinItem>
+                                <JoinItem>
+                                    <Button
+                                        size="sm"
+                                        variant="solid"
+                                        active={viewMode.value === "table"}
+                                        onClick={() =>
+                                            (viewMode.value = "table")
+                                        }
+                                        title="Table view"
+                                        className="rounded-l-none"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <HugeiconsIcon
+                                                icon={TableIcon}
+                                                size={16}
+                                                color="currentColor"
+                                                strokeWidth={1.5}
+                                            />
+                                            <span>Table</span>
+                                        </span>
+                                    </Button>
+                                </JoinItem>
+                            </Join>
                         ) : null}
                     </div>
                 ) : null}
@@ -282,14 +332,14 @@ export const ResultViewer = ({
             )}
 
             {rpcResult.loading && !isNewQuery ? (
-                <div className="content-loading">
-                    <div className="loading-indicator">
-                        <div className="spinner"></div>
+                <div className="content-loading flex min-h-50 items-center justify-center p-10">
+                    <div className="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
+                        <span className="loading loading-spinner loading-md" />
                         <span>Loading records...</span>
                     </div>
                 </div>
             ) : viewMode.value === "table" ? (
-                <div className="result-table-container">
+                <div className="flex min-h-0 overflow-auto rounded-box border-base-300 dark:border-base-200">
                     <VirtualTable
                         data={data || []}
                         allKeys={allKeys}
@@ -305,14 +355,16 @@ export const ResultViewer = ({
                     )}
                 </div>
             ) : (
-                <RecordRenderer
-                    records={data || []}
-                    fieldsMetadata={fieldsMetadata}
-                    clickableRow={true}
-                    showId={true}
-                    onExpandToggle={toggleRowExpansion}
-                    expandedRecords={expandedRows.value}
-                />
+                <div className="flex min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
+                    <RecordRenderer
+                        records={data || []}
+                        fieldsMetadata={fieldsMetadata}
+                        clickableRow={true}
+                        showId={true}
+                        onExpandToggle={toggleRowExpansion}
+                        expandedRecords={expandedRows.value}
+                    />
+                </div>
             )}
         </div>
     );

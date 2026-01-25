@@ -77,7 +77,6 @@ export const ModelSelect = ({
             loading={modelsState.loading}
             error={modelsState.error || ""}
             onRefresh={handleRefresh}
-            className="model-select"
             allowFreeInput={true}
             highlightSearch={true}
             enableSmartSort={true}

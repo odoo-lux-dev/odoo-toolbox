@@ -1,4 +1,5 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Alert02Icon } from "@hugeicons/core-free-icons";
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
 import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
@@ -12,6 +13,9 @@ import {
 import { mergeWithTemplate } from "@/components/devtools/json-autocomplete/utils/json-extraction";
 import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
@@ -31,6 +35,7 @@ import { isOdooError } from "@/services/odoo-error";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { FieldMetadata } from "@/types";
 import { addCreateToHistory } from "@/utils/history-helpers";
+import { parseRpcContext } from "@/utils/context-utils";
 import {
     validateFieldsExistence,
     validateRequiredFields,
@@ -66,6 +71,7 @@ export const CreateTab = () => {
     const handleClearForm = () => {
         setRpcQuery({
             model: "",
+            context: "",
             fieldsMetadata: {},
         });
         clearJson();
@@ -210,9 +216,18 @@ export const CreateTab = () => {
 
         setCreateLoading(true);
         try {
+            const contextResult = parseRpcContext(rpcQuery.context || "");
+
+            if (!contextResult.isValid) {
+                throw new Error(
+                    `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+                );
+            }
+
             const createParams = {
                 model: rpcQuery.model,
                 values: [JSON.parse(createData)],
+                context: contextResult.value,
             };
             const createdIds = await odooRpcService.create(createParams);
 
@@ -264,15 +279,20 @@ export const CreateTab = () => {
 
     const generateInformativeText = (model: string | null) => {
         return (
-            <>
-                A new{model ? <span> {model}</span> : ""} record will be
-                created.
-            </>
+            <span>
+                A new
+                {model ? (
+                    <span className="text-accent"> {model}</span>
+                ) : (
+                    ""
+                )}{" "}
+                record will be created
+            </span>
         );
     };
 
     return (
-        <div className="rpc-query-form">
+        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
             <QueryFormSidebar
                 showRecordIdsSection={false}
                 onPrimaryAction={undefined}
@@ -280,102 +300,117 @@ export const CreateTab = () => {
                 isLoading={createLoading}
             />
 
-            <div className="tab-results">
-                <div className="tab-editor-section">
-                    <div className="tab-warning-banner">
-                        <div className="warning-icon">⚠️</div>
-                        <div className="warning-content">
-                            <strong>Warning: Database Modification</strong>
-                            <p>
-                                Creating a record will permanently add new data
-                                to your Odoo database. Please verify your input
-                                before proceeding.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="tab-editor-header">
-                        <div className="header-left">
+            <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
+                <div className="flex flex-col gap-3 pt-3">
+                    <Alert
+                        color="warning"
+                        icon={
+                            <HugeiconsIcon
+                                icon={Alert02Icon}
+                                size={18}
+                                color="currentColor"
+                                strokeWidth={1.8}
+                            />
+                        }
+                        title="Warning: Database Modification"
+                        variant="outline"
+                    >
+                        <p className="text-sm">
+                            Creating a record will permanently add new data to
+                            your Odoo database. Please verify your input before
+                            proceeding.
+                        </p>
+                    </Alert>
+
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-3">
                             <h3
-                                className={
-                                    jsonValidation.isValid === false
-                                        ? "error"
-                                        : ""
-                                }
+                                className={`text-base font-semibold ${jsonValidation.isValid === false ? "text-error" : ""}`}
                             >
                                 Record Data (JSON Format)
                             </h3>
-                            {jsonValidation.isValid === false && (
-                                <span className="error-message">
-                                    {jsonValidation.error}
-                                </span>
-                            )}
-                        </div>
-                        <div className="header-right">
-                            <button
-                                type="button"
+                            <Button
+                                variant="soft"
+                                size="sm"
                                 onClick={formatJson}
                                 disabled={!createData.trim() || createLoading}
-                                className="btn btn-secondary-outline btn-small"
                             >
                                 Format JSON
-                            </button>
+                            </Button>
                         </div>
-                    </div>
-                    <JsonAutocomplete
-                        value={createData}
-                        onChange={handleJsonChange}
-                        fieldsMetadata={rpcQuery.fieldsMetadata || {}}
-                        placeholder={`Enter the data for the new record in JSON format, e.g.:
+
+                        <FormField
+                            helpText={
+                                jsonValidation.isValid === false
+                                    ? jsonValidation.error
+                                    : undefined
+                            }
+                            helpTone={
+                                jsonValidation.isValid === false
+                                    ? "error"
+                                    : "neutral"
+                            }
+                        >
+                            <JsonAutocomplete
+                                value={createData}
+                                onChange={handleJsonChange}
+                                fieldsMetadata={rpcQuery.fieldsMetadata || {}}
+                                placeholder={`Enter the data for the new record in JSON format, e.g.:
 {
   "name": "New Record",
   "email": "new@example.com",
   "active": true
 }`}
-                        disabled={rpcResult.loading}
-                        className={`form-input tab-editor ${jsonValidation.isValid === false ? "error" : ""}`}
-                        mode="create"
-                        onAddRequiredFields={
-                            handleAddRequiredFieldsFromAutocomplete
-                        }
-                    />
-                    <div className="tab-actions">
-                        <button
-                            type="button"
-                            onClick={handleCreateRecord}
-                            disabled={
-                                createLoading ||
-                                !rpcQuery.model ||
-                                !createData.trim() ||
-                                !jsonValidation.isValid
-                            }
-                            className="btn btn-primary btn-full-width"
-                        >
-                            {createLoading ? "Creating..." : "Create Record"}
-                        </button>
+                                disabled={rpcResult.loading}
+                                className={`min-h-44 ${jsonValidation.isValid === false ? "textarea-error" : ""}`}
+                                mode="create"
+                                onAddRequiredFields={
+                                    handleAddRequiredFieldsFromAutocomplete
+                                }
+                                rows={1}
+                            />
+                        </FormField>
+
+                        <div className="pt-1">
+                            <Button
+                                color="primary"
+                                block
+                                loading={createLoading}
+                                onClick={handleCreateRecord}
+                                disabled={
+                                    createLoading ||
+                                    !rpcQuery.model ||
+                                    !createData.trim() ||
+                                    !jsonValidation.isValid
+                                }
+                            >
+                                {createLoading
+                                    ? "Creating..."
+                                    : "Create Record"}
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="tab-results-section">
-                    <div className="tab-results-section-content">
-                        <ResultViewer
-                            hideCopyButton
-                            hideDownloadButton
-                            hideSwitchViewButton
-                            hideFieldNumber
-                            hideRecordPagingData
-                            customText={
-                                rpcResult.data && rpcResult.data.length > 0 ? (
-                                    <div className="tab-section-header">
-                                        <h4>
-                                            {generateInformativeText(
-                                                rpcResult.model,
-                                            )}
-                                        </h4>
-                                    </div>
-                                ) : undefined
-                            }
-                        />
-                    </div>
+                <div className="min-h-0 flex-1">
+                    <ResultViewer
+                        hideCopyButton
+                        hideDownloadButton
+                        hideSwitchViewButton
+                        hideFieldNumber
+                        hideRecordPagingData
+                        customText={
+                            rpcResult.data && rpcResult.data.length > 0 ? (
+                                <div className="py-2 mr-auto">
+                                    <h4 className="text-sm font-semibold">
+                                        {generateInformativeText(
+                                            rpcResult.model,
+                                        )}
+                                    </h4>
+                                </div>
+                            ) : undefined
+                        }
+                    />
                 </div>
             </div>
             <ConfirmationModal

@@ -1,4 +1,5 @@
-import { Bug } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bug02Icon } from "@hugeicons/core-free-icons";
 
 export const DebugModeOnIcon = ({
     isNostalgia = false,
@@ -70,5 +71,12 @@ export const DebugModeOnIcon = ({
         );
     }
 
-    return <Bug size={16} />;
+    return (
+        <HugeiconsIcon
+            icon={Bug02Icon}
+            size={16}
+            color="currentColor"
+            strokeWidth={2}
+        />
+    );
 };

@@ -17,6 +17,7 @@ export interface OdooRpcParams {
 export interface OdooActionParams {
     action: Record<string, unknown> | number | string;
     options?: Record<string, unknown>;
+    context?: Record<string, unknown>;
 }
 
 export interface OdooSearchParams {

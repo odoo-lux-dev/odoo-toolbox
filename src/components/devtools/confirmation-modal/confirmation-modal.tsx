@@ -1,7 +1,6 @@
-import "./confirmation-modal.style.scss";
-import { X } from "lucide-preact";
 import { JSX } from "preact";
-import { useEffect } from "preact/hooks";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import type { ConfirmationConfig } from "./confirmation-modal.types";
 
 interface ConfirmationModalProps {
@@ -17,32 +16,7 @@ export const ConfirmationModal = ({
     onConfirm,
     onCancel,
 }: ConfirmationModalProps): JSX.Element | null => {
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") {
-                onCancel();
-            }
-        };
-
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [isOpen, onCancel]);
-
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [isOpen]);
-
-    if (!isOpen || !config) {
+    if (!config) {
         return null;
     }
 
@@ -55,64 +29,64 @@ export const ConfirmationModal = ({
         details,
     } = config;
 
-    const handleBackdropClick = (e: MouseEvent) => {
-        if (e.target === e.currentTarget) {
-            onCancel();
-        }
-    };
-
     return (
-        <div
-            className="confirmation-modal-backdrop"
-            onClick={handleBackdropClick}
-        >
-            <div
-                className={`confirmation-modal confirmation-modal--${variant}`}
-            >
-                <div className="confirmation-modal-header">
-                    <h3 className="confirmation-modal-title">{title}</h3>
-                    <button
-                        className="confirmation-modal-close"
+        <Modal
+            open={isOpen}
+            onClose={onCancel}
+            title={title}
+            description={message}
+            size="lg"
+            boxClassName={`border border-base-300 ${
+                variant === "warning"
+                    ? "border-l-4 border-l-warning"
+                    : variant === "danger"
+                      ? "border-l-4 border-l-error"
+                      : variant === "success"
+                        ? "border-l-4 border-l-success"
+                        : ""
+            }`}
+            footer={
+                <>
+                    <Button
+                        className="flex-1"
                         onClick={onCancel}
                         type="button"
-                        aria-label="Close"
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
-
-                <div className="confirmation-modal-body">
-                    <p className="confirmation-modal-message">{message}</p>
-                    {details && (
-                        <div className="confirmation-modal-details">
-                            <details>
-                                <summary>Show details</summary>
-                                <pre className="confirmation-modal-details-content">
-                                    {details}
-                                </pre>
-                            </details>
-                        </div>
-                    )}
-                </div>
-
-                <div className="confirmation-modal-footer">
-                    <button
-                        className="confirmation-modal-button confirmation-modal-button-cancel"
-                        onClick={onCancel}
-                        type="button"
+                        variant="outline"
                     >
                         {cancelText}
-                    </button>
-                    <button
-                        className={`confirmation-modal-button confirmation-modal-button-confirm confirmation-modal-button-confirm-${variant}`}
+                    </Button>
+                    <Button
+                        className="flex-1"
                         onClick={onConfirm}
                         type="button"
                         autoFocus
+                        color={
+                            variant === "warning"
+                                ? "warning"
+                                : variant === "danger"
+                                  ? "error"
+                                  : variant === "success"
+                                    ? "success"
+                                    : "primary"
+                        }
                     >
                         {confirmText}
-                    </button>
+                    </Button>
+                </>
+            }
+        >
+            {details ? (
+                <div className="mt-4">
+                    <details className="rounded-md border border-base-300 bg-base-200 px-3 py-2">
+                        <summary className="cursor-pointer select-none text-xs text-base-content/70 hover:text-base-content">
+                            Show details
+                        </summary>
+                        <pre className="mt-3 whitespace-pre-wrap rounded-md bg-base-300/60 p-3 text-xs font-mono text-base-content/70 overflow-x-auto">
+                            {details}
+                        </pre>
+                    </details>
                 </div>
-            </div>
-        </div>
+            ) : null}
+        </Modal>
     );
 };

@@ -1,4 +1,3 @@
-import "./style.scss";
 import { render } from "preact";
 import { App } from "./App";
 

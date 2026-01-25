@@ -51,7 +51,6 @@ export const FieldSelect = ({
             onChange={handleChange}
             placeholder={placeholder}
             disabled={disabled}
-            className="field-select"
             allowFreeInput={true}
             highlightSearch={true}
             enableSmartSort={true}

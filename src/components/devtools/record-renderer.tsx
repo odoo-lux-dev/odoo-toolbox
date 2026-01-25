@@ -1,11 +1,13 @@
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    ArrowUpRight,
-    ChevronDown,
-    ChevronRight,
-    Crosshair,
-    Layers2,
-    TriangleAlert,
-} from "lucide-preact";
+    Alert01Icon,
+    ArrowDown01Icon,
+    ArrowRight01Icon,
+    ArrowUpRight01Icon,
+    CenterFocusIcon,
+    Layers02Icon,
+} from "@hugeicons/core-free-icons";
+import { IconButton } from "@/components/ui/icon-button";
 import { useRpcQuery } from "@/contexts/devtools-signals-hook";
 import { FieldMetadata } from "@/types";
 import { ContextMenu } from "./context-menu/context-menu";
@@ -108,11 +110,7 @@ export const RecordRenderer = ({
     };
 
     return (
-        <div
-            className={
-                clickableRow ? "result-list-container" : "relational-records"
-            }
-        >
+        <div className="flex flex-col w-full">
             {records.map((record, index) => {
                 const isExpanded = currentExpanded.has(index);
                 const recordId = record.id || index + 1;
@@ -121,7 +119,7 @@ export const RecordRenderer = ({
                     return (
                         <div
                             key={recordId}
-                            className="relational-record-details"
+                            className="border border-base-200 bg-base-200"
                             data-record-index={index}
                         >
                             <LevelProvider level={level + 1}>
@@ -146,11 +144,11 @@ export const RecordRenderer = ({
                 return (
                     <div
                         key={recordId}
-                        className={`record-item${isExpanded ? " expanded" : ""}`}
+                        className={`border-b last:border-b-0 border-base-200 bg-base-100 shrink-0 ${isExpanded ? "shadow-sm" : ""}`}
                         data-record-index={index}
                     >
                         <div
-                            className={`record-header${clickableRow ? " clickable-row" : ""}`}
+                            className={`record-header flex items-center gap-2 border-b last:border-b-0 border-base-300 dark:border-base-200 bg-base-100 px-3 py-1 ${clickableRow ? "cursor-pointer hover:bg-base-300 sticky top-0 z-10" : ""}`}
                             onClick={
                                 clickableRow
                                     ? () => toggleExpansion(index)
@@ -164,17 +162,27 @@ export const RecordRenderer = ({
                                 )
                             }
                         >
-                            <div className="record-header-content">
-                                <span className="expand-icon">
+                            <div className="flex items-center gap-2 w-full min-w-0">
+                                <span className="inline-flex h-5 w-5 items-center justify-center shrink-0 rounded-sm text-base-content">
                                     {isExpanded ? (
-                                        <ChevronDown />
+                                        <HugeiconsIcon
+                                            icon={ArrowDown01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                        />
                                     ) : (
-                                        <ChevronRight />
+                                        <HugeiconsIcon
+                                            icon={ArrowRight01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                        />
                                     )}
                                 </span>
                                 {showId && (
                                     <span
-                                        className="record-id"
+                                        className="text-xs font-medium text-primary dark:text-accent shrink-0 w-14"
                                         data-field="aaid"
                                         data-level={level}
                                         data-searchable={String(recordId)}
@@ -183,7 +191,7 @@ export const RecordRenderer = ({
                                     </span>
                                 )}
                                 <span
-                                    className="record-name"
+                                    className="min-w-0 flex-1 truncate text-sm font-semibold text-base-content"
                                     data-field="aadisplay_name"
                                     data-level={level}
                                     data-searchable={displayName}
@@ -191,31 +199,48 @@ export const RecordRenderer = ({
                                     {displayName}
                                 </span>
                                 {currentModel && recordId ? (
-                                    <div className="record-actions">
+                                    <div className="ml-auto flex items-center gap-1.5">
                                         {modelHasExcludedFields &&
                                         isExpanded ? (
                                             <span
-                                                className="excluded-fields-indicator"
+                                                className="inline-flex items-center text-warning"
                                                 title={`Excluded fields from ${currentModel}: ${excludedFields.join(", ")}`}
                                             >
-                                                <TriangleAlert size={16} />
+                                                <HugeiconsIcon
+                                                    icon={Alert01Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
                                             </span>
                                         ) : null}
-                                        <button
-                                            className="open-record-button focus-button"
-                                            title="Focus on this record"
+                                        <IconButton
+                                            label="Focus on this record"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-info"
                                             onClick={(e) =>
                                                 handleFocusRecord(
                                                     record,
                                                     e as unknown as Event,
                                                 )
                                             }
-                                        >
-                                            <Crosshair size={16} />
-                                        </button>
-                                        <button
-                                            className="open-record-button"
-                                            title="Open record in Odoo"
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={CenterFocusIcon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
+                                        <IconButton
+                                            label="Open record in Odoo"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-primary"
                                             onClick={(e) =>
                                                 handleOpenRecord(
                                                     record,
@@ -223,12 +248,21 @@ export const RecordRenderer = ({
                                                     false,
                                                 )
                                             }
-                                        >
-                                            <ArrowUpRight size={16} />
-                                        </button>
-                                        <button
-                                            className="open-record-button popup-button"
-                                            title="Open record in popup"
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={ArrowUpRight01Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
+                                        <IconButton
+                                            label="Open record in popup"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-warning"
                                             onClick={(e) =>
                                                 handleOpenRecord(
                                                     record,
@@ -236,16 +270,22 @@ export const RecordRenderer = ({
                                                     true,
                                                 )
                                             }
-                                        >
-                                            <Layers2 size={16} />
-                                        </button>
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={Layers02Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
                                     </div>
                                 ) : null}
                             </div>
                         </div>
 
                         {isExpanded && (
-                            <div className="record-details">
+                            <div className="border-t border-base-200 bg-base-200 px-3 py-2">
                                 <LevelProvider level={level + 1}>
                                     {allKeys.map((key) =>
                                         renderRecordField(

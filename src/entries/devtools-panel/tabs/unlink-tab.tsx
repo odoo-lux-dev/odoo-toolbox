@@ -1,10 +1,13 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Alert02Icon } from "@hugeicons/core-free-icons";
 import { ConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal";
 import { useConfirmationModal } from "@/components/devtools/confirmation-modal/confirmation-modal.hook";
 import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
 import { useQueryIds } from "@/components/devtools/hooks/use-query-ids";
 import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
 import {
@@ -20,6 +23,7 @@ import {
 import { Logger } from "@/services/logger";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { addUnlinkToHistory } from "@/utils/history-helpers";
+import { parseRpcContext } from "@/utils/context-utils";
 import { generateRecordText, parseIds } from "@/utils/tab-utils";
 
 export const UnlinkTab = () => {
@@ -73,10 +77,18 @@ export const UnlinkTab = () => {
         try {
             setActionLoading("archive");
             const ids = parseIds(queryIds);
+            const contextResult = parseRpcContext(rpcQuery.context || "");
+
+            if (!contextResult.isValid) {
+                throw new Error(
+                    `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+                );
+            }
 
             await odooRpcService.archive({
                 model: rpcQuery.model,
                 ids,
+                context: contextResult.value,
             });
 
             showNotification(
@@ -136,10 +148,18 @@ export const UnlinkTab = () => {
         try {
             setActionLoading("unarchive");
             const ids = parseIds(queryIds);
+            const contextResult = parseRpcContext(rpcQuery.context || "");
+
+            if (!contextResult.isValid) {
+                throw new Error(
+                    `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+                );
+            }
 
             await odooRpcService.unarchive({
                 model: rpcQuery.model,
                 ids,
+                context: contextResult.value,
             });
 
             showNotification(
@@ -189,7 +209,7 @@ export const UnlinkTab = () => {
 
         try {
             const confirmed = await openConfirmation({
-                title: "⚠️ Delete Records",
+                title: "Delete Records",
                 message: (
                     <>
                         Are you sure you want to permanently delete{" "}
@@ -209,10 +229,18 @@ export const UnlinkTab = () => {
         try {
             setActionLoading("unlink");
             const ids = parseIds(queryIds);
+            const contextResult = parseRpcContext(rpcQuery.context || "");
+
+            if (!contextResult.isValid) {
+                throw new Error(
+                    `Invalid context format: ${contextResult.error || "Invalid JSON"}`,
+                );
+            }
 
             await odooRpcService.unlink({
                 model: rpcQuery.model,
                 ids,
+                context: contextResult.value,
             });
 
             showNotification(
@@ -248,7 +276,7 @@ export const UnlinkTab = () => {
     };
 
     return (
-        <div className="rpc-query-form">
+        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
             <QueryFormSidebar
                 recordIdsLabel="Record IDs"
                 recordIdsHelpText="Comma-separated IDs or JSON array of records to delete/archive."
@@ -258,27 +286,38 @@ export const UnlinkTab = () => {
                 onPrimaryAction={handleExecuteQuery}
                 onClear={handleClearForm}
                 isLoading={actionLoading !== null}
+                showDomainSection
             />
 
-            <div className="tab-results">
-                <div className="tab-content">
-                    <div className="tab-warning-banner">
-                        <div className="warning-icon">⚠️</div>
-                        <div className="warning-content">
-                            <strong>Warning: Destructive Operations</strong>
-                            <p>
-                                These operations will modify or permanently
-                                delete records. Archive operations are
-                                reversible, but delete operations cannot be
-                                undone.
-                            </p>
-                        </div>
-                    </div>
+            <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
+                <div className="flex flex-col gap-3 pt-3">
+                    <Alert
+                        color="warning"
+                        icon={
+                            <HugeiconsIcon
+                                icon={Alert02Icon}
+                                size={18}
+                                color="currentColor"
+                                strokeWidth={1.8}
+                            />
+                        }
+                        title="Warning: Destructive Operations"
+                        variant="outline"
+                    >
+                        <p className="text-sm">
+                            These operations will modify or permanently delete
+                            records. Archive operations are reversible, but
+                            delete operations cannot be undone.
+                        </p>
+                    </Alert>
 
-                    <div className="unlink-actions">
-                        <div className="unlink-archive-actions">
-                            <button
-                                type="button"
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                            <Button
+                                color="primary"
+                                className="flex-1"
+                                variant="outline"
+                                loading={actionLoading === "archive"}
                                 onClick={handleArchive}
                                 disabled={
                                     !rpcQuery.model ||
@@ -286,14 +325,16 @@ export const UnlinkTab = () => {
                                     actionLoading !== null ||
                                     !hasActiveField
                                 }
-                                className="btn btn-archive-action btn-primary-outline"
                             >
                                 {actionLoading === "archive"
                                     ? "Archiving..."
                                     : "Archive Records"}
-                            </button>
-                            <button
-                                type="button"
+                            </Button>
+                            <Button
+                                color="secondary"
+                                className="flex-1"
+                                variant="outline"
+                                loading={actionLoading === "unarchive"}
                                 onClick={handleUnarchive}
                                 disabled={
                                     !rpcQuery.model ||
@@ -301,53 +342,51 @@ export const UnlinkTab = () => {
                                     actionLoading !== null ||
                                     !hasActiveField
                                 }
-                                className="btn btn-unarchive-action btn-secondary-outline"
                             >
                                 {actionLoading === "unarchive"
                                     ? "Unarchiving..."
                                     : "Unarchive Records"}
-                            </button>
+                            </Button>
                         </div>
-                        <button
-                            type="button"
+                        <Button
+                            color="error"
+                            variant="outline"
+                            block
+                            loading={actionLoading === "unlink"}
                             onClick={handleUnlink}
                             disabled={
                                 !rpcQuery.model ||
                                 !queryIds.trim() ||
                                 actionLoading !== null
                             }
-                            className="btn btn-unlink-action btn-danger-outline"
                         >
                             {actionLoading === "unlink"
                                 ? "Deleting..."
                                 : "Delete Records"}
-                        </button>
+                        </Button>
                     </div>
+                </div>
 
-                    <div className="tab-results-section">
-                        <div className="tab-results-section-content">
-                            <ResultViewer
-                                hideCopyButton
-                                hideDownloadButton
-                                hideSwitchViewButton
-                                hideFieldNumber
-                                hideRecordPagingData
-                                customText={
-                                    rpcResult.data &&
-                                    rpcResult.data.length > 0 ? (
-                                        <div className="tab-section-header">
-                                            <h4>
-                                                {generateRecordText(
-                                                    rpcQuery.model,
-                                                    rpcResult.data.length,
-                                                )}
-                                            </h4>
-                                        </div>
-                                    ) : undefined
-                                }
-                            />
-                        </div>
-                    </div>
+                <div className="min-h-0 flex-1">
+                    <ResultViewer
+                        hideCopyButton
+                        hideDownloadButton
+                        hideSwitchViewButton
+                        hideFieldNumber
+                        hideRecordPagingData
+                        customText={
+                            rpcResult.data && rpcResult.data.length > 0 ? (
+                                <div className="py-2">
+                                    <h4 className="text-sm font-semibold">
+                                        {generateRecordText(
+                                            rpcQuery.model,
+                                            rpcResult.data.length,
+                                        )}
+                                    </h4>
+                                </div>
+                            ) : undefined
+                        }
+                    />
                 </div>
             </div>
             <ConfirmationModal

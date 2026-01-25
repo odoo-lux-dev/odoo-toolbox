@@ -1,12 +1,14 @@
 import { useSignal } from "@preact/signals";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    ArrowUpRight,
-    ChevronDown,
-    ChevronRight,
-    Crosshair,
-    Layers2,
-    TriangleAlert,
-} from "lucide-preact";
+    Alert01Icon,
+    ArrowDown01Icon,
+    ArrowRight01Icon,
+    ArrowUpRight01Icon,
+    CenterFocusIcon,
+    Layers02Icon,
+} from "@hugeicons/core-free-icons";
+import { IconButton } from "@/components/ui/icon-button";
 import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
 import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip";
 import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields";
@@ -138,18 +140,26 @@ export const RelationalFieldRenderer = ({
     const renderRelationalContent = () => {
         if (loading.value) {
             return (
-                <div className="relational-loading">
+                <div className="rounded-box border border-base-200/60 bg-base-200/40 px-3 py-2 text-xs text-base-content/70">
                     Loading relational data...
                 </div>
             );
         }
 
         if (error.value) {
-            return <div className="relational-error">Error: {error.value}</div>;
+            return (
+                <div className="rounded-box border border-error/30 bg-error/10 px-3 py-2 text-xs text-error">
+                    Error: {error.value}
+                </div>
+            );
         }
 
         if (!relatedData.value || relatedData.value.length === 0) {
-            return <div className="no-data">No related data found</div>;
+            return (
+                <div className="rounded-box border border-base-200/60 bg-base-200/40 px-3 py-2 text-xs text-base-content/70">
+                    No related data found
+                </div>
+            );
         }
 
         // If a single record: display it directly
@@ -168,7 +178,7 @@ export const RelationalFieldRenderer = ({
 
         // If multiple records: display a list with individual controls
         return (
-            <div className="relational-records-list">
+            <div className="flex flex-col">
                 {relatedData.value.map((record, index) => {
                     const recordId = record.id as number;
                     const isExpanded = relatedRecordsExpanded.value.has(index);
@@ -176,10 +186,10 @@ export const RelationalFieldRenderer = ({
                     return (
                         <div
                             key={recordId || index}
-                            className="relational-record-item"
+                            className="first:rounded-t-box last:rounded-b-box border-b last:border-b-0 border-base-200 bg-base-100 overflow-hidden"
                         >
                             <div
-                                className="relational-record-header"
+                                className="peer flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-base-300"
                                 onClick={() => handleRelatedRecordToggle(index)}
                                 onContextMenu={(e) =>
                                     handleRecordContextMenu(
@@ -189,15 +199,25 @@ export const RelationalFieldRenderer = ({
                                     )
                                 }
                             >
-                                <span className="expand-icon">
+                                <span className="inline-flex h-4 w-4 items-center justify-center shrink-0 text-base-content/70">
                                     {isExpanded ? (
-                                        <ChevronDown />
+                                        <HugeiconsIcon
+                                            icon={ArrowDown01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                        />
                                     ) : (
-                                        <ChevronRight />
+                                        <HugeiconsIcon
+                                            icon={ArrowRight01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                        />
                                     )}
                                 </span>
                                 <span
-                                    className="record-id"
+                                    className="text-xs font-medium text-primary shrink-0 w-12"
                                     data-level={level}
                                     data-searchable={
                                         recordId ? String(recordId) : ""
@@ -206,7 +226,7 @@ export const RelationalFieldRenderer = ({
                                     {recordId ? `#${recordId}` : "No ID"}
                                 </span>
                                 <span
-                                    className="record-name"
+                                    className="min-w-0 flex-1 truncate text-xs font-semibold text-base-content"
                                     data-level={level}
                                     data-searchable={
                                         record.name ||
@@ -219,31 +239,48 @@ export const RelationalFieldRenderer = ({
                                         `Record ${index + 1}`}
                                 </span>
                                 {recordId && modelName ? (
-                                    <div className="record-actions">
+                                    <div className="ml-auto flex items-center gap-1.5">
                                         {modelHasExcludedFields &&
                                         isExpanded ? (
                                             <span
-                                                className="excluded-fields-indicator"
+                                                className="inline-flex items-center text-warning"
                                                 title={`Excluded fields from ${modelName}: ${excludedFields.join(", ")}`}
                                             >
-                                                <TriangleAlert size={16} />
+                                                <HugeiconsIcon
+                                                    icon={Alert01Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
                                             </span>
                                         ) : null}
-                                        <button
-                                            className="open-record-button focus-button"
-                                            title="Focus on this record"
+                                        <IconButton
+                                            label="Focus on this record"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-info"
                                             onClick={(e) =>
                                                 handleFocusRelatedRecord(
                                                     record,
                                                     e as unknown as Event,
                                                 )
                                             }
-                                        >
-                                            <Crosshair size={16} />
-                                        </button>
-                                        <button
-                                            className="open-record-button"
-                                            title="Open record in Odoo"
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={CenterFocusIcon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
+                                        <IconButton
+                                            label="Open record in Odoo"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-primary"
                                             onClick={(e) =>
                                                 handleOpenRelatedRecord(
                                                     record,
@@ -251,12 +288,21 @@ export const RelationalFieldRenderer = ({
                                                     false,
                                                 )
                                             }
-                                        >
-                                            <ArrowUpRight size={16} />
-                                        </button>
-                                        <button
-                                            className="open-record-button popup-button"
-                                            title="Open record in popup"
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={ArrowUpRight01Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
+                                        <IconButton
+                                            label="Open record in popup"
+                                            variant="ghost"
+                                            size="sm"
+                                            square
+                                            className="text-base-content/60 hover:text-warning"
                                             onClick={(e) =>
                                                 handleOpenRelatedRecord(
                                                     record,
@@ -264,14 +310,22 @@ export const RelationalFieldRenderer = ({
                                                     true,
                                                 )
                                             }
-                                        >
-                                            <Layers2 size={16} />
-                                        </button>
+                                            icon={
+                                                <HugeiconsIcon
+                                                    icon={Layers02Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    strokeWidth={1.6}
+                                                />
+                                            }
+                                        />
                                     </div>
                                 ) : null}
                             </div>
                             {isExpanded && (
-                                <div className="relational-record-content">
+                                <div
+                                    className={`border-2 not-last:border-y-0 border-base-100 bg-base-200 px-3 py-2 peer-hover:border-base-300 ${index === relatedData.value.length - 1 ? "rounded-b-box" : ""}`}
+                                >
                                     <RecordRenderer
                                         records={[record]}
                                         fieldsMetadata={
@@ -293,13 +347,17 @@ export const RelationalFieldRenderer = ({
     };
 
     if (!modelName) {
-        return <span className="detail-values">Invalid relational field</span>;
+        return (
+            <span className="text-xs font-mono text-error">
+                Invalid relational field
+            </span>
+        );
     }
 
     return (
-        <div className="field-with-label">
+        <div className="relational-node flex flex-col gap-1 [&:hover>.relational-header_.relational-arrow]:text-accent [&:hover>.relational-border]:border-accent">
             <div
-                className="detail-row"
+                className="relational-header flex w-full min-w-0 flex-nowrap items-end rounded hover:bg-neutral/40"
                 data-field={fieldName}
                 onContextMenu={
                     onContextMenu
@@ -315,11 +373,24 @@ export const RelationalFieldRenderer = ({
                         : undefined
                 }
             >
-                <span className="expand-icon" onClick={handleExpand}>
+                <span
+                    className="relational-arrow inline-flex h-4 w-4 shrink-0 items-center cursor-pointer text-base-content/70"
+                    onClick={handleExpand}
+                >
                     {isExpanded.value ? (
-                        <ChevronDown size={14} />
+                        <HugeiconsIcon
+                            icon={ArrowDown01Icon}
+                            size={14}
+                            color="currentColor"
+                            strokeWidth={1.6}
+                        />
                     ) : (
-                        <ChevronRight size={14} />
+                        <HugeiconsIcon
+                            icon={ArrowRight01Icon}
+                            size={14}
+                            color="currentColor"
+                            strokeWidth={1.6}
+                        />
                     )}
                 </span>
                 <FieldMetadataTooltip
@@ -327,7 +398,7 @@ export const RelationalFieldRenderer = ({
                     fieldName={fieldName}
                 >
                     <span
-                        className="detail-label"
+                        className="text-xs font-medium text-base-content/70 whitespace-nowrap"
                         data-searchable={fieldName}
                         data-level={level}
                     >
@@ -335,7 +406,7 @@ export const RelationalFieldRenderer = ({
                     </span>
                 </FieldMetadataTooltip>
                 <span
-                    className="detail-values relational-summary"
+                    className="ml-2 min-w-0 flex-1 truncate text-xs font-mono text-primary dark:text-accent"
                     data-level={level}
                     data-field={fieldName}
                     data-searchable={
@@ -353,55 +424,87 @@ export const RelationalFieldRenderer = ({
                         : `(${modelName}, ${ids.length}) [${ids.join(", ")}]`}
                 </span>
                 {modelName && ids.length > 0 && (
-                    <div className="relational-field-actions">
+                    <div className="ml-auto flex max-h-4 shrink-0 flex-nowrap items-center gap-1">
                         {modelHasExcludedFields && isExpanded.value ? (
                             <span
-                                className="excluded-fields-indicator"
+                                className="inline-flex items-center text-warning"
                                 title={`Excluded fields from ${modelName}: ${excludedFields.join(", ")}`}
                             >
-                                <TriangleAlert size={12} />
+                                <HugeiconsIcon
+                                    icon={Alert01Icon}
+                                    size={12}
+                                    color="currentColor"
+                                    strokeWidth={1.6}
+                                />
                             </span>
                         ) : null}
-                        <button
-                            className="open-relational-field-button focus-button"
-                            title="Focus on this record"
+                        <IconButton
+                            label="Focus on this record"
+                            variant="ghost"
+                            size="xs"
+                            square
+                            className="text-base-content/60 hover:text-info"
                             onClick={(e) =>
                                 handleFocusRelationalField(
                                     e as unknown as Event,
                                 )
                             }
-                        >
-                            <Crosshair size={14} />
-                        </button>
-                        <button
-                            className="open-relational-field-button"
-                            title="Open relational field in Odoo"
+                            icon={
+                                <HugeiconsIcon
+                                    icon={CenterFocusIcon}
+                                    size={14}
+                                    color="currentColor"
+                                    strokeWidth={1.6}
+                                />
+                            }
+                        />
+                        <IconButton
+                            label="Open relational field in Odoo"
+                            variant="ghost"
+                            size="xs"
+                            square
+                            className="text-base-content/60 hover:text-primary"
                             onClick={(e) =>
                                 handleOpenRelationalField(
                                     e as unknown as Event,
                                     false,
                                 )
                             }
-                        >
-                            <ArrowUpRight size={14} />
-                        </button>
-                        <button
-                            className="open-relational-field-button popup-button"
-                            title="Open relational field in popup"
+                            icon={
+                                <HugeiconsIcon
+                                    icon={ArrowUpRight01Icon}
+                                    size={14}
+                                    color="currentColor"
+                                    strokeWidth={1.6}
+                                />
+                            }
+                        />
+                        <IconButton
+                            label="Open relational field in popup"
+                            variant="ghost"
+                            size="xs"
+                            square
+                            className="text-base-content/60 hover:text-warning"
                             onClick={(e) =>
                                 handleOpenRelationalField(
                                     e as unknown as Event,
                                     true,
                                 )
                             }
-                        >
-                            <Layers2 size={14} />
-                        </button>
+                            icon={
+                                <HugeiconsIcon
+                                    icon={Layers02Icon}
+                                    size={14}
+                                    color="currentColor"
+                                    strokeWidth={1.6}
+                                />
+                            }
+                        />
                     </div>
                 )}
             </div>
             {(loading.value || isExpanded.value) && (
-                <div className="relational-content">
+                <div className="relational-border my-1 ml-1.5 border-l border-primary pl-3">
                     {renderRelationalContent()}
                 </div>
             )}

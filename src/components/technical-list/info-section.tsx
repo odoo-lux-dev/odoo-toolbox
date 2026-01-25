@@ -1,5 +1,7 @@
 import { useComputed } from "@preact/signals";
-import { JSX } from "preact";
+import { ComponentChildren, JSX } from "preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import {
     expandedSectionsSignal,
     setSectionExpanded,
@@ -7,7 +9,7 @@ import {
 } from "@/contexts/technical-list-signals";
 
 interface InfoSectionProps {
-    icon: string;
+    icon: ComponentChildren;
     title: string;
     children: JSX.Element | JSX.Element[] | (JSX.Element | null | false)[];
     defaultExpanded?: boolean;
@@ -42,27 +44,31 @@ export const InfoSection = ({
     };
 
     return (
-        <div className="x-odoo-technical-list-info-record-info">
-            <div
-                className="x-odoo-technical-list-info-section-header"
+        <div className="border-solid border-b border-base-100 dark:border-base-200 px-2 py-4">
+            <button
+                type="button"
                 onClick={toggleExpanded}
+                aria-expanded={isExpanded.value}
+                className="cursor-pointer flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-base font-semibold text-base-content transition-colors hover:bg-base-200/60"
                 title={
                     isExpanded.value ? "Click to collapse" : "Click to expand"
                 }
             >
-                <div className="x-odoo-technical-list-info-section-title">
-                    <i className={`fa ${icon}`} />
+                <div className="flex items-center gap-2">
+                    <span className="text-base opacity-70">{icon}</span>
                     <span>{title}</span>
                 </div>
-                <i
-                    className={`fa fa-chevron-right x-odoo-technical-list-info-section-toggle ${isExpanded.value ? "x-odoo-technical-list-info-section-expanded" : ""}`}
+                <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    size={14}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                    className={`transition-transform duration-200 ${
+                        isExpanded.value ? "rotate-90" : ""
+                    }`}
                 />
-            </div>
-            {isExpanded.value && (
-                <div className="x-odoo-technical-list-info-section-content">
-                    {children}
-                </div>
-            )}
+            </button>
+            {isExpanded.value && <div className="mt-3 px-4">{children}</div>}
         </div>
     );
 };
