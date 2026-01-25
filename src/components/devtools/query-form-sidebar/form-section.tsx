@@ -20,16 +20,14 @@ export const FormSection = ({
     className = "",
     children,
 }: FormSectionProps) => {
-    const sectionClasses = `form-section${className ? ` ${className}` : ""}`;
-
     return (
-        <div className={sectionClasses}>
+        <div className={`mb-3 ${className}`.trim()}>
             {label && (
-                <label className="form-label">
-                    {label} {required && <span className="required">*</span>}
+                <label className="block text-sm font-medium text-base-content">
+                    {label} {required && <span className="text-error">*</span>}
                     {helpText && (
                         <span
-                            className={`help-text${helpTextWarning ? " warning" : ""}`}
+                            className={`mt-1 block text-xs ${helpTextWarning ? "text-warning" : "text-base-content/60"}`}
                         >
                             {helpText}
                         </span>

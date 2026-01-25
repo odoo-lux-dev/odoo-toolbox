@@ -1,7 +1,14 @@
-import "@/components/devtools/record-search/record-search.style.scss";
 import { useComputed, useSignal } from "@preact/signals";
-import { ChevronDown, ChevronUp, Search, X } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    ArrowDown01Icon,
+    ArrowUp01Icon,
+    Cancel01Icon,
+    Search01Icon,
+} from "@hugeicons/core-free-icons";
 import { useCallback, useEffect, useRef } from "preact/hooks";
+import { Input } from "@/components/ui/input";
+import { IconButton } from "@/components/ui/icon-button";
 import { simpleDebounce } from "@/utils/utils";
 import { useRecordSearch } from "./record-search.hook";
 
@@ -140,19 +147,29 @@ export const RecordSearch = ({ expandedRecords }: RecordSearchProps) => {
     }
 
     return (
-        <div className="record-search-bar">
-            <div className="search-input-container">
-                <Search size={16} className="search-icon" />
-                <input
+        <div className="record-search-bar sticky top-0 z-10 animate-record-search-in">
+            <div className="flex items-center gap-2 px-2 py-1.5">
+                <span className="text-base-content/60">
+                    <HugeiconsIcon
+                        icon={Search01Icon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.5}
+                    />
+                </span>
+                <Input
                     ref={inputRef}
                     type="text"
                     placeholder="Search in field names and values (expanded records only)..."
-                    className="search-input"
+                    className="min-w-0"
+                    size="sm"
+                    variant="ghost"
+                    fullWidth
                     onInput={handleInputChange}
                 />
-                <div className="search-controls">
+                <div className="flex items-center gap-1">
                     {searchResults.value.length > 0 && (
-                        <span className="search-results-count">
+                        <span className="text-xs text-base-content/70 whitespace-nowrap">
                             {currentIndex.value + 1} of{" "}
                             {searchResults.value.length}
                             {searchResults.value.some(
@@ -161,7 +178,7 @@ export const RecordSearch = ({ expandedRecords }: RecordSearchProps) => {
                             searchResults.value.some(
                                 (r) => r.matchType === "value",
                             ) ? (
-                                <span className="match-types">
+                                <span className="ml-1 text-base-content/60">
                                     (
                                     {
                                         searchResults.value.filter(
@@ -179,32 +196,51 @@ export const RecordSearch = ({ expandedRecords }: RecordSearchProps) => {
                             ) : null}
                         </span>
                     )}
-                    <button
-                        type="button"
-                        className="search-nav-btn"
+                    <IconButton
+                        size="xs"
+                        variant="ghost"
+                        label="Previous result (Ctrl+Shift+G)"
                         onClick={handlePrevious}
                         disabled={searchResults.value.length === 0}
-                        title="Previous result (Ctrl+Shift+G)"
-                    >
-                        <ChevronUp size={14} />
-                    </button>
-                    <button
-                        type="button"
-                        className="search-nav-btn"
+                        icon={
+                            <HugeiconsIcon
+                                icon={ArrowUp01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                            />
+                        }
+                    />
+                    <IconButton
+                        size="xs"
+                        variant="ghost"
+                        label="Next result (Ctrl+G)"
                         onClick={handleNext}
                         disabled={searchResults.value.length === 0}
-                        title="Next result (Ctrl+G)"
-                    >
-                        <ChevronDown size={14} />
-                    </button>
-                    <button
-                        type="button"
-                        className="search-close-btn"
+                        icon={
+                            <HugeiconsIcon
+                                icon={ArrowDown01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                            />
+                        }
+                    />
+                    <IconButton
+                        size="xs"
+                        variant="ghost"
+                        color="error"
+                        label="Close search (Esc)"
                         onClick={handleClose}
-                        title="Close search (Esc)"
-                    >
-                        <X size={14} />
-                    </button>
+                        icon={
+                            <HugeiconsIcon
+                                icon={Cancel01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                            />
+                        }
+                    />
                 </div>
             </div>
         </div>

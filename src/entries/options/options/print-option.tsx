@@ -1,5 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
-import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import {
@@ -21,40 +21,33 @@ export const PrintOption = () => {
     const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF];
     const htmlEnabled =
         !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML];
-
-    const additionalTooltipContent = (
-        <ul>
-            <li>
-                <strong>PDF</strong> : Enable PDF print option
-            </li>
-            <li>
-                <strong>HTML</strong> : Enable HTML print option
-            </li>
-        </ul>
-    );
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
             id="print-options"
             title="Print options"
             tooltipContent="This will allow you to print the page in PDF or HTML format without downloading it"
-            additionalTooltipContent={additionalTooltipContent}
         >
-            <div className="x-odoo-options-page-print-options-rows">
-                <ToggleSwitch
-                    isChecked={pdfEnabled}
-                    onInput={handlePdfChange}
-                    labelOn="PDF"
-                    labelOff="PDF"
-                    className="pdf-print-switch"
-                />
-                <ToggleSwitch
-                    isChecked={htmlEnabled}
-                    onInput={handleHtmlChange}
-                    labelOn="HTML"
-                    labelOff="HTML"
-                    className="html-print-switch"
-                />
+            <div className="flex flex-col gap-3">
+                <label className="label cursor-pointer justify-between gap-3">
+                    <span className="label-text">PDF</span>
+                    <Toggle
+                        color={isDarkMode ? "accent" : "primary"}
+                        size="sm"
+                        checked={pdfEnabled}
+                        onCheckedChange={handlePdfChange}
+                    />
+                </label>
+                <label className="label cursor-pointer justify-between gap-3">
+                    <span className="label-text">HTML</span>
+                    <Toggle
+                        color={isDarkMode ? "accent" : "primary"}
+                        size="sm"
+                        checked={htmlEnabled}
+                        onCheckedChange={handleHtmlChange}
+                    />
+                </label>
             </div>
         </OptionItem>
     );

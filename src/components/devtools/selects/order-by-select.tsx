@@ -109,7 +109,6 @@ export const OrderBySelect = ({
             onChange={handleChange}
             placeholder={placeholder}
             disabled={disabled}
-            className="order-by-select"
             allowFreeInput={true}
             highlightSearch={true}
             enableSmartSort={true}

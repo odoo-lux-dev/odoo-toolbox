@@ -1,5 +1,7 @@
-import { History } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { TransactionHistoryIcon } from "@hugeicons/core-free-icons";
 import { route } from "preact-router";
+import { Button } from "@/components/ui/button";
 import { useDevToolsNotifications } from "@/components/devtools/hooks/use-devtools-notifications";
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import {
@@ -157,16 +159,26 @@ export const HistoryActionRestore = ({ action }: HistoryActionRestoreProps) => {
     };
 
     return (
-        <div className="history-action-restore">
-            <button
+        <div className="flex items-center">
+            <Button
                 type="button"
-                className="btn btn-secondary-outline restore-btn"
+                variant="outline"
+                color="secondary"
+                size="sm"
+                className="gap-2"
                 onClick={handleRestore}
                 title={`This will navigate to the ${action.type} tab and restore the parameters.`}
             >
-                <History size={14} />
-                Restore
-            </button>
+                <span className="flex items-center gap-2">
+                    <HugeiconsIcon
+                        icon={TransactionHistoryIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                    <span>Restore</span>
+                </span>
+            </Button>
         </div>
     );
 };

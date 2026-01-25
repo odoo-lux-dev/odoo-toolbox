@@ -1,4 +1,6 @@
-import { GripVertical } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { DragDropVerticalIcon } from "@hugeicons/core-free-icons";
+import { Button } from "@/components/ui/button";
 import { QuickDomain } from "@/types";
 
 interface QuickDomainRowProps {
@@ -19,45 +21,69 @@ export const QuickDomainRow = ({
     onDelete,
 }: QuickDomainRowProps) => {
     return (
-        <div className="slot" data-swapy-slot={slotId}>
+        <div className="slot py-0.5" data-swapy-slot={slotId}>
             <div
-                className="item quick-domain-row"
+                className="item flex items-center gap-3 rounded-md border border-base-300 bg-base-200 p-3"
                 key={`item-${domain.id}`}
                 data-swapy-item={itemId}
             >
-                <div className="drag-handle">
-                    <GripVertical size={18} />
+                <div className="drag-handle flex cursor-grab active:cursor-grabbing text-base-content/60 hover:text-base-content">
+                    <HugeiconsIcon
+                        icon={DragDropVerticalIcon}
+                        size={18}
+                        color="currentColor"
+                        strokeWidth={4}
+                    />
                 </div>
 
-                <div className="domain-content" data-swapy-no-drag>
-                    <div className="domain-name">{domain.name}</div>
-                    <div className="domain-value">{domain.domain}</div>
+                <div
+                    className="domain-content flex-1 min-w-0"
+                    data-swapy-no-drag
+                >
+                    <div className="domain-name text-sm font-semibold text-base-content truncate">
+                        {domain.name}
+                    </div>
+                    <div
+                        title={domain.domain}
+                        className="domain-value text-xs truncate text-base-content/70 break-all leading-relaxed"
+                    >
+                        {domain.domain}
+                    </div>
                 </div>
 
-                <div className="domain-actions" data-swapy-no-drag>
-                    <button
+                <div
+                    className="domain-actions flex items-center gap-2 shrink-0"
+                    data-swapy-no-drag
+                >
+                    <Button
                         onClick={() => onDomainClick(domain.domain)}
-                        className="btn btn-primary-outline"
+                        variant="outline"
+                        color="primary"
+                        size="sm"
                         title="Use this domain"
                     >
                         Use
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => onEdit(domain)}
-                        className="btn btn-secondary-outline"
+                        variant="outline"
+                        color="secondary"
+                        size="sm"
                         data-swapy-no-drag
                         title="Edit domain"
                     >
                         Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={() => onDelete(domain.id)}
-                        className="btn btn-danger-outline"
+                        variant="outline"
+                        color="error"
+                        size="sm"
                         data-swapy-no-drag
                         title="Delete domain"
                     >
                         Delete
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

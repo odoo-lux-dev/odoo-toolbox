@@ -31,12 +31,17 @@
         "wxt": "^0.20.8"
     },
     "dependencies": {
+        "@hugeicons/core-free-icons": "^3.1.1",
+        "@hugeicons/react": "^1.1.4",
         "@preact/signals": "^2.3.1",
+        "@tailwindcss/vite": "^4.1.18",
+        "@tanstack/react-virtual": "^3.13.12",
+        "daisyui": "^5.5.14",
         "history": "^5.3.0",
-        "lucide-preact": "^0.542.0",
         "preact": "^10.27.1",
         "preact-router": "^4.1.2",
         "swapy": "^1.0.5",
+        "tailwindcss": "^4.1.18",
         "vite": "^7.1.4"
     }
 }

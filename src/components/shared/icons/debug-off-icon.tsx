@@ -1,10 +1,13 @@
-import { BugOff } from "lucide-preact";
+import { SVGProps } from "preact/compat";
+
+interface DebugModeOffIconProps extends SVGProps<SVGSVGElement> {
+    isNostalgia?: boolean;
+    size?: number;
+}
 
 export const DebugModeOffIcon = ({
     isNostalgia = false,
-}: {
-    isNostalgia: boolean;
-}) => {
+}: DebugModeOffIconProps) => {
     if (isNostalgia) {
         return (
             <svg
@@ -82,5 +85,45 @@ export const DebugModeOffIcon = ({
         );
     }
 
-    return <BugOff size={16} />;
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            version="1.2"
+            viewBox="0 0 24 24"
+            width={16}
+            height={16}
+        >
+            <defs>
+                <mask id="mask-diagonal">
+                    <rect width="24" height="24" fill="white" />
+                    <path
+                        d="m2.1 1.9l20 20"
+                        fill="none"
+                        stroke="black"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                    />
+                </mask>
+            </defs>
+            <style>{`.a{fill:none;stroke:currentColor;stroke-linecap:round;stroke-width:${2}}.b{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:${2}}`}</style>
+            <path className="a" d="m3 6.6c-0.1 1.1 0.7 3.6 2.9 3.7" />
+            <path className="a" d="m18.3 10.2c1.1 0.1 2.7-1.2 2.7-3.6" />
+            <path className="a" d="m3.9 21c-0.1-1.4 0.9-3.5 2.6-3.6" />
+            <path className="a" d="m3 13.8h2.2" />
+            <path className="a" d="m21 13.8h-2.2" />
+            <path className="a" d="m16.5 3l-1.8 1.8m-7.2-1.8l1.8 1.8" />
+            <path mask="url(#mask-diagonal)" className="a" d="m12 13.8v-2.9" />
+            <path
+                mask="url(#mask-diagonal)"
+                className="a"
+                d="m7 8.6c1.6 1.2 5.6 2.9 10 0.1"
+            />
+            <path
+                mask="url(#mask-diagonal)"
+                className="a"
+                d="m16.8 7.7c-3.5-5-8.1-2.6-9.7 0.1-1.1 1.8-2.7 6.1 0.4 10.8 3.4 4.1 7.3 2.2 8.9 0 1.6-1.8 3.1-6.6 0.4-10.9z"
+            />
+            <path className="b" d="m2.1 1.9l20 20" />
+        </svg>
+    );
 };

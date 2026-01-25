@@ -1,4 +1,5 @@
-import { FlaskConical } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { TestTube01Icon } from "@hugeicons/core-free-icons";
 
 export const DebugModeTestsAssetsIcon = ({
     isNostalgia = false,
@@ -74,5 +75,12 @@ export const DebugModeTestsAssetsIcon = ({
         );
     }
 
-    return <FlaskConical size={14} />;
+    return (
+        <HugeiconsIcon
+            icon={TestTube01Icon}
+            size={16}
+            color="currentColor"
+            strokeWidth={2}
+        />
+    );
 };

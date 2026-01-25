@@ -15,6 +15,89 @@ export const useRecordSearch = () => {
     const allSearchResults = signal<SearchResult[]>([]);
     const currentSearchResult = signal<SearchResult | null>(null);
 
+    const highlightBaseClass =
+        "record-search-highlight inline font-medium rounded";
+    const highlightKeyClass = "bg-yellow-300 text-neutral-900";
+    const highlightValueClass = "bg-yellow-200 text-neutral-900";
+    const highlightCurrentKeyClass = "!bg-orange-600 text-white";
+    const highlightCurrentValueClass = "!bg-orange-600 text-white";
+    const ellipsisBaseClass =
+        "record-search-ellipsis-highlight inline rounded text-[8px] text-orange-600 my-auto ml-2";
+    const ellipsisCurrentClass =
+        "bg-orange-500 text-white shadow-[0_0_0_2px_rgba(255,107,53,0.3)]";
+
+    const toggleClassList = (
+        element: Element,
+        classes: string,
+        add: boolean,
+    ) => {
+        classes
+            .split(" ")
+            .filter(Boolean)
+            .forEach((className) => {
+                if (add) {
+                    element.classList.add(className);
+                } else {
+                    element.classList.remove(className);
+                }
+            });
+    };
+
+    const findScrollableAncestor = (element: Element): HTMLElement | null => {
+        let current = element as HTMLElement | null;
+
+        while (current && current !== document.body) {
+            const style = window.getComputedStyle(current);
+            const overflowY = style.overflowY;
+            const overflow = style.overflow;
+            const isScrollable =
+                (overflowY === "auto" ||
+                    overflowY === "scroll" ||
+                    overflow === "auto" ||
+                    overflow === "scroll") &&
+                current.scrollHeight > current.clientHeight;
+
+            if (isScrollable) {
+                return current;
+            }
+
+            current = current.parentElement;
+        }
+
+        return document.scrollingElement instanceof HTMLElement
+            ? document.scrollingElement
+            : null;
+    };
+
+    const applyCurrentHighlight = (element: Element) => {
+        element.classList.add("current-match");
+
+        if (element.classList.contains("record-search-ellipsis-highlight")) {
+            toggleClassList(element, ellipsisCurrentClass, true);
+            return;
+        }
+
+        if (!element.classList.contains("record-search-highlight")) return;
+
+        if (element.classList.contains("key-match")) {
+            toggleClassList(element, highlightCurrentKeyClass, true);
+            return;
+        }
+
+        if (element.classList.contains("value-match")) {
+            toggleClassList(element, highlightCurrentValueClass, true);
+        }
+    };
+
+    const clearCurrentHighlight = (element: Element) => {
+        element.classList.remove("current-match");
+        toggleClassList(
+            element,
+            `${highlightCurrentKeyClass} ${highlightCurrentValueClass} ${ellipsisCurrentClass}`,
+            false,
+        );
+    };
+
     // Build field path by traversing up the DOM structure
     const buildFieldPath = (
         element: Element,
@@ -236,15 +319,15 @@ export const useRecordSearch = () => {
 
         // Create ellipsis indicator
         const ellipsisIndicator = document.createElement("span");
-        ellipsisIndicator.className = `record-search-ellipsis-highlight${isCurrent ? " current-match" : ""}`;
+        ellipsisIndicator.className = `${ellipsisBaseClass}${isCurrent ? ` current-match ${ellipsisCurrentClass}` : ""}`;
         ellipsisIndicator.textContent = "● ";
         ellipsisIndicator.title = `Match found in hidden text: "${searchText}"`;
 
         // Insert point
-        const container =
-            element.closest(".detail-values, .cell-object, .detail-field") ||
-            element.parentElement;
-        container?.parentNode?.insertBefore(ellipsisIndicator, container);
+        const parent = element.parentElement;
+        if (parent) {
+            parent.insertBefore(ellipsisIndicator, element);
+        }
     };
 
     // Text highlighting
@@ -254,6 +337,10 @@ export const useRecordSearch = () => {
         result: SearchResult,
         isCurrent: boolean,
     ) => {
+        if (targetElement.querySelector(".record-search-highlight")) {
+            return;
+        }
+
         const walker = document.createTreeWalker(
             targetElement,
             NodeFilter.SHOW_TEXT,
@@ -278,23 +365,32 @@ export const useRecordSearch = () => {
                 );
 
                 const parent = textNode.parentNode;
-                if (parent) {
+                if (parent && parent.nodeType === Node.ELEMENT_NODE) {
+                    const parentElement = parent as Element;
+                    if (
+                        parentElement.classList.contains(
+                            "record-search-highlight",
+                        )
+                    ) {
+                        return;
+                    }
+
                     const highlightNode = document.createElement("mark");
-                    highlightNode.className = `record-search-highlight${isCurrent ? " current-match" : ""} ${result.matchType}-match`;
+                    highlightNode.className = `${highlightBaseClass} ${result.matchType === "key" ? `key-match ${highlightKeyClass}` : `value-match ${highlightValueClass}`}${isCurrent ? ` current-match ${result.matchType === "key" ? highlightCurrentKeyClass : highlightCurrentValueClass}` : ""}`;
                     highlightNode.textContent = matchText;
 
                     if (beforeText)
-                        parent.insertBefore(
+                        parentElement.insertBefore(
                             document.createTextNode(beforeText),
                             textNode,
                         );
-                    parent.insertBefore(highlightNode, textNode);
+                    parentElement.insertBefore(highlightNode, textNode);
                     if (afterText)
-                        parent.insertBefore(
+                        parentElement.insertBefore(
                             document.createTextNode(afterText),
                             textNode,
                         );
-                    parent.removeChild(textNode);
+                    parentElement.removeChild(textNode);
                 }
                 break;
             }
@@ -306,6 +402,7 @@ export const useRecordSearch = () => {
         element: Element,
         result: SearchResult,
         isCurrent: boolean = false,
+        allowHighlight: boolean = true,
     ) => {
         const searchText = result.displayText.substring(
             result.matchStart,
@@ -322,12 +419,14 @@ export const useRecordSearch = () => {
             checkAndShowEllipsis(element, searchText, true);
         }
 
-        highlightTextInTargetElement(
-            targetElement,
-            searchText,
-            result,
-            isCurrent,
-        );
+        if (allowHighlight) {
+            highlightTextInTargetElement(
+                targetElement,
+                searchText,
+                result,
+                isCurrent,
+            );
+        }
     };
 
     // Highlight all search results (without ellipsis indicators for performance)
@@ -345,10 +444,10 @@ export const useRecordSearch = () => {
         // Remove current-match class from all highlights
         document
             .querySelectorAll(
-                ".record-search-highlight.current-match, .record-search-ellipsis-highlight.current-match",
+                ".record-search-highlight, .record-search-ellipsis-highlight",
             )
             .forEach((el) => {
-                el.classList.remove("current-match");
+                clearCurrentHighlight(el);
             });
 
         // Remove all ellipsis indicators first
@@ -358,27 +457,29 @@ export const useRecordSearch = () => {
 
         // Scroll to the element
         const elementRect = result.element.getBoundingClientRect();
-        const resultViewer = document.querySelector(".result-viewer");
-        const container = resultViewer?.querySelector(
-            ".result-list-container, .relational-records",
-        ) as HTMLElement;
+        const scrollContainer = findScrollableAncestor(result.element);
 
-        if (container) {
-            const containerRect = container.getBoundingClientRect();
+        if (scrollContainer) {
+            const containerRect = scrollContainer.getBoundingClientRect();
             const scrollTop =
-                container.scrollTop +
+                scrollContainer.scrollTop +
                 elementRect.top -
                 containerRect.top -
                 containerRect.height / 3;
 
-            container.scrollTo({
+            scrollContainer.scrollTo({
                 top: Math.max(0, scrollTop),
-                behavior: "instant",
+                behavior: "auto",
+            });
+        } else {
+            (result.element as HTMLElement).scrollIntoView({
+                block: "center",
+                inline: "nearest",
             });
         }
 
         // Highlight current result with ellipsis check
-        highlightTextInElement(result.element, result, true);
+        highlightTextInElement(result.element, result, true, false);
 
         // Add current-match class
         const searchText = result.displayText
@@ -397,9 +498,29 @@ export const useRecordSearch = () => {
                 ) ||
                 highlight.textContent?.toLowerCase() === searchText
             ) {
-                highlight.classList.add("current-match");
+                applyCurrentHighlight(highlight);
                 highlightFound = true;
                 break;
+            }
+        }
+
+        if (!highlightFound) {
+            highlightTextInElement(result.element, result, true, true);
+
+            const refreshedHighlights = result.element.querySelectorAll(
+                ".record-search-highlight, .record-search-ellipsis-highlight",
+            );
+            for (const highlight of refreshedHighlights) {
+                if (
+                    highlight.classList.contains(
+                        "record-search-ellipsis-highlight",
+                    ) ||
+                    highlight.textContent?.toLowerCase() === searchText
+                ) {
+                    applyCurrentHighlight(highlight);
+                    highlightFound = true;
+                    break;
+                }
             }
         }
 
@@ -416,7 +537,7 @@ export const useRecordSearch = () => {
                     (highlight.textContent?.toLowerCase() === searchText &&
                         highlight.contains(result.element))
                 ) {
-                    highlight.classList.add("current-match");
+                    applyCurrentHighlight(highlight);
                     break;
                 }
             }

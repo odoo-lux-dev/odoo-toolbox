@@ -1,5 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
-import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS } from "@/utils/constants";
@@ -12,6 +12,7 @@ export const LoginButtonsOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS];
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -19,7 +20,12 @@ export const LoginButtonsOption = () => {
             title="Show login buttons"
             tooltipContent="Choose if you want to show the default login buttons for admin/demo/portal"
         >
-            <ToggleSwitch isChecked={isEnabled} onInput={handleChange} />
+            <Toggle
+                color={isDarkMode ? "accent" : "primary"}
+                size="sm"
+                checked={isEnabled}
+                onCheckedChange={handleChange}
+            />
         </OptionItem>
     );
 };

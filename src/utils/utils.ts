@@ -10,6 +10,7 @@ const getDefaultColorScheme = () =>
     document.body.dataset.defaultColorScheme as DefaultColorScheme;
 const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
+const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
 
 const isOnSpecificRecordPage = () => {
     const odooWindowObject = window.odoo;
@@ -302,4 +303,5 @@ export {
     getShowTechnicalList,
     retrieveIdFromAvatar,
     getShowLoginButtons,
+    getOdooToolboxTheme,
 };

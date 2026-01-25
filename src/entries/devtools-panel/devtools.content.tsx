@@ -1,6 +1,8 @@
 import { Route, Router } from "preact-router";
 import { useSupportCheck } from "@/contexts/devtools-signals-hook";
 import { DevToolsLayout } from "@/entries/devtools-panel/devtools.layout";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { CallMethodTab } from "@/entries/devtools-panel/tabs/call-method-tab";
 import { CreateTab } from "@/entries/devtools-panel/tabs/create-tab";
 import { HistoryTab } from "@/entries/devtools-panel/tabs/history-tab";
@@ -29,20 +31,28 @@ export const DevToolsContent = () => {
     if (hasHostPermission == false) {
         return (
             <div className="devtools-app unsupported">
-                <div className="unsupported-message">
-                    <h3>Insufficient Permissions</h3>
-                    <div className="unsupported-details">
-                        <p>
+                <div className="flex min-h-screen items-center justify-center bg-base-100 px-6 py-10">
+                    <Alert
+                        title="Insufficient Permissions"
+                        color="warning"
+                        variant="soft"
+                        className="w-full max-w-2xl items-start flex flex-col"
+                        actions={
+                            <Button
+                                variant="outline"
+                                color="warning"
+                                onClick={handlePermissionsAsking}
+                                className="ml-auto"
+                            >
+                                Grant permission
+                            </Button>
+                        }
+                    >
+                        <p className="text-sm text-base-content/80">
                             To access the Odoo Toolbox Devtools, you need to
                             grant host permission for this domain.
                         </p>
-                    </div>
-                    <button
-                        className="btn btn-primary-outline retry-btn"
-                        onClick={handlePermissionsAsking}
-                    >
-                        Grant permission
-                    </button>
+                    </Alert>
                 </div>
             </div>
         );
@@ -50,10 +60,22 @@ export const DevToolsContent = () => {
 
     if (isSupported === null) {
         return (
-            <div className="devtools-app loading">
-                <div className="loading-message">
-                    <div className="spinner"></div>
-                    <span>Detecting Odoo version...</span>
+            <div className="devtools-app detecting">
+                <div className="flex min-h-screen items-center justify-center bg-base-100 px-6 py-10">
+                    <Alert
+                        title="Detecting Odoo version..."
+                        color="info"
+                        variant="soft"
+                        className="w-full max-w-2xl items-start flex flex-col"
+                    >
+                        <div className="flex items-center gap-3 text-base-content/80">
+                            <span className="loading loading-spinner loading-md" />
+                            <span>
+                                Checking your current Odoo instance. This should
+                                only take a moment.
+                            </span>
+                        </div>
+                    </Alert>
                 </div>
             </div>
         );
@@ -63,24 +85,33 @@ export const DevToolsContent = () => {
     if (isSupported === false) {
         return (
             <div className="devtools-app unsupported">
-                <div className="unsupported-message">
-                    <h3>Unable to reach Odoo</h3>
-                    <div className="unsupported-details">
-                        <p>Be sure that you are in a valid context :</p>
-                        <ul>
-                            <li>You're on an Odoo instance</li>
-                            <li>
-                                You're inside the Odoo's backend (and not on the
-                                website)
-                            </li>
-                        </ul>
-                    </div>
-                    <button
-                        className="btn btn-primary-outline retry-btn"
-                        onClick={handleRetry}
+                <div className="flex min-h-screen items-center justify-center bg-base-100 px-6 py-10">
+                    <Alert
+                        title="Unable to reach Odoo"
+                        color="error"
+                        variant="soft"
+                        className="w-full max-w-2xl items-start flex flex-col"
+                        actions={
+                            <Button
+                                variant="outline"
+                                color="error"
+                                onClick={handleRetry}
+                            >
+                                Retry
+                            </Button>
+                        }
                     >
-                        Retry
-                    </button>
+                        <div className="text-sm text-base-content/80">
+                            <p>Be sure that you are in a valid context :</p>
+                            <ul className="mt-2 list-disc space-y-1 pl-5">
+                                <li>You're on an Odoo instance</li>
+                                <li>
+                                    You're inside the Odoo's backend (and not on
+                                    the website)
+                                </li>
+                            </ul>
+                        </div>
+                    </Alert>
                 </div>
             </div>
         );

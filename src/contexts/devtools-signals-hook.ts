@@ -1,6 +1,7 @@
 import {
     callMethodNameSignal,
     clearTabValues,
+    contextSignal,
     createValuesSignal,
     databaseSignal,
     dataSignal,
@@ -52,6 +53,7 @@ export const useRpcQuery = () => {
         limit: limitSignal,
         offset: offsetSignal,
         orderBy: orderBySignal,
+        context: contextSignal,
         fieldsMetadata: fieldsMetadataSignal,
     };
 };

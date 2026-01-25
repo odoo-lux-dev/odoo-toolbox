@@ -1,37 +1,46 @@
-import { ChevronRight } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Favorite } from "@/types";
 
 export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
     const handleClick = (event: MouseEvent) => {
+        const url = `https://www.odoo.sh/project/${favorite.name}`;
+
         if (
             event.button === 0 &&
             !event.ctrlKey &&
             !event.shiftKey &&
-            !event.altKey
+            !event.altKey &&
+            !event.metaKey
         ) {
-            // Left Click only without any modifiers
-            event.preventDefault();
-            browser.tabs.update({
-                url: `https://www.odoo.sh/project/${favorite.name}`,
-            });
-            // Close the popup once we click on the link
+            browser.tabs.update({ url });
+            window.close();
+            return;
+        }
+
+        if (event.ctrlKey || event.metaKey || event.button === 1) {
+            browser.tabs.create({ url });
             window.close();
         }
     };
 
     return (
-        <div className="x-odoo-favorite-popup-row">
-            <a
-                href={`https://www.odoo.sh/project/${favorite.name}`}
+        <div className="rounded-md text-primary dark:text-base-content odd:bg-base-200 even:bg-transparent hover:bg-base-300">
+            <button
+                type="button"
+                className="flex w-full items-center justify-between p-3 text-left text-sm cursor-pointer"
                 onClick={handleClick}
             >
-                <span className="x-odoo-favorite-popup-row-text">
-                    {favorite.display_name}
+                <span className="truncate">{favorite.display_name}</span>
+                <span className="text-base-content/70">
+                    <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        size={18}
+                        color="currentColor"
+                        strokeWidth={2}
+                    />
                 </span>
-                <span className="x-odoo-favorite-popup-row-arrow-icon">
-                    <ChevronRight size={18} />
-                </span>
-            </a>
+            </button>
         </div>
     );
 };

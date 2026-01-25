@@ -1,5 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
-import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE } from "@/utils/constants";
@@ -12,6 +12,7 @@ export const NostalgiaModeOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE];
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -19,7 +20,12 @@ export const NostalgiaModeOption = () => {
             title="Enable nostalgia mode"
             tooltipContent="This mode replace the original debug icons by monkey icons to remember the famous monkey extension"
         >
-            <ToggleSwitch isChecked={isEnabled} onInput={handleChange} />
+            <Toggle
+                color={isDarkMode ? "accent" : "primary"}
+                size="sm"
+                checked={isEnabled}
+                onCheckedChange={handleChange}
+            />
         </OptionItem>
     );
 };

@@ -22,6 +22,7 @@ export interface RpcQueryState {
     limit: number;
     offset: number;
     orderBy: string;
+    context?: string;
     fieldsMetadata?: Record<string, FieldMetadata>;
     isQueryValid: boolean;
 }

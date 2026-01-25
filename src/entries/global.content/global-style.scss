@@ -1,37 +1,35 @@
-@use "@/features/technical-list/technical-list.scss";
-
 .x-odoo-technical-print-option {
-	font-size: 16px;
-	margin-left: 5px;
-	cursor: pointer;
-	padding: 5px;
+    font-size: 16px;
+    margin-left: 5px;
+    cursor: pointer;
+    padding: 5px;
 
-	&:hover {
-		background-color: var(--light);
-	}
+    &:hover {
+        background-color: var(--light);
+    }
 }
 
 .x-odoo-technical-model-name {
-	display: flex;
-	align-items: center;
-	user-select: text;
+    display: flex;
+    align-items: center;
+    user-select: text;
 
-	strong {
-		color: var(--body-color);
-		margin-right: 5px;
-	}
+    strong {
+        color: var(--body-color);
+        margin-right: 5px;
+    }
 }
 
 .x-odoo-technical-model-name-breadcrumb {
-	color: var(--body-color);
-	font-style: italic;
-	margin-left: 3px;
+    color: var(--body-color);
+    font-style: italic;
+    margin-left: 3px;
 }
 
 .x-odoo-technical-print-option-loading-spinner {
-	margin-left: 5px;
+    margin-left: 5px;
 
-	i {
-		height: fit-content;
-	}
+    i {
+        height: fit-content;
+    }
 }

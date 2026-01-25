@@ -1,6 +1,8 @@
 import { useCallback, useRef } from "preact/hooks";
+import { ensureHighlightStyles } from "@/components/technical-list/utils/highlight-styles";
 
 export const useFieldHighlight = () => {
+    ensureHighlightStyles();
     const highlightedElements = useRef<Set<Element>>(new Set());
     const fieldElementsCache = useRef<Map<string, Element[]>>(new Map());
     const buttonElementsCache = useRef<Map<string, Element[]>>(new Map());

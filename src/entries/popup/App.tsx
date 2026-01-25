@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./style.css";
 import { useEffect } from "preact/hooks";
 import { Footer } from "@/components/popup/footer";
 import { Header } from "@/components/popup/header";
@@ -13,16 +13,17 @@ export const App = () => {
     }, []);
 
     useEffect(() => {
-        document.body.className = theme;
+        const themeName = theme === "dark" ? "odoodark" : "odoolight";
+        document.documentElement.setAttribute("data-theme", themeName);
     }, [theme]);
 
     return (
-        <>
+        <div className="flex min-h-screen flex-col bg-base-100 text-base-content w-[280px]">
             <Header />
-            <main className="container">
+            <main className="flex-1 px-2 py-4">
                 <ProjectList />
             </main>
             <Footer />
-        </>
+        </div>
     );
 };

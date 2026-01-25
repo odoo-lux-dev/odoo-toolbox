@@ -1,7 +1,13 @@
-import { GripVertical } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { DragDropVerticalIcon } from "@hugeicons/core-free-icons";
 
 export const FavoriteDragHandler = () => (
-    <div className="x-odoo-options-drag-handler">
-        <GripVertical size={18} />
+    <div className="cursor-grab active:cursor-grabbing">
+        <HugeiconsIcon
+            icon={DragDropVerticalIcon}
+            size={18}
+            color="currentColor"
+            strokeWidth={4}
+        />
     </div>
 );

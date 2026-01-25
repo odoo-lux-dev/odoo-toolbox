@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
+import { ensureHighlightStyles } from "@/components/technical-list/utils/highlight-styles";
 import {
     isSelectionModeSignal,
     selectedElementSignal,
@@ -46,6 +47,7 @@ const HOVER_CLASS = "x-odoo-field-selector-hover";
 export const useElementSelector = (
     options: UseElementSelectorOptions = {},
 ): UseElementSelectorReturn => {
+    ensureHighlightStyles();
     const { validFields, validButtons, onNonSelectableClick, isExpanded } =
         options;
 
@@ -258,7 +260,7 @@ export const useElementSelector = (
             const target = event.target as HTMLElement;
             if (!target) return;
 
-            if (target.closest(".x-odoo-technical-list-info-side-panel")) {
+            if (target.closest('[data-technical-list-panel="true"]')) {
                 return;
             }
 

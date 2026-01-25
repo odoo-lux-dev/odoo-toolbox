@@ -1,4 +1,5 @@
 import type { OdooDomain, RpcQueryState } from "@/types";
+import { parseRpcContext } from "@/utils/context-utils";
 import { validateDomainStructure } from "@/utils/domain-utils";
 import { evaluateExpr } from "@/utils/odoo-py_js/py.js";
 
@@ -235,7 +236,8 @@ export const calculateQueryValidity = (
         validateDomainWithPython(query.domain) &&
         validateIds(query.ids) &&
         validateLimit(query.limit) &&
-        validateOffset(query.offset)
+        validateOffset(query.offset) &&
+        parseRpcContext(query.context || "").isValid
     );
 };
 
@@ -256,6 +258,13 @@ export const getValidationErrors = (query: RpcQueryState): string[] => {
     if (!validateDomainWithPython(query.domain)) {
         const validation = validateDomain(query.domain);
         errors.push(validation.error || "Invalid domain format");
+    }
+
+    const contextValidation = parseRpcContext(query.context || "");
+    if (!contextValidation.isValid) {
+        errors.push(
+            `Invalid context format: ${contextValidation.error || "Invalid JSON"}`,
+        );
     }
 
     if (!validateIds(query.ids)) {

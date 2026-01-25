@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
     isDebugTrue,
     isDynamicCondition,
@@ -11,6 +12,17 @@ interface FieldBadgeProps {
     badgeType: "required" | "readonly";
 }
 
+const badgeLabelMap: Record<FieldBadgeProps["badgeType"], string> = {
+    required: "Required",
+    readonly: "Readonly",
+};
+
+const badgeColorMap: Record<FieldBadgeProps["badgeType"], "error" | "warning"> =
+    {
+        required: "error",
+        readonly: "warning",
+    };
+
 export const FieldBadge = ({
     debugValue,
     cssValue,
@@ -19,29 +31,43 @@ export const FieldBadge = ({
 }: FieldBadgeProps) => {
     if (isDynamicCondition(debugValue)) {
         return (
-            <span
-                className={`x-odoo-technical-list-info-debug-badge x-odoo-badge-${badgeType}`}
-                title={`${badgeType.charAt(0).toUpperCase() + badgeType.slice(1)} when: ${debugValue}`}
+            <Badge
+                size="sm"
+                variant="outline"
+                color={badgeColorMap[badgeType]}
+                title={`${badgeLabelMap[badgeType]} when: ${debugValue}`}
+                className="uppercase tracking-wide"
             >
-                {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}*
-            </span>
-        );
-    } else if (isDebugTrue(debugValue)) {
-        return (
-            <span
-                className={`x-odoo-technical-list-info-debug-badge x-odoo-badge-${badgeType}`}
-            >
-                {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}
-            </span>
-        );
-    } else if (cssValue && shouldUseCSSFallback(debugValue, hasDebugInfo)) {
-        return (
-            <span
-                className={`x-odoo-technical-list-info-debug-badge x-odoo-badge-${badgeType}`}
-            >
-                {badgeType.charAt(0).toUpperCase() + badgeType.slice(1)}
-            </span>
+                {badgeLabelMap[badgeType]}*
+            </Badge>
         );
     }
+
+    if (isDebugTrue(debugValue)) {
+        return (
+            <Badge
+                size="sm"
+                variant="outline"
+                color={badgeColorMap[badgeType]}
+                className="uppercase tracking-wide"
+            >
+                {badgeLabelMap[badgeType]}
+            </Badge>
+        );
+    }
+
+    if (cssValue && shouldUseCSSFallback(debugValue, hasDebugInfo)) {
+        return (
+            <Badge
+                size="sm"
+                variant="outline"
+                color={badgeColorMap[badgeType]}
+                className="uppercase tracking-wide"
+            >
+                {badgeLabelMap[badgeType]}
+            </Badge>
+        );
+    }
+
     return null;
 };

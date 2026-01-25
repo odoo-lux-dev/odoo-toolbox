@@ -7,7 +7,7 @@ export async function handleExportConfig() {
             "x-odoo-backup-options-status",
         )!;
         configStatus.textContent = "Exporting your settings...";
-        configStatus.className = "x-odoo-backup-options-status-message";
+        configStatus.className = "text-base-content";
 
         const config = await configurationService.exportConfiguration();
 
@@ -32,7 +32,7 @@ export async function handleExportConfig() {
             "x-odoo-backup-options-status",
         )!;
         configStatus.textContent = `An error occured during the export: ${error instanceof Error ? error.message : "Unknown error"}`;
-        configStatus.className = "x-odoo-backup-options-status-message error";
+        configStatus.className = "text-error";
     }
 }
 
@@ -44,7 +44,7 @@ export async function handleImportConfig(event: Event) {
         "x-odoo-backup-options-status",
     )!;
     configStatus.textContent = "Importing your settings...";
-    configStatus.className = "x-odoo-backup-options-status-message";
+    configStatus.className = "text-base-content";
 
     try {
         const reader = new FileReader();
@@ -69,12 +69,11 @@ export async function handleImportConfig(event: Event) {
 
                 configStatus.textContent =
                     "Configuration successfully imported";
-                configStatus.className =
-                    "x-odoo-backup-options-status-message success";
+                configStatus.className = "text-success";
 
                 setTimeout(() => {
-                    configStatus.className =
-                        "x-odoo-backup-options-status-message";
+                    configStatus.textContent = "";
+                    configStatus.className = "text-base-content";
                 }, 3000);
             } catch (parseError) {
                 Logger.error(
@@ -82,8 +81,7 @@ export async function handleImportConfig(event: Event) {
                     parseError,
                 );
                 configStatus.textContent = `An error occured during file process: ${parseError instanceof Error ? parseError.message : "Invalid file format"}`;
-                configStatus.className =
-                    "x-odoo-backup-options-status-message error";
+                configStatus.className = "text-error";
             }
         };
 
@@ -91,7 +89,7 @@ export async function handleImportConfig(event: Event) {
     } catch (error) {
         Logger.error("An error occured during the import:", error);
         configStatus.textContent = `An error occured during the import: ${error instanceof Error ? error.message : "Unknown error"}`;
-        configStatus.className = "x-odoo-backup-options-status-message error";
+        configStatus.className = "text-error";
     }
 
     if (event.target) {

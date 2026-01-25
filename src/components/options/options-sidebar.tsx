@@ -1,10 +1,17 @@
-import { Download, Settings2, Star, Upload } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Download04Icon,
+    GithubIcon,
+    Settings02Icon,
+    StarIcon,
+    Upload04Icon,
+} from "@hugeicons/core-free-icons";
 import { createRef } from "preact";
 import { ChangeEvent } from "preact/compat";
 import { useState } from "preact/hooks";
 import { Link } from "preact-router";
 import Match from "preact-router/match";
-import { GithubIcon } from "@/components/shared/icons/github-icon";
+import { ThemeController } from "@/components/ui/theme-controller";
 import { LuxembourgFlag } from "@/components/shared/icons/luxembourg-flag";
 import {
     handleExportConfig,
@@ -22,7 +29,7 @@ export const OptionsSidebar = () => {
 
     const handleExport = async () => {
         setStatusMessage("Exporting your settings...");
-        setStatusClass("x-odoo-backup-options-status-message");
+        setStatusClass("text-xs text-info");
         try {
             await handleExportConfig();
             setStatusMessage("");
@@ -32,7 +39,7 @@ export const OptionsSidebar = () => {
             setStatusMessage(
                 `An error occurred during export: ${errorMessage || "Unknown error"}`,
             );
-            setStatusClass("x-odoo-backup-options-status-message error");
+            setStatusClass("text-xs text-error");
         }
     };
 
@@ -46,73 +53,125 @@ export const OptionsSidebar = () => {
         await handleImportConfig(event);
         (event.target as HTMLInputElement).value = "";
     };
+
     return (
-        <div class="sidebar">
-            <h1>Odoo Toolbox</h1>
-            <div class="x-odoo-options-page-buttons">
+        <div class="w-72 bg-base-100 min-h-screen flex flex-col p-4 gap-6">
+            <div class="relative flex items-center justify-center">
+                <h1 class="text-xl font-semibold text-center text-primary dark:text-accent">
+                    Odoo Toolbox
+                </h1>
+                <div class="absolute right-0">
+                    <ThemeController iconSize={18} />
+                </div>
+            </div>
+            <div class="flex flex-col gap-2">
                 <Match path="/">
                     {({ path }: { path: string }) => (
-                        <Link
-                            id="global-options"
-                            className={`x-odoo-options-page-button ${path === "/options" ? "active" : ""}`}
-                            href="#/options"
+                        <details
+                            class="collapse collapse-arrow bg-base-100"
+                            open={path === "/options"}
                         >
-                            <Settings2 size={18} color="#2ebcfa" />
-                            Options
-                        </Link>
+                            <summary class="collapse-title p-0">
+                                <Link
+                                    id="global-options"
+                                    className={`btn btn-ghost justify-start w-full ${path === "/options" ? "btn-active" : ""}`}
+                                    href="#/options"
+                                >
+                                    <HugeiconsIcon
+                                        icon={Settings02Icon}
+                                        size={18}
+                                        color="#2ebcfa"
+                                        strokeWidth={2}
+                                    />
+                                    Options
+                                </Link>
+                            </summary>
+                            <div class="collapse-content flex flex-col gap-1 pl-8 pt-1">
+                                <Link
+                                    className="btn btn-ghost btn-sm justify-start"
+                                    href="#/options#odoo-options"
+                                >
+                                    Odoo
+                                </Link>
+                                <Link
+                                    className="btn btn-ghost btn-sm justify-start"
+                                    href="#/options#odoosh-options"
+                                >
+                                    Odoo.SH
+                                </Link>
+                            </div>
+                        </details>
                     )}
                 </Match>
                 <Match path="/">
                     {({ path }: { path: string }) => (
                         <Link
                             id="sh-favorites"
-                            className={`x-odoo-options-page-button ${path === "/favorites" ? "active" : ""}`}
+                            className={`btn btn-ghost justify-start ${path === "/favorites" ? "btn-active" : ""}`}
                             href="#/favorites"
                         >
-                            <Star size={18} color="#ED8A19" fill="#ED8A19" />
+                            <HugeiconsIcon
+                                icon={StarIcon}
+                                size={18}
+                                color="#ED8A19"
+                                strokeWidth={2}
+                            />
                             SH Favorites
                         </Link>
                     )}
                 </Match>
             </div>
-            <div class="x-odoo-options-page-sidebar-footer">
+            <div class="mt-auto flex flex-col gap-4 items-center">
                 <div id="x-odoo-backup-options-status" class={statusClass}>
                     {statusMessage}
                 </div>
-                <div class="x-odoo-backup-options-container-buttons">
+
+                <div class="flex gap-2">
                     <button
-                        id="x-odoo-backup-options-export-config-btn"
-                        class="x-odoo-button-with-icon"
+                        class="btn btn-sm btn-outline btn-primary gap-2"
                         onClick={handleExport}
                     >
-                        <Download size={15} />
+                        <HugeiconsIcon
+                            icon={Download04Icon}
+                            size={15}
+                            color="currentColor"
+                            strokeWidth={2}
+                        />
                         Export
                     </button>
                     <button
-                        id="x-odoo-backup-options-import-config-btn"
-                        class="x-odoo-button-with-icon"
+                        class="btn btn-sm btn-outline btn-primary gap-2"
                         onClick={handleImport}
                     >
-                        <Upload size={15} />
+                        <HugeiconsIcon
+                            icon={Upload04Icon}
+                            size={15}
+                            color="currentColor"
+                            strokeWidth={2}
+                        />
                         Restore
                     </button>
                     <input
                         type="file"
-                        id="x-odoo-backup-options-input-file"
                         accept=".json"
-                        style="display: none;"
+                        class="hidden"
                         ref={fileInputRef}
                         onInput={handleFileChange}
                     />
                 </div>
-                <div class="x-odoo-options-page-sidebar-footer-version">
+                <div class="flex items-center gap-2 text-xs">
                     <a
                         href="https://github.com/odoo-lux-dev/odoo-toolbox"
                         target="_blank"
                         rel="noopener noreferrer"
                         title="GitHub Repository"
                     >
-                        <GithubIcon />
+                        <HugeiconsIcon
+                            icon={GithubIcon}
+                            size={16}
+                            color="currentColor"
+                            strokeWidth={2}
+                        />
                     </a>
                     <span id="extension-version">{extensionVersion}</span>
                     <LuxembourgFlag />

@@ -1,5 +1,5 @@
 import { OptionItem } from "@/components/options/option-item";
-import { ToggleSwitch } from "@/components/options/toggle-switch";
+import { Toggle } from "@/components/ui/toggle";
 import { useOptions } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME } from "@/utils/constants";
@@ -12,6 +12,7 @@ export const ShPageRenameOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME];
+    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -19,7 +20,12 @@ export const ShPageRenameOption = () => {
             title="Update the tab title on SH pages"
             tooltipContent="Select whether to change the tab title on Odoo.SH pages to includes current project name"
         >
-            <ToggleSwitch isChecked={isEnabled} onInput={handleChange} />
+            <Toggle
+                color={isDarkMode ? "accent" : "primary"}
+                size="sm"
+                checked={isEnabled}
+                onCheckedChange={handleChange}
+            />
         </OptionItem>
     );
 };

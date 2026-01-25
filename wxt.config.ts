@@ -1,4 +1,5 @@
 import preact from "@preact/preset-vite";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, UserManifest, WxtViteConfig } from "wxt";
 import pkg from "./package.json";
 
@@ -85,7 +86,7 @@ export default defineConfig({
             build.minify = "esbuild";
         }
         return {
-            plugins: [preact()],
+            plugins: [tailwindcss(), preact()],
             build,
             esbuild: {
                 minifyIdentifiers: false, // Keep variable names

@@ -1,8 +1,8 @@
-import "./quick-domain-manager.style.scss";
 import { useComputed, useSignal } from "@preact/signals";
-import { X } from "lucide-preact";
 import { useEffect, useRef } from "preact/hooks";
 import { createSwapy, Swapy, utils } from "swapy";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { Logger } from "@/services/logger";
 import { quickDomainsService } from "@/services/quick-domains-service";
 import { QuickDomain } from "@/types";
@@ -10,11 +10,13 @@ import { QuickDomainFormModal } from "./quick-domain-form-modal";
 import { QuickDomainRow } from "./quick-domain-row";
 
 interface QuickDomainManagerProps {
+    open: boolean;
     onClose: () => void;
     onDomainSelect: (domain: string) => void;
 }
 
 export const QuickDomainManager = ({
+    open,
     onClose,
     onDomainSelect,
 }: QuickDomainManagerProps) => {
@@ -154,89 +156,88 @@ export const QuickDomainManager = ({
 
     if (loading.value) {
         return (
-            <div
-                className="quick-domain-manager-overlay"
-                onClick={(e) => {
-                    if (e.target === e.currentTarget) onClose();
-                }}
+            <Modal
+                open={open}
+                onClose={onClose}
+                title="Quick Domain Manager"
+                size="lg"
+                boxClassName="border border-base-300"
             >
-                <div className="quick-domain-manager">
-                    <div className="quick-domain-manager-header">
-                        <h3>Quick Domain Manager - Loading</h3>
-                        <button className="btn-close" onClick={onClose}>
-                            <X size={16} />
-                        </button>
-                    </div>
-                    <div className="quick-domain-manager-content">
-                        <div className="loading">Loading domains...</div>
-                    </div>
+                <div className="flex h-[40vh] items-center justify-center text-sm text-base-content/60">
+                    Loading domains...
                 </div>
-            </div>
+            </Modal>
         );
     }
 
     return (
-        <div
-            className="quick-domain-manager-overlay"
-            onClick={(e) => {
-                if (e.target === e.currentTarget) onClose();
-            }}
-        >
-            <div className="quick-domain-manager">
-                <div className="quick-domain-manager-header">
-                    <h3>Quick Domain Manager</h3>
-                    <button className="btn-close" onClick={onClose}>
-                        <X size={16} />
-                    </button>
-                </div>
-
-                <div className="quick-domain-manager-actions">
-                    <button onClick={handleAdd} className="btn btn-primary">
-                        Add Domain
-                    </button>
-                </div>
-
-                <div className="quick-domain-manager-content">
-                    <div className="quick-domain-list" ref={containerRef}>
-                        {slottedItems.value.map(
-                            ({
-                                slotId,
-                                itemId,
-                                item,
-                            }: {
-                                slotId: string;
-                                itemId: string;
-                                item: QuickDomain | null;
-                            }) =>
-                                item && (
-                                    <QuickDomainRow
-                                        key={slotId}
-                                        domain={item}
-                                        slotId={slotId}
-                                        itemId={itemId}
-                                        onDomainClick={handleDomainClick}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                    />
-                                ),
-                        )}
+        <>
+            <Modal
+                open={open}
+                onClose={onClose}
+                title="Quick Domain Manager"
+                size="xl"
+                boxClassName="border border-base-300 max-w-3xl"
+            >
+                <div className="flex h-[70vh] flex-col">
+                    <div className="flex items-center justify-between">
+                        <Button
+                            onClick={handleAdd}
+                            color="accent"
+                            variant="outline"
+                            className="w-full my-3"
+                            size="sm"
+                        >
+                            Add Domain
+                        </Button>
                     </div>
 
-                    {domains.value.length === 0 && (
-                        <div className="quick-domain-empty">
-                            <p>No domains found.</p>
-                            <p>Click "Add Domain" to create one.</p>
+                    <div className="flex-1 overflow-hidden">
+                        <div
+                            className="flex flex-col gap-2 overflow-y-auto pr-1 h-full transition-none [&_[data-swapy-slot]]:transition-none [&_[data-swapy-item]]:transition-none [&_[data-swapy-container]]:transition-none [&_[data-swapy-slot]_*]:transition-none [&_[data-swapy-item]_*]:transition-none"
+                            ref={containerRef}
+                        >
+                            {slottedItems.value.map(
+                                ({
+                                    slotId,
+                                    itemId,
+                                    item,
+                                }: {
+                                    slotId: string;
+                                    itemId: string;
+                                    item: QuickDomain | null;
+                                }) =>
+                                    item && (
+                                        <QuickDomainRow
+                                            key={slotId}
+                                            domain={item}
+                                            slotId={slotId}
+                                            itemId={itemId}
+                                            onDomainClick={handleDomainClick}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDelete}
+                                        />
+                                    ),
+                            )}
                         </div>
-                    )}
 
-                    <QuickDomainFormModal
-                        domain={editingDomain.value}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                        isOpen={showForm.value}
-                    />
+                        {domains.value.length === 0 && (
+                            <div className="py-10 text-center text-sm text-base-content/60">
+                                <p className="mb-2 font-medium text-base-content">
+                                    No domains found.
+                                </p>
+                                <p>Click "Add Domain" to create one.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        </div>
+            </Modal>
+            <QuickDomainFormModal
+                domain={editingDomain.value}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                isOpen={showForm.value}
+            />
+        </>
     );
 };

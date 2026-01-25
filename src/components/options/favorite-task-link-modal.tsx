@@ -1,13 +1,19 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 import { Favorite } from "@/types";
 import { URL_CHECK_REGEX } from "@/utils/constants";
 
 export const FavoriteTaskLinkModal = ({
     favorite,
+    open,
     onClose,
     onSave,
 }: {
     favorite: Favorite;
+    open: boolean;
     onClose: () => void;
     onSave: (name: string, taskLink: string) => Promise<void>;
 }) => {
@@ -16,10 +22,17 @@ export const FavoriteTaskLinkModal = ({
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (inputRef.current) {
+        if (open && inputRef.current) {
             inputRef.current.focus();
         }
-    }, []);
+    }, [open]);
+
+    useEffect(() => {
+        if (open) {
+            setTaskLink(favorite.task_link || "");
+            setHasError(false);
+        }
+    }, [favorite, open]);
 
     const handleSave = async () => {
         const isValidUrl = URL_CHECK_REGEX.test(taskLink) || taskLink === "";
@@ -37,44 +50,52 @@ export const FavoriteTaskLinkModal = ({
     };
 
     return (
-        <div className="x-odoo-options-modal-overlay" onClick={onClose}>
-            <div
-                className="x-odoo-options-modal"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="x-odoo-options-modal-content">
-                    <h2>Edit task link for {favorite.display_name}</h2>
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={taskLink}
-                        id="task-link-input"
-                        className={`x-options-input ${hasError ? "has-error" : ""}`}
-                        placeholder="https://www.odoo.com/odoo/project.task/{{task_id}}"
-                        onInput={(e) => {
-                            setTaskLink(e.currentTarget.value);
-                            setHasError(false);
-                        }}
-                        onKeyDown={handleKeyDown}
-                    />
-                    {hasError && (
-                        <span
-                            className="x-odoo-options-modal-task-link-error-message"
-                            style={{ display: "block" }}
-                        >
-                            Link seems incorrect. Please verify.
-                        </span>
-                    )}
-                    <div className="x-odoo-options-modal-content-footer">
-                        <button id="save-task-link" onClick={handleSave}>
-                            Save
-                        </button>
-                        <button id="cancel-task-link" onClick={onClose}>
-                            Cancel
-                        </button>
-                    </div>
-                </div>
+        <Modal
+            open={open}
+            onClose={onClose}
+            title={`Edit task link for ${favorite.display_name}`}
+            description="Set a custom task link for this project."
+            footer={
+                <>
+                    <Button
+                        id="cancel-task-link"
+                        color="error"
+                        variant="outline"
+                        onClick={onClose}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        id="save-task-link"
+                        color="primary"
+                        onClick={handleSave}
+                    >
+                        Save
+                    </Button>
+                </>
+            }
+        >
+            <div className="flex flex-col gap-3">
+                <Input
+                    ref={inputRef}
+                    type="text"
+                    value={taskLink}
+                    id="task-link-input"
+                    className={hasError ? "input-error" : ""}
+                    placeholder="https://www.odoo.com/odoo/project.task/{{task_id}}"
+                    fullWidth
+                    onInput={(e) => {
+                        setTaskLink(e.currentTarget.value);
+                        setHasError(false);
+                    }}
+                    onKeyDown={handleKeyDown}
+                />
+                {hasError ? (
+                    <Alert color="error" variant="soft" className="text-sm">
+                        Link seems incorrect. Please verify.
+                    </Alert>
+                ) : null}
             </div>
-        </div>
+        </Modal>
     );
 };

@@ -1,6 +1,6 @@
-import "@/components/devtools/selects/selects.styles.scss";
 import { effect, useComputed, useSignal } from "@preact/signals";
 import { useRef } from "preact/hooks";
+import { Input } from "@/components/ui/input";
 import { useDropdownNavigation } from "@/hooks/use-dropdown-navigation";
 import { RefreshButton } from "./refresh-button";
 import { SelectOption } from "./select-option";
@@ -11,6 +11,19 @@ export interface GenericSelectOption {
     label: string;
     searchableText?: string; // Text to search in (combines value + label by default)
 }
+
+type GenericSelectInputProps = Omit<
+    Parameters<typeof Input>[0],
+    | "value"
+    | "onInput"
+    | "onKeyDown"
+    | "onFocus"
+    | "onBlur"
+    | "type"
+    | "placeholder"
+    | "disabled"
+    | "className"
+>;
 
 export interface GenericSelectProps {
     options: GenericSelectOption[];
@@ -37,6 +50,9 @@ export interface GenericSelectProps {
     ) => GenericSelectOption[];
 
     excludedFields?: string[];
+
+    inputClassName?: string;
+    inputProps?: GenericSelectInputProps;
 }
 
 export const GenericSelect = ({
@@ -56,6 +72,8 @@ export const GenericSelect = ({
     customSort,
     multiple = false,
     excludedFields = [],
+    inputClassName = "",
+    inputProps,
 }: GenericSelectProps) => {
     const searchValue = useSignal("");
     const isOpen = useSignal(false);
@@ -64,6 +82,33 @@ export const GenericSelect = ({
     const inputWrapperRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const shouldRenderAbove = useSignal(false);
+
+    const findScrollableAncestor = (
+        element: HTMLElement,
+    ): HTMLElement | null => {
+        let current = element.parentElement;
+
+        while (current && current !== document.body) {
+            const style = window.getComputedStyle(current);
+            const overflowY = style.overflowY;
+            const overflow = style.overflow;
+            const isScrollContainer =
+                overflowY === "auto" ||
+                overflowY === "scroll" ||
+                overflow === "auto" ||
+                overflow === "scroll";
+
+            if (isScrollContainer) {
+                return current;
+            }
+
+            current = current.parentElement;
+        }
+
+        return document.scrollingElement instanceof HTMLElement
+            ? document.scrollingElement
+            : null;
+    };
 
     effect(() => {
         optionsSignal.value = options || [];
@@ -267,8 +312,15 @@ export const GenericSelect = ({
         setTimeout(() => {
             if (inputWrapperRef.current) {
                 const rect = inputWrapperRef.current.getBoundingClientRect();
-                const spaceBelow = window.innerHeight - rect.bottom;
-                const spaceAbove = rect.top;
+                const scrollParent = findScrollableAncestor(
+                    inputWrapperRef.current,
+                );
+                const containerRect = scrollParent
+                    ? scrollParent.getBoundingClientRect()
+                    : { top: 0, bottom: window.innerHeight };
+
+                const spaceBelow = containerRect.bottom - rect.bottom;
+                const spaceAbove = rect.top - containerRect.top;
                 const estimatedDropdownHeight = Math.min(
                     200,
                     filteredOptions.value.length * 40,
@@ -315,7 +367,9 @@ export const GenericSelect = ({
         return (
             <>
                 {before}
-                <mark className="search-highlight">{match}</mark>
+                <mark className="bg-warning/40 text-base-content rounded px-0.5">
+                    {match}
+                </mark>
                 {after}
             </>
         );
@@ -324,7 +378,7 @@ export const GenericSelect = ({
     return (
         <div
             ref={containerRef}
-            className={`select-container ${className} ${multiple ? "multiple" : ""} ${shouldRenderAbove.value ? "dropdown-above" : ""}`}
+            className={`select-container relative ${className} ${multiple ? "multiple" : ""} ${shouldRenderAbove.value ? "dropdown-above" : ""}`}
         >
             {multiple && (
                 <SelectedFieldBadges
@@ -334,8 +388,8 @@ export const GenericSelect = ({
                 />
             )}
 
-            <div ref={inputWrapperRef} className="input-wrapper">
-                <input
+            <div ref={inputWrapperRef} className="input-wrapper relative">
+                <Input
                     type="text"
                     value={displayValue}
                     onInput={handleInputChange}
@@ -343,8 +397,11 @@ export const GenericSelect = ({
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     placeholder={placeholder}
-                    className="form-input"
+                    size="sm"
+                    fullWidth
+                    className={`form-input input-bordered pr-8 ${inputClassName}`}
                     disabled={disabled || loading}
+                    {...inputProps}
                 />
 
                 <RefreshButton
@@ -357,10 +414,15 @@ export const GenericSelect = ({
 
                 {isOpen.value &&
                 (filteredOptions.value.length > 0 || loading) ? (
-                    <div ref={dropdownRef} className="select-dropdown">
+                    <div
+                        ref={dropdownRef}
+                        className={`select-dropdown absolute left-0 right-0 z-50 max-h-52 overflow-y-auto overflow-x-hidden border border-base-300 bg-base-100 shadow-lg ${shouldRenderAbove.value ? "bottom-full mb-1 rounded-md" : "top-full mt-1 rounded-md"}`}
+                    >
                         <>
                             {loading ? (
-                                <div className="select-loading">Loading...</div>
+                                <div className="select-loading px-3 py-2 text-xs text-base-content/60">
+                                    Loading...
+                                </div>
                             ) : (
                                 visibleOptions.value.map((option, index) => {
                                     const isSelected =
@@ -386,7 +448,7 @@ export const GenericSelect = ({
                             {!loading &&
                                 filteredOptions.value.length >
                                     maxDisplayedOptions && (
-                                    <div className="select-more">
+                                    <div className="select-more px-3 py-2 text-xs italic text-base-content/60 bg-base-200/60">
                                         Showing first {maxDisplayedOptions}{" "}
                                         results. Refine your search for more
                                         specific results.

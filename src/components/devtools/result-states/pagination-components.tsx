@@ -1,5 +1,6 @@
-import "@/components/devtools/result-states/pagination-components.style.scss";
-import { ArrowLeft, ArrowRight } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
+
 import { usePagination } from "@/components/devtools/hooks/use-pagination";
 
 interface PaginationControlsProps {
@@ -16,26 +17,39 @@ export const PaginationControls = ({
     }
 
     return (
-        <div className="pagination-inline">
-            <button
-                className={`pagination-inline-btn ${loading ? "loading" : ""}`}
-                onClick={pagination.goToPreviousPage}
-                disabled={pagination.currentPage === 1 || loading}
-            >
-                <ArrowLeft size={16} />
-            </button>
-            <span className="page-info">
-                Page {pagination.currentPage} of {pagination.totalPages}
-            </span>
-            <button
-                className={`pagination-inline-btn ${loading ? "loading" : ""}`}
-                onClick={pagination.goToNextPage}
-                disabled={
-                    pagination.currentPage === pagination.totalPages || loading
-                }
-            >
-                <ArrowRight size={16} />
-            </button>
+        <div className="flex items-center gap-2">
+            <div className="join">
+                <button
+                    className="join-item btn btn-xs btn-ghost"
+                    onClick={pagination.goToPreviousPage}
+                    disabled={pagination.currentPage === 1 || loading}
+                >
+                    <HugeiconsIcon
+                        icon={ArrowLeft01Icon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                </button>
+                <span className="join-item btn btn-xs btn-ghost pointer-events-none font-normal tabular-nums">
+                    Page {pagination.currentPage} of {pagination.totalPages}
+                </span>
+                <button
+                    className="join-item btn btn-xs btn-ghost"
+                    onClick={pagination.goToNextPage}
+                    disabled={
+                        pagination.currentPage === pagination.totalPages ||
+                        loading
+                    }
+                >
+                    <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                </button>
+            </div>
         </div>
     );
 };
@@ -44,7 +58,7 @@ export const PaginationInfo = () => {
     const pagination = usePagination();
 
     return (
-        <span className="record-count">
+        <span className="text-xs text-base-content/70 tabular-nums">
             {pagination.totalPages > 1 &&
             pagination.startRecord &&
             pagination.endRecord

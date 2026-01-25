@@ -30,6 +30,9 @@ export default defineContentScript({
         document.body.dataset.showLoginButtons = (
             settings.showLoginButtons || false
         ).toString();
+        document.body.dataset.odooToolboxTheme = (
+            settings.extensionTheme || "dark"
+        ).toString();
 
         await injectScript("/odoo-websites.js", {
             keepInDom: true,

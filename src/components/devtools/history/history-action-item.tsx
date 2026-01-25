@@ -1,16 +1,19 @@
 import { useSignal } from "@preact/signals";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    Archive,
-    ArchiveRestore,
-    ChevronDown,
-    ChevronRight,
-    CirclePlus,
-    Pencil,
-    Search,
-    SquareFunction,
-    Trash,
-} from "lucide-preact";
+    Add01Icon,
+    ArchiveArrowDownIcon,
+    ArchiveArrowUpIcon,
+    ArrowDown01Icon,
+    ArrowRight01Icon,
+    Delete02Icon,
+    FunctionSquareIcon,
+    PencilEdit01Icon,
+    Search01Icon,
+} from "@hugeicons/core-free-icons";
 import { JSX } from "preact/jsx-runtime";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { removeHistoryAction } from "@/contexts/history-signals";
 import { Logger } from "@/services/logger";
 import type { HistoryAction } from "@/types";
@@ -27,18 +30,27 @@ const getActionOperation = (action: HistoryAction): string => {
     return action.type;
 };
 
+const renderIcon = (icon: typeof Search01Icon, size = 18) => (
+    <HugeiconsIcon
+        icon={icon}
+        size={size}
+        color="currentColor"
+        strokeWidth={1.6}
+    />
+);
+
 const getActionIcon = (action: HistoryAction): JSX.Element => {
     if (action.type === "unlink") {
         const operation = action.parameters.operation;
         switch (operation) {
             case "archive":
-                return <Archive size={18} />;
+                return renderIcon(ArchiveArrowDownIcon);
             case "unarchive":
-                return <ArchiveRestore size={18} />;
+                return renderIcon(ArchiveArrowUpIcon);
             case "delete":
-                return <Trash size={18} />;
+                return renderIcon(Delete02Icon);
             default:
-                return <Trash size={18} />;
+                return renderIcon(Delete02Icon);
         }
     }
 
@@ -46,10 +58,10 @@ const getActionIcon = (action: HistoryAction): JSX.Element => {
         Exclude<HistoryAction["type"], "unlink">,
         JSX.Element
     > = {
-        search: <Search size={18} />,
-        write: <Pencil size={18} />,
-        create: <CirclePlus size={18} />,
-        "call-method": <SquareFunction size={18} />,
+        search: renderIcon(Search01Icon),
+        write: renderIcon(PencilEdit01Icon),
+        create: renderIcon(Add01Icon),
+        "call-method": renderIcon(FunctionSquareIcon),
     };
 
     return defaultIcons[
@@ -58,11 +70,11 @@ const getActionIcon = (action: HistoryAction): JSX.Element => {
 };
 
 const ACTION_TYPE_COLORS: Record<HistoryAction["type"], string> = {
-    search: "history-action-search",
-    write: "history-action-write",
-    create: "history-action-create",
-    "call-method": "history-action-method",
-    unlink: "history-action-unlink",
+    search: "border-l-2 border-l-info",
+    write: "border-l-2 border-l-warning",
+    create: "border-l-2 border-l-success",
+    "call-method": "border-l-2 border-l-secondary",
+    unlink: "border-l-2 border-l-error",
 };
 
 /**
@@ -124,74 +136,93 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
 
     return (
         <div
-            className={`history-action-item ${ACTION_TYPE_COLORS[action.type]}`}
+            className={`rounded-md border border-base-300 bg-base-100 transition-shadow hover:shadow-sm ${ACTION_TYPE_COLORS[action.type]}`}
         >
-            <div className="action-header">
-                <div className="action-main">
-                    <button
+            <div className="flex items-center justify-between gap-3 p-2 select-none hover:bg-base-200/70">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <IconButton
                         type="button"
-                        className="btn-icon expand-btn"
+                        label={isExpanded.value ? "Collapse" : "Expand"}
+                        variant="ghost"
+                        size="xs"
+                        square
+                        className="text-base-content/60 hover:text-base-content hover:bg-base-200/70"
                         onClick={(e) => {
                             e.stopPropagation();
                             toggleExpanded();
                         }}
-                        title={isExpanded.value ? "Collapse" : "Expand"}
-                    >
-                        {isExpanded.value ? <ChevronDown /> : <ChevronRight />}
-                    </button>
+                        icon={
+                            <HugeiconsIcon
+                                icon={
+                                    isExpanded.value
+                                        ? ArrowDown01Icon
+                                        : ArrowRight01Icon
+                                }
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={1.6}
+                            />
+                        }
+                    />
                     <div
-                        className="action-icon"
+                        className="flex w-5 text-base-content/70"
                         title={getActionOperation(action)}
                     >
                         {getActionIcon(action)}
                     </div>
-                    <div className="action-info">
-                        <div className="action-meta">
-                            <span className="action-model">{action.model}</span>
+                    <div className="flex flex-1 flex-col gap-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-base-content/60">
+                            <span className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[10px] select-text">
+                                {action.model}
+                            </span>
                             {action.database && (
                                 <>
-                                    <span className="action-separator">•</span>
+                                    <span className="opacity-50">•</span>
                                     <span
-                                        className="action-database"
+                                        className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-primary select-text"
                                         title={`Database: ${action.database}`}
                                     >
                                         {action.database}
                                     </span>
                                 </>
                             )}
-                            <span className="action-separator">•</span>
-                            <span className="action-time">
+                            <span className="opacity-50">•</span>
+                            <span className="whitespace-nowrap">
                                 {formatTimestamp(action.timestamp)}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <div className="action-controls">
+                <div className="flex items-center gap-2 shrink-0">
                     <HistoryActionRestore action={action} />
                 </div>
             </div>
 
             {isExpanded.value && (
-                <div className="action-details">
-                    <div className="action-parameters">
-                        <h5>Parameters:</h5>
-                        <pre className="parameters-json">
+                <div className="flex flex-col gap-4 border-t border-base-300 bg-base-200 p-4">
+                    <div className="flex flex-col gap-2">
+                        <h5 className="text-xs font-semibold text-base-content/70">
+                            Parameters:
+                        </h5>
+                        <pre className="max-h-[300px] overflow-x-auto overflow-y-auto whitespace-pre rounded border border-base-300 bg-base-100 p-3 font-mono text-[11px] leading-relaxed text-base-content/80">
                             {JSON.stringify(action.parameters, null, 2)}
                         </pre>
                     </div>
 
-                    <div className="action-footer">
-                        <button
+                    <div className="flex justify-end gap-2 border-t border-base-300 pt-2">
+                        <Button
                             type="button"
-                            className="btn btn-danger-outline"
+                            variant="outline"
+                            color="error"
+                            size="sm"
                             onClick={handleDelete}
                             disabled={isDeleting.value}
                         >
                             {isDeleting.value
                                 ? "Removing..."
                                 : "Remove from History"}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

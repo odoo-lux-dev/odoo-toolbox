@@ -109,40 +109,49 @@ export const FavoritesPage = () => {
     };
 
     if (loading) {
-        return <div>Loading favorites...</div>;
+        return (
+            <div className="flex items-center gap-2 text-sm opacity-80">
+                <span className="loading loading-spinner loading-sm" />
+                <span>Loading favorites...</span>
+            </div>
+        );
     }
 
     if (!favorites?.length) {
         return (
-            <div className="x-odoo-options-page x-odoo-options-page-no-favorites">
-                <h2 className="x-odoo-options-page-option-title">
-                    Favorite projects
-                </h2>
-                <p>You have no favorite projects</p>
-                <p>
-                    Click on the star icon next to the project name to add it to
-                    your favorites
-                </p>
-                <a
-                    className="x-odoo-options-page-link"
-                    target="_blank"
-                    href="https://www.odoo.sh/project"
-                >
-                    Take me to Odoo.sh projects page
-                </a>
+            <div className="flex flex-col gap-4">
+                <div className="divider">
+                    <h2 className="text-xl font-semibold">Favorite projects</h2>
+                </div>
+                <div className="card bg-base-200 shadow-sm">
+                    <div className="card-body gap-3">
+                        <p className="text-sm opacity-80">
+                            You have no favorite projects
+                        </p>
+                        <p className="text-sm opacity-80">
+                            Click on the star icon next to the project name to
+                            add it to your favorites
+                        </p>
+                        <a
+                            className="btn btn-sm btn-primary w-fit"
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            href="https://www.odoo.sh/project"
+                        >
+                            Take me to Odoo.sh projects page
+                        </a>
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="x-odoo-options-page">
-            <h2 className="x-odoo-options-page-option-title">
-                Favorite projects
-            </h2>
-            <div
-                className="x-odoo-options-page-favorite-rows"
-                ref={favoritesContainerRef}
-            >
+        <div className="flex flex-col gap-4">
+            <div className="divider">
+                <h2 className="text-xl font-semibold">Favorite projects</h2>
+            </div>
+            <div className="flex flex-col gap-3" ref={favoritesContainerRef}>
                 {slottedItems.value.map(
                     ({ slotId, itemId, item: favorite }, index) =>
                         favorite ? (
@@ -166,13 +175,14 @@ export const FavoritesPage = () => {
                 )}
             </div>
 
-            {showModal.value && selectedFavorite.value && (
+            {selectedFavorite.value ? (
                 <FavoriteTaskLinkModal
                     favorite={selectedFavorite.value}
+                    open={showModal.value}
                     onClose={() => (showModal.value = false)}
                     onSave={handleSaveTaskLink}
                 />
-            )}
+            ) : null}
         </div>
     );
 };

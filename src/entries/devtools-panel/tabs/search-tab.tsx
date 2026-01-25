@@ -1,4 +1,3 @@
-import "@/entries/devtools-panel/tabs/tabs.style.scss";
 import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query-form-sidebar";
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
 import {
@@ -23,7 +22,7 @@ export const SearchTab = () => {
     const isPrimaryActionDisabled = !rpcQuery.model || !rpcQuery.isQueryValid;
 
     return (
-        <div className="rpc-query-form">
+        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
             <QueryFormSidebar
                 showFieldsSection={true}
                 showDomainSection={true}
@@ -33,10 +32,10 @@ export const SearchTab = () => {
                 primaryActionDisabled={isPrimaryActionDisabled}
                 onPrimaryAction={handleExecuteQuery}
                 onClear={handleClearForm}
-                recordIdsHelpText="Comma-separated IDs or JSON array. Leave empty for all records."
+                recordIdsHelpText="Comma-separated IDs or array. Empty for all records."
             />
 
-            <div className="tab-results">
+            <div className="bg-base-100 flex h-full min-h-0 flex-col gap-4 overflow-hidden rounded-tl-xl px-3">
                 <ResultViewer />
             </div>
         </div>

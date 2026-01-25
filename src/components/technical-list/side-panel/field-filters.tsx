@@ -1,3 +1,8 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Search01Icon } from "@hugeicons/core-free-icons";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+
 interface FieldFiltersProps {
     searchTerm: string;
     onSearchChange: (term: string) => void;
@@ -23,71 +28,65 @@ export const FieldFilters = ({
     showOnlyButtons,
     onButtonsChange,
 }: FieldFiltersProps) => (
-    <div className="x-odoo-technical-list-info-filters">
-        <div className="x-odoo-technical-list-info-search">
-            <input
+    <div className="border-solid border-b border-base-200 px-6 py-4">
+        <div>
+            <Input
                 type="text"
+                size="sm"
                 placeholder="Search fields and buttons..."
                 value={searchTerm}
-                onInput={(e) =>
-                    onSearchChange((e.target as HTMLInputElement).value)
+                onInput={(event) =>
+                    onSearchChange((event.target as HTMLInputElement).value)
                 }
-                className="x-odoo-technical-list-info-search-input"
+                fullWidth
+                className="input-bordered"
+                suffix={
+                    <HugeiconsIcon
+                        icon={Search01Icon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                        className="text-base-content/50"
+                    />
+                }
             />
-            <i className="fa fa-search" />
         </div>
-        <div className="x-odoo-technical-list-info-search-filters-list">
-            <div>
-                <label className="x-odoo-technical-list-info-checkbox">
-                    <input
-                        type="checkbox"
+        <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-base-content/80 sm:grid-cols-2">
+            <div className="space-y-2">
+                <div>
+                    <Checkbox
                         checked={showOnlyRequired}
-                        onInput={(e) =>
-                            onRequiredChange(
-                                (e.target as HTMLInputElement).checked,
-                            )
-                        }
+                        onCheckedChange={onRequiredChange}
+                        label="Required only"
+                        size="xs"
                     />
-                    <span>Required only</span>
-                </label>
-                <label className="x-odoo-technical-list-info-checkbox">
-                    <input
-                        type="checkbox"
+                </div>
+                <div>
+                    <Checkbox
                         checked={showOnlyReadonly}
-                        onInput={(e) =>
-                            onReadonlyChange(
-                                (e.target as HTMLInputElement).checked,
-                            )
-                        }
+                        onCheckedChange={onReadonlyChange}
+                        label="Readonly only"
+                        size="xs"
                     />
-                    <span>Readonly only</span>
-                </label>
+                </div>
             </div>
-            <div>
-                <label className="x-odoo-technical-list-info-checkbox">
-                    <input
-                        type="checkbox"
+            <div className="space-y-2">
+                <div>
+                    <Checkbox
                         checked={showOnlyFields}
-                        onInput={(e) =>
-                            onFieldsChange(
-                                (e.target as HTMLInputElement).checked,
-                            )
-                        }
+                        onCheckedChange={onFieldsChange}
+                        label="Fields only"
+                        size="xs"
                     />
-                    <span>Fields only</span>
-                </label>
-                <label className="x-odoo-technical-list-info-checkbox">
-                    <input
-                        type="checkbox"
+                </div>
+                <div>
+                    <Checkbox
                         checked={showOnlyButtons}
-                        onInput={(e) =>
-                            onButtonsChange(
-                                (e.target as HTMLInputElement).checked,
-                            )
-                        }
+                        onCheckedChange={onButtonsChange}
+                        label="Buttons only"
+                        size="xs"
                     />
-                    <span>Buttons only</span>
-                </label>
+                </div>
             </div>
         </div>
     </div>

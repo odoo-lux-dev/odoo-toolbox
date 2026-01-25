@@ -1,4 +1,6 @@
-import { Info } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { Badge } from "@/components/ui/badge";
 import { useCallback } from "preact/hooks";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { EnhancedTechnicalButtonInfo } from "@/types";
@@ -13,6 +15,9 @@ interface ButtonItemProps {
     ) => void;
 }
 
+const getButtonTypeColor = (type: "object" | "action") =>
+    type === "object" ? "primary" : "secondary";
+
 export const ButtonItem = ({
     button,
     onHighlight,
@@ -22,7 +27,7 @@ export const ButtonItem = ({
 
     const handleCopyButtonName = useCallback(
         async (buttonName: string, event: MouseEvent) => {
-            const target = event.target as HTMLElement;
+            const target = event.currentTarget as HTMLElement;
             await copyToClipboard(buttonName, target);
         },
         [copyToClipboard],
@@ -30,34 +35,44 @@ export const ButtonItem = ({
 
     return (
         <div
-            className="x-odoo-technical-list-info-field"
+            className="rounded-xl border border-solid border-base-200 bg-base-100 p-3 shadow-sm hover:border-primary hover:shadow-md"
             onMouseEnter={() => onHighlight(button.name, button.type)}
             onMouseLeave={() => onClearHighlight(button.name, button.type)}
         >
-            <div className="x-odoo-technical-list-info-field-header">
-                <div className="x-odoo-technical-list-info-field-name">
-                    <code
-                        onClick={(e) => handleCopyButtonName(button.name, e)}
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <span
+                        className="text-xs font-mono rounded-md px-2 py-1 max-w-50 truncate cursor-pointer bg-base-200 hover:bg-primary hover:text-primary-content transition-colors"
+                        onClick={(event) =>
+                            handleCopyButtonName(button.name, event)
+                        }
                         title="Click to copy button name"
                     >
                         {button.name}
-                    </code>
+                    </span>
                 </div>
-                <span className="x-odoo-technical-list-info-field-type x-odoo-type-button">
+                <Badge
+                    size="sm"
+                    color={getButtonTypeColor(button.type)}
+                    variant="outline"
+                    className="uppercase tracking-wide"
+                >
                     {button.type}
-                </span>
+                </Badge>
             </div>
 
-            {button.label && (
-                <div className="x-odoo-technical-list-info-field-label">
+            {button.label ? (
+                <div className="mt-2 text-xs text-base-content/70">
                     {button.label}
                 </div>
-            )}
+            ) : null}
 
-            <div className="x-odoo-technical-list-info-debug-badges">
-                {button.debugInfo?.invisible && (
-                    <span
-                        className="x-odoo-technical-list-info-debug-badge x-odoo-badge-invisible"
+            <div className="mt-3 flex flex-wrap gap-2">
+                {button.debugInfo?.invisible ? (
+                    <Badge
+                        size="sm"
+                        variant="outline"
+                        className="uppercase tracking-wide"
                         title={
                             isDynamicCondition(button.debugInfo.invisible)
                                 ? `Invisible when: ${button.debugInfo.invisible}`
@@ -67,21 +82,26 @@ export const ButtonItem = ({
                         {isDynamicCondition(button.debugInfo.invisible)
                             ? "Invisible*"
                             : "Invisible"}
-                    </span>
-                )}
+                    </Badge>
+                ) : null}
             </div>
 
-            {isDynamicCondition(button.debugInfo?.invisible) && (
-                <div className="x-odoo-technical-list-info-conditional-note">
-                    <Info size={10} />
+            {isDynamicCondition(button.debugInfo?.invisible) ? (
+                <div className="mt-3 flex items-center gap-2 rounded-md bg-base-200/70 px-2 py-1 text-[11px] text-base-content/70">
+                    <HugeiconsIcon
+                        icon={InformationCircleIcon}
+                        size={12}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
                     <span>
                         * indicates conditional behavior based on button state
                     </span>
                 </div>
-            )}
+            ) : null}
 
-            {button.debugInfo && (
-                <div className="x-odoo-technical-list-info-debug-details">
+            {button.debugInfo ? (
+                <div className="mt-3 space-y-2 border-t border-base-200 pt-3 text-xs">
                     {[
                         {
                             key: "string",
@@ -123,28 +143,28 @@ export const ButtonItem = ({
                         .map((item) => (
                             <div
                                 key={item.key}
-                                className="x-odoo-technical-list-info-debug-item"
+                                className="flex items-start justify-between gap-4"
                             >
-                                <span className="x-odoo-debug-label">
+                                <span className="font-medium text-base-content/60 text-nowrap">
                                     {item.label}
                                 </span>
-                                <span className="x-odoo-debug-value x-odoo-json">
+                                <code className="max-w-[220px] break-words text-right font-mono text-base-content/80 max-h-[60px] overflow-y-auto">
                                     {item.serialize
                                         ? JSON.stringify(item.value)
                                         : String(item.value)}
-                                </span>
+                                </code>
                             </div>
                         ))}
                 </div>
-            )}
+            ) : null}
 
-            {button.hotkey && (
-                <div className="x-odoo-technical-list-info-field-value">
-                    <div className="x-odoo-technical-list-info-field-value-content">
+            {button.hotkey ? (
+                <div className="mt-3">
+                    <code className="rounded-md border border-base-200 bg-base-200/60 px-2 py-1 text-xs font-mono text-base-content/80">
                         <strong>Hotkey:</strong> {button.hotkey}
-                    </div>
+                    </code>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 };

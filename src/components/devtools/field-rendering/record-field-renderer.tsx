@@ -38,11 +38,7 @@ export const RecordFieldRenderer = ({
 
     if (isRelational) {
         return (
-            <div
-                data-field={fieldKey}
-                key={fieldKey}
-                className="detail-row-wrapper"
-            >
+            <div data-field={fieldKey} key={fieldKey}>
                 <FieldRenderer
                     value={fieldValue}
                     fieldName={fieldKey}
@@ -65,43 +61,42 @@ export const RecordFieldRenderer = ({
     }
 
     return (
-        <div key={fieldKey} className="detail-row-wrapper">
-            <div
-                className="detail-row"
-                data-field={fieldKey}
-                onContextMenu={(e) =>
-                    onFieldContextMenu(
-                        e as unknown as MouseEvent,
-                        record,
-                        fieldKey,
-                        fieldValue,
-                        fieldMetadata,
-                        parentModel,
-                    )
-                }
+        <div
+            key={fieldKey}
+            className="flex min-w-0 items-end rounded hover:bg-neutral/40"
+            data-field={fieldKey}
+            onContextMenu={(e) =>
+                onFieldContextMenu(
+                    e as unknown as MouseEvent,
+                    record,
+                    fieldKey,
+                    fieldValue,
+                    fieldMetadata,
+                    parentModel,
+                )
+            }
+        >
+            <span className="inline-flex h-4 w-4 shrink-0"></span>
+            <FieldMetadataTooltip
+                fieldMetadata={fieldMetadata || null}
+                fieldName={fieldKey}
             >
-                <span className="expand-icon-placeholder"></span>
-                <FieldMetadataTooltip
-                    fieldMetadata={fieldMetadata || null}
-                    fieldName={fieldKey}
+                <span
+                    className="text-xs font-medium text-base-content/70"
+                    data-level={actualLevel}
+                    data-field={fieldKey}
+                    data-searchable={fieldKey}
                 >
-                    <span
-                        className="detail-label"
-                        data-level={actualLevel}
-                        data-field={fieldKey}
-                        data-searchable={fieldKey}
-                    >
-                        {fieldKey}:
-                    </span>
-                </FieldMetadataTooltip>
-                <FieldRenderer
-                    value={fieldValue}
-                    fieldName={fieldKey}
-                    level={level + 1}
-                    parentFieldsMetadata={fieldsMetadata}
-                    additionalClasses="detail-values"
-                />
-            </div>
+                    {fieldKey}:
+                </span>
+            </FieldMetadataTooltip>
+            <FieldRenderer
+                value={fieldValue}
+                fieldName={fieldKey}
+                level={level + 1}
+                parentFieldsMetadata={fieldsMetadata}
+                additionalClasses="ml-2 min-w-0 flex-1 truncate"
+            />
         </div>
     );
 };

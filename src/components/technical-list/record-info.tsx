@@ -1,3 +1,15 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    CodeIcon,
+    StarsIcon,
+    DatabaseIcon,
+    EyeIcon,
+    FilterIcon,
+    IdIcon,
+    Settings02Icon,
+    StarIcon,
+    ThreeDViewIcon,
+} from "@hugeicons/core-free-icons";
 import { useTechnicalSidebar } from "./hooks/use-technical-sidebar";
 import { InfoItem } from "./info-item";
 import { InfoSection } from "./info-section";
@@ -10,9 +22,16 @@ export const RecordInfo = () => {
     if (viewInfo?.currentModel) {
         items.push(
             <InfoItem
-                icon="fa-table"
+                icon={
+                    <HugeiconsIcon
+                        icon={DatabaseIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Model"
-                value={viewInfo?.currentModel}
+                value={viewInfo.currentModel}
                 copyable
             />,
         );
@@ -21,9 +40,16 @@ export const RecordInfo = () => {
     if (viewInfo?.currentRecordId) {
         items.push(
             <InfoItem
-                icon="fa-id-card"
+                icon={
+                    <HugeiconsIcon
+                        icon={IdIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Record ID"
-                value={viewInfo?.currentRecordId.toString()}
+                value={viewInfo.currentRecordId.toString()}
                 copyable
             />,
         );
@@ -32,9 +58,16 @@ export const RecordInfo = () => {
     if (viewInfo?.viewType) {
         items.push(
             <InfoItem
-                icon="fa-eye"
+                icon={
+                    <HugeiconsIcon
+                        icon={EyeIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="View Type"
-                value={viewInfo?.viewType}
+                value={viewInfo.viewType}
                 copyable
             />,
         );
@@ -43,9 +76,16 @@ export const RecordInfo = () => {
     if (viewInfo?.actionType) {
         items.push(
             <InfoItem
-                icon="fa-star-o"
+                icon={
+                    <HugeiconsIcon
+                        icon={StarIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Action Type"
-                value={viewInfo?.actionType}
+                value={viewInfo.actionType}
                 copyable
             />,
         );
@@ -54,9 +94,16 @@ export const RecordInfo = () => {
     if (viewInfo?.actionName) {
         items.push(
             <InfoItem
-                icon="fa-bolt"
+                icon={
+                    <HugeiconsIcon
+                        icon={StarsIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Action Name"
-                value={viewInfo?.actionName}
+                value={viewInfo.actionName}
                 copyable
             />,
         );
@@ -65,9 +112,16 @@ export const RecordInfo = () => {
     if (viewInfo?.actionXmlId) {
         items.push(
             <InfoItem
-                icon="fa-code"
+                icon={
+                    <HugeiconsIcon
+                        icon={CodeIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Action XML ID"
-                value={viewInfo?.actionXmlId}
+                value={viewInfo.actionXmlId}
                 copyable
             />,
         );
@@ -76,9 +130,16 @@ export const RecordInfo = () => {
     if (viewInfo?.actionContext) {
         items.push(
             <InfoItem
-                icon="fa-cog"
+                icon={
+                    <HugeiconsIcon
+                        icon={Settings02Icon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Action Context"
-                value={viewInfo?.actionContext}
+                value={viewInfo.actionContext}
                 copyable
             />,
         );
@@ -87,23 +148,42 @@ export const RecordInfo = () => {
     if (viewInfo?.actionDomain) {
         items.push(
             <InfoItem
-                icon="fa-filter"
+                icon={
+                    <HugeiconsIcon
+                        icon={FilterIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
                 label="Action Domain"
-                value={viewInfo?.actionDomain}
+                value={viewInfo.actionDomain}
                 copyable
             />,
         );
     }
 
     return (
-        <InfoSection icon="fa-cogs" title="Record Information">
+        <InfoSection
+            icon={
+                <HugeiconsIcon
+                    icon={ThreeDViewIcon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+            }
+            title="Record Information"
+        >
             <>
                 {items}
                 {viewInfo?.currentModel ? (
-                    <ModelActions
-                        currentModel={viewInfo?.currentModel}
-                        currentRecordId={viewInfo?.currentRecordId}
-                    />
+                    <div className="pt-2">
+                        <ModelActions
+                            currentModel={viewInfo.currentModel}
+                            currentRecordId={viewInfo.currentRecordId}
+                        />
+                    </div>
                 ) : null}
             </>
         </InfoSection>

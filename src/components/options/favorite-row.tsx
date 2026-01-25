@@ -1,6 +1,15 @@
 import { useSignal } from "@preact/signals";
-import { Link, Pencil, Save, Trash, Undo2 } from "lucide-preact";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+    Delete02Icon,
+    FloppyDiskIcon,
+    Link01Icon,
+    PencilEdit01Icon,
+    UndoIcon,
+} from "@hugeicons/core-free-icons";
 import { useEffect, useRef } from "preact/hooks";
+import { IconButton } from "@/components/ui/icon-button";
+import { Input } from "@/components/ui/input";
 import { Favorite } from "@/types";
 import { FavoriteDragHandler } from "./favorite-drag-handler";
 
@@ -69,14 +78,14 @@ export const FavoriteRow = ({
         <div data-swapy-slot={slotId}>
             <div
                 key={itemId}
-                className="x-odoo-options-page-favorite-row"
+                className={`flex items-center gap-2 rounded-box bg-base-100 px-3 py-2 shadow-sm ${isOtherRowEditing ? "opacity-50" : ""}`}
                 data-swapy-item={itemId}
                 data-swapy-no-drag
             >
                 <FavoriteDragHandler />
 
                 {isEditing.value ? (
-                    <input
+                    <Input
                         ref={inputRef}
                         type="text"
                         value={displayName.value}
@@ -85,17 +94,17 @@ export const FavoriteRow = ({
                         }
                         onKeyDown={handleKeyDown}
                         data-swapy-no-drag
+                        size="sm"
+                        fullWidth
+                        className="min-w-0"
                     />
                 ) : (
                     <a
                         href={`https://www.odoo.sh/project/${favorite.name}`}
                         target="_blank"
+                        rel="noreferrer noopener"
                         data-swapy-no-drag
-                        className={
-                            isOtherRowEditing
-                                ? "x-odoo-options-page-favorite-disabled"
-                                : ""
-                        }
+                        className={`link link-hover flex-1 min-w-0 truncate ${isOtherRowEditing ? "opacity-50 pointer-events-none" : ""}`}
                         onClick={
                             isOtherRowEditing
                                 ? (e) => e.preventDefault()
@@ -106,55 +115,88 @@ export const FavoriteRow = ({
                     </a>
                 )}
 
-                <button
-                    className={`x-odoo-options-page-favorite-edit-button ${isEditing.value ? "x-odoo-options-page-favorite-save-button" : ""}`}
-                    title={
-                        isEditing.value
-                            ? "Save changes"
-                            : `Edit ${favorite.display_name} name`
-                    }
-                    onClick={isEditing.value ? handleSave : startEditing}
-                    disabled={isOtherRowEditing}
-                    data-swapy-no-drag
-                >
-                    {isEditing.value ? (
-                        <Save size={18} />
-                    ) : (
-                        <Pencil size={18} />
-                    )}
-                </button>
+                <div className="ml-auto flex items-center gap-1">
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        label={
+                            isEditing.value
+                                ? "Save changes"
+                                : `Edit ${favorite.display_name} name`
+                        }
+                        icon={
+                            isEditing.value ? (
+                                <HugeiconsIcon
+                                    icon={FloppyDiskIcon}
+                                    size={18}
+                                    color="currentColor"
+                                    strokeWidth={2}
+                                />
+                            ) : (
+                                <HugeiconsIcon
+                                    icon={PencilEdit01Icon}
+                                    size={18}
+                                    color="currentColor"
+                                    strokeWidth={2}
+                                />
+                            )
+                        }
+                        onClick={isEditing.value ? handleSave : startEditing}
+                        disabled={isOtherRowEditing}
+                        data-swapy-no-drag
+                    />
 
-                <button
-                    className="x-odoo-options-page-favorite-link-button"
-                    title={`Edit ${favorite.display_name} task link`}
-                    onClick={() => onEditTaskLink(favorite)}
-                    disabled={isEditing.value || isOtherRowEditing}
-                    data-swapy-no-drag
-                >
-                    <Link size={18} />
-                </button>
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        label={`Edit ${favorite.display_name} task link`}
+                        icon={
+                            <HugeiconsIcon
+                                icon={Link01Icon}
+                                size={18}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                        }
+                        onClick={() => onEditTaskLink(favorite)}
+                        disabled={isEditing.value || isOtherRowEditing}
+                        data-swapy-no-drag
+                    />
 
-                <button
-                    className={`x-odoo-options-page-favorite-delete-button ${isEditing.value ? "x-odoo-options-page-favorite-reset-button" : ""}`}
-                    title={
-                        isEditing.value
-                            ? "Reset changes"
-                            : `Delete ${favorite.display_name} from favorites`
-                    }
-                    onClick={
-                        isEditing.value
-                            ? handleReset
-                            : () => onDelete(favorite.name)
-                    }
-                    disabled={isOtherRowEditing}
-                    data-swapy-no-drag
-                >
-                    {isEditing.value ? (
-                        <Undo2 size={18} />
-                    ) : (
-                        <Trash size={18} />
-                    )}
-                </button>
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        label={
+                            isEditing.value
+                                ? "Reset changes"
+                                : `Delete ${favorite.display_name} from favorites`
+                        }
+                        icon={
+                            isEditing.value ? (
+                                <HugeiconsIcon
+                                    icon={UndoIcon}
+                                    size={18}
+                                    color="currentColor"
+                                    strokeWidth={2}
+                                />
+                            ) : (
+                                <HugeiconsIcon
+                                    icon={Delete02Icon}
+                                    size={18}
+                                    color="currentColor"
+                                    strokeWidth={2}
+                                />
+                            )
+                        }
+                        onClick={
+                            isEditing.value
+                                ? handleReset
+                                : () => onDelete(favorite.name)
+                        }
+                        disabled={isOtherRowEditing}
+                        data-swapy-no-drag
+                    />
+                </div>
             </div>
         </div>
     );

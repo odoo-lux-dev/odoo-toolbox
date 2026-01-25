@@ -10,21 +10,25 @@ interface ValueRendererProps {
 
 // Determine CSS classes based on value type
 export const getValueClasses = (val: unknown): string => {
-    let classes = "detail-value";
+    const base = "text-xs font-mono";
 
     if (typeof val === "boolean") {
-        classes += " cell-boolean";
-    } else if (typeof val === "number") {
-        classes += " cell-number";
-    } else if (typeof val === "string") {
-        classes += " cell-string";
-    } else if (val === null || val === undefined) {
-        classes += " cell-object";
-    } else if (typeof val === "object") {
-        classes += " cell-object";
+        return `${base} text-warning`;
+    }
+    if (typeof val === "number") {
+        return `${base} text-primary dark:text-accent`;
+    }
+    if (typeof val === "string") {
+        return `${base} text-success`;
+    }
+    if (val === null || val === undefined) {
+        return `${base} text-base-content/60`;
+    }
+    if (typeof val === "object") {
+        return `${base} text-base-content`;
     }
 
-    return classes;
+    return `${base} text-base-content`;
 };
 
 export const ValueRenderer = ({
@@ -42,7 +46,9 @@ export const ValueRenderer = ({
         if (typeof val === "string") {
             const textRef = useEllipsisTitle(val, [val]);
             const classes =
-                isRoot && className ? className : getValueClasses(val);
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
             return (
                 <span ref={textRef} key={keyPrefix} className={classes}>
                     "{val}"
@@ -51,7 +57,10 @@ export const ValueRenderer = ({
         }
 
         if (Array.isArray(val)) {
-            const classes = isRoot && className ? className : "";
+            const classes =
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
             const fullText = JSON.stringify(val);
             const arrayRef = useEllipsisTitle(fullText, [val]);
             return (
@@ -70,7 +79,9 @@ export const ValueRenderer = ({
 
         if (typeof val === "boolean") {
             const classes =
-                isRoot && className ? className : getValueClasses(val);
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
             return (
                 <span key={keyPrefix} className={classes}>
                     {val.toString()}
@@ -80,7 +91,9 @@ export const ValueRenderer = ({
 
         if (typeof val === "number") {
             const classes =
-                isRoot && className ? className : getValueClasses(val);
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
             return (
                 <span key={keyPrefix} className={classes}>
                     {val.toString()}
@@ -90,7 +103,9 @@ export const ValueRenderer = ({
 
         if (val === null || val === undefined) {
             const classes =
-                isRoot && className ? className : getValueClasses(val);
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
             return (
                 <span key={keyPrefix} className={classes}>
                     null
@@ -100,7 +115,9 @@ export const ValueRenderer = ({
 
         if (typeof val === "object") {
             const classes =
-                isRoot && className ? className : getValueClasses(val);
+                isRoot && className
+                    ? `${getValueClasses(val)} ${className}`
+                    : getValueClasses(val);
 
             // Handle object case by iterating over its properties
             if (
@@ -117,7 +134,7 @@ export const ValueRenderer = ({
                         {entries.map(([objKey, objValue], index) => (
                             <span key={`${keyPrefix}-obj-${index}`}>
                                 {index > 0 && ", "}
-                                <span className="detail-value cell-string">
+                                <span className="text-xs font-mono text-success">
                                     "{objKey}"
                                 </span>
                                 {": "}

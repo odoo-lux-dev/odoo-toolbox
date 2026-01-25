@@ -410,7 +410,34 @@ async function executeInContentScript(
             throw new Error("Action service not available");
         }
 
-        return await doActionFunction(params.action, params.options || {});
+        const options = params.options || {};
+        const action = params.action;
+        const mergedAction =
+            params.context && typeof action === "object" && action !== null
+                ? {
+                      ...(action as Record<string, unknown>),
+                      context: {
+                          ...(((action as Record<string, unknown>).context as
+                              | Record<string, unknown>
+                              | undefined) || {}),
+                          ...params.context,
+                      },
+                  }
+                : action;
+
+        const mergedOptions =
+            params.context && (typeof action !== "object" || action === null)
+                ? {
+                      ...options,
+                      context: {
+                          ...(options as { context?: Record<string, unknown> })
+                              .context,
+                          ...params.context,
+                      },
+                  }
+                : options;
+
+        return await doActionFunction(mergedAction, mergedOptions);
     }
 
     try {

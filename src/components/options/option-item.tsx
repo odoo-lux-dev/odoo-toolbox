@@ -1,5 +1,6 @@
 import { ComponentChildren } from "preact";
-import { Tooltip } from "./tooltip";
+import { Card } from "@/components/ui/card";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface OptionItemProps {
     id: string;
@@ -21,18 +22,25 @@ export const OptionItem = ({
     className = "",
 }: OptionItemProps) => {
     return (
-        <div id={id} className={`x-odoo-options-page-option-item ${className}`}>
-            <h3>
-                {title}
-                {tooltipContent && (
-                    <Tooltip
+        <Card
+            id={id}
+            className={`bg-base-100 shadow-sm self-start break-inside-avoid ${className}`}
+            bodyClassName="gap-2"
+        >
+            <div className="flex items-start justify-between gap-2">
+                <h3 className="card-title text-base">{title}</h3>
+                {tooltipContent ? (
+                    <InfoTooltip
                         content={tooltipContent}
                         additionalContent={additionalTooltipContent}
+                        placement="left"
                     />
-                )}
-            </h3>
-            {description && <p>{description}</p>}
-            <div className="x-odoo-options-page-option-content">{children}</div>
-        </div>
+                ) : null}
+            </div>
+            {description ? (
+                <p className="text-sm opacity-80">{description}</p>
+            ) : null}
+            <div className="mt-2 flex flex-col gap-2">{children}</div>
+        </Card>
     );
 };
