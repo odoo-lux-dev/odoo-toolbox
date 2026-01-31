@@ -1,6 +1,6 @@
 import { OptionItem } from "@/components/options/option-item";
 import { Toggle } from "@/components/ui/toggle";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import {
     CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
@@ -8,7 +8,12 @@ import {
 } from "@/utils/constants";
 
 export const PrintOption = () => {
-    const { settings } = useOptions();
+    const pdfSetting = useSettingValue(
+        CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
+    );
+    const htmlSetting = useSettingValue(
+        CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
+    );
 
     const handlePdfChange = async (checked: boolean) => {
         await settingsService.setPrintOptionsPDF(checked);
@@ -18,9 +23,8 @@ export const PrintOption = () => {
         await settingsService.setPrintOptionsHTML(checked);
     };
 
-    const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF];
-    const htmlEnabled =
-        !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML];
+    const pdfEnabled = !!pdfSetting.value;
+    const htmlEnabled = !!htmlSetting.value;
 
     return (
         <OptionItem

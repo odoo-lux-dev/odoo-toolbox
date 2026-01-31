@@ -7,11 +7,11 @@ import type {
 import { Logger } from "./logger";
 
 const HISTORY_STORAGE_KEY = "devtools_history";
-const MAX_HISTORY_ENTRIES = 100;
+export const MAX_HISTORY_ENTRIES = 150;
 
 /**
  * Service for managing DevTools action history
- * Stores the last 100 actions performed through DevTools
+ * Stores the last MAX_HISTORY_ENTRIES actions performed through DevTools
  */
 export class HistoryService {
     private static instance: HistoryService | null = null;

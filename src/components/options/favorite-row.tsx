@@ -11,6 +11,7 @@ import { useEffect, useRef } from "preact/hooks";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { Favorite } from "@/types";
+import { FavoriteDeleteModal } from "./favorite-delete-modal";
 import { FavoriteDragHandler } from "./favorite-drag-handler";
 
 export const FavoriteRow = ({
@@ -22,6 +23,7 @@ export const FavoriteRow = ({
     onEditTaskLink,
     onDelete,
     onEdition,
+    onDeleteModalChange,
 }: {
     slotId: string;
     itemId: string;
@@ -31,9 +33,11 @@ export const FavoriteRow = ({
     onEditTaskLink: (favorite: Favorite) => void;
     onDelete: (name: string) => Promise<void>;
     onEdition: (isEditing: boolean) => void;
+    onDeleteModalChange?: (isOpen: boolean) => void;
 }) => {
     const isEditing = useSignal(false);
     const displayName = useSignal(favorite.display_name);
+    const showDeleteConfirm = useSignal(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -72,6 +76,17 @@ export const FavoriteRow = ({
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Enter") handleSave();
         if (e.key === "Escape") handleAbort();
+    };
+
+    const handleConfirmDelete = async () => {
+        showDeleteConfirm.value = false;
+        onDeleteModalChange?.(false);
+        await onDelete(favorite.name);
+    };
+
+    const handleCloseDelete = () => {
+        showDeleteConfirm.value = false;
+        onDeleteModalChange?.(false);
     };
 
     return (
@@ -125,21 +140,26 @@ export const FavoriteRow = ({
                                 : `Edit ${favorite.display_name} name`
                         }
                         icon={
-                            isEditing.value ? (
-                                <HugeiconsIcon
-                                    icon={FloppyDiskIcon}
-                                    size={18}
-                                    color="currentColor"
-                                    strokeWidth={2}
-                                />
-                            ) : (
-                                <HugeiconsIcon
-                                    icon={PencilEdit01Icon}
-                                    size={18}
-                                    color="currentColor"
-                                    strokeWidth={2}
-                                />
-                            )
+                            <span
+                                className={`swap swap-rotate ${isEditing.value ? "swap-active" : ""}`}
+                            >
+                                <span className="swap-on">
+                                    <HugeiconsIcon
+                                        icon={FloppyDiskIcon}
+                                        size={18}
+                                        color="currentColor"
+                                        strokeWidth={2}
+                                    />
+                                </span>
+                                <span className="swap-off">
+                                    <HugeiconsIcon
+                                        icon={PencilEdit01Icon}
+                                        size={18}
+                                        color="currentColor"
+                                        strokeWidth={2}
+                                    />
+                                </span>
+                            </span>
                         }
                         onClick={isEditing.value ? handleSave : startEditing}
                         disabled={isOtherRowEditing}
@@ -172,31 +192,46 @@ export const FavoriteRow = ({
                                 : `Delete ${favorite.display_name} from favorites`
                         }
                         icon={
-                            isEditing.value ? (
-                                <HugeiconsIcon
-                                    icon={UndoIcon}
-                                    size={18}
-                                    color="currentColor"
-                                    strokeWidth={2}
-                                />
-                            ) : (
-                                <HugeiconsIcon
-                                    icon={Delete02Icon}
-                                    size={18}
-                                    color="currentColor"
-                                    strokeWidth={2}
-                                />
-                            )
+                            <span
+                                className={`swap swap-rotate ${isEditing.value ? "swap-active" : ""}`}
+                            >
+                                <span className="swap-on">
+                                    <HugeiconsIcon
+                                        icon={UndoIcon}
+                                        size={18}
+                                        color="currentColor"
+                                        strokeWidth={2}
+                                    />
+                                </span>
+                                <span className="swap-off">
+                                    <HugeiconsIcon
+                                        icon={Delete02Icon}
+                                        size={18}
+                                        color="currentColor"
+                                        strokeWidth={2}
+                                    />
+                                </span>
+                            </span>
                         }
                         onClick={
                             isEditing.value
                                 ? handleReset
-                                : () => onDelete(favorite.name)
+                                : () => {
+                                      showDeleteConfirm.value = true;
+                                      onDeleteModalChange?.(true);
+                                  }
                         }
                         disabled={isOtherRowEditing}
                         data-swapy-no-drag
                     />
                 </div>
+
+                <FavoriteDeleteModal
+                    favorite={favorite}
+                    open={showDeleteConfirm.value}
+                    onClose={handleCloseDelete}
+                    onConfirm={handleConfirmDelete}
+                />
             </div>
         </div>
     );

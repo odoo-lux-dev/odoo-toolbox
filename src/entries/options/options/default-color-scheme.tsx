@@ -1,19 +1,17 @@
 import { OptionItem } from "@/components/options/option-item";
 import { Radio } from "@/components/ui/radio";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import type { DefaultColorScheme } from "@/types";
 import { CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME } from "@/utils/constants";
 
 export const DefaultColorSchemeOption = () => {
-    const { settings } = useOptions();
+    const defaultColorScheme = useSettingValue(
+        CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
+    );
 
-    const getCurrentScheme = (): DefaultColorScheme => {
-        return (settings?.[CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME] ||
-            "none") as DefaultColorScheme;
-    };
-
-    const currentScheme = getCurrentScheme();
+    const currentScheme =
+        (defaultColorScheme.value as DefaultColorScheme) || "none";
 
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;

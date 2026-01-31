@@ -10,12 +10,12 @@ export const FavoriteTaskLinkModal = ({
     favorite,
     open,
     onClose,
-    onSave,
+    onConfirm,
 }: {
     favorite: Favorite;
     open: boolean;
     onClose: () => void;
-    onSave: (name: string, taskLink: string) => Promise<void>;
+    onConfirm: (name: string, taskLink: string) => Promise<void>;
 }) => {
     const [taskLink, setTaskLink] = useState(favorite.task_link || "");
     const [hasError, setHasError] = useState(false);
@@ -40,7 +40,7 @@ export const FavoriteTaskLinkModal = ({
             setHasError(true);
             return;
         }
-        await onSave(favorite.name, taskLink);
+        await onConfirm(favorite.name, taskLink);
         onClose();
     };
 

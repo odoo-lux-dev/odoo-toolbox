@@ -1,17 +1,19 @@
 import { OptionItem } from "@/components/options/option-item";
 import { Toggle } from "@/components/ui/toggle";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS } from "@/utils/constants";
 
 export const LoginButtonsOption = () => {
-    const { settings } = useOptions();
+    const showLoginButtons = useSettingValue(
+        CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
+    );
 
     const handleChange = async (checked: boolean) => {
         await settingsService.setShowLoginButtons(checked);
     };
 
-    const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS];
+    const isEnabled = !!showLoginButtons.value;
 
     return (
         <OptionItem

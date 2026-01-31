@@ -4,7 +4,7 @@ import { OptionItem } from "@/components/options/option-item";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import {
     CHROME_STORAGE_SETTINGS_TASK_URL,
@@ -50,20 +50,22 @@ export const TaskLinkOption = () => {
         return hasChanged && isValid;
     });
 
-    const { settings } = useOptions();
+    const taskUrlSetting = useSettingValue(CHROME_STORAGE_SETTINGS_TASK_URL);
+    const regexSetting = useSettingValue(
+        CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
+    );
 
     useEffect(() => {
-        const savedTaskUrl = settings?.[CHROME_STORAGE_SETTINGS_TASK_URL] || "";
+        const savedTaskUrl = taskUrlSetting.value || "";
         taskUrl.value = savedTaskUrl;
         initialTaskUrl.value = savedTaskUrl;
-    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL]]);
+    }, [taskUrlSetting.value]);
 
     useEffect(() => {
-        const savedRegexPattern =
-            settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX] || "";
+        const savedRegexPattern = regexSetting.value || "";
         regexPattern.value = savedRegexPattern;
         initialRegexPattern.value = savedRegexPattern;
-    }, [settings?.[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX]]);
+    }, [regexSetting.value]);
 
     const handleTaskUrlChange = (e: Event) => {
         const value = (e.target as HTMLInputElement).value;
@@ -102,7 +104,6 @@ export const TaskLinkOption = () => {
             id="task-link"
             title="Task link on SH branch page"
             tooltipContent="Specify an URL to redirect to when clicking on the task link icon on SH branch page. Leave it empty to disable the feature."
-            // additionalTooltipContent={additionalTooltipContent}
         >
             <div className="flex flex-col gap-6">
                 <Alert

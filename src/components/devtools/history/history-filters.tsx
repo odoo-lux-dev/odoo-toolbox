@@ -1,5 +1,6 @@
 import type { Signal } from "@preact/signals";
 import type { HistoryActionType } from "@/types";
+import { MAX_HISTORY_ENTRIES } from "@/services/history-service";
 
 interface HistoryFiltersProps {
     searchTerm: Signal<string>;
@@ -58,7 +59,7 @@ export const HistoryFilters = ({
     return (
         <div className="flex flex-col gap-3 rounded-md border border-base-300 bg-base-200 p-4 mx-3">
             <div className="flex flex-wrap items-end gap-3">
-                <div className="flex min-w-[120px] flex-col gap-1 first:grow first:min-w-[200px]">
+                <div className="flex min-w-30 flex-col gap-1 first:grow first:min-w-50">
                     <label
                         htmlFor="history-search"
                         className="text-xs font-medium text-base-content/70"
@@ -75,7 +76,7 @@ export const HistoryFilters = ({
                     />
                 </div>
 
-                <div className="flex min-w-[120px] flex-col gap-1">
+                <div className="flex min-w-30 flex-col gap-1">
                     <label
                         htmlFor="action-type-filter"
                         className="text-xs font-medium text-base-content/70"
@@ -101,7 +102,7 @@ export const HistoryFilters = ({
                     </select>
                 </div>
 
-                <div className="flex min-w-[120px] flex-col gap-1">
+                <div className="flex min-w-30 flex-col gap-1">
                     <label
                         htmlFor="model-filter"
                         className="text-xs font-medium text-base-content/70"
@@ -123,7 +124,7 @@ export const HistoryFilters = ({
                     </select>
                 </div>
 
-                <div className="flex min-w-[120px] flex-col gap-1">
+                <div className="flex min-w-30 flex-col gap-1">
                     <button
                         type="button"
                         className="btn btn-outline btn-secondary btn-sm w-full sm:w-auto"
@@ -139,8 +140,8 @@ export const HistoryFilters = ({
             {totalActions > 0 && (
                 <div className="border-t border-base-300 pt-2">
                     <span className="text-xs text-base-content/60">
-                        Total actions stored: {totalActions} (last 100 actions
-                        are kept)
+                        Total actions stored: {totalActions} (last{" "}
+                        {MAX_HISTORY_ENTRIES} actions are kept)
                     </span>
                 </div>
             )}

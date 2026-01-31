@@ -1,17 +1,19 @@
 import { OptionItem } from "@/components/options/option-item";
 import { Toggle } from "@/components/ui/toggle";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE } from "@/utils/constants";
 
 export const NostalgiaModeOption = () => {
-    const { settings } = useOptions();
+    const nostalgiaMode = useSettingValue(
+        CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
+    );
 
     const handleChange = async (checked: boolean) => {
         await settingsService.setNostalgiaMode(checked);
     };
 
-    const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE];
+    const isEnabled = !!nostalgiaMode.value;
 
     return (
         <OptionItem

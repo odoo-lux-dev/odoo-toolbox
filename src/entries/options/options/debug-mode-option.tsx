@@ -3,17 +3,18 @@ import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { Alert } from "@/components/ui/alert";
 import { Radio } from "@/components/ui/radio";
 import { OptionItem } from "@/components/options/option-item";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
 import { DebugModeType } from "@/types";
 import { CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY } from "@/utils/constants";
 
 export const DebugModeOption = () => {
-    const { settings } = useOptions();
+    const debugModeSetting = useSettingValue(
+        CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
+    );
 
     const selectedMode =
-        (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) ||
-        "disabled";
+        (debugModeSetting.value as DebugModeType) || "disabled";
 
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;

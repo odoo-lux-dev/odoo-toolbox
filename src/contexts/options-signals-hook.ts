@@ -1,3 +1,5 @@
+import { useComputed } from "@preact/signals";
+import type { StoredSettings } from "@/types";
 import {
     favoritesSignal,
     initializeOptions,
@@ -12,4 +14,16 @@ export const useOptions = () => {
         loading: loadingSignal.value,
         initializeOptions,
     };
+};
+
+export const useSettingValue = <K extends keyof StoredSettings>(key: K) => {
+    return useComputed(() => settingsSignal.value?.[key]);
+};
+
+export const useFavoritesValue = () => {
+    return favoritesSignal;
+};
+
+export const useLoadingValue = () => {
+    return loadingSignal;
 };

@@ -47,6 +47,10 @@ export const Footer = () => {
         let clickTimer: number;
 
         const executeDebugModeChange = async (targetMode: DebugModeType) => {
+            if (targetMode === debugMode) {
+                clickCount = 0;
+                return;
+            }
             await settingsService.setDebugMode(targetMode);
             await refreshActiveTabs(targetMode);
             updateDebugMode(targetMode);
@@ -60,26 +64,18 @@ export const Footer = () => {
                 clearTimeout(clickTimer);
             }
 
-            // If any debug mode is active, single click disables it
-            if (debugMode !== "disabled") {
-                await executeDebugModeChange("disabled");
-                return;
-            }
-
             if (clickCount === 1) {
-                // Single click: enable debug mode
-                clickTimer = window.setTimeout(
-                    () => executeDebugModeChange("1"),
-                    400,
-                );
+                clickTimer = window.setTimeout(() => {
+                    const targetMode: DebugModeType =
+                        debugMode === "disabled" ? "1" : "disabled";
+                    executeDebugModeChange(targetMode);
+                }, 400);
             } else if (clickCount === 2) {
-                // Double click: enable assets mode
                 clickTimer = window.setTimeout(
                     () => executeDebugModeChange("assets"),
                     200,
                 );
             } else if (clickCount === 3) {
-                // Triple click: enable assets tests mode
                 await executeDebugModeChange("assets,tests");
             } else {
                 clickCount = 0;
@@ -191,7 +187,7 @@ export const Footer = () => {
                     size={18}
                     color="currentColor"
                     strokeWidth={2}
-                    className="transition-transform duration-500 group-hover:-rotate-[60deg]"
+                    className="transition-transform duration-500 group-hover:-rotate-60"
                 />
             </button>
         </footer>

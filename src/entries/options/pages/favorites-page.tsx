@@ -12,6 +12,7 @@ export const FavoritesPage = () => {
     const showModal = useSignal(false);
     const selectedFavorite = useSignal<Favorite | null>(null);
     const editingRowName = useSignal<string | null>(null);
+    const deleteModalOpen = useSignal(false);
     const favoritesContainerRef = useRef<HTMLDivElement>(null);
     const swapy = useRef<Swapy>(null);
     const slotItemMap = useSignal(
@@ -20,6 +21,12 @@ export const FavoritesPage = () => {
     const slottedItems = useComputed(() =>
         utils.toSlottedItems(favorites || [], "name", slotItemMap.value),
     );
+
+    const updateDragState = () => {
+        const hasOpenModal = showModal.value || deleteModalOpen.value;
+        const isEditing = editingRowName.value !== null;
+        swapy.current?.enable(!hasOpenModal && !isEditing);
+    };
 
     useEffect(
         () =>
@@ -69,12 +76,18 @@ export const FavoritesPage = () => {
                     );
                 }
             });
+
+            updateDragState();
         }
 
         return () => {
             swapy.current?.destroy();
         };
     }, [loading, favorites]);
+
+    useEffect(() => {
+        updateDragState();
+    }, [showModal.value, deleteModalOpen.value, editingRowName.value]);
 
     const handleEditTaskLink = (favorite: Favorite) => {
         selectedFavorite.value = favorite;
@@ -105,7 +118,7 @@ export const FavoritesPage = () => {
 
     const handleEdition = (isEditing: boolean, favoriteName?: string) => {
         editingRowName.value = isEditing ? favoriteName || null : null;
-        swapy.current?.enable(!isEditing);
+        updateDragState();
     };
 
     if (loading) {
@@ -151,7 +164,7 @@ export const FavoritesPage = () => {
             <div className="divider">
                 <h2 className="text-xl font-semibold">Favorite projects</h2>
             </div>
-            <div className="flex flex-col gap-3" ref={favoritesContainerRef}>
+            <div className="flex flex-col gap-2" ref={favoritesContainerRef}>
                 {slottedItems.value.map(
                     ({ slotId, itemId, item: favorite }, index) =>
                         favorite ? (
@@ -170,6 +183,10 @@ export const FavoritesPage = () => {
                                 onEdition={(isEditing) =>
                                     handleEdition(isEditing, favorite.name)
                                 }
+                                onDeleteModalChange={(isOpen) => {
+                                    deleteModalOpen.value = isOpen;
+                                    updateDragState();
+                                }}
                             />
                         ) : null,
                 )}
@@ -180,7 +197,7 @@ export const FavoritesPage = () => {
                     favorite={selectedFavorite.value}
                     open={showModal.value}
                     onClose={() => (showModal.value = false)}
-                    onSave={handleSaveTaskLink}
+                    onConfirm={handleSaveTaskLink}
                 />
             ) : null}
         </div>

@@ -3,13 +3,14 @@ import { createHashHistory } from "history";
 import { useEffect } from "preact/hooks";
 import { CustomHistory, Route, Router } from "preact-router";
 import { OptionsLayout } from "@/components/options/options-layout";
-import { setupOptionsWatchers } from "@/contexts/options-signals";
-import { useOptions } from "@/contexts/options-signals-hook";
+import {
+    initializeOptions,
+    setupOptionsWatchers,
+} from "@/contexts/options-signals";
 import { FavoritesPage } from "./pages/favorites-page";
 import { OptionsPage } from "./pages/options-page";
 
 export const App = () => {
-    const { initializeOptions } = useOptions();
     const history = createHashHistory();
     const customHistory: CustomHistory = {
         listen: (callback) => {

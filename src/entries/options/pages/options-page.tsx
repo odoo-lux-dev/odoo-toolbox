@@ -7,6 +7,11 @@ export const OptionsPage = () => {
             const rawHash = window.location.hash;
             const hash = rawHash.split("#").pop()?.replace(/^\//, "") ?? "";
             if (!hash) return;
+            if (hash === "odoo-options") {
+                const container = document.getElementById("content-container");
+                container?.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
             const element = document.getElementById(hash);
             if (!element) return;
             element.scrollIntoView({ behavior: "smooth", block: "start" });

@@ -1,8 +1,9 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
 import { useEffect } from "preact/hooks";
-import { useOptions } from "@/contexts/options-signals-hook";
+import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
+import { CHROME_STORAGE_SETTINGS_EXTENSION_THEME } from "@/utils/constants";
 
 export interface ThemeControllerProps {
     className?: string;
@@ -17,14 +18,16 @@ export const ThemeController = ({
     ariaLabel = "Toggle theme",
     dataToggleTheme = "odoolight,odoodark",
 }: ThemeControllerProps) => {
-    const { settings } = useOptions();
+    const extensionTheme = useSettingValue(
+        CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
+    );
 
     useEffect(() => {
-        if (!settings?.extensionTheme) return;
+        if (!extensionTheme.value) return;
         const themeName =
-            settings.extensionTheme === "dark" ? "odoodark" : "odoolight";
+            extensionTheme.value === "dark" ? "odoodark" : "odoolight";
         document.documentElement.setAttribute("data-theme", themeName);
-    }, [settings?.extensionTheme]);
+    }, [extensionTheme.value]);
 
     const handleThemeToggle = async () => {
         await settingsService.toggleExtensionTheme();
@@ -35,7 +38,7 @@ export const ThemeController = ({
             <input
                 type="checkbox"
                 className="theme-controller"
-                checked={settings?.extensionTheme === "dark"}
+                checked={extensionTheme.value === "dark"}
                 onChange={handleThemeToggle}
                 data-toggle-theme={dataToggleTheme}
                 aria-label={ariaLabel}
