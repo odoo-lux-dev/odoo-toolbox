@@ -170,7 +170,7 @@ export const DevToolsContent = () => {
             <Route
                 default
                 component={({ path }: DevToolsPageProps) => (
-                    <DevToolsLayout currentPath="/search">
+                    <DevToolsLayout currentPath={path || "/search"}>
                         <SearchTab />
                     </DevToolsLayout>
                 )}

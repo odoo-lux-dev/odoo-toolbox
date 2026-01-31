@@ -122,7 +122,7 @@ export const ModelActions = ({
         <div className="flex flex-nowrap items-center justify-center gap-1">
             <Button
                 className="gap-2 text-xs"
-                variant="ghost"
+                variant="solid"
                 size="sm"
                 onClick={handleViewFields}
                 disabled={loading.value !== null}
@@ -138,7 +138,7 @@ export const ModelActions = ({
             </Button>
             <Button
                 className="gap-2 text-xs"
-                variant="ghost"
+                variant="solid"
                 size="sm"
                 onClick={handleViewRules}
                 disabled={loading.value !== null}
@@ -154,7 +154,7 @@ export const ModelActions = ({
             </Button>
             <Button
                 className="gap-2 text-xs"
-                variant="ghost"
+                variant="solid"
                 size="sm"
                 onClick={handleViewAccess}
                 disabled={loading.value !== null}
@@ -171,7 +171,7 @@ export const ModelActions = ({
             {currentRecordId && (
                 <Button
                     className="gap-2 text-xs"
-                    variant="ghost"
+                    variant="solid"
                     size="sm"
                     onClick={handleViewData}
                     disabled={loading.value !== null}

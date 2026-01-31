@@ -3,7 +3,7 @@ import {
     Bug01Icon,
     Tag01Icon,
     DatabaseIcon,
-    GlobeIcon,
+    LanguageSkillIcon,
     Settings02Icon,
 } from "@hugeicons/core-free-icons";
 import { DatabaseInfo } from "@/types";
@@ -60,7 +60,7 @@ export const DatabaseInfoComponent = ({
         <InfoItem
             icon={
                 <HugeiconsIcon
-                    icon={GlobeIcon}
+                    icon={LanguageSkillIcon}
                     size={14}
                     color="currentColor"
                     strokeWidth={1.6}

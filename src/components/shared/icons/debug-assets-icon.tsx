@@ -1,6 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Bug02Icon } from "@hugeicons/core-free-icons";
-
 export const DebugModeAssetsIcon = ({
     isNostalgia = false,
 }: {

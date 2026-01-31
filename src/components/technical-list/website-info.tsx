@@ -4,6 +4,7 @@ import {
     GlobeIcon,
     HashtagIcon,
     AlignKeyObjectIcon,
+    WebDesign01Icon,
 } from "@hugeicons/core-free-icons";
 import { Badge } from "@/components/ui/badge";
 import { WebsiteInfo as WebsiteInfoType } from "@/types";
@@ -26,7 +27,6 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
             }
             label="Website ID"
             value={websiteInfo.websiteId}
-            // valueClass="text-primary"
             copyable={true}
         />,
         <InfoItem
@@ -40,7 +40,6 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
             }
             label="Main Object"
             value={websiteInfo.mainObject}
-            // valueClass="text-secondary"
             copyable={true}
         />,
     ];
@@ -58,7 +57,6 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
                 }
                 label="View XML ID"
                 value={websiteInfo.viewXmlId}
-                // valueClass="text-secondary"
                 copyable={true}
             />,
         );
@@ -77,7 +75,6 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
                 }
                 label="View ID"
                 value={websiteInfo.viewId}
-                // valueClass="text-secondary"
                 copyable={true}
             />,
         );
@@ -88,7 +85,7 @@ export const WebsiteInfo = ({ websiteInfo }: WebsiteInfoProps) => {
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2 text-base font-semibold text-base-content">
                     <HugeiconsIcon
-                        icon={GlobeIcon}
+                        icon={WebDesign01Icon}
                         size={16}
                         color="currentColor"
                         strokeWidth={1.6}
