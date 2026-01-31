@@ -31,7 +31,7 @@ export const DevToolsLayout = ({
     };
 
     return (
-        <div className="devtools-app h-screen min-h-0 overflow-hidden bg-base-300 text-base-content flex flex-col">
+        <div className="devtools-app flex h-screen min-h-0 flex-col overflow-hidden bg-base-300 text-base-content">
             <nav className="devtools-nav bg-base-300">
                 <Tabs variant="bordered" className="px-6">
                     {navItems.map((item) => (
@@ -46,7 +46,7 @@ export const DevToolsLayout = ({
                 </Tabs>
             </nav>
 
-            <main className="devtools-content bg-base-100 flex-1 min-h-0 flex flex-col">
+            <main className="devtools-content flex min-h-0 flex-1 flex-col bg-base-100">
                 {children}
             </main>
         </div>

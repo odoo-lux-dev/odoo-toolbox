@@ -63,7 +63,7 @@ export const RecordFieldRenderer = ({
     return (
         <div
             key={fieldKey}
-            className="flex min-w-0 items-end rounded hover:bg-neutral/40"
+            className="flex min-w-0 items-end rounded-sm hover:bg-neutral/40"
             data-field={fieldKey}
             onContextMenu={(e) =>
                 onFieldContextMenu(
@@ -76,7 +76,7 @@ export const RecordFieldRenderer = ({
                 )
             }
         >
-            <span className="inline-flex h-4 w-4 shrink-0"></span>
+            <span className="inline-flex size-4 shrink-0"></span>
             <FieldMetadataTooltip
                 fieldMetadata={fieldMetadata || null}
                 fieldName={fieldKey}

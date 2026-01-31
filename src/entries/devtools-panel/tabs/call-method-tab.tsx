@@ -8,7 +8,6 @@ import { QueryFormSidebar } from "@/components/devtools/query-form-sidebar/query
 import { ResultViewer } from "@/components/devtools/result-viewer/result-viewer";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { ERROR_NOTIFICATION_TIMEOUT } from "@/components/shared/notifications/notifications";
 import { useDevToolsLoading } from "@/contexts/devtools-loading-signals-hook";
@@ -168,7 +167,7 @@ export const CallMethodTab = () => {
     };
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
+        <div className="grid h-full min-h-0 grid-cols-1 bg-base-300 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)]">
             <QueryFormSidebar
                 recordIdsLabel="Record IDs"
                 recordIdsHelpText="Comma-separated IDs or JSON array of records to call the method on."
@@ -181,7 +180,7 @@ export const CallMethodTab = () => {
                 showDomainSection
             />
 
-            <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl bg-base-100 px-3">
                 <div className="flex flex-col gap-3 pt-3">
                     <Alert
                         color="warning"
@@ -248,7 +247,7 @@ export const CallMethodTab = () => {
                         hideRecordPagingData
                         customText={
                             rpcResult.data && rpcResult.data.length > 0 ? (
-                                <div className="py-2 mr-auto">
+                                <div className="mr-auto py-2">
                                     <h4 className="text-sm font-semibold">
                                         {generateMethodCallText(
                                             rpcResult.model,

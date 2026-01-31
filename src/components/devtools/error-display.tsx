@@ -14,7 +14,7 @@ const ErrorSection = ({
     children: ComponentChildren;
 }) => (
     <div className="mb-4 last:mb-0">
-        <h5 className="mb-2 text-xs font-semibold uppercase tracking-wide text-error/90">
+        <h5 className="mb-2 text-xs font-semibold tracking-wide text-error/90 uppercase">
             {title}
         </h5>
         {children}
@@ -45,7 +45,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
     if (!errorDetails || typeof errorDetails !== "object") {
         return (
             <div className="rounded-box border border-base-300/60 bg-base-200/50 p-2 text-xs text-base-content/70">
-                <pre className="whitespace-pre-wrap break-words">{error}</pre>
+                <pre className="wrap-break-word whitespace-pre-wrap">{error}</pre>
             </div>
         );
     }
@@ -92,7 +92,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                     <ErrorSection title="Debug Traceback">
                         <CodeBlock
                             data={odoo.data.debug}
-                            className="rounded-box border border-error/30 bg-base-200/50 p-2 text-xs text-base-content/70 whitespace-pre-wrap break-words max-h-[40vh] overflow-y-auto leading-relaxed"
+                            className="max-h-[40vh] overflow-y-auto rounded-box border border-error/30 bg-base-200/50 p-2 text-xs/relaxed wrap-break-word whitespace-pre-wrap text-base-content/70"
                         />
                     </ErrorSection>
                 )}
@@ -117,7 +117,7 @@ export const ErrorDisplay = ({ error, errorDetails }: ErrorDisplayProps) => {
                 <ErrorSection title="Stack Trace">
                     <CodeBlock
                         data={errorObj.stack}
-                        className="rounded-box border border-error/30 bg-base-200/50 p-2 text-xs text-base-content/70 whitespace-pre-wrap break-words max-h-[40vh] overflow-y-auto leading-relaxed"
+                        className="max-h-[40vh] overflow-y-auto rounded-box border border-error/30 bg-base-200/50 p-2 text-xs/relaxed wrap-break-word whitespace-pre-wrap text-base-content/70"
                     />
                 </ErrorSection>
             )}

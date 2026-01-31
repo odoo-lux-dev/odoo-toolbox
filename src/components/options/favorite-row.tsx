@@ -119,7 +119,7 @@ export const FavoriteRow = ({
                         target="_blank"
                         rel="noreferrer noopener"
                         data-swapy-no-drag
-                        className={`link link-hover flex-1 min-w-0 truncate ${isOtherRowEditing ? "opacity-50 pointer-events-none" : ""}`}
+                        className={`min-w-0 flex-1 link truncate link-hover ${isOtherRowEditing ? "pointer-events-none opacity-50" : ""}`}
                         onClick={
                             isOtherRowEditing
                                 ? (e) => e.preventDefault()

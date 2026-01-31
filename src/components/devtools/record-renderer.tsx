@@ -110,7 +110,7 @@ export const RecordRenderer = ({
     };
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex w-full flex-col">
             {records.map((record, index) => {
                 const isExpanded = currentExpanded.has(index);
                 const recordId = record.id || index + 1;
@@ -144,11 +144,11 @@ export const RecordRenderer = ({
                 return (
                     <div
                         key={recordId}
-                        className={`border-b last:border-b-0 border-base-200 bg-base-100 shrink-0 ${isExpanded ? "shadow-sm" : ""}`}
+                        className={`shrink-0 border-b border-base-200 bg-base-100 last:border-b-0 ${isExpanded ? "shadow-sm" : ""}`}
                         data-record-index={index}
                     >
                         <div
-                            className={`record-header flex items-center gap-2 border-b last:border-b-0 border-base-300 dark:border-base-200 bg-base-100 px-3 py-1 ${clickableRow ? "cursor-pointer hover:bg-base-300 sticky top-0 z-10" : ""}`}
+                            className={`record-header flex items-center gap-2 border-b border-base-300 bg-base-100 px-3 py-1 last:border-b-0 dark:border-base-200 ${clickableRow ? "sticky top-0 z-10 cursor-pointer hover:bg-base-300" : ""}`}
                             onClick={
                                 clickableRow
                                     ? () => toggleExpansion(index)
@@ -162,8 +162,8 @@ export const RecordRenderer = ({
                                 )
                             }
                         >
-                            <div className="flex items-center gap-2 w-full min-w-0">
-                                <span className="inline-flex h-5 w-5 items-center justify-center shrink-0 rounded-sm text-base-content">
+                            <div className="flex w-full min-w-0 items-center gap-2">
+                                <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-base-content">
                                     {isExpanded ? (
                                         <HugeiconsIcon
                                             icon={ArrowDown01Icon}
@@ -182,7 +182,7 @@ export const RecordRenderer = ({
                                 </span>
                                 {showId && (
                                     <span
-                                        className="text-xs font-medium text-primary dark:text-accent shrink-0 w-14"
+                                        className="w-14 shrink-0 text-xs font-medium text-primary dark:text-accent"
                                         data-field="aaid"
                                         data-level={level}
                                         data-searchable={String(recordId)}

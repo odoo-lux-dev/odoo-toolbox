@@ -190,7 +190,7 @@ export const QuickDomainButtons = ({
     if (loading.value) {
         return (
             <div className="flex items-center justify-between gap-2">
-                <div className="flex flex-wrap gap-2 flex-1">
+                <div className="flex flex-1 flex-wrap gap-2">
                     <div className="text-xs text-base-content/60">
                         Loading domains...
                     </div>
@@ -223,7 +223,7 @@ export const QuickDomainButtons = ({
         <>
             <div className="flex items-center justify-between gap-2">
                 <div
-                    className="flex flex-wrap gap-2 flex-1 min-w-0"
+                    className="flex min-w-0 flex-1 flex-wrap gap-2"
                     ref={containerRef}
                 >
                     {domains.value.length > 0 ? (
@@ -233,7 +233,7 @@ export const QuickDomainButtons = ({
                                 type="button"
                                 variant="outline"
                                 size="xs"
-                                className="text-base-content/70 max-w-full whitespace-normal break-words"
+                                className="max-w-full wrap-break-word whitespace-normal text-base-content/70"
                                 onClick={() => handleDomainClick(domain.domain)}
                                 title={`Domain: ${domain.domain}`}
                                 disabled={loadingSignal.value}

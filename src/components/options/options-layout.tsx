@@ -12,7 +12,7 @@ export const OptionsLayout = ({
                 <OptionsSidebar />
                 <main
                     id="content-container"
-                    class="flex-1 h-full overflow-y-auto px-6 py-8"
+                    class="h-full flex-1 overflow-y-auto px-6 py-8"
                 >
                     {children}
                 </main>

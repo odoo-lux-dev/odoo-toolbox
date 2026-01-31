@@ -36,7 +36,7 @@ export const ProjectList = () => {
                 id="projects"
                 className="flex items-center gap-2 text-sm opacity-80"
             >
-                <span className="loading loading-spinner loading-sm" />
+                <span className="loading loading-sm loading-spinner" />
                 <span>Loading favorites...</span>
             </div>
         );

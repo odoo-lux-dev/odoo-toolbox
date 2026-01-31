@@ -1,8 +1,16 @@
 {
     "$schema": "./node_modules/oxlint/configuration_schema.json",
     "plugins": null,
+    "jsPlugins": ["eslint-plugin-better-tailwindcss"],
     "categories": {},
-    "rules": {},
+    "rules": {
+        "better-tailwindcss/enforce-consistent-class-order": "warn",
+        "better-tailwindcss/enforce-canonical-classes": "warn",
+        "better-tailwindcss/no-conflicting-classes": "error",
+        "better-tailwindcss/no-duplicate-classes": "warn",
+        "better-tailwindcss/no-deprecated-classes": "warn",
+        "better-tailwindcss/no-unnecessary-whitespace": "warn"
+    },
     "settings": {
         "jsx-a11y": {
             "polymorphicPropName": null,
@@ -30,6 +38,9 @@
         },
         "vitest": {
             "typecheck": false
+        },
+        "better-tailwindcss": {
+            "entryPoint": "src/theme/daisy-theme.css"
         }
     },
     "env": {

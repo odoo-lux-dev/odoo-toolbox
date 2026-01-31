@@ -110,7 +110,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
                 {...rest}
             >
                 {loading ? (
-                    <span className="loading loading-spinner loading-xs" />
+                    <span className="loading loading-xs loading-spinner" />
                 ) : null}
                 {icon}
             </button>

@@ -1,5 +1,5 @@
 export const Header = () => (
-    <header className="border-b-2 border-base-200 bg-primary dark:bg-base-100 px-4 py-4">
+    <header className="border-b-2 border-base-200 bg-primary p-4 dark:bg-base-100">
         <h2 className="text-center text-xl font-semibold text-gray-100 dark:text-base-content">
             Your{" "}
             <a

@@ -38,7 +38,7 @@ export const FloatingButton = () => {
                 strokeWidth={1.6}
                 className="shrink-0"
             />
-            <span className="button-text transition-opacity duration-200 whitespace-nowrap text-xs font-medium opacity-0 group-hover:opacity-100">
+            <span className="button-text text-xs font-medium whitespace-nowrap opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 Technical List
             </span>
         </button>

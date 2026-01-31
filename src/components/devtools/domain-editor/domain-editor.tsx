@@ -55,7 +55,7 @@ export const DomainEditor = ({
                         value={domainSignal.value}
                         onInput={handleChange}
                         placeholder={placeholder}
-                        className="textarea textarea-bordered textarea-sm min-h-[60px] pr-9 font-mono"
+                        className="textarea-bordered textarea min-h-[60px] pr-9 font-mono textarea-sm"
                         rows={1}
                         disabled={loadingSignal.value}
                         fullWidth
@@ -67,7 +67,7 @@ export const DomainEditor = ({
                         label="Domain format help"
                         variant="ghost"
                         size="xs"
-                        className="absolute right-2 top-2 text-base-content/50 hover:text-base-content"
+                        className="absolute top-2 right-2 text-base-content/50 hover:text-base-content"
                         onClick={() => {
                             isHelpOpen.value = true;
                         }}
@@ -83,7 +83,7 @@ export const DomainEditor = ({
                     />
                 </div>
                 {error.value && (
-                    <div className="mt-1 whitespace-pre-wrap text-xs text-error">
+                    <div className="mt-1 text-xs whitespace-pre-wrap text-error">
                         {error.value}
                     </div>
                 )}
@@ -99,7 +99,7 @@ export const DomainEditor = ({
                 title="Domain format help"
                 size="lg"
             >
-                <div className="space-y-2 mt-3 text-xs text-base-content/70 [&_code]:rounded [&_code]:bg-base-300 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono">
+                <div className="mt-3 space-y-2 text-xs text-base-content/70 [&_code]:rounded-sm [&_code]:bg-base-300 [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono">
                     <p>
                         <strong>🐍 Python domains are supported !</strong>
                     </p>

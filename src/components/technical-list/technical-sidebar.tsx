@@ -9,7 +9,7 @@ const TechnicalSidebarContent = () => {
     return (
         <div
             ref={buttonRef}
-            className="fixed bottom-6 right-0 z-[9999] flex flex-col items-end gap-2 text-sm leading-6 max-md:bottom-5"
+            className="fixed right-0 bottom-6 z-9999 flex flex-col items-end gap-2 text-sm/6 max-md:bottom-5"
             data-technical-list-root="true"
         >
             <FloatingButton />

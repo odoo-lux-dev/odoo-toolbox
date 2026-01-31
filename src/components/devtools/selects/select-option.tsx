@@ -25,11 +25,11 @@ export const SelectOption = ({
 }: SelectOptionProps) => {
     return (
         <div
-            className={`select-option relative flex w-full cursor-pointer items-start gap-2 border-l-2 border-transparent px-3 py-2 text-left text-xs transition hover:bg-base-200 hover:border-primary ${index === focusedIndex ? "bg-base-200 !border-primary" : ""} ${isSelected ? "bg-primary/10 border-primary" : ""}`}
+            className={`select-option relative flex w-full cursor-pointer items-start gap-2 border-l-2 border-transparent px-3 py-2 text-left text-xs transition hover:border-primary hover:bg-base-200 ${index === focusedIndex ? "border-primary! bg-base-200" : ""} ${isSelected ? "border-primary bg-primary/10" : ""}`}
             onClick={() => onSelect(option.value)}
         >
             {isMultiple && isSelected && (
-                <div className="select-check-indicator absolute right-3 top-1/2 -translate-y-1/2 text-primary">
+                <div className="select-check-indicator absolute top-1/2 right-3 -translate-y-1/2 text-primary">
                     <HugeiconsIcon
                         icon={CheckmarkCircle01Icon}
                         size={16}
@@ -39,10 +39,10 @@ export const SelectOption = ({
                 </div>
             )}
             <div className="select-content flex min-w-0 flex-1 flex-col gap-0.5">
-                <div className="select-technical-name break-words text-xs font-medium text-base-content">
+                <div className="select-technical-name text-xs font-medium wrap-break-word text-base-content">
                     {highlightMatch(option.value, searchValue)}
                 </div>
-                <div className="select-display-name break-words text-[11px] text-base-content/70">
+                <div className="select-display-name text-[11px] wrap-break-word text-base-content/70">
                     {highlightMatch(option.label, searchValue)}
                 </div>
             </div>

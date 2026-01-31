@@ -22,7 +22,7 @@ export const RefreshButton = ({
     if (loading) {
         return (
             <IconButton
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/60"
+                className="absolute top-1/2 right-2 -translate-y-1/2 text-base-content/60"
                 label="Refreshing list"
                 title="Refreshing list"
                 type="button"
@@ -39,7 +39,7 @@ export const RefreshButton = ({
     if (error) {
         return (
             <IconButton
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-warning hover:text-warning/80"
+                className="absolute top-1/2 right-2 -translate-y-1/2 text-warning hover:text-warning/80"
                 label={`Error: ${error}. You can try again or enter your value manually.`}
                 onClick={onRefresh}
                 title={`Error: ${error}\n\nYou can try again (by clicking this button) or enter your value manually.`}
@@ -63,7 +63,7 @@ export const RefreshButton = ({
     if (hasOptions) {
         return (
             <IconButton
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
+                className="absolute top-1/2 right-2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
                 label="Refresh list"
                 onClick={onRefresh}
                 title="Refresh list"

@@ -18,7 +18,7 @@ export const SelectedFieldBadges = ({
     if (selectedValues.length === 0) return null;
 
     return (
-        <div className={`flex flex-wrap gap-2 mb-2 min-h-[24px] ${className}`}>
+        <div className={`mb-2 flex min-h-[24px] flex-wrap gap-2 ${className}`}>
             {selectedValues.map((selectedValue) => {
                 const isExcluded = excludedFields.includes(selectedValue);
                 return (
@@ -54,7 +54,7 @@ export const SelectedFieldBadges = ({
                         </span>
                         <button
                             type="button"
-                            className="ml-1 inline-flex items-center text-current/70 hover:text-current cursor-pointer"
+                            className="ml-1 inline-flex cursor-pointer items-center text-current/70 hover:text-current"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(selectedValue);

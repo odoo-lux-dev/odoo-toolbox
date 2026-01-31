@@ -91,8 +91,8 @@ export const PanelContent = () => {
             ) : null}
 
             {filteredFields.length > 0 ? (
-                <div className="space-y-3 px-6 py-4 border-solid border-b border-base-200">
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                <div className="space-y-3 border-b border-solid border-base-200 px-6 py-4">
+                    <div className="flex items-center gap-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">
                         <HugeiconsIcon
                             icon={InputShortTextIcon}
                             size={16}
@@ -116,7 +116,7 @@ export const PanelContent = () => {
 
             {filteredButtons.length > 0 ? (
                 <div className="space-y-3 px-6 py-4">
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                    <div className="flex items-center gap-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">
                         <HugeiconsIcon
                             icon={MouseLeftClick06Icon}
                             size={16}
@@ -140,7 +140,7 @@ export const PanelContent = () => {
 
             {filteredFields.length === 0 && filteredButtons.length === 0 ? (
                 hasFields || hasButtons ? (
-                    <div className="px-6 py-6">
+                    <div className="p-6">
                         <EmptyState
                             icon={
                                 <HugeiconsIcon
@@ -154,7 +154,7 @@ export const PanelContent = () => {
                         />
                     </div>
                 ) : !isWebsite ? (
-                    <div className="px-6 py-6">
+                    <div className="p-6">
                         <EmptyState
                             icon={
                                 <HugeiconsIcon

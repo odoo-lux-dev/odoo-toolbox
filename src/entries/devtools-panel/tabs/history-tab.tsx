@@ -63,7 +63,7 @@ export const HistoryTab = () => {
     if (state.loading) {
         return (
             <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-                <span className="loading loading-spinner loading-sm text-primary" />
+                <span className="loading loading-sm loading-spinner text-primary" />
                 <span className="text-sm text-base-content/70">
                     Loading history...
                 </span>
@@ -80,7 +80,7 @@ export const HistoryTab = () => {
                     </span>
                     <button
                         type="button"
-                        className="btn btn-outline btn-primary btn-sm"
+                        className="btn btn-outline btn-sm btn-primary"
                         onClick={loadHistory}
                     >
                         Retry
@@ -106,7 +106,7 @@ export const HistoryTab = () => {
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
-                        className="btn btn-outline btn-secondary btn-sm"
+                        className="btn btn-outline btn-sm btn-secondary"
                         onClick={() => loadHistory()}
                         disabled={state.loading}
                     >
@@ -114,7 +114,7 @@ export const HistoryTab = () => {
                     </button>
                     <button
                         type="button"
-                        className="btn btn-outline btn-error btn-sm"
+                        className="btn btn-outline btn-sm btn-error"
                         onClick={handleClearHistory}
                         disabled={state.loading || actions.value.length === 0}
                     >
@@ -131,7 +131,7 @@ export const HistoryTab = () => {
                 totalActions={actions.value.length}
             />
 
-            <div className="flex-1 overflow-y-auto max-h-[70vh] px-2">
+            <div className="max-h-[70vh] flex-1 overflow-y-auto px-2">
                 {filteredActions.value.length === 0 ? (
                     <div className="flex items-center justify-center p-12 text-center">
                         {actions.value.length === 0 ? (
@@ -147,7 +147,7 @@ export const HistoryTab = () => {
                                 <h4 className="m-0 font-medium text-base-content/70">
                                     No History Yet
                                 </h4>
-                                <p className="m-0 text-sm leading-relaxed text-base-content/60">
+                                <p className="m-0 text-sm/relaxed text-base-content/60">
                                     Your DevTools actions will appear here.
                                     Start by performing searches, writes, or
                                     other operations.
@@ -166,7 +166,7 @@ export const HistoryTab = () => {
                                 <h4 className="m-0 font-medium text-base-content/70">
                                     No Results Found
                                 </h4>
-                                <p className="m-0 text-sm leading-relaxed text-base-content/60">
+                                <p className="m-0 text-sm/relaxed text-base-content/60">
                                     Try adjusting your search terms or filters.
                                 </p>
                             </div>

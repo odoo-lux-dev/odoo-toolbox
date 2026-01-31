@@ -195,7 +195,7 @@ export const ResultViewer = ({
                 {loading && (
                     <div className="content-loading flex min-h-[200px] items-center justify-center p-10">
                         <div className="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
-                            <span className="loading loading-spinner loading-md" />
+                            <span className="loading loading-md loading-spinner" />
                             <span>Loading records...</span>
                         </div>
                     </div>
@@ -205,8 +205,8 @@ export const ResultViewer = ({
     }
 
     return (
-        <div className="rounded-box bg-base-100 flex h-full min-h-0 flex-col overflow-hidden pb-3">
-            <div className="result-header sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 bg-base-100 px-4 py-3 flex-col md:flex-row">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-box bg-base-100 pb-3">
+            <div className="result-header sticky top-0 z-20 flex flex-col flex-wrap items-center justify-between gap-3 bg-base-100 px-4 py-3 md:flex-row">
                 <div className="result-stats flex flex-1 flex-wrap items-center gap-3 text-sm text-base-content/70">
                     {customText ? <>{customText}</> : null}
                     {!hideRecordPagingData || !hideFieldNumber ? (
@@ -226,7 +226,7 @@ export const ResultViewer = ({
                 {!hideDownloadButton ||
                 !hideSwitchViewButton ||
                 !hideCopyButton ? (
-                    <div className="result-buttons flex flex-wrap items-center gap-2 justify-center">
+                    <div className="result-buttons flex flex-wrap items-center justify-center gap-2">
                         {!hideCopyButton || !hideDownloadButton ? (
                             <div className="flex items-center gap-2">
                                 {!hideCopyButton ? (
@@ -272,7 +272,7 @@ export const ResultViewer = ({
                         ) : null}
                         {!hideSwitchViewButton &&
                         (!hideCopyButton || !hideDownloadButton) ? (
-                            <div className="hidden md:flex divider divider-horizontal mx-1" />
+                            <div className="divider mx-1 hidden divider-horizontal md:flex" />
                         ) : null}
                         {!hideSwitchViewButton ? (
                             <Join>
@@ -334,7 +334,7 @@ export const ResultViewer = ({
             {rpcResult.loading && !isNewQuery ? (
                 <div className="content-loading flex min-h-50 items-center justify-center p-10">
                     <div className="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
-                        <span className="loading loading-spinner loading-md" />
+                        <span className="loading loading-md loading-spinner" />
                         <span>Loading records...</span>
                     </div>
                 </div>

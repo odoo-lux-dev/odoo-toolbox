@@ -104,7 +104,7 @@ export const QuickDomainFormModal = ({
                             ).value)
                         }
                         placeholder='e.g., [["active", "=", true]]'
-                        className="textarea-bordered textarea-sm font-mono"
+                        className="textarea-bordered font-mono textarea-sm"
                         rows={3}
                         fullWidth
                         color={

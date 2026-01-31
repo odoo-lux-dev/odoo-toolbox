@@ -22,7 +22,7 @@ export const SearchTab = () => {
     const isPrimaryActionDisabled = !rpcQuery.model || !rpcQuery.isQueryValid;
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
+        <div className="grid h-full min-h-0 grid-cols-1 bg-base-300 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)]">
             <QueryFormSidebar
                 showFieldsSection={true}
                 showDomainSection={true}
@@ -35,7 +35,7 @@ export const SearchTab = () => {
                 recordIdsHelpText="Comma-separated IDs or array. Empty for all records."
             />
 
-            <div className="bg-base-100 flex h-full min-h-0 flex-col gap-4 overflow-hidden rounded-tl-xl px-3">
+            <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden rounded-tl-xl bg-base-100 px-3">
                 <ResultViewer />
             </div>
         </div>

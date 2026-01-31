@@ -221,8 +221,8 @@ export const QueryFormSidebar = ({
     ]);
 
     return (
-        <div className="flex h-full min-h-0 flex-col gap-4 bg-base-300 p-3 shrink-0 ">
-            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto bg-base-300 pr-2 -mr-3 pl-1 -ml-1">
+        <div className="flex h-full min-h-0 shrink-0 flex-col gap-4 bg-base-300 p-3">
+            <div className="-mr-3 -ml-1 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto bg-base-300 pr-2 pl-1">
                 {showModelSection && (
                     <FormField
                         label="Model"
@@ -344,7 +344,7 @@ export const QueryFormSidebar = ({
                                 }
                             />
                             <IconButton
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
+                                className="absolute top-1/2 right-2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
                                 label="Set default context"
                                 type="button"
                                 size="xs"

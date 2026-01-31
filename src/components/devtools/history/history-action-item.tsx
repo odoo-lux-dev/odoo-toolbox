@@ -14,6 +14,7 @@ import {
 import { JSX } from "preact/jsx-runtime";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { Modal } from "@/components/ui/modal";
 import { removeHistoryAction } from "@/contexts/history-signals";
 import { Logger } from "@/services/logger";
 import type { HistoryAction } from "@/types";
@@ -84,24 +85,26 @@ const ACTION_TYPE_COLORS: Record<HistoryAction["type"], string> = {
 export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
     const isExpanded = useSignal(false);
     const isDeleting = useSignal(false);
+    const isDeleteModalOpen = useSignal(false);
 
-    const handleDelete = async () => {
-        if (
-            !confirm(
-                "Are you sure you want to remove this action from history?",
-            )
-        ) {
-            return;
-        }
+    const handleDelete = () => {
+        isDeleteModalOpen.value = true;
+    };
 
+    const handleConfirmDelete = async () => {
         try {
             isDeleting.value = true;
             await removeHistoryAction(action.id);
+            isDeleteModalOpen.value = false;
         } catch (error) {
             Logger.error("Failed to delete history action:", error);
         } finally {
             isDeleting.value = false;
         }
+    };
+
+    const handleCancelDelete = () => {
+        isDeleteModalOpen.value = false;
     };
 
     const toggleExpanded = () => {
@@ -138,15 +141,18 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
         <div
             className={`rounded-md border border-base-300 bg-base-100 transition-shadow hover:shadow-sm ${ACTION_TYPE_COLORS[action.type]}`}
         >
-            <div className="flex items-center justify-between gap-3 p-2 select-none hover:bg-base-200/70">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div
+                className="group flex cursor-pointer items-center justify-between gap-3 p-2 select-none hover:bg-base-200/70"
+                onClick={toggleExpanded}
+            >
+                <div className="flex min-w-0 flex-1 items-center gap-3">
                     <IconButton
                         type="button"
                         label={isExpanded.value ? "Collapse" : "Expand"}
                         variant="ghost"
                         size="xs"
                         square
-                        className="text-base-content/60 hover:text-base-content hover:bg-base-200/70"
+                        className="text-base-content/60 group-hover:text-base-content hover:bg-base-200/70"
                         onClick={(e) => {
                             e.stopPropagation();
                             toggleExpanded();
@@ -170,17 +176,23 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                     >
                         {getActionIcon(action)}
                     </div>
-                    <div className="flex flex-1 flex-col gap-1 min-w-0">
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
                         <div className="flex flex-wrap items-center gap-2 text-xs text-base-content/60">
-                            <span className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[10px] select-text">
+                            <span
+                                className="cursor-text rounded-sm bg-base-200 px-1.5 py-0.5 font-mono text-[10px] select-text"
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
+                            >
                                 {action.model}
                             </span>
                             {action.database && (
                                 <>
                                     <span className="opacity-50">•</span>
                                     <span
-                                        className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-primary select-text"
+                                        className="cursor-text rounded-sm bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-primary select-text"
                                         title={`Database: ${action.database}`}
+                                        onMouseDown={(e) => e.stopPropagation()}
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         {action.database}
                                     </span>
@@ -194,7 +206,11 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div
+                    className="flex shrink-0 items-center gap-2"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <HistoryActionRestore action={action} />
                 </div>
             </div>
@@ -205,7 +221,7 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                         <h5 className="text-xs font-semibold text-base-content/70">
                             Parameters:
                         </h5>
-                        <pre className="max-h-[300px] overflow-x-auto overflow-y-auto whitespace-pre rounded border border-base-300 bg-base-100 p-3 font-mono text-[11px] leading-relaxed text-base-content/80">
+                        <pre className="max-h-75 overflow-x-auto overflow-y-auto rounded-sm border border-base-300 bg-base-100 p-3 font-mono text-[11px] leading-relaxed whitespace-pre text-base-content/80">
                             {JSON.stringify(action.parameters, null, 2)}
                         </pre>
                     </div>
@@ -226,6 +242,29 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                     </div>
                 </div>
             )}
+
+            <Modal
+                open={isDeleteModalOpen.value}
+                onClose={handleCancelDelete}
+                title="Remove from history?"
+                description="Are you sure you want to remove this action from history? This cannot be undone."
+                size="md"
+                boxClassName="border border-base-300"
+                footer={
+                    <>
+                        <Button variant="outline" onClick={handleCancelDelete}>
+                            Cancel
+                        </Button>
+                        <Button
+                            color="error"
+                            onClick={handleConfirmDelete}
+                            disabled={isDeleting.value}
+                        >
+                            {isDeleting.value ? "Removing..." : "Remove"}
+                        </Button>
+                    </>
+                }
+            />
         </div>
     );
 };

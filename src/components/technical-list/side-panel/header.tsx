@@ -13,7 +13,7 @@ export const SidePanelHeader = () => {
     } = useTechnicalSidebar();
 
     return (
-        <div className="flex items-center justify-between border-solid border-b border-base-200 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-solid border-base-200 px-6 py-4">
             <h3 className="text-lg font-semibold text-base-content">
                 Odoo Toolbox
             </h3>
@@ -39,7 +39,7 @@ export const SidePanelHeader = () => {
                         }
                         className={
                             isSelectionMode
-                                ? "btn-accent text-accent-content"
+                                ? "text-accent-content btn-accent"
                                 : undefined
                         }
                     />

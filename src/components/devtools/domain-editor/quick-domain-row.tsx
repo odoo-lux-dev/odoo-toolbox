@@ -27,7 +27,7 @@ export const QuickDomainRow = ({
                 key={`item-${domain.id}`}
                 data-swapy-item={itemId}
             >
-                <div className="drag-handle flex cursor-grab active:cursor-grabbing text-base-content/60 hover:text-base-content">
+                <div className="drag-handle flex cursor-grab text-base-content/60 hover:text-base-content active:cursor-grabbing">
                     <HugeiconsIcon
                         icon={DragDropVerticalIcon}
                         size={18}
@@ -37,22 +37,22 @@ export const QuickDomainRow = ({
                 </div>
 
                 <div
-                    className="domain-content flex-1 min-w-0"
+                    className="domain-content min-w-0 flex-1"
                     data-swapy-no-drag
                 >
-                    <div className="domain-name text-sm font-semibold text-base-content truncate">
+                    <div className="domain-name truncate text-sm font-semibold text-base-content">
                         {domain.name}
                     </div>
                     <div
                         title={domain.domain}
-                        className="domain-value text-xs truncate text-base-content/70 break-all leading-relaxed"
+                        className="domain-value truncate text-xs/relaxed break-all text-base-content/70"
                     >
                         {domain.domain}
                     </div>
                 </div>
 
                 <div
-                    className="domain-actions flex items-center gap-2 shrink-0"
+                    className="domain-actions flex shrink-0 items-center gap-2"
                     data-swapy-no-drag
                 >
                     <Button

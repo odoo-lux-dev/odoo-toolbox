@@ -24,7 +24,7 @@ export const OptionItem = ({
     return (
         <Card
             id={id}
-            className={`bg-base-100 shadow-sm self-start break-inside-avoid ${className}`}
+            className={`break-inside-avoid self-start bg-base-100 shadow-sm ${className}`}
             bodyClassName="gap-2"
         >
             <div className="flex items-start justify-between gap-2">

@@ -225,7 +225,7 @@ export const VirtualTable = ({
                                         {key}
                                     </span>
                                     <div
-                                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize border-l border-base-300"
+                                        className="absolute top-0 right-0 h-full w-1.5 cursor-col-resize border-l border-base-300"
                                         onMouseDown={(event) => {
                                             event.preventDefault();
                                             startResize(

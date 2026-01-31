@@ -134,7 +134,7 @@ export const ValueRenderer = ({
                         {entries.map(([objKey, objValue], index) => (
                             <span key={`${keyPrefix}-obj-${index}`}>
                                 {index > 0 && ", "}
-                                <span className="text-xs font-mono text-success">
+                                <span className="font-mono text-xs text-success">
                                     "{objKey}"
                                 </span>
                                 {": "}

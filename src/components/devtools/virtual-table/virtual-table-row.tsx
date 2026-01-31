@@ -34,7 +34,7 @@ const VirtualTableRowComponent = ({
             data-index={index}
             role="row"
             aria-rowindex={index + 2}
-            className={`absolute left-0 right-0 hover:bg-base-200/60 ${
+            className={`absolute inset-x-0 hover:bg-base-200/60 ${
                 isEven ? "bg-base-200/40" : "bg-base-100"
             }`}
             style={{

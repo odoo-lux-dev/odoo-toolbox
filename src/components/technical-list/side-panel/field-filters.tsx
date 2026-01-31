@@ -28,7 +28,7 @@ export const FieldFilters = ({
     showOnlyButtons,
     onButtonsChange,
 }: FieldFiltersProps) => (
-    <div className="border-solid border-b border-base-200 px-6 py-4">
+    <div className="border-b border-solid border-base-200 px-6 py-4">
         <div>
             <Input
                 type="text"

@@ -64,7 +64,7 @@ export const RecordDataViewer = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleCopy}
-                    className="absolute right-3 top-3 bg-base-100/80 shadow-sm backdrop-blur"
+                    className="absolute top-3 right-3 bg-base-100/80 shadow-sm backdrop-blur-sm"
                     icon={
                         <HugeiconsIcon
                             icon={Copy01Icon}
@@ -74,7 +74,7 @@ export const RecordDataViewer = ({
                         />
                     }
                 />
-                <pre className="max-h-105 overflow-auto rounded-lg border border-base-300 bg-base-200/50 p-3 mt-2 text-xs leading-6 text-base-content">
+                <pre className="mt-2 max-h-105 overflow-auto rounded-lg border border-base-300 bg-base-200/50 p-3 text-xs/6 text-base-content">
                     {jsonString}
                 </pre>
             </div>

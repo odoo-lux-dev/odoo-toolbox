@@ -19,7 +19,7 @@ export const NotificationManager = ({
     }
 
     return (
-        <div className="toast toast-top toast-end fixed top-4 right-4 z-9999 flex flex-col gap-2">
+        <div className="toast fixed toast-end toast-top top-4 right-4 z-9999 flex flex-col gap-2">
             {notifications.map((notification) => (
                 <Notification
                     key={notification.id}
