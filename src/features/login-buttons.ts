@@ -1,6 +1,23 @@
 import { getShowLoginButtons } from "@/utils/utils";
 
 /**
+ * Returns true when the current site should not show login buttons.
+ */
+const isLoginButtonsBlacklisted = (): boolean => {
+    const { hostname, pathname } = window.location;
+
+    if (hostname === "runbot.odoo.com") {
+        return true;
+    }
+
+    if (pathname.startsWith("/_odoo/support")) {
+        return true;
+    }
+
+    return false;
+};
+
+/**
  * Fills the login form credentials and attempts to submit the form.
  */
 const fillCredentialsAndSubmit = (username: string, password: string): void => {
@@ -63,6 +80,7 @@ const handleLoginButtons = (): void => {
 
     if (
         !showLoginButtons ||
+        isLoginButtonsBlacklisted() ||
         !loginForm ||
         loginForm.querySelector(".x-odoo-login-buttons")
     )
