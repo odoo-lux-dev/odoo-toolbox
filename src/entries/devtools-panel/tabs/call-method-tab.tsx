@@ -179,23 +179,7 @@ export const CallMethodTab = () => {
                 onClear={handleClearForm}
                 isLoading={methodLoading}
                 showDomainSection
-            >
-                <FormField
-                    label="Method Name"
-                    required
-                    helpText="Name of the method to call on the records."
-                >
-                    <Input
-                        type="text"
-                        value={callMethodName.value}
-                        onInput={handleMethodNameChange}
-                        placeholder="action_confirm"
-                        className="input-bordered input-sm"
-                        fullWidth
-                        disabled={rpcResult.loading || methodLoading}
-                    />
-                </FormField>
-            </QueryFormSidebar>
+            />
 
             <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
                 <div className="flex flex-col gap-3 pt-3">
@@ -218,6 +202,23 @@ export const CallMethodTab = () => {
                             be undone.
                         </p>
                     </Alert>
+
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-3">
+                            <h3 className="text-base font-semibold">
+                                Method to Call
+                            </h3>
+                        </div>
+                        <Input
+                            type="text"
+                            value={callMethodName.value}
+                            onInput={handleMethodNameChange}
+                            placeholder="action_confirm"
+                            className="input-bordered input-sm"
+                            fullWidth
+                            disabled={rpcResult.loading || methodLoading}
+                        />
+                    </div>
 
                     <div className="pt-1">
                         <Button
