@@ -54,7 +54,7 @@ export const SelectedFieldBadges = ({
                         </span>
                         <button
                             type="button"
-                            className="ml-1 inline-flex items-center text-current/70 hover:text-current"
+                            className="ml-1 inline-flex items-center text-current/70 hover:text-current cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onRemove(selectedValue);
