@@ -12,7 +12,6 @@ export const ShPageRenameOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -21,7 +20,7 @@ export const ShPageRenameOption = () => {
             tooltipContent="Select whether to change the tab title on Odoo.SH pages to includes current project name"
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

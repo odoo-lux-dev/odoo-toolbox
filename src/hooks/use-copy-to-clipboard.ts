@@ -68,6 +68,29 @@ const setFeedbackState = (
     if (variant !== "action") {
         targetElement.classList.add(...FEEDBACK_PADDING_CLASSES);
     }
+    if (variant === "action") {
+        targetElement.classList.add("whitespace-nowrap");
+        targetElement.setAttribute(
+            "data-clipboard-original-width",
+            targetElement.style.width,
+        );
+        targetElement.setAttribute(
+            "data-clipboard-original-min-width",
+            targetElement.style.minWidth,
+        );
+        targetElement.setAttribute(
+            "data-clipboard-original-padding-left",
+            targetElement.style.paddingLeft,
+        );
+        targetElement.setAttribute(
+            "data-clipboard-original-padding-right",
+            targetElement.style.paddingRight,
+        );
+        targetElement.style.width = "auto";
+        targetElement.style.minWidth = "max-content";
+        targetElement.style.paddingLeft = "0.5rem";
+        targetElement.style.paddingRight = "0.5rem";
+    }
     targetElement.classList.add(...FEEDBACK_CLASS_MAP[variant][type]);
 };
 
@@ -79,6 +102,18 @@ const clearFeedbackState = (targetElement: HTMLElement) => {
     );
     const originalCursor = targetElement.getAttribute(
         "data-clipboard-original-cursor",
+    );
+    const originalWidth = targetElement.getAttribute(
+        "data-clipboard-original-width",
+    );
+    const originalMinWidth = targetElement.getAttribute(
+        "data-clipboard-original-min-width",
+    );
+    const originalPaddingLeft = targetElement.getAttribute(
+        "data-clipboard-original-padding-left",
+    );
+    const originalPaddingRight = targetElement.getAttribute(
+        "data-clipboard-original-padding-right",
     );
 
     targetElement.innerHTML = originalHTML;
@@ -106,10 +141,46 @@ const clearFeedbackState = (targetElement: HTMLElement) => {
         }
     }
 
+    if (originalWidth !== null) {
+        if (originalWidth) {
+            targetElement.style.width = originalWidth;
+        } else {
+            targetElement.style.removeProperty("width");
+        }
+    }
+
+    if (originalMinWidth !== null) {
+        if (originalMinWidth) {
+            targetElement.style.minWidth = originalMinWidth;
+        } else {
+            targetElement.style.removeProperty("min-width");
+        }
+    }
+
+    if (originalPaddingLeft !== null) {
+        if (originalPaddingLeft) {
+            targetElement.style.paddingLeft = originalPaddingLeft;
+        } else {
+            targetElement.style.removeProperty("padding-left");
+        }
+    }
+
+    if (originalPaddingRight !== null) {
+        if (originalPaddingRight) {
+            targetElement.style.paddingRight = originalPaddingRight;
+        } else {
+            targetElement.style.removeProperty("padding-right");
+        }
+    }
+
     targetElement.removeAttribute("data-clipboard-state");
     targetElement.removeAttribute("data-clipboard-original");
     targetElement.removeAttribute("data-clipboard-original-class");
     targetElement.removeAttribute("data-clipboard-original-cursor");
+    targetElement.removeAttribute("data-clipboard-original-width");
+    targetElement.removeAttribute("data-clipboard-original-min-width");
+    targetElement.removeAttribute("data-clipboard-original-padding-left");
+    targetElement.removeAttribute("data-clipboard-original-padding-right");
     targetElement.removeAttribute("data-clipboard-variant");
 };
 

@@ -12,7 +12,6 @@ export const LoginButtonsOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -21,7 +20,7 @@ export const LoginButtonsOption = () => {
             tooltipContent="Choose if you want to show the default login buttons for admin/demo/portal"
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

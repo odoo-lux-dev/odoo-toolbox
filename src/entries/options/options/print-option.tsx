@@ -21,7 +21,6 @@ export const PrintOption = () => {
     const pdfEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF];
     const htmlEnabled =
         !!settings?.[CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -33,7 +32,7 @@ export const PrintOption = () => {
                 <label className="label cursor-pointer justify-between gap-3">
                     <span className="label-text">PDF</span>
                     <Toggle
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="toggle-primary dark:toggle-accent"
                         size="sm"
                         checked={pdfEnabled}
                         onCheckedChange={handlePdfChange}
@@ -42,7 +41,7 @@ export const PrintOption = () => {
                 <label className="label cursor-pointer justify-between gap-3">
                     <span className="label-text">HTML</span>
                     <Toggle
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="toggle-primary dark:toggle-accent"
                         size="sm"
                         checked={htmlEnabled}
                         onCheckedChange={handleHtmlChange}

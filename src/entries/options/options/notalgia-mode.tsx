@@ -12,7 +12,6 @@ export const NostalgiaModeOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -21,7 +20,7 @@ export const NostalgiaModeOption = () => {
             tooltipContent="This mode replace the original debug icons by monkey icons to remember the famous monkey extension"
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

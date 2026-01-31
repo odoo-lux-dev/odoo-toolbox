@@ -15,8 +15,6 @@ export const DebugModeOption = () => {
         (settings?.[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] as DebugModeType) ||
         "disabled";
 
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
-
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;
         const value = target.value as DebugModeType;
@@ -87,7 +85,7 @@ export const DebugModeOption = () => {
                 <div className="flex flex-col gap-3">
                     <Radio
                         name="debug-mode"
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="radio-primary dark:radio-accent"
                         value="disabled"
                         checked={selectedMode === "disabled"}
                         onChange={handleChange}
@@ -97,7 +95,7 @@ export const DebugModeOption = () => {
 
                     <Radio
                         name="debug-mode"
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="radio-primary dark:radio-accent"
                         value="1"
                         checked={selectedMode === "1"}
                         onChange={handleChange}
@@ -107,7 +105,7 @@ export const DebugModeOption = () => {
 
                     <Radio
                         name="debug-mode"
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="radio-primary dark:radio-accent"
                         value="assets"
                         checked={selectedMode === "assets"}
                         onChange={handleChange}
@@ -117,7 +115,7 @@ export const DebugModeOption = () => {
 
                     <Radio
                         name="debug-mode"
-                        color={isDarkMode ? "accent" : "primary"}
+                        className="radio-primary dark:radio-accent"
                         value="assets,tests"
                         checked={selectedMode === "assets,tests"}
                         onChange={handleChange}

@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CursorPointer01Icon, Select02Icon } from "@hugeicons/core-free-icons";
+import { ZoomInAreaIcon, Select02Icon } from "@hugeicons/core-free-icons";
 import { ButtonItem } from "@/components/technical-list/button-item";
 import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
 import { EmptyState } from "@/components/technical-list/states";
@@ -28,11 +28,11 @@ export const SelectedButtonContent = () => {
 
     return (
         <div className="px-6 py-4">
-            <div className="mb-3 flex items-center gap-2 rounded-lg bg-base-200/60 px-3 py-2 text-sm font-semibold text-base-content">
+            <div className="mb-1 flex items-center gap-2 px-3 py-2 text-sm font-semibold text-base-content">
                 <HugeiconsIcon
-                    icon={CursorPointer01Icon}
-                    size={16}
-                    color="currentColor"
+                    icon={ZoomInAreaIcon}
+                    size={24}
+                    color="var(--color-accent)"
                     strokeWidth={1.6}
                 />
                 <span>Selected Button</span>

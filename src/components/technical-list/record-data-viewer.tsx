@@ -1,5 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Copy01Icon } from "@hugeicons/core-free-icons";
+import { Alert } from "@/components/ui/alert";
 import { IconButton } from "@/components/ui/icon-button";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
@@ -21,25 +22,30 @@ export const RecordDataViewer = ({
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center rounded-lg border border-base-200 bg-base-100 px-4 py-8 text-sm text-base-content/70">
-                Loading record data...
-            </div>
+            <Alert
+                title="Loading record data..."
+                color="info"
+                variant="outline"
+                className="items-start"
+            >
+                <span className="text-sm">Please wait a moment.</span>
+            </Alert>
         );
     }
 
     if (error) {
         return (
-            <div className="alert alert-error shadow-sm">
+            <Alert color="error" variant="outline" className="items-start">
                 <span className="text-sm">{error}</span>
-            </div>
+            </Alert>
         );
     }
 
     if (!data) {
         return (
-            <div className="alert alert-warning shadow-sm">
+            <Alert color="warning" variant="outline" className="items-start">
                 <span className="text-sm">No data available</span>
-            </div>
+            </Alert>
         );
     }
 
@@ -68,7 +74,7 @@ export const RecordDataViewer = ({
                         />
                     }
                 />
-                <pre className="max-h-[420px] overflow-auto rounded-lg border border-base-300 bg-base-200/50 p-4 text-xs leading-6 text-base-content">
+                <pre className="max-h-105 overflow-auto rounded-lg border border-base-300 bg-base-200/50 p-3 mt-2 text-xs leading-6 text-base-content">
                     {jsonString}
                 </pre>
             </div>

@@ -12,7 +12,6 @@ export const ColorBlindOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_COLORBLIND_MODE];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -21,7 +20,7 @@ export const ColorBlindOption = () => {
             tooltipContent="This mode replace some colors and icons from Odoo.SH to a color blind friendly palette"
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

@@ -13,7 +13,6 @@ export const TechnicalModelOption = () => {
 
     const isEnabled =
         !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     return (
         <OptionItem
@@ -22,7 +21,7 @@ export const TechnicalModelOption = () => {
             tooltipContent="Choose if you want to display the technical model onto the page (v17.2+)"
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

@@ -12,7 +12,6 @@ export const TechnicalListOption = () => {
     };
 
     const isEnabled = !!settings?.[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST];
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     const additionalTooltipContent = (
         <div>
@@ -69,7 +68,7 @@ export const TechnicalListOption = () => {
             additionalTooltipContent={additionalTooltipContent}
         >
             <Toggle
-                color={isDarkMode ? "accent" : "primary"}
+                className="toggle-primary dark:toggle-accent"
                 size="sm"
                 checked={isEnabled}
                 onCheckedChange={handleChange}

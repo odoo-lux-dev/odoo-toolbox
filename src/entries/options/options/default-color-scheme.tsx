@@ -14,7 +14,6 @@ export const DefaultColorSchemeOption = () => {
     };
 
     const currentScheme = getCurrentScheme();
-    const isDarkMode = settings?.extensionTheme === "dark" || false;
 
     const handleChange = async (event: Event) => {
         const target = event.target as HTMLInputElement;
@@ -44,7 +43,7 @@ export const DefaultColorSchemeOption = () => {
             <div id="default-color-scheme" className="flex flex-col gap-3">
                 <Radio
                     name="default-color-scheme"
-                    color={isDarkMode ? "accent" : "primary"}
+                    className="radio-primary dark:radio-accent"
                     value="none"
                     checked={currentScheme === "none"}
                     onChange={handleChange}
@@ -53,7 +52,7 @@ export const DefaultColorSchemeOption = () => {
                 />
                 <Radio
                     name="default-color-scheme"
-                    color={isDarkMode ? "accent" : "primary"}
+                    className="radio-primary dark:radio-accent"
                     value="system"
                     checked={currentScheme === "system"}
                     onChange={handleChange}
@@ -62,7 +61,7 @@ export const DefaultColorSchemeOption = () => {
                 />
                 <Radio
                     name="default-color-scheme"
-                    color={isDarkMode ? "accent" : "primary"}
+                    className="radio-primary dark:radio-accent"
                     value="light"
                     checked={currentScheme === "light"}
                     onChange={handleChange}
@@ -71,7 +70,7 @@ export const DefaultColorSchemeOption = () => {
                 />
                 <Radio
                     name="default-color-scheme"
-                    color={isDarkMode ? "accent" : "primary"}
+                    className="radio-primary dark:radio-accent"
                     value="dark"
                     checked={currentScheme === "dark"}
                     onChange={handleChange}
