@@ -94,7 +94,7 @@ export const DevToolsProvider = ({ children }: DevToolsProviderProps) => {
             await refreshOdooInfo();
 
             if (browser.devtools.network.onNavigated) {
-                const handleNavigation = async (url: string) => {
+                const handleNavigation = async (_url: string) => {
                     await refreshOdooInfo();
                 };
 

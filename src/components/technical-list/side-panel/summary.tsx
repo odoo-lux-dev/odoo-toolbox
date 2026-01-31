@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GlobeIcon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import { useTechnicalSidebar } from "@/components/technical-list/hooks/use-technical-sidebar";
 
 export const SidePanelSummary = () => {
@@ -16,7 +16,7 @@ export const SidePanelSummary = () => {
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-md bg-base-200/60 px-2 py-1 text-xs text-base-content/70">
                         <HugeiconsIcon
-                            icon={GlobeIcon}
+                            icon={InformationCircleIcon}
                             size={12}
                             color="currentColor"
                             strokeWidth={1.6}
