@@ -464,6 +464,6 @@ async function executeInContentScript(
         // Return the complete error object that can be serialized back to the background script
         // This preserves Odoo's detailed error structure (code, data, debug, etc.)
         // We have to destructure the error object to make it work on Firefox
-        return { ...(error || {}) };
+        return { ...(error || {}) }; // oxlint-disable-line
     }
 }

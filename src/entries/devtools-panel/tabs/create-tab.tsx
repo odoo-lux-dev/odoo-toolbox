@@ -292,7 +292,7 @@ export const CreateTab = () => {
     };
 
     return (
-        <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)] bg-base-300">
+        <div className="grid h-full min-h-0 grid-cols-1 bg-base-300 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)]">
             <QueryFormSidebar
                 showRecordIdsSection={false}
                 onPrimaryAction={undefined}
@@ -300,7 +300,7 @@ export const CreateTab = () => {
                 isLoading={createLoading}
             />
 
-            <div className="bg-base-100 flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl px-3">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl bg-base-100 px-3">
                 <div className="flex flex-col gap-3 pt-3">
                     <Alert
                         color="warning"
@@ -401,7 +401,7 @@ export const CreateTab = () => {
                         hideRecordPagingData
                         customText={
                             rpcResult.data && rpcResult.data.length > 0 ? (
-                                <div className="py-2 mr-auto">
+                                <div className="mr-auto py-2">
                                     <h4 className="text-sm font-semibold">
                                         {generateInformativeText(
                                             rpcResult.model,

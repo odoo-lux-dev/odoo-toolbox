@@ -6,7 +6,7 @@ interface EmptyStateProps {
 }
 
 export const EmptyState = ({ icon, message }: EmptyStateProps) => (
-    <div className="shadow-sm flex flex-col py-12 items-center gap-3">
+    <div className="flex flex-col items-center gap-3 py-12 shadow-sm">
         {icon}
         <span className="text-sm">{message}</span>
     </div>

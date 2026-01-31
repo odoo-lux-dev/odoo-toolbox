@@ -73,7 +73,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
                     size={14}
                     color="currentColor"
                     strokeWidth={2}
-                    className={iconClassName ?? "h-3.5 w-3.5"}
+                    className={iconClassName ?? "size-3.5"}
                 />
             );
 
@@ -83,7 +83,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
                     size={14}
                     color="currentColor"
                     strokeWidth={2}
-                    className={iconClassName ?? "h-3.5 w-3.5"}
+                    className={iconClassName ?? "size-3.5"}
                 />
             );
 

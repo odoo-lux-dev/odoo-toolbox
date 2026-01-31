@@ -124,7 +124,7 @@ export const FavoritesPage = () => {
     if (loading) {
         return (
             <div className="flex items-center gap-2 text-sm opacity-80">
-                <span className="loading loading-spinner loading-sm" />
+                <span className="loading loading-sm loading-spinner" />
                 <span>Loading favorites...</span>
             </div>
         );
@@ -146,7 +146,7 @@ export const FavoritesPage = () => {
                             add it to your favorites
                         </p>
                         <a
-                            className="btn btn-sm btn-primary w-fit"
+                            className="btn w-fit btn-sm btn-primary"
                             target="_blank"
                             rel="noreferrer noopener"
                             href="https://www.odoo.sh/project"

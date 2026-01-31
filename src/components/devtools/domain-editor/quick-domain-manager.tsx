@@ -185,7 +185,7 @@ export const QuickDomainManager = ({
                             onClick={handleAdd}
                             color="accent"
                             variant="outline"
-                            className="w-full my-3"
+                            className="my-3 w-full"
                             size="sm"
                         >
                             Add Domain
@@ -194,7 +194,7 @@ export const QuickDomainManager = ({
 
                     <div className="flex-1 overflow-hidden">
                         <div
-                            className="flex flex-col gap-2 overflow-y-auto pr-1 h-full transition-none [&_[data-swapy-slot]]:transition-none [&_[data-swapy-item]]:transition-none [&_[data-swapy-container]]:transition-none [&_[data-swapy-slot]_*]:transition-none [&_[data-swapy-item]_*]:transition-none"
+                            className="flex h-full flex-col gap-2 overflow-y-auto pr-1 transition-none **:data-swapy-container:transition-none **:data-swapy-item:transition-none **:data-swapy-slot:transition-none [&_[data-swapy-item]_*]:transition-none [&_[data-swapy-slot]_*]:transition-none"
                             ref={containerRef}
                         >
                             {slottedItems.value.map(

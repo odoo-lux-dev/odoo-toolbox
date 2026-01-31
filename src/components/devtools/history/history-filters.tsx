@@ -57,9 +57,9 @@ export const HistoryFilters = ({
         selectedModel.value !== "all";
 
     return (
-        <div className="flex flex-col gap-3 rounded-md border border-base-300 bg-base-200 p-4 mx-3">
+        <div className="mx-3 flex flex-col gap-3 rounded-md border border-base-300 bg-base-200 p-4">
             <div className="flex flex-wrap items-end gap-3">
-                <div className="flex min-w-30 flex-col gap-1 first:grow first:min-w-50">
+                <div className="flex min-w-30 flex-col gap-1 first:min-w-50 first:grow">
                     <label
                         htmlFor="history-search"
                         className="text-xs font-medium text-base-content/70"
@@ -69,7 +69,7 @@ export const HistoryFilters = ({
                     <input
                         id="history-search"
                         type="text"
-                        className="input input-bordered input-sm w-full"
+                        className="input-bordered input input-sm w-full"
                         placeholder="Search actions, models..."
                         value={searchTerm.value}
                         onInput={handleSearchChange}
@@ -85,7 +85,7 @@ export const HistoryFilters = ({
                     </label>
                     <select
                         id="action-type-filter"
-                        className="select select-bordered select-sm w-full"
+                        className="select-bordered select w-full select-sm"
                         value={selectedType.value}
                         onChange={handleTypeChange}
                     >
@@ -111,7 +111,7 @@ export const HistoryFilters = ({
                     </label>
                     <select
                         id="model-filter"
-                        className="select select-bordered select-sm w-full"
+                        className="select-bordered select w-full select-sm"
                         value={selectedModel.value}
                         onChange={handleModelChange}
                     >
@@ -127,7 +127,7 @@ export const HistoryFilters = ({
                 <div className="flex min-w-30 flex-col gap-1">
                     <button
                         type="button"
-                        className="btn btn-outline btn-secondary btn-sm w-full sm:w-auto"
+                        className="btn w-full btn-outline btn-sm btn-secondary sm:w-auto"
                         onClick={clearFilters}
                         disabled={!hasActiveFilters}
                         title="Clear all filters"

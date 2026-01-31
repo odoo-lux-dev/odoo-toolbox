@@ -20,14 +20,14 @@ export const createFieldValidationErrorNotification = (
             <div className="flex flex-wrap gap-1">
                 {invalidFields.map((field, index) => (
                     <span key={field} className="inline-flex items-center">
-                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                        <code className="rounded-sm bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
                             "{field}"
                         </code>
                         {index < invalidFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="text-xs italic text-base-content/70">
+            <div className="text-xs text-base-content/70 italic">
                 💡 Use the autocomplete suggestions or check the model fields
             </div>
         </div>
@@ -52,14 +52,14 @@ export const createRequiredFieldsErrorNotification = (
             <div className="flex flex-wrap gap-1">
                 {missingFields.map((field, index) => (
                     <span key={field} className="inline-flex items-center">
-                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                        <code className="rounded-sm bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
                             "{field}"
                         </code>
                         {index < missingFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="text-xs italic text-base-content/70">
+            <div className="text-xs text-base-content/70 italic">
                 💡 These fields must be provided when creating a record
             </div>
         </div>
@@ -140,14 +140,14 @@ export const createRequiredFieldsActionNotification = (
             <div className="flex flex-wrap gap-1">
                 {missingFields.map((field, index) => (
                     <span key={field} className="inline-flex items-center">
-                        <code className="rounded bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
+                        <code className="rounded-sm bg-base-200 px-1.5 py-0.5 font-mono text-[11px] text-error">
                             "{field}"
                         </code>
                         {index < missingFields.length - 1 && ", "}
                     </span>
                 ))}
             </div>
-            <div className="text-xs italic text-base-content/70">
+            <div className="text-xs text-base-content/70 italic">
                 💡 Click below to add these fields with default values
             </div>
         </div>

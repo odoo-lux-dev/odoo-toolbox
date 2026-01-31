@@ -8,7 +8,7 @@ export const SidePanelSummary = () => {
     if (!viewInfo || isSelectionMode) return null;
 
     return (
-        <div className="border-solid border-b border-base-200 px-6 py-3 text-sm text-base-content/70">
+        <div className="border-b border-solid border-base-200 px-6 py-3 text-sm text-base-content/70">
             {isWebsite ? (
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-base-content">

@@ -147,7 +147,7 @@ export const RecordSearch = ({ expandedRecords }: RecordSearchProps) => {
     }
 
     return (
-        <div className="record-search-bar sticky top-0 z-10 animate-record-search-in">
+        <div className="record-search-bar animate-record-search-in sticky top-0 z-10">
             <div className="flex items-center gap-2 px-2 py-1.5">
                 <span className="text-base-content/60">
                     <HugeiconsIcon
@@ -169,7 +169,7 @@ export const RecordSearch = ({ expandedRecords }: RecordSearchProps) => {
                 />
                 <div className="flex items-center gap-1">
                     {searchResults.value.length > 0 && (
-                        <span className="text-xs text-base-content/70 whitespace-nowrap">
+                        <span className="text-xs whitespace-nowrap text-base-content/70">
                             {currentIndex.value + 1} of{" "}
                             {searchResults.value.length}
                             {searchResults.value.some(

@@ -63,7 +63,7 @@ export const FieldItem = ({
             <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2">
                     <span
-                        className="text-xs font-mono rounded-md px-2 py-1 max-w-50 truncate cursor-pointer bg-base-200 hover:bg-primary hover:text-primary-content transition-colors"
+                        className="max-w-50 cursor-pointer truncate rounded-md bg-base-200 px-2 py-1 font-mono text-xs transition-colors hover:bg-primary hover:text-primary-content"
                         onClick={(event) =>
                             handleCopyFieldName(field.name, event)
                         }
@@ -76,7 +76,7 @@ export const FieldItem = ({
                     size="sm"
                     color={typeColor}
                     variant="outline"
-                    className="uppercase tracking-wide"
+                    className="tracking-wide uppercase"
                 >
                     {typeLabel}
                 </Badge>
@@ -108,7 +108,7 @@ export const FieldItem = ({
                         <Badge
                             size="sm"
                             variant="outline"
-                            className="uppercase tracking-wide"
+                            className="tracking-wide uppercase"
                             title={
                                 isDynamicCondition(field.debugInfo.invisible)
                                     ? `Invisible when: ${field.debugInfo.invisible}`
@@ -126,7 +126,7 @@ export const FieldItem = ({
                             size="sm"
                             variant="outline"
                             color="secondary"
-                            className="uppercase tracking-wide"
+                            className="tracking-wide uppercase"
                         >
                             Compute
                         </Badge>
@@ -137,7 +137,7 @@ export const FieldItem = ({
                             size="sm"
                             variant="outline"
                             color="success"
-                            className="uppercase tracking-wide"
+                            className="tracking-wide uppercase"
                         >
                             Related
                         </Badge>
@@ -148,7 +148,7 @@ export const FieldItem = ({
                             size="sm"
                             variant="outline"
                             color="info"
-                            className="uppercase tracking-wide"
+                            className="tracking-wide uppercase"
                         >
                             Store
                         </Badge>
@@ -173,7 +173,7 @@ export const FieldItem = ({
             )}
 
             {field.debugInfo ? (
-                <div className="mt-3 space-y-2 border-solid border-t border-base-300 pt-3 text-xs ">
+                <div className="mt-3 space-y-2 border-t border-solid border-base-300 pt-3 text-xs">
                     {[
                         {
                             key: "widget",
@@ -233,10 +233,10 @@ export const FieldItem = ({
                                 key={item.key}
                                 className="flex items-start justify-between gap-4"
                             >
-                                <span className="font-medium text-base-content/60 text-nowrap">
+                                <span className="font-medium text-nowrap text-base-content/60">
                                     {item.label}
                                 </span>
-                                <code className="max-w-[220px] break-words text-right font-mono text-base-content/80 max-h-[60px] overflow-y-auto">
+                                <code className="max-h-[60px] max-w-[220px] overflow-y-auto text-right font-mono wrap-break-word text-base-content/80">
                                     {item.serialize
                                         ? JSON.stringify(item.value)
                                         : item.value}
@@ -249,7 +249,7 @@ export const FieldItem = ({
             {field.value ? (
                 <div className="mt-3">
                     <button
-                        className="btn btn-ghost btn-xs gap-2 text-xs"
+                        className="btn gap-2 text-xs btn-ghost btn-xs"
                         onClick={(event) => {
                             event.stopPropagation();
                             showValue.value = !showValue.value;
@@ -265,7 +265,7 @@ export const FieldItem = ({
                         {showValue.value ? "Hide Value" : "Show Value"}
                     </button>
                     {showValue.value ? (
-                        <code className="mt-2 max-h-28 overflow-auto rounded-md border border-base-200 bg-base-200/60 p-2 text-xs font-mono text-base-content/80">
+                        <code className="mt-2 max-h-28 overflow-auto rounded-md border border-base-200 bg-base-200/60 p-2 font-mono text-xs text-base-content/80">
                             {field.value}
                         </code>
                     ) : null}

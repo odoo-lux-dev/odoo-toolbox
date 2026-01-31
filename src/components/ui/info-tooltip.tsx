@@ -51,7 +51,7 @@ export const InfoTooltip = ({
             </div>
             <div
                 tabIndex={0}
-                className="dropdown-content z-50 w-96 max-w-[calc(100vw-2rem)] rounded-box border border-base-300 bg-base-200 p-3 text-sm shadow whitespace-normal break-words"
+                className="dropdown-content z-50 w-96 max-w-[calc(100vw-2rem)] rounded-box border border-base-300 bg-base-200 p-3 text-sm wrap-break-word whitespace-normal shadow-sm"
             >
                 <div className="opacity-90">{content}</div>
                 {additionalContent ? (

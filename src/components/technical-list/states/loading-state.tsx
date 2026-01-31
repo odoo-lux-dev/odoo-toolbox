@@ -8,7 +8,7 @@ interface LoadingStateProps {
 export const LoadingState = ({
     message = "Scanning technical fields...",
 }: LoadingStateProps) => (
-    <div className="shadow-sm flex flex-col py-12 items-center gap-3">
+    <div className="flex flex-col items-center gap-3 py-12 shadow-sm">
         <HugeiconsIcon
             icon={Loading03Icon}
             size={32}

@@ -101,7 +101,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 {...rest}
             >
                 {loading ? (
-                    <span className="loading loading-spinner loading-xs" />
+                    <span className="loading loading-xs loading-spinner" />
                 ) : null}
                 {children}
             </button>

@@ -14,7 +14,7 @@ interface FieldMetadataTooltipProps {
 const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
     if (typeof value === "string") {
         return (
-            <span key={keyPrefix} className="text-xs font-mono text-success">
+            <span key={keyPrefix} className="font-mono text-xs text-success">
                 "{value}"
             </span>
         );
@@ -24,7 +24,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
         return (
             <span
                 key={keyPrefix}
-                className="text-xs font-mono text-base-content/70"
+                className="font-mono text-xs text-base-content/70"
             >
                 [
                 {value.map((item, index) => (
@@ -40,7 +40,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (typeof value === "boolean") {
         return (
-            <span key={keyPrefix} className="text-xs font-mono text-warning">
+            <span key={keyPrefix} className="font-mono text-xs text-warning">
                 {value.toString()}
             </span>
         );
@@ -48,7 +48,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
 
     if (typeof value === "number") {
         return (
-            <span key={keyPrefix} className="text-xs font-mono text-primary">
+            <span key={keyPrefix} className="font-mono text-xs text-primary">
                 {value.toString()}
             </span>
         );
@@ -58,7 +58,7 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
         return (
             <span
                 key={keyPrefix}
-                className="text-xs font-mono text-base-content/60"
+                className="font-mono text-xs text-base-content/60"
             >
                 null
             </span>
@@ -70,13 +70,13 @@ const renderValue = (value: unknown, keyPrefix = ""): ComponentChildren => {
         return (
             <span
                 key={keyPrefix}
-                className="text-xs font-mono text-base-content/70"
+                className="font-mono text-xs text-base-content/70"
             >
                 {"{"}
                 {entries.map(([objKey, objValue], index) => (
                     <span key={`${keyPrefix}-obj-${index}`}>
                         {index > 0 && ", "}
-                        <span className="text-xs font-mono text-success">
+                        <span className="font-mono text-xs text-success">
                             "{objKey}"
                         </span>
                         {": "}
@@ -135,7 +135,7 @@ export const FieldMetadataTooltip = ({
                 onMouseEnter={showTooltip}
                 onMouseLeave={hideTooltip}
             >
-                <div className="underline decoration-dotted underline-offset-2 decoration-base-content/40 hover:decoration-primary">
+                <div className="underline decoration-base-content/40 decoration-dotted underline-offset-2 hover:decoration-primary">
                     {children}
                 </div>
 
@@ -143,14 +143,14 @@ export const FieldMetadataTooltip = ({
                     <Portal>
                         <div
                             ref={tooltipRef}
-                            className="fixed z-[9999] pointer-events-none"
+                            className="pointer-events-none fixed z-9999"
                             style={{
                                 top: `${position.top}px`,
                                 left: `${position.left}px`,
                             }}
                         >
                             <div className="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
-                                <div className="text-base-content/70 font-medium">
+                                <div className="font-medium text-base-content/70">
                                     Field metadata is not available. If this is
                                     a new field, please restart devtools or
                                     modify the model to force a refresh.
@@ -172,7 +172,7 @@ export const FieldMetadataTooltip = ({
             onMouseEnter={showTooltip}
             onMouseLeave={hideTooltip}
         >
-            <div className="underline decoration-dotted underline-offset-2 decoration-base-content/40 hover:decoration-primary">
+            <div className="underline decoration-base-content/40 decoration-dotted underline-offset-2 hover:decoration-primary">
                 {children}
             </div>
 
@@ -180,14 +180,14 @@ export const FieldMetadataTooltip = ({
                 <Portal>
                     <div
                         ref={tooltipRef}
-                        className="fixed z-[9999] pointer-events-none"
+                        className="pointer-events-none fixed z-9999"
                         style={{
                             top: `${position.top}px`,
                             left: `${position.left}px`,
                         }}
                     >
                         <div className="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
-                            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary">
+                            <div className="mb-2 text-xs font-semibold tracking-wide text-primary uppercase">
                                 Field: {fieldName}
                             </div>
                             <div>

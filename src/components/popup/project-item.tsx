@@ -25,10 +25,10 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
     };
 
     return (
-        <div className="rounded-md text-primary dark:text-base-content odd:bg-base-200 even:bg-transparent hover:bg-base-300">
+        <div className="rounded-md text-primary odd:bg-base-200 even:bg-transparent hover:bg-base-300 dark:text-base-content">
             <button
                 type="button"
-                className="flex w-full items-center justify-between p-3 text-left text-sm cursor-pointer"
+                className="flex w-full cursor-pointer items-center justify-between p-3 text-left text-sm"
                 onClick={handleClick}
             >
                 <span className="truncate">{favorite.display_name}</span>

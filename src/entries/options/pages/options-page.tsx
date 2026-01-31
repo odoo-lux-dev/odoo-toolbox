@@ -30,7 +30,7 @@ export const OptionsPage = () => {
                         Odoo
                     </h2>
                 </div>
-                <div className="columns-1 md:columns-2 gap-4">
+                <div className="columns-1 gap-4 md:columns-2">
                     {ExtensionOptions.filter(
                         (option) => option.category === "Odoo",
                     ).map((option) => (
@@ -49,7 +49,7 @@ export const OptionsPage = () => {
                         Odoo.SH
                     </h2>
                 </div>
-                <div className="columns-1 md:columns-2 gap-4">
+                <div className="columns-1 gap-4 md:columns-2">
                     {ExtensionOptions.filter(
                         (option) => option.category === "Odoo.SH",
                     ).map((option) => (

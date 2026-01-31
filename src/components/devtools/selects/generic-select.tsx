@@ -367,7 +367,7 @@ export const GenericSelect = ({
         return (
             <>
                 {before}
-                <mark className="bg-warning/40 text-base-content rounded px-0.5">
+                <mark className="rounded-sm bg-warning/40 px-0.5 text-base-content">
                     {match}
                 </mark>
                 {after}
@@ -416,7 +416,7 @@ export const GenericSelect = ({
                 (filteredOptions.value.length > 0 || loading) ? (
                     <div
                         ref={dropdownRef}
-                        className={`select-dropdown absolute left-0 right-0 z-50 max-h-52 overflow-y-auto overflow-x-hidden border border-base-300 bg-base-100 shadow-lg ${shouldRenderAbove.value ? "bottom-full mb-1 rounded-md" : "top-full mt-1 rounded-md"}`}
+                        className={`select-dropdown absolute inset-x-0 z-50 max-h-52 overflow-x-hidden overflow-y-auto border border-base-300 bg-base-100 shadow-lg ${shouldRenderAbove.value ? "bottom-full mb-1 rounded-md" : "top-full mt-1 rounded-md"}`}
                     >
                         <>
                             {loading ? (
@@ -448,7 +448,7 @@ export const GenericSelect = ({
                             {!loading &&
                                 filteredOptions.value.length >
                                     maxDisplayedOptions && (
-                                    <div className="select-more px-3 py-2 text-xs italic text-base-content/60 bg-base-200/60">
+                                    <div className="select-more bg-base-200/60 px-3 py-2 text-xs text-base-content/60 italic">
                                         Showing first {maxDisplayedOptions}{" "}
                                         results. Refine your search for more
                                         specific results.

@@ -6,7 +6,7 @@ interface ErrorStateProps {
 }
 
 export const ErrorState = ({ message }: ErrorStateProps) => (
-    <div className="shadow-sm flex flex-col py-12 items-center gap-3">
+    <div className="flex flex-col items-center gap-3 py-12 shadow-sm">
         <HugeiconsIcon
             icon={AlertCircleIcon}
             size={32}

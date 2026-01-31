@@ -10,7 +10,7 @@ export const SelectedFieldContent = () => {
 
     if (!selectedFieldInfo) {
         return (
-            <div className="px-6 py-6">
+            <div className="p-6">
                 <EmptyState
                     icon={
                         <HugeiconsIcon

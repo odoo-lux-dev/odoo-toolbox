@@ -174,7 +174,7 @@ export const App = () => {
     };
 
     return (
-        <div className="min-h-screen bg-base-200 text-base-content flex items-center justify-center px-4 py-8">
+        <div className="flex min-h-screen items-center justify-center bg-base-200 px-4 py-8 text-base-content">
             <Card className="w-full max-w-2xl bg-base-100 shadow-xl">
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center justify-between gap-4">
@@ -200,13 +200,13 @@ export const App = () => {
                         </p>
                     </div>
 
-                    <p className="text-sm text-base-content/60 text-center">
+                    <p className="text-center text-sm text-base-content/60">
                         This notification only appears for significant updates
                         worth highlighting.
                     </p>
 
                     {updateInfo.mainFeature ? (
-                        <Card className="bg-base-200/60 border border-base-300">
+                        <Card className="border border-base-300 bg-base-200/60">
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-primary/15 p-2 text-primary">
                                     {renderIcon(
@@ -349,7 +349,7 @@ export const App = () => {
                                         key={index}
                                         className="flex items-center gap-2"
                                     >
-                                        <span className="mt-1 h-2 w-2 rounded-full bg-primary/70" />
+                                        <span className="mt-1 size-2 rounded-full bg-primary/70" />
                                         <span>{note}</span>
                                     </li>
                                 ))}
@@ -360,7 +360,7 @@ export const App = () => {
                     <div className="flex flex-wrap gap-3">
                         <Button
                             color="primary"
-                            className="gap-2 flex-1"
+                            className="flex-1 gap-2"
                             onClick={openOptions}
                         >
                             <HugeiconsIcon
@@ -375,7 +375,7 @@ export const App = () => {
                             <Button
                                 variant="outline"
                                 color="secondary"
-                                className="gap-2 flex-1"
+                                className="flex-1 gap-2"
                                 onClick={openChangelog}
                             >
                                 <HugeiconsIcon
@@ -388,7 +388,7 @@ export const App = () => {
                             </Button>
                             <Button
                                 variant="outline"
-                                className="gap-2 flex-1"
+                                className="flex-1 gap-2"
                                 onClick={openGitHub}
                             >
                                 <HugeiconsIcon

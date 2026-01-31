@@ -20,7 +20,7 @@ export const PaginationControls = ({
         <div className="flex items-center gap-2">
             <div className="join">
                 <button
-                    className="join-item btn btn-xs btn-ghost"
+                    className="btn join-item btn-ghost btn-xs"
                     onClick={pagination.goToPreviousPage}
                     disabled={pagination.currentPage === 1 || loading}
                 >
@@ -31,11 +31,11 @@ export const PaginationControls = ({
                         strokeWidth={1.6}
                     />
                 </button>
-                <span className="join-item btn btn-xs btn-ghost pointer-events-none font-normal tabular-nums">
+                <span className="btn pointer-events-none join-item font-normal tabular-nums btn-ghost btn-xs">
                     Page {pagination.currentPage} of {pagination.totalPages}
                 </span>
                 <button
-                    className="join-item btn btn-xs btn-ghost"
+                    className="btn join-item btn-ghost btn-xs"
                     onClick={pagination.goToNextPage}
                     disabled={
                         pagination.currentPage === pagination.totalPages ||

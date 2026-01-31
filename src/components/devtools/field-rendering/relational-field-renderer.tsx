@@ -186,10 +186,10 @@ export const RelationalFieldRenderer = ({
                     return (
                         <div
                             key={recordId || index}
-                            className="first:rounded-t-box last:rounded-b-box border-b last:border-b-0 border-base-200 bg-base-100 overflow-hidden"
+                            className="overflow-hidden border-b border-base-200 bg-base-100 first:rounded-t-box last:rounded-b-box last:border-b-0"
                         >
                             <div
-                                className="peer flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-base-300"
+                                className="peer flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-base-300"
                                 onClick={() => handleRelatedRecordToggle(index)}
                                 onContextMenu={(e) =>
                                     handleRecordContextMenu(
@@ -199,7 +199,7 @@ export const RelationalFieldRenderer = ({
                                     )
                                 }
                             >
-                                <span className="inline-flex h-4 w-4 items-center justify-center shrink-0 text-base-content/70">
+                                <span className="inline-flex size-4 shrink-0 items-center justify-center text-base-content/70">
                                     {isExpanded ? (
                                         <HugeiconsIcon
                                             icon={ArrowDown01Icon}
@@ -217,7 +217,7 @@ export const RelationalFieldRenderer = ({
                                     )}
                                 </span>
                                 <span
-                                    className="text-xs font-medium text-primary shrink-0 w-12"
+                                    className="w-12 shrink-0 text-xs font-medium text-primary"
                                     data-level={level}
                                     data-searchable={
                                         recordId ? String(recordId) : ""
@@ -324,7 +324,7 @@ export const RelationalFieldRenderer = ({
                             </div>
                             {isExpanded && (
                                 <div
-                                    className={`border-2 not-last:border-y-0 border-base-100 bg-base-200 px-3 py-2 peer-hover:border-base-300 ${index === relatedData.value.length - 1 ? "rounded-b-box" : ""}`}
+                                    className={`border-2 border-base-100 bg-base-200 px-3 py-2 not-last:border-y-0 peer-hover:border-base-300 ${index === relatedData.value.length - 1 ? "rounded-b-box" : ""}`}
                                 >
                                     <RecordRenderer
                                         records={[record]}
@@ -348,16 +348,16 @@ export const RelationalFieldRenderer = ({
 
     if (!modelName) {
         return (
-            <span className="text-xs font-mono text-error">
+            <span className="font-mono text-xs text-error">
                 Invalid relational field
             </span>
         );
     }
 
     return (
-        <div className="relational-node flex flex-col gap-1 [&:hover>.relational-header_.relational-arrow]:text-accent [&:hover>.relational-border]:border-accent">
+        <div className="relational-node flex flex-col gap-1 [&:hover>.relational-border]:border-accent [&:hover>.relational-header_.relational-arrow]:text-accent">
             <div
-                className="relational-header flex w-full min-w-0 flex-nowrap items-end rounded hover:bg-neutral/40"
+                className="relational-header flex w-full min-w-0 flex-nowrap items-end rounded-sm hover:bg-neutral/40"
                 data-field={fieldName}
                 onContextMenu={
                     onContextMenu
@@ -374,7 +374,7 @@ export const RelationalFieldRenderer = ({
                 }
             >
                 <span
-                    className="relational-arrow inline-flex h-4 w-4 shrink-0 items-center cursor-pointer text-base-content/70"
+                    className="relational-arrow inline-flex size-4 shrink-0 cursor-pointer items-center text-base-content/70"
                     onClick={handleExpand}
                 >
                     {isExpanded.value ? (
@@ -398,7 +398,7 @@ export const RelationalFieldRenderer = ({
                     fieldName={fieldName}
                 >
                     <span
-                        className="text-xs font-medium text-base-content/70 whitespace-nowrap"
+                        className="text-xs font-medium whitespace-nowrap text-base-content/70"
                         data-searchable={fieldName}
                         data-level={level}
                     >
@@ -406,7 +406,7 @@ export const RelationalFieldRenderer = ({
                     </span>
                 </FieldMetadataTooltip>
                 <span
-                    className="ml-2 min-w-0 flex-1 truncate text-xs font-mono text-primary dark:text-accent"
+                    className="ml-2 min-w-0 flex-1 truncate font-mono text-xs text-primary dark:text-accent"
                     data-level={level}
                     data-field={fieldName}
                     data-searchable={

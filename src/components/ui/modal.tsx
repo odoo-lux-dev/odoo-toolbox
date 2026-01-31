@@ -87,7 +87,7 @@ export const Modal = ({
                 {showCloseButton ? (
                     <form method="dialog">
                         <button
-                            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                            className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
                             aria-label="Close"
                         >
                             <HugeiconsIcon
@@ -100,7 +100,7 @@ export const Modal = ({
                     </form>
                 ) : null}
                 {title ? (
-                    <h3 id={titleId} className="font-bold text-lg">
+                    <h3 id={titleId} className="text-lg font-bold">
                         {title}
                     </h3>
                 ) : null}

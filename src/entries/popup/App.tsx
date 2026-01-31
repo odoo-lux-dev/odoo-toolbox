@@ -18,7 +18,7 @@ export const App = () => {
     }, [theme]);
 
     return (
-        <div className="flex min-h-screen flex-col bg-base-100 text-base-content w-[280px]">
+        <div className="flex min-h-screen w-[280px] flex-col bg-base-100 text-base-content">
             <Header />
             <main className="flex-1 px-2 py-4">
                 <ProjectList />

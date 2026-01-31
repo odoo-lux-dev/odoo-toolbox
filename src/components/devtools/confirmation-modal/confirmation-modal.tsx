@@ -78,10 +78,10 @@ export const ConfirmationModal = ({
             {details ? (
                 <div className="mt-4">
                     <details className="rounded-md border border-base-300 bg-base-200 px-3 py-2">
-                        <summary className="cursor-pointer select-none text-xs text-base-content/70 hover:text-base-content">
+                        <summary className="cursor-pointer text-xs text-base-content/70 select-none hover:text-base-content">
                             Show details
                         </summary>
-                        <pre className="mt-3 whitespace-pre-wrap rounded-md bg-base-300/60 p-3 text-xs font-mono text-base-content/70 overflow-x-auto">
+                        <pre className="mt-3 overflow-x-auto rounded-md bg-base-300/60 p-3 font-mono text-xs whitespace-pre-wrap text-base-content/70">
                             {details}
                         </pre>
                     </details>

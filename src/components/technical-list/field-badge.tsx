@@ -36,7 +36,7 @@ export const FieldBadge = ({
                 variant="outline"
                 color={badgeColorMap[badgeType]}
                 title={`${badgeLabelMap[badgeType]} when: ${debugValue}`}
-                className="uppercase tracking-wide"
+                className="tracking-wide uppercase"
             >
                 {badgeLabelMap[badgeType]}*
             </Badge>
@@ -49,7 +49,7 @@ export const FieldBadge = ({
                 size="sm"
                 variant="outline"
                 color={badgeColorMap[badgeType]}
-                className="uppercase tracking-wide"
+                className="tracking-wide uppercase"
             >
                 {badgeLabelMap[badgeType]}
             </Badge>
@@ -62,7 +62,7 @@ export const FieldBadge = ({
                 size="sm"
                 variant="outline"
                 color={badgeColorMap[badgeType]}
-                className="uppercase tracking-wide"
+                className="tracking-wide uppercase"
             >
                 {badgeLabelMap[badgeType]}
             </Badge>

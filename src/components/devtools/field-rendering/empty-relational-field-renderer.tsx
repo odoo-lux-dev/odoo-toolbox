@@ -17,7 +17,7 @@ export const EmptyRelationalFieldRenderer = ({
     const actualLevel = contextLevel || level;
 
     return (
-        <div className="flex flex-col gap-1 rounded hover:bg-neutral/40">
+        <div className="flex flex-col gap-1 rounded-sm hover:bg-neutral/40">
             <div
                 className="flex min-w-0 items-end"
                 onContextMenu={
@@ -34,7 +34,7 @@ export const EmptyRelationalFieldRenderer = ({
                         : undefined
                 }
             >
-                <span className="inline-flex h-4 w-4 shrink-0"></span>
+                <span className="inline-flex size-4 shrink-0"></span>
                 <FieldMetadataTooltip
                     fieldMetadata={fieldMetadata}
                     fieldName={fieldName}
@@ -48,7 +48,7 @@ export const EmptyRelationalFieldRenderer = ({
                     </span>
                 </FieldMetadataTooltip>
                 <span
-                    className="ml-2 min-w-0 flex-1 truncate text-xs font-mono text-warning"
+                    className="ml-2 min-w-0 flex-1 truncate font-mono text-xs text-warning"
                     data-level={actualLevel}
                     data-field={fieldName}
                     data-searchable="false"

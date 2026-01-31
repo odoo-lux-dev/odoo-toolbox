@@ -175,14 +175,14 @@ export const Notification = ({
 
     return (
         <div
-            className={`notification alert ${typeConfig[type].className} ${isClosing ? "slide-out" : ""} bg-base-100 border border-base-200 border-l-4 p-0 shadow-lg flex flex-col whitespace-pre-wrap gap-0`}
+            className={`notification alert ${typeConfig[type].className} ${isClosing ? "slide-out" : ""} flex flex-col gap-0 border border-l-4 border-base-200 bg-base-100 p-0 whitespace-pre-wrap shadow-lg`}
             style={{ borderLeftColor: typeConfig[type].borderLeftColor }}
             onAnimationEnd={handleAnimationEnd}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             role="alert"
         >
-            <div className="notification-header flex items-center justify-between px-4 pt-3 pb-2 w-full">
+            <div className="notification-header flex w-full items-center justify-between px-4 pt-3 pb-2">
                 <div className="notification-type flex items-center gap-2">
                     <span
                         className="notification-icon text-base leading-none"
@@ -190,12 +190,12 @@ export const Notification = ({
                     >
                         {typeConfig[type].icon}
                     </span>
-                    <span className="notification-label text-xs font-semibold uppercase tracking-wide text-base-content">
+                    <span className="notification-label text-xs font-semibold tracking-wide text-base-content uppercase">
                         {typeConfig[type].label}
                     </span>
                 </div>
                 <IconButton
-                    className="notification-close text-base-content/60 hover:text-primary hover:bg-base-200/60"
+                    className="notification-close text-base-content/60 hover:bg-base-200/60 hover:text-primary"
                     onClick={handleClose}
                     type="button"
                     label="Close"
@@ -212,8 +212,8 @@ export const Notification = ({
                     }
                 />
             </div>
-            <div className="notification-body px-4 pb-3 pt-2">
-                <div className="notification-message text-sm leading-relaxed text-base-content">
+            <div className="notification-body px-4 pt-2 pb-3">
+                <div className="notification-message text-sm/relaxed text-base-content">
                     {message}
                 </div>
                 {actionButton && (

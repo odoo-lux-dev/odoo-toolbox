@@ -122,7 +122,7 @@ export const JsonAutocomplete = ({
             {showSuggestions && suggestions.length > 0 && (
                 <div
                     ref={dropdownRef}
-                    className={`z-50 flex max-h-75 min-w-[320px] flex-col overflow-hidden rounded-box border border-base-300 bg-base-100 text-xs shadow-lg ${dropdownStyle.value ? "" : "absolute left-0 top-full mt-1"}`}
+                    className={`z-50 flex max-h-75 min-w-[320px] flex-col overflow-hidden rounded-box border border-base-300 bg-base-100 text-xs shadow-lg ${dropdownStyle.value ? "" : "absolute top-full left-0 mt-1"}`}
                     style={
                         dropdownStyle.value
                             ? {
@@ -138,7 +138,7 @@ export const JsonAutocomplete = ({
                         {suggestions.map((suggestion, index) => (
                             <div
                                 key={suggestion.field}
-                                className={`json-autocomplete-suggestion flex cursor-pointer flex-col gap-1 border-l-2 border-transparent px-3 py-2 transition-colors last:border-b-0 hover:bg-base-200 hover:border-primary ${index === focusedIndex ? "bg-base-200 text-base-content !border-primary" : ""} ${suggestion.isSpecial ? "bg-primary/5" : ""}`}
+                                className={`json-autocomplete-suggestion flex cursor-pointer flex-col gap-1 border-l-2 border-transparent px-3 py-2 transition-colors last:border-b-0 hover:border-primary hover:bg-base-200 ${index === focusedIndex ? "border-primary! bg-base-200 text-base-content" : ""} ${suggestion.isSpecial ? "bg-primary/5" : ""}`}
                                 onClick={() => insertSuggestion(suggestion)}
                             >
                                 {suggestion.isSpecial ? (
@@ -146,7 +146,7 @@ export const JsonAutocomplete = ({
                                         <div className="text-sm font-semibold text-primary">
                                             {suggestion.description}
                                         </div>
-                                        <div className="text-xs italic text-base-content/70">
+                                        <div className="text-xs text-base-content/70 italic">
                                             {String(suggestion.example)}
                                         </div>
                                     </div>
@@ -167,7 +167,7 @@ export const JsonAutocomplete = ({
                                         <div className="text-xs text-base-content/70">
                                             {suggestion.description}
                                         </div>
-                                        <div className="mt-1 truncate rounded bg-base-200/60 px-1.5 py-0.5 text-[11px] text-base-content/60">
+                                        <div className="mt-1 truncate rounded-sm bg-base-200/60 px-1.5 py-0.5 text-[11px] text-base-content/60">
                                             Example:{" "}
                                             {JSON.stringify(suggestion.example)}
                                         </div>
@@ -176,7 +176,7 @@ export const JsonAutocomplete = ({
                             </div>
                         ))}
                     </div>
-                    <div className="border-t border-base-200 bg-base-200/60 px-3 py-2 text-center text-[10px] italic text-base-content/60">
+                    <div className="border-t border-base-200 bg-base-200/60 px-3 py-2 text-center text-[10px] text-base-content/60 italic">
                         ↑↓ to navigate • Enter/Tab to select • Esc to close •
                         Ctrl+Space to force suggestions
                     </div>

@@ -73,7 +73,7 @@ export const ContextMenu = ({
     return (
         <div
             ref={menuRef}
-            className="rounded-md border border-base-300 bg-base-200 shadow-lg min-w-[180px] overflow-hidden"
+            className="min-w-45 overflow-hidden rounded-md border border-base-300 bg-base-200 shadow-lg"
             style={{
                 position: "fixed",
                 left: `${position.x}px`,

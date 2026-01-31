@@ -55,9 +55,9 @@ export const OptionsSidebar = () => {
     };
 
     return (
-        <div class="w-72 bg-base-100 min-h-screen flex flex-col p-4 gap-6">
+        <div class="flex min-h-screen w-72 flex-col gap-6 bg-base-100 p-4">
             <div class="relative flex items-center justify-center">
-                <h1 class="text-xl font-semibold text-center text-primary dark:text-accent">
+                <h1 class="text-center text-xl font-semibold text-primary dark:text-accent">
                     Odoo Toolbox
                 </h1>
                 <div class="absolute right-0">
@@ -68,13 +68,13 @@ export const OptionsSidebar = () => {
                 <Match path="/">
                     {({ path }: { path: string }) => (
                         <details
-                            class="collapse collapse-arrow bg-base-100"
+                            class="collapse-arrow collapse bg-base-100"
                             open={path === "/options"}
                         >
                             <summary class="collapse-title p-0">
                                 <Link
                                     id="global-options"
-                                    className={`btn btn-ghost justify-start w-full ${path === "/options" ? "btn-active" : ""}`}
+                                    className={`btn w-full justify-start btn-ghost ${path === "/options" ? "btn-active" : ""}`}
                                     href="#/options"
                                 >
                                     <HugeiconsIcon
@@ -86,15 +86,15 @@ export const OptionsSidebar = () => {
                                     Options
                                 </Link>
                             </summary>
-                            <div class="collapse-content flex flex-col gap-1 pl-8 pt-1">
+                            <div class="collapse-content flex flex-col gap-1 pt-1 pl-8">
                                 <Link
-                                    className="btn btn-ghost btn-sm justify-start"
+                                    className="btn justify-start btn-ghost btn-sm"
                                     href="#/options#odoo-options"
                                 >
                                     Odoo
                                 </Link>
                                 <Link
-                                    className="btn btn-ghost btn-sm justify-start"
+                                    className="btn justify-start btn-ghost btn-sm"
                                     href="#/options#odoosh-options"
                                 >
                                     Odoo.SH
@@ -107,7 +107,7 @@ export const OptionsSidebar = () => {
                     {({ path }: { path: string }) => (
                         <Link
                             id="sh-favorites"
-                            className={`btn btn-ghost justify-start ${path === "/favorites" ? "btn-active" : ""}`}
+                            className={`btn justify-start btn-ghost ${path === "/favorites" ? "btn-active" : ""}`}
                             href="#/favorites"
                         >
                             <HugeiconsIcon
@@ -121,14 +121,14 @@ export const OptionsSidebar = () => {
                     )}
                 </Match>
             </div>
-            <div class="mt-auto flex flex-col gap-4 items-center">
+            <div class="mt-auto flex flex-col items-center gap-4">
                 <div id="x-odoo-backup-options-status" class={statusClass}>
                     {statusMessage}
                 </div>
 
                 <div class="flex gap-2">
                     <button
-                        class="btn btn-sm btn-outline btn-primary gap-2"
+                        class="btn gap-2 btn-outline btn-sm btn-primary"
                         onClick={handleExport}
                     >
                         <HugeiconsIcon
@@ -140,7 +140,7 @@ export const OptionsSidebar = () => {
                         Export
                     </button>
                     <button
-                        class="btn btn-sm btn-outline btn-primary gap-2"
+                        class="btn gap-2 btn-outline btn-sm btn-primary"
                         onClick={handleImport}
                     >
                         <HugeiconsIcon

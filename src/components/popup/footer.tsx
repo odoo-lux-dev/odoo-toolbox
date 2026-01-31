@@ -113,7 +113,7 @@ export const Footer = () => {
         <footer className="flex items-center justify-between gap-2 border-t border-base-200 bg-base-300 p-2 text-xs text-base-content">
             <div className="flex items-center">
                 <label
-                    className="btn btn-ghost btn-sm swap swap-rotate px-2"
+                    className="btn swap swap-rotate px-2 btn-ghost btn-sm"
                     title={themeLabel}
                 >
                     <input
@@ -147,7 +147,7 @@ export const Footer = () => {
                     type="button"
                     aria-label={debugLabel}
                     title={debugLabel}
-                    className={`btn btn-ghost btn-sm swap swap-rotate px-2 ${debugMode !== "disabled" ? "swap-active" : ""}`}
+                    className={`btn swap swap-rotate px-2 btn-ghost btn-sm ${debugMode !== "disabled" ? "swap-active" : ""}`}
                     onClick={handleDebugModeToggle}
                 >
                     <span className="swap-on">
@@ -162,7 +162,7 @@ export const Footer = () => {
                     type="button"
                     aria-label={technicalLabel}
                     title={technicalLabel}
-                    className="btn btn-ghost btn-sm px-2"
+                    className="btn px-2 btn-ghost btn-sm"
                     onClick={handleShowTechnicalListToggle}
                 >
                     <TechnicalSidebarIcon
@@ -176,10 +176,10 @@ export const Footer = () => {
                 type="button"
                 aria-label={settingsLabel}
                 title={settingsLabel}
-                className="btn btn-ghost btn-sm relative group gap-1 overflow-hidden px-2"
+                className="group btn relative gap-1 overflow-hidden px-2 btn-ghost btn-sm"
                 onClick={openOptions}
             >
-                <span className="max-w-0 whitespace-nowrap text-[11px] text-base-content/80 opacity-0 -translate-x-1 transition-all duration-500 group-hover:max-w-[80px] group-hover:opacity-100 group-hover:translate-x-0">
+                <span className="max-w-0 -translate-x-1 text-[11px] whitespace-nowrap text-base-content/80 opacity-0 transition-all duration-500 group-hover:max-w-[80px] group-hover:translate-x-0 group-hover:opacity-100">
                     {settingsHoverLabel}
                 </span>
                 <HugeiconsIcon

@@ -44,12 +44,12 @@ export const InfoSection = ({
     };
 
     return (
-        <div className="border-solid border-b border-base-100 dark:border-base-200 px-2 py-4">
+        <div className="border-b border-solid border-base-100 px-2 py-4 dark:border-base-200">
             <button
                 type="button"
                 onClick={toggleExpanded}
                 aria-expanded={isExpanded.value}
-                className="cursor-pointer flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-base font-semibold text-base-content transition-colors hover:bg-base-200/60"
+                className="flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-left text-base font-semibold text-base-content transition-colors hover:bg-base-200/60"
                 title={
                     isExpanded.value ? "Click to collapse" : "Click to expand"
                 }

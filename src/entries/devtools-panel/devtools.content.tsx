@@ -36,7 +36,7 @@ export const DevToolsContent = () => {
                         title="Insufficient Permissions"
                         color="warning"
                         variant="soft"
-                        className="w-full max-w-2xl items-start flex flex-col"
+                        className="flex w-full max-w-2xl flex-col items-start"
                         actions={
                             <Button
                                 variant="outline"
@@ -66,10 +66,10 @@ export const DevToolsContent = () => {
                         title="Detecting Odoo version..."
                         color="info"
                         variant="soft"
-                        className="w-full max-w-2xl items-start flex flex-col"
+                        className="flex w-full max-w-2xl flex-col items-start"
                     >
                         <div className="flex items-center gap-3 text-base-content/80">
-                            <span className="loading loading-spinner loading-md" />
+                            <span className="loading loading-md loading-spinner" />
                             <span>
                                 Checking your current Odoo instance. This should
                                 only take a moment.
@@ -90,7 +90,7 @@ export const DevToolsContent = () => {
                         title="Unable to reach Odoo"
                         color="error"
                         variant="soft"
-                        className="w-full max-w-2xl items-start flex flex-col"
+                        className="flex w-full max-w-2xl flex-col items-start"
                         actions={
                             <Button
                                 variant="outline"
