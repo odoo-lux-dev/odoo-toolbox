@@ -4,8 +4,6 @@ import { Favorite } from "@/types";
 
 export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
     const handleClick = (event: MouseEvent) => {
-        const url = `https://www.odoo.sh/project/${favorite.name}`;
-
         if (
             event.button === 0 &&
             !event.ctrlKey &&
@@ -13,21 +11,18 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
             !event.altKey &&
             !event.metaKey
         ) {
-            browser.tabs.update({ url });
-            window.close();
-            return;
-        }
-
-        if (event.ctrlKey || event.metaKey || event.button === 1) {
-            browser.tabs.create({ url });
+            event.preventDefault();
+            browser.tabs.update({
+                url: `https://www.odoo.sh/project/${favorite.name}`,
+            });
             window.close();
         }
     };
 
     return (
         <div className="rounded-md text-primary odd:bg-base-200 even:bg-transparent hover:bg-base-300 dark:text-base-content">
-            <button
-                type="button"
+            <a
+                href={`https://www.odoo.sh/project/${favorite.name}`}
                 className="flex w-full cursor-pointer items-center justify-between p-3 text-left text-sm"
                 onClick={handleClick}
             >
@@ -40,7 +35,7 @@ export const ProjectItem = ({ favorite }: { favorite: Favorite }) => {
                         strokeWidth={2}
                     />
                 </span>
-            </button>
+            </a>
         </div>
     );
 };
