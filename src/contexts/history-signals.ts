@@ -73,3 +73,18 @@ export const removeHistoryAction = async (actionId: string) => {
             error instanceof Error ? error.message : "Failed to remove action";
     }
 };
+
+export const setHistoryActionPinned = async (
+    actionId: string,
+    pinned: boolean,
+) => {
+    try {
+        await historyService.setActionPinned(actionId, pinned);
+        historyActionsSignal.value = await historyService.getHistory();
+    } catch (error) {
+        historyErrorSignal.value =
+            error instanceof Error
+                ? error.message
+                : "Failed to update pinned action";
+    }
+};

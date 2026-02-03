@@ -11,6 +11,7 @@ export interface BaseHistoryAction {
     timestamp: number;
     model: string;
     database?: string;
+    pinned?: boolean;
 }
 
 export interface SearchHistoryAction extends BaseHistoryAction {
@@ -74,6 +75,8 @@ export type HistoryAction =
     | CreateHistoryAction
     | CallMethodHistoryAction
     | UnlinkHistoryAction;
+
+export type HistoryActionV1 = Omit<HistoryAction, "pinned">;
 
 export interface HistoryState {
     actions: HistoryAction[];

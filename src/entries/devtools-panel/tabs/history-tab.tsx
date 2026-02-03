@@ -47,7 +47,10 @@ export const HistoryTab = () => {
             );
         }
 
-        return filtered;
+        const pinned = filtered.filter((action) => action.pinned);
+        const unpinned = filtered.filter((action) => !action.pinned);
+
+        return [...pinned, ...unpinned];
     });
 
     const handleClearHistory = async () => {
