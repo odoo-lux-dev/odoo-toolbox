@@ -9,13 +9,18 @@ import {
     Delete02Icon,
     FunctionSquareIcon,
     PencilEdit01Icon,
+    PinIcon,
+    PinOffIcon,
     Search01Icon,
 } from "@hugeicons/core-free-icons";
 import { JSX } from "preact/jsx-runtime";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { Modal } from "@/components/ui/modal";
-import { removeHistoryAction } from "@/contexts/history-signals";
+import {
+    removeHistoryAction,
+    setHistoryActionPinned,
+} from "@/contexts/history-signals";
 import { Logger } from "@/services/logger";
 import type { HistoryAction } from "@/types";
 import { HistoryActionRestore } from "./history-action-restore";
@@ -85,6 +90,7 @@ const ACTION_TYPE_COLORS: Record<HistoryAction["type"], string> = {
 export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
     const isExpanded = useSignal(false);
     const isDeleting = useSignal(false);
+    const isPinning = useSignal(false);
     const isDeleteModalOpen = useSignal(false);
 
     const handleDelete = () => {
@@ -105,6 +111,17 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
 
     const handleCancelDelete = () => {
         isDeleteModalOpen.value = false;
+    };
+
+    const handleTogglePin = async () => {
+        try {
+            isPinning.value = true;
+            await setHistoryActionPinned(action.id, !action.pinned);
+        } catch (error) {
+            Logger.error("Failed to update pinned history action:", error);
+        } finally {
+            isPinning.value = false;
+        }
     };
 
     const toggleExpanded = () => {
@@ -139,7 +156,7 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
 
     return (
         <div
-            className={`rounded-md border border-base-300 bg-base-100 transition-shadow hover:shadow-sm ${ACTION_TYPE_COLORS[action.type]}`}
+            className={`rounded-md border border-base-300 bg-base-100 ${ACTION_TYPE_COLORS[action.type]} ${action.pinned ? "ring-1 ring-warning/40 bg-warning/5" : ""}`}
         >
             <div
                 className="group flex cursor-pointer items-center justify-between gap-3 p-2 select-none hover:bg-base-200/70"
@@ -185,6 +202,14 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                             >
                                 {action.model}
                             </span>
+                            {action.pinned && (
+                                <>
+                                    <span className="opacity-50">•</span>
+                                    <span className="rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                                        Pinned
+                                    </span>
+                                </>
+                            )}
                             {action.database && (
                                 <>
                                     <span className="opacity-50">•</span>
@@ -211,6 +236,35 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                 >
+                    <Button
+                        type="button"
+                        variant="outline"
+                        color="warning"
+                        size="sm"
+                        onClick={handleTogglePin}
+                        disabled={isPinning.value}
+                        title={
+                            action.pinned
+                                ? "Unpin this action"
+                                : "Pin this action"
+                        }
+                    >
+                        <span className="flex items-center gap-2">
+                            <HugeiconsIcon
+                                icon={action.pinned ? PinOffIcon : PinIcon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={1.6}
+                            />
+                            <span>
+                                {isPinning.value
+                                    ? "Saving..."
+                                    : action.pinned
+                                      ? "Unpin"
+                                      : "Pin"}
+                            </span>
+                        </span>
+                    </Button>
                     <HistoryActionRestore action={action} />
                 </div>
             </div>
