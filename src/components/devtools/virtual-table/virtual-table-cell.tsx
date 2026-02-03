@@ -50,7 +50,7 @@ export const VirtualTableCell = ({
         >
             <div
                 ref={cellRef}
-                className="max-w-[300px] truncate"
+                className="w-full min-w-0 truncate"
                 data-autofit-content
             >
                 <ValueRenderer value={value} />
