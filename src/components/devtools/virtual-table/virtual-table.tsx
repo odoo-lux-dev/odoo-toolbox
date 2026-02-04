@@ -33,6 +33,10 @@ export const VirtualTable = ({
     const containerWidth = useSignal(0);
     const columnSizes = useSignal<Record<number, number>>({});
     const isResizing = useSignal(false);
+    const resizeGuideLeft = useSignal<number | null>(null);
+    const resizingColumnIndex = useSignal<number | null>(null);
+    const resizingHandleWidth = useSignal<number | null>(null);
+    const resizingLeftHandleWidth = useSignal<number | null>(null);
     const { selectedFields } = useRpcQuery();
 
     const orderedKeys = useMemo(() => {
@@ -145,27 +149,99 @@ export const VirtualTable = ({
         })
         .filter((column): column is ColumnLayout => Boolean(column));
 
-    const startResize = (columnIndex: number, startX: number) => {
+    const startResize = (
+        columnIndex: number,
+        startX: number,
+        columnStart: number,
+        columnSize: number,
+        handleWidth: number,
+        leftHandleWidth: number,
+    ) => {
         const startSize = getColumnSize(columnIndex);
         const initialSizes = columnSizes.value;
+        const scrollElement = scrollRef.current;
+        const startScrollLeft = scrollElement?.scrollLeft ?? 0;
 
         isResizing.value = true;
+        resizingColumnIndex.value = columnIndex;
+        resizingHandleWidth.value = handleWidth;
+        resizingLeftHandleWidth.value = leftHandleWidth;
+        resizeGuideLeft.value = columnStart + columnSize - handleWidth;
         document.body.style.userSelect = "none";
         document.body.style.cursor = "col-resize";
 
+        const edgeThreshold = 24;
+        const maxScrollSpeed = 24;
+        let autoScrollDirection = 0;
+        let autoScrollFrame: number | null = null;
+        let lastDistanceToRight = Number.POSITIVE_INFINITY;
+        let lastDistanceToLeft = Number.POSITIVE_INFINITY;
+
+        const updateAutoScroll = (event: MouseEvent) => {
+            if (!scrollElement) return;
+            const rect = scrollElement.getBoundingClientRect();
+            const distanceToRight = rect.right - event.clientX;
+            const distanceToLeft = event.clientX - rect.left;
+            lastDistanceToRight = distanceToRight;
+            lastDistanceToLeft = distanceToLeft;
+
+            if (distanceToRight < edgeThreshold) {
+                autoScrollDirection = 1;
+            } else if (distanceToLeft < edgeThreshold) {
+                autoScrollDirection = -1;
+            } else {
+                autoScrollDirection = 0;
+            }
+
+            if (autoScrollDirection !== 0 && autoScrollFrame === null) {
+                const tick = () => {
+                    if (!scrollElement || autoScrollDirection === 0) {
+                        autoScrollFrame = null;
+                        return;
+                    }
+
+                    const intensity =
+                        autoScrollDirection > 0
+                            ? Math.max(0, edgeThreshold - lastDistanceToRight)
+                            : Math.max(0, edgeThreshold - lastDistanceToLeft);
+
+                    const speed = Math.min(maxScrollSpeed, 2 + intensity * 0.6);
+
+                    scrollElement.scrollLeft += speed * autoScrollDirection;
+                    autoScrollFrame = requestAnimationFrame(tick);
+                };
+
+                autoScrollFrame = requestAnimationFrame(tick);
+            }
+        };
+
         const handleMove = (event: MouseEvent) => {
-            const delta = event.clientX - startX;
+            const currentScrollLeft = scrollElement?.scrollLeft ?? 0;
+            const delta =
+                event.clientX - startX + (currentScrollLeft - startScrollLeft);
             const nextSize = Math.max(COLUMN_MIN_WIDTH, startSize + delta);
             columnSizes.value = {
                 ...initialSizes,
                 [columnIndex]: nextSize,
             };
+            resizeGuideLeft.value = columnStart + nextSize - handleWidth;
+
+            updateAutoScroll(event);
         };
 
         const handleUp = () => {
             isResizing.value = false;
+            resizingColumnIndex.value = null;
+            resizingHandleWidth.value = null;
+            resizingLeftHandleWidth.value = null;
+            resizeGuideLeft.value = null;
             document.body.style.userSelect = "";
             document.body.style.cursor = "";
+            autoScrollDirection = 0;
+            if (autoScrollFrame !== null) {
+                cancelAnimationFrame(autoScrollFrame);
+                autoScrollFrame = null;
+            }
             window.removeEventListener("mousemove", handleMove);
             window.removeEventListener("mouseup", handleUp);
         };
@@ -192,6 +268,12 @@ export const VirtualTable = ({
                     height: `${totalHeight + HEADER_HEIGHT}px`,
                 }}
             >
+                {resizeGuideLeft.value !== null && (
+                    <div
+                        className="pointer-events-none absolute top-0 z-20 h-full w-px bg-primary/60"
+                        style={{ left: `${resizeGuideLeft.value}px` }}
+                    />
+                )}
                 <div
                     className="sticky top-0 z-10 bg-base-200"
                     role="row"
@@ -221,16 +303,41 @@ export const VirtualTable = ({
                                         height: `${HEADER_HEIGHT}px`,
                                     }}
                                 >
-                                    <span className="block truncate">
+                                    {resizingColumnIndex.value ===
+                                        column.index && (
+                                        <div
+                                            className="pointer-events-none absolute inset-y-0 bg-base-300/60"
+                                            style={{
+                                                left: `-${resizingLeftHandleWidth.value ?? 0}px`,
+                                                right: `${resizingHandleWidth.value ?? 0}px`,
+                                            }}
+                                        />
+                                    )}
+                                    <span className="relative z-10 block truncate">
                                         {key}
                                     </span>
                                     <div
                                         className="absolute top-0 right-0 h-full w-1.5 cursor-col-resize border-l border-base-300"
+                                        data-resize-handle
                                         onMouseDown={(event) => {
                                             event.preventDefault();
+                                            const handleWidth =
+                                                event.currentTarget.clientWidth;
+                                            const leftHandleWidth =
+                                                (
+                                                    event.currentTarget
+                                                        .parentElement
+                                                        ?.previousElementSibling as HTMLElement | null
+                                                )?.querySelector<HTMLElement>(
+                                                    "[data-resize-handle]",
+                                                )?.clientWidth ?? handleWidth;
                                             startResize(
                                                 column.index,
                                                 event.clientX,
+                                                column.start,
+                                                column.size,
+                                                handleWidth,
+                                                leftHandleWidth,
                                             );
                                         }}
                                     />
