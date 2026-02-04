@@ -11,6 +11,7 @@ import { SelectedButtonContent } from "./selected-button-content";
 import { SelectedFieldContent } from "./selected-field-content";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Select02Icon } from "@hugeicons/core-free-icons";
+import { getTechnicalListPosition } from "@/utils/utils";
 
 export const SidePanel = () => {
     const {
@@ -23,6 +24,7 @@ export const SidePanel = () => {
         selectedButtonInfo,
         viewInfo,
     } = useTechnicalSidebar();
+    const position = getTechnicalListPosition();
 
     return (
         <div
@@ -31,13 +33,13 @@ export const SidePanel = () => {
             className={[
                 "fixed",
                 "top-0",
-                "right-0",
+                position === "left" ? "left-0" : "right-0",
                 "z-1000",
                 "h-screen",
                 "w-[400px]",
                 "max-md:w-full",
                 "bg-base-300",
-                "border-l",
+                position === "left" ? "border-r" : "border-l",
                 "border-base-200",
                 "transition-transform",
                 "duration-300",
@@ -47,7 +49,11 @@ export const SidePanel = () => {
                 "overflow-hidden",
             ].join(" ")}
             style={{
-                transform: isExpanded ? "translateX(0)" : "translateX(100%)",
+                transform: isExpanded
+                    ? "translateX(0)"
+                    : position === "left"
+                      ? "translateX(-100%)"
+                      : "translateX(100%)",
                 transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             }}
         >

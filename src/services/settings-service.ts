@@ -17,6 +17,8 @@ import type {
     StoredSettingsV10,
     StoredSettingsV11,
     StoredSettingsV12,
+    StoredSettingsV13,
+    TechnicalListPosition,
 } from "@/types";
 import {
     CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
@@ -34,6 +36,7 @@ import {
     CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
     CHROME_STORAGE_SETTINGS_TASK_URL,
     CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
+    CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
 } from "@/utils/constants";
 
 /**
@@ -47,7 +50,7 @@ export class SettingsService {
         <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
         {
             init: () => this.getDefaultSettingsInternal(),
-            version: 2,
+            version: 3,
             migrations: {
                 2: (settings: StoredSettingsV10): StoredSettingsV11 => {
                     const {
@@ -64,6 +67,13 @@ export class SettingsService {
                             newColorScheme,
                     };
                 },
+                3: (settings: StoredSettingsV12): StoredSettingsV13 => {
+                    return {
+                        ...settings,
+                        [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]:
+                            "right" as TechnicalListPosition,
+                    };
+                },
             },
         },
     );
@@ -71,7 +81,7 @@ export class SettingsService {
     private settingsSyncStorage = storage.defineItem<StoredSettings>(
         <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
         {
-            version: 12,
+            version: 13,
             init: () => {
                 return {
                     [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]:
@@ -89,6 +99,8 @@ export class SettingsService {
                     [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                         "none" as DefaultColorScheme,
                     [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+                    [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]:
+                        "right" as TechnicalListPosition,
                     [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
                 } as StoredSettings;
             },
@@ -183,6 +195,13 @@ export class SettingsService {
                         [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
                     };
                 },
+                13: (settings: StoredSettingsV12): StoredSettingsV13 => {
+                    return {
+                        ...settings,
+                        [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]:
+                            "right" as TechnicalListPosition,
+                    };
+                },
             },
         },
     );
@@ -223,6 +242,8 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                 "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+            [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]:
+                "right" as TechnicalListPosition,
             [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
         } as StoredSettings;
     }
@@ -247,6 +268,8 @@ export class SettingsService {
             [CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME]:
                 "none" as DefaultColorScheme,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: false,
+            [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]:
+                "right" as TechnicalListPosition,
             [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: false,
         } as StoredSettings;
     }
@@ -330,6 +353,17 @@ export class SettingsService {
         const newSettings = {
             ...settings,
             [CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST]: showTechnicalList,
+        };
+        return this.setSettings(newSettings);
+    }
+
+    async setTechnicalListPosition(
+        position: TechnicalListPosition,
+    ): Promise<void> {
+        const settings = await this.getSettings();
+        const newSettings = {
+            ...settings,
+            [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]: position,
         };
         return this.setSettings(newSettings);
     }

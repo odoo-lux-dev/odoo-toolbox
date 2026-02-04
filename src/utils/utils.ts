@@ -1,4 +1,8 @@
-import type { DebugModeType, DefaultColorScheme } from "@/types";
+import type {
+    DebugModeType,
+    DefaultColorScheme,
+    TechnicalListPosition,
+} from "@/types";
 
 const getDefaultDebugMode = () =>
     document.body.dataset.defaultDebugMode as DebugModeType | undefined;
@@ -9,6 +13,8 @@ const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF;
 const getDefaultColorScheme = () =>
     document.body.dataset.defaultColorScheme as DefaultColorScheme;
 const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
+const getTechnicalListPosition = () =>
+    document.body.dataset.technicalListPosition as TechnicalListPosition;
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
 const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
 
@@ -301,6 +307,7 @@ export {
     getDefaultColorScheme,
     simpleDebounce,
     getShowTechnicalList,
+    getTechnicalListPosition,
     retrieveIdFromAvatar,
     getShowLoginButtons,
     getOdooToolboxTheme,

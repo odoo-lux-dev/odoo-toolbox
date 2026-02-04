@@ -1,8 +1,12 @@
 import { OptionItem } from "@/components/options/option-item";
 import { Toggle } from "@/components/ui/toggle";
+import { Join } from "@/components/ui/join";
 import { useSettingValue } from "@/contexts/options-signals-hook";
 import { settingsService } from "@/services/settings-service";
-import { CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST } from "@/utils/constants";
+import {
+    CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
+    CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
+} from "@/utils/constants";
 
 export const TechnicalListOption = () => {
     const technicalListEnabled = useSettingValue(
@@ -11,6 +15,16 @@ export const TechnicalListOption = () => {
 
     const handleChange = async (checked: boolean) => {
         await settingsService.setShowTechnicalList(checked);
+    };
+
+    const technicalListPosition = useSettingValue(
+        CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
+    );
+    const selectedPosition =
+        (technicalListPosition.value as "left" | "right") || "right";
+
+    const setPosition = async (value: "left" | "right") => {
+        await settingsService.setTechnicalListPosition(value);
     };
 
     const isEnabled = !!technicalListEnabled.value;
@@ -69,12 +83,53 @@ export const TechnicalListOption = () => {
             tooltipContent="Enable an advanced technical sidebar with comprehensive field and system information"
             additionalTooltipContent={additionalTooltipContent}
         >
-            <Toggle
-                className="toggle-primary dark:toggle-accent"
-                size="sm"
-                checked={isEnabled}
-                onCheckedChange={handleChange}
-            />
+            <div className="flex flex-col gap-3">
+                <div className="flex items-center">
+                    <Toggle
+                        className="toggle-primary dark:toggle-accent"
+                        size="sm"
+                        checked={isEnabled}
+                        onCheckedChange={handleChange}
+                    />
+                </div>
+                {isEnabled && (
+                    <div className="flex items-center justify-between text-xs text-base-content/70">
+                        <span className="font-medium">Sidebar position</span>
+                        <Join>
+                            <button
+                                type="button"
+                                className={[
+                                    "btn",
+                                    "btn-sm",
+                                    "join-item",
+                                    selectedPosition === "left"
+                                        ? "btn-primary text-primary-content dark:btn-accent dark:text-accent-content"
+                                        : "btn-ghost",
+                                ].join(" ")}
+                                onClick={() => setPosition("left")}
+                                aria-pressed={selectedPosition === "left"}
+                            >
+                                Left
+                            </button>
+                            <button
+                                type="button"
+                                className={[
+                                    "btn",
+                                    "btn-sm",
+                                    "join-item",
+                                    selectedPosition === "right"
+                                        ? "btn-primary text-primary-content dark:btn-accent dark:text-accent-content"
+                                        : "btn-ghost",
+                                ].join(" ")}
+                                onClick={() => setPosition("right")}
+                                aria-pressed={selectedPosition === "right"}
+                            >
+                                Right
+                            </button>
+                        </Join>
+                    </div>
+                )}
+            </div>
         </OptionItem>
     );
 };

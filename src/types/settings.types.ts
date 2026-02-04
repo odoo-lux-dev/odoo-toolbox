@@ -13,11 +13,14 @@ import {
     CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
     CHROME_STORAGE_SETTINGS_TASK_URL,
     CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
+    CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
 } from "@/utils/constants";
 
 export type DebugModeType = "1" | "disabled" | "assets" | "assets,tests";
 
 export type DefaultColorScheme = "none" | "system" | "light" | "dark";
+
+export type TechnicalListPosition = "right" | "left";
 
 export type StoredSettingsV1 = {
     [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]: "manual" | "1" | "0" | "assets";
@@ -80,4 +83,8 @@ export type StoredSettingsV12 = StoredSettingsV11 & {
     [CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS]: boolean;
 };
 
-export type StoredSettings = StoredSettingsV12;
+export type StoredSettingsV13 = StoredSettingsV12 & {
+    [CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION]: TechnicalListPosition;
+};
+
+export type StoredSettings = StoredSettingsV13;

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "preact/hooks";
 import { effect } from "@preact/signals";
 
 import { useElementSelector } from "@/components/technical-list/hooks/use-element-selector";
+import { getTechnicalListPosition } from "@/utils/utils";
 import { useFieldHighlight } from "@/components/technical-list/hooks/use-field-highlight";
 import { useViewInfo } from "@/components/technical-list/hooks/use-view-info";
 import {
@@ -112,9 +113,13 @@ export const useTechnicalSidebar = () => {
                     ).matches;
                     const shouldOffset = isExpandedSignal.value && !isMobile;
                     const offsetPx = shouldOffset ? "400px" : "0px";
+                    const position = getTechnicalListPosition();
+                    const side = position;
+                    const oppositeSide = side === "left" ? "right" : "left";
+                    const paddingProp = `padding-${side}`;
+                    const oppositePaddingProp = `padding-${oppositeSide}`;
                     const bodyElement = document.body;
-                    const bodyTransition =
-                        "padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                    const bodyTransition = `${paddingProp} 0.3s cubic-bezier(0.4, 0, 0.2, 1)`;
                     bodyElement.style.setProperty(
                         "transition",
                         prefersReducedMotion ? "none" : bodyTransition,
@@ -123,22 +128,29 @@ export const useTechnicalSidebar = () => {
 
                     if (shouldOffset) {
                         bodyElement.style.setProperty(
-                            "padding-right",
+                            paddingProp,
                             "400px",
                             "important",
                         );
+                        bodyElement.style.removeProperty(oppositePaddingProp);
                     } else {
                         bodyElement.style.removeProperty("padding-right");
+                        bodyElement.style.removeProperty("padding-left");
                     }
 
-                    sidebarRoot.style.transition = prefersReducedMotion
+                    const sidebarTransition = prefersReducedMotion
                         ? ""
-                        : "right 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
-                    sidebarRoot.style.right = isMobile
-                        ? isExpandedSignal.value
-                            ? "20px"
-                            : "0px"
-                        : offsetPx;
+                        : `${side} 0.3s cubic-bezier(0.4, 0, 0.2, 1)`;
+                    sidebarRoot.style.transition = sidebarTransition;
+                    sidebarRoot.style.setProperty(
+                        side,
+                        isMobile
+                            ? isExpandedSignal.value
+                                ? "20px"
+                                : "0px"
+                            : offsetPx,
+                    );
+                    sidebarRoot.style.setProperty(oppositeSide, "");
                 };
 
                 applyLayout();
@@ -148,8 +160,10 @@ export const useTechnicalSidebar = () => {
                     window.removeEventListener("resize", applyLayout);
 
                     document.body.style.removeProperty("padding-right");
+                    document.body.style.removeProperty("padding-left");
 
                     sidebarRoot.style.right = "";
+                    sidebarRoot.style.left = "";
                     sidebarRoot.style.transition = "";
                 };
             });
