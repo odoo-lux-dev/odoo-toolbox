@@ -217,10 +217,13 @@ export const RelationalFieldRenderer = ({
                                     )}
                                 </span>
                                 <span
-                                    className="w-12 shrink-0 text-xs font-medium text-primary"
+                                    className="max-w-20 truncate text-xs font-medium text-primary"
                                     data-level={level}
                                     data-searchable={
                                         recordId ? String(recordId) : ""
+                                    }
+                                    title={
+                                        recordId ? String(recordId) : "No ID"
                                     }
                                 >
                                     {recordId ? `#${recordId}` : "No ID"}
@@ -229,6 +232,11 @@ export const RelationalFieldRenderer = ({
                                     className="min-w-0 flex-1 truncate text-xs font-semibold text-base-content"
                                     data-level={level}
                                     data-searchable={
+                                        record.name ||
+                                        record.display_name ||
+                                        `Record ${index + 1}`
+                                    }
+                                    title={
                                         record.name ||
                                         record.display_name ||
                                         `Record ${index + 1}`

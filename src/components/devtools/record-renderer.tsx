@@ -182,10 +182,11 @@ export const RecordRenderer = ({
                                 </span>
                                 {showId && (
                                     <span
-                                        className="w-14 shrink-0 text-xs font-medium text-primary dark:text-accent"
+                                        className="max-w-20 truncate text-xs font-medium text-primary dark:text-accent"
                                         data-field="aaid"
                                         data-level={level}
                                         data-searchable={String(recordId)}
+                                        title={String(recordId)}
                                     >
                                         #{recordId}
                                     </span>
@@ -195,6 +196,7 @@ export const RecordRenderer = ({
                                     data-field="aadisplay_name"
                                     data-level={level}
                                     data-searchable={displayName}
+                                    title={displayName}
                                 >
                                     {displayName}
                                 </span>
