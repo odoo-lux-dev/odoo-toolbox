@@ -1,8 +1,10 @@
 import { useSignal } from "@preact/signals";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+    ArrowUpRight01Icon,
     Copy01Icon,
     Download04Icon,
+    Layers02Icon,
     ListViewIcon,
     TableIcon,
 } from "@hugeicons/core-free-icons";
@@ -10,8 +12,10 @@ import { useCallback, useEffect, useMemo } from "preact/hooks";
 import { JSX } from "preact/jsx-runtime";
 import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
 import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
 import { Join, JoinItem } from "@/components/ui/join";
 import { usePagination } from "@/components/devtools/hooks/use-pagination";
+import { useRecordActions } from "@/components/devtools/hooks/use-record-actions";
 import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
 import { RecordRenderer } from "@/components/devtools/record-renderer";
 import { RecordSearch } from "@/components/devtools/record-search/record-search";
@@ -55,6 +59,7 @@ export const ResultViewer = ({
         rpcResult;
 
     const { copyToClipboard } = useCopyToClipboard();
+    const { openRecords } = useRecordActions();
     const pagination = usePagination();
 
     const viewMode = useSignal<ViewMode>("list");
@@ -154,6 +159,15 @@ export const ResultViewer = ({
         }
     };
 
+    const handleOpenInOdoo = (event: Event, asPopup = false) => {
+        if (!data || !rpcQuery.model) return;
+        const ids = data
+            .map((record) => record.id as number)
+            .filter((id) => id != null);
+        if (ids.length === 0) return;
+        openRecords(ids, rpcQuery.model, event, asPopup);
+    };
+
     const downloadJson = () => {
         if (data) {
             const dataToDownload = data.length === 1 ? data[0] : data;
@@ -217,6 +231,52 @@ export const ResultViewer = ({
                                     {allKeys.length} field(s)
                                 </span>
                             ) : null}
+                        </div>
+                    ) : null}
+                    {rpcQuery.model && data && data.length > 0 ? (
+                        <div className="flex items-center gap-1">
+                            <IconButton
+                                label="Open record(s) in Odoo"
+                                variant="ghost"
+                                size="xs"
+                                square
+                                className="text-base-content/60 hover:text-primary"
+                                onClick={(e) =>
+                                    handleOpenInOdoo(
+                                        e as unknown as Event,
+                                        false,
+                                    )
+                                }
+                                icon={
+                                    <HugeiconsIcon
+                                        icon={ArrowUpRight01Icon}
+                                        size={14}
+                                        color="currentColor"
+                                        strokeWidth={1.5}
+                                    />
+                                }
+                            />
+                            <IconButton
+                                label="Open record(s) in popup"
+                                variant="ghost"
+                                size="xs"
+                                square
+                                className="text-base-content/60 hover:text-warning"
+                                onClick={(e) =>
+                                    handleOpenInOdoo(
+                                        e as unknown as Event,
+                                        true,
+                                    )
+                                }
+                                icon={
+                                    <HugeiconsIcon
+                                        icon={Layers02Icon}
+                                        size={14}
+                                        color="currentColor"
+                                        strokeWidth={1.5}
+                                    />
+                                }
+                            />
                         </div>
                     ) : null}
                     {pagination.totalPages > 1 && !hidePaging ? (
