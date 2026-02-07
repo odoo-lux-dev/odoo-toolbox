@@ -8,7 +8,7 @@ import {
     ListViewIcon,
     TableIcon,
 } from "@hugeicons/core-free-icons";
-import { useCallback, useEffect, useMemo } from "preact/hooks";
+import { useEffect, useMemo } from "preact/hooks";
 import { JSX } from "preact/jsx-runtime";
 import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import { Join, JoinItem } from "@/components/ui/join";
 import { usePagination } from "@/components/devtools/hooks/use-pagination";
 import { useRecordActions } from "@/components/devtools/hooks/use-record-actions";
 import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
+import { useTableContextMenu } from "@/components/devtools/hooks/use-table-context-menu";
 import { RecordRenderer } from "@/components/devtools/record-renderer";
 import { RecordSearch } from "@/components/devtools/record-search/record-search";
 import { useRecordSearch } from "@/components/devtools/record-search/record-search.hook";
@@ -84,36 +85,12 @@ export const ResultViewer = ({
         getContextMenuItems,
     ]);
 
-    const handleTableContextMenu = useCallback(
-        (e: Event) => {
-            const target = e.target as HTMLElement;
-            const cell = target.closest(
-                "[data-field][data-row-index]",
-            ) as HTMLElement;
-            if (!cell) return;
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            const rowIndex = Number(cell.dataset.rowIndex || "0");
-            const fieldName = cell.dataset.field || "";
-
-            if (data && data[rowIndex]) {
-                const record = data[rowIndex];
-                const fieldMetadata = rpcQuery.fieldsMetadata?.[fieldName];
-
-                handleFieldContextMenu(
-                    e as MouseEvent,
-                    record,
-                    fieldName,
-                    record[fieldName],
-                    fieldMetadata,
-                    rpcQuery.model,
-                );
-            }
-        },
-        [data, handleFieldContextMenu, rpcQuery.fieldsMetadata, rpcQuery.model],
-    );
+    const { handleTableContextMenu } = useTableContextMenu({
+        data,
+        fieldsMetadata: rpcQuery.fieldsMetadata,
+        model: rpcQuery.model,
+        handleFieldContextMenu,
+    });
 
     useEffect(() => {
         const newExpanded = new Set<number>();
