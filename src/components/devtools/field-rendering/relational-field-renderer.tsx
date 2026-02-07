@@ -7,14 +7,19 @@ import {
     ArrowUpRight01Icon,
     CenterFocusIcon,
     Layers02Icon,
+    ListViewIcon,
+    TableIcon,
 } from "@hugeicons/core-free-icons";
+import { useMemo } from "preact/hooks";
 import { IconButton } from "@/components/ui/icon-button";
 import { ContextMenu } from "@/components/devtools/context-menu/context-menu";
 import { FieldMetadataTooltip } from "@/components/devtools/field-metadata-tooltip/field-metadata-tooltip";
 import { useModelExcludedFields } from "@/components/devtools/hooks/use-model-excluded-fields";
 import { useRecordActions } from "@/components/devtools/hooks/use-record-actions";
 import { useRecordContextMenu } from "@/components/devtools/hooks/use-record-context-menu";
+import { useTableContextMenu } from "@/components/devtools/hooks/use-table-context-menu";
 import { RecordRenderer } from "@/components/devtools/record-renderer";
+import { VirtualTable } from "@/components/devtools/virtual-table/virtual-table";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { FieldMetadata } from "@/types";
 import { extractIds, getRelatedModel } from "./field-utils";
@@ -38,6 +43,7 @@ export const RelationalFieldRenderer = ({
     const {
         contextMenu,
         handleRecordContextMenu,
+        handleFieldContextMenu,
         closeContextMenu,
         getContextMenuItems,
     } = useRecordContextMenu();
@@ -51,6 +57,7 @@ export const RelationalFieldRenderer = ({
     const loading = useSignal(false);
     const error = useSignal<string | null>(null);
     const relatedRecordsExpanded = useSignal<Set<number>>(new Set());
+    const relationalViewMode = useSignal<"list" | "table">("list");
 
     const ids = extractIds(value);
     const modelName = getRelatedModel(fieldMetadata);
@@ -137,6 +144,25 @@ export const RelationalFieldRenderer = ({
         await focusOnRecord(record, modelName, event);
     };
 
+    const { handleTableContextMenu: handleRelationalTableContextMenu } =
+        useTableContextMenu({
+            data: relatedData.value,
+            fieldsMetadata: relatedFieldsMetadata.value,
+            model: modelName || undefined,
+            handleFieldContextMenu,
+        });
+
+    const relatedAllKeys = useMemo(() => {
+        if (!relatedData.value || relatedData.value.length === 0) return [];
+        return Array.from(
+            new Set(relatedData.value.flatMap((record) => Object.keys(record))),
+        ).sort((a, b) => {
+            if (a === "id" && b !== "id") return -1;
+            if (b === "id" && a !== "id") return 1;
+            return a.localeCompare(b);
+        });
+    }, [relatedData.value]);
+
     const renderRelationalContent = () => {
         if (loading.value) {
             return (
@@ -173,6 +199,21 @@ export const RelationalFieldRenderer = ({
                     expandedRecords={new Set([0])}
                     renderAsList={false}
                 />
+            );
+        }
+
+        // If multiple records in table view
+        if (relationalViewMode.value === "table") {
+            return (
+                <div className="flex max-h-80 min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
+                    <VirtualTable
+                        data={relatedData.value}
+                        allKeys={relatedAllKeys}
+                        handleTableContextMenu={
+                            handleRelationalTableContextMenu
+                        }
+                    />
+                </div>
             );
         }
 
@@ -445,6 +486,51 @@ export const RelationalFieldRenderer = ({
                                     strokeWidth={1.6}
                                 />
                             </span>
+                        ) : null}
+                        {ids.length > 1 &&
+                        isExpanded.value &&
+                        relatedData.value &&
+                        relatedData.value.length > 1 ? (
+                            <IconButton
+                                label={
+                                    relationalViewMode.value === "list"
+                                        ? "Switch to table view"
+                                        : "Switch to list view"
+                                }
+                                variant="ghost"
+                                size="xs"
+                                square
+                                className={`text-base-content/60 hover:text-success ${relationalViewMode.value === "table" ? "text-success" : ""}`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    relationalViewMode.value =
+                                        relationalViewMode.value === "list"
+                                            ? "table"
+                                            : "list";
+                                }}
+                                icon={
+                                    <span
+                                        className={`swap swap-rotate ${relationalViewMode.value === "table" ? "swap-active" : ""}`}
+                                    >
+                                        <span className="swap-on">
+                                            <HugeiconsIcon
+                                                icon={ListViewIcon}
+                                                size={14}
+                                                color="currentColor"
+                                                strokeWidth={1.6}
+                                            />
+                                        </span>
+                                        <span className="swap-off">
+                                            <HugeiconsIcon
+                                                icon={TableIcon}
+                                                size={14}
+                                                color="currentColor"
+                                                strokeWidth={1.6}
+                                            />
+                                        </span>
+                                    </span>
+                                }
+                            />
                         ) : null}
                         <IconButton
                             label="Focus on this record"

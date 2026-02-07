@@ -86,7 +86,7 @@ export const QueryFormSidebar = ({
     domainPlaceholder = '["field", "=", "value"]',
 
     showContextSection = true,
-    contextPlaceholder = '{ "lang": "fr_FR" }',
+    contextPlaceholder = '{ "lang": "fr_BE" }',
     contextHelpText = "Additional context for RPC calls in JSON format.",
 
     showLimitOffsetSection = false,
