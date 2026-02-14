@@ -68,7 +68,7 @@ export const InfoSection = ({
                     }`}
                 />
             </button>
-            {isExpanded.value && <div className="mt-3 px-4">{children}</div>}
+            {isExpanded.value && <div className="mt-3">{children}</div>}
         </div>
     );
 };

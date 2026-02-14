@@ -82,6 +82,12 @@ export async function getModelAccessIds(model: string): Promise<number[]> {
     ]);
 }
 
+export async function getServerActionsIds(model: string): Promise<number[]> {
+    return searchReadRecords("ir.actions.server", [
+        ["model_id.model", "=", model],
+    ]);
+}
+
 export async function getRecordData(
     model: string,
     id: number,

@@ -178,12 +178,10 @@ export const RecordInfo = () => {
             <>
                 {items}
                 {viewInfo?.currentModel ? (
-                    <div className="pt-2">
-                        <ModelActions
-                            currentModel={viewInfo.currentModel}
-                            currentRecordId={viewInfo.currentRecordId}
-                        />
-                    </div>
+                    <ModelActions
+                        currentModel={viewInfo.currentModel}
+                        currentRecordId={viewInfo.currentRecordId}
+                    />
                 ) : null}
             </>
         </InfoSection>

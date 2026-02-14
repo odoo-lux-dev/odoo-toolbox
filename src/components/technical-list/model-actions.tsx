@@ -2,6 +2,7 @@ import { useSignal } from "@preact/signals";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     DatabaseIcon,
+    DatabaseLightningIcon,
     Key01Icon,
     ListViewIcon,
     Shield02Icon,
@@ -11,6 +12,7 @@ import {
     getModelFieldIds,
     getModelRuleIds,
     getRecordData,
+    getServerActionsIds,
     openViewWithIds,
 } from "@/services/content-script-rpc-service";
 import { Button } from "@/components/ui/button";
@@ -56,14 +58,14 @@ export const ModelActions = ({
         }
     };
 
-    const handleViewRules = async () => {
+    const handleViewRecordRules = async () => {
         loading.value = "rules";
         try {
             const ruleIds = await getModelRuleIds(currentModel);
             await openViewWithIds(
                 "ir.rule",
                 ruleIds,
-                `Odoo Toolbox - ${currentModel} access rules`,
+                `Odoo Toolbox - ${currentModel} record rules`,
             );
         } catch (error) {
             alert(error);
@@ -72,14 +74,14 @@ export const ModelActions = ({
         }
     };
 
-    const handleViewAccess = async () => {
+    const handleViewAccessRights = async () => {
         loading.value = "access";
         try {
             const accessIds = await getModelAccessIds(currentModel);
             await openViewWithIds(
                 "ir.model.access",
                 accessIds,
-                `Odoo Toolbox - ${currentModel} model access`,
+                `Odoo Toolbox - ${currentModel} model access rights`,
             );
         } catch (error) {
             alert(error);
@@ -118,8 +120,24 @@ export const ModelActions = ({
         recordDataError.value = null;
     };
 
+    const handleViewServerActions = async () => {
+        loading.value = "actions";
+        try {
+            const serverActionsIds = await getServerActionsIds(currentModel);
+            await openViewWithIds(
+                "ir.actions.server",
+                serverActionsIds,
+                `Odoo Toolbox - ${currentModel} server actions`,
+            );
+        } catch (error) {
+            alert(error);
+        } finally {
+            loading.value = null;
+        }
+    };
+
     return (
-        <div className="flex flex-nowrap items-center justify-center gap-1">
+        <div className="flex flex-wrap items-center justify-center gap-1 pt-2">
             <Button
                 className="gap-2 text-xs"
                 variant="solid"
@@ -140,25 +158,9 @@ export const ModelActions = ({
                 className="gap-2 text-xs"
                 variant="solid"
                 size="sm"
-                onClick={handleViewRules}
+                onClick={handleViewAccessRights}
                 disabled={loading.value !== null}
-                title="View access rules (ir.rule)"
-            >
-                <HugeiconsIcon
-                    icon={Shield02Icon}
-                    size={16}
-                    color="currentColor"
-                    strokeWidth={1.6}
-                />
-                {loading.value === "rules" ? "Loading..." : "Rules"}
-            </Button>
-            <Button
-                className="gap-2 text-xs"
-                variant="solid"
-                size="sm"
-                onClick={handleViewAccess}
-                disabled={loading.value !== null}
-                title="View model access (ir.model.access)"
+                title="View model access rights (ir.model.access)"
             >
                 <HugeiconsIcon
                     icon={Key01Icon}
@@ -166,7 +168,39 @@ export const ModelActions = ({
                     color="currentColor"
                     strokeWidth={1.6}
                 />
-                {loading.value === "access" ? "Loading..." : "Access"}
+                {loading.value === "access" ? "Loading..." : "Access Rights"}
+            </Button>
+            <Button
+                className="gap-2 text-xs"
+                variant="solid"
+                size="sm"
+                onClick={handleViewRecordRules}
+                disabled={loading.value !== null}
+                title="View record rules (ir.rule)"
+            >
+                <HugeiconsIcon
+                    icon={Shield02Icon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+                {loading.value === "rules" ? "Loading..." : "Record Rules"}
+            </Button>
+            <Button
+                className="gap-2 text-xs"
+                variant="solid"
+                size="sm"
+                onClick={handleViewServerActions}
+                disabled={loading.value !== null}
+                title="View server actions (ir.actions.server)"
+            >
+                <HugeiconsIcon
+                    icon={DatabaseLightningIcon}
+                    size={16}
+                    color="currentColor"
+                    strokeWidth={1.6}
+                />
+                {loading.value === "actions" ? "Loading..." : "Server Actions"}
             </Button>
             {currentRecordId && (
                 <Button

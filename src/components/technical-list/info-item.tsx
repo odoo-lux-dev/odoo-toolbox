@@ -53,7 +53,7 @@ export const InfoItem = ({
         .join(" ");
 
     return (
-        <div className="flex items-center justify-between gap-4 py-1">
+        <div className="flex items-center justify-between gap-4 px-4 py-1">
             <div className="inline-flex items-center gap-2 text-sm font-medium text-base-content/70">
                 {icon ? (
                     <span className="text-base opacity-70">{icon}</span>
