@@ -21,13 +21,32 @@ export interface RadioProps
     labelClassName?: string;
 }
 
+const RADIO_COLOR_CLASS: Record<RadioColor, string> = {
+    neutral: "radio-neutral",
+    primary: "radio-primary",
+    secondary: "radio-secondary",
+    accent: "radio-accent",
+    info: "radio-info",
+    success: "radio-success",
+    warning: "radio-warning",
+    error: "radio-error",
+};
+
+const RADIO_SIZE_CLASS: Record<RadioSize, string> = {
+    xs: "radio-xs",
+    sm: "radio-sm",
+    md: "radio-md",
+    lg: "radio-lg",
+    xl: "radio-xl",
+};
+
 const buildRadioClassName = (color?: RadioColor, size?: RadioSize) => {
     const classes = ["radio"];
     if (color) {
-        classes.push(`radio-${color}`);
+        classes.push(RADIO_COLOR_CLASS[color]);
     }
     if (size) {
-        classes.push(`radio-${size}`);
+        classes.push(RADIO_SIZE_CLASS[size]);
     }
     return classes;
 };

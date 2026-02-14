@@ -24,6 +24,29 @@ interface InputProps
     suffix?: ComponentChildren;
 }
 
+const INPUT_SIZE_CLASS: Record<InputSize, string> = {
+    xs: "input-xs",
+    sm: "input-sm",
+    md: "input-md",
+    lg: "input-lg",
+    xl: "input-xl",
+};
+
+const INPUT_COLOR_CLASS: Record<InputColor, string> = {
+    neutral: "input-neutral",
+    primary: "input-primary",
+    secondary: "input-secondary",
+    accent: "input-accent",
+    info: "input-info",
+    success: "input-success",
+    warning: "input-warning",
+    error: "input-error",
+};
+
+const INPUT_VARIANT_CLASS: Record<InputStyle, string> = {
+    ghost: "input-ghost",
+};
+
 const buildInputClassName = ({
     size,
     color,
@@ -38,9 +61,9 @@ const buildInputClassName = ({
     className?: string;
 }) => {
     const classes = ["input"];
-    if (size) classes.push(`input-${size}`);
-    if (color) classes.push(`input-${color}`);
-    if (variant) classes.push(`input-${variant}`);
+    if (size) classes.push(INPUT_SIZE_CLASS[size]);
+    if (color) classes.push(INPUT_COLOR_CLASS[color]);
+    if (variant) classes.push(INPUT_VARIANT_CLASS[variant]);
     if (fullWidth) classes.push("w-full");
     if (className) classes.push(className);
     return classes.join(" ");

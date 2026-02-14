@@ -21,6 +21,29 @@ export interface TextareaProps
     fullWidth?: boolean;
 }
 
+const TEXTAREA_SIZE_CLASS: Record<TextareaSize, string> = {
+    xs: "textarea-xs",
+    sm: "textarea-sm",
+    md: "textarea-md",
+    lg: "textarea-lg",
+    xl: "textarea-xl",
+};
+
+const TEXTAREA_COLOR_CLASS: Record<TextareaColor, string> = {
+    neutral: "textarea-neutral",
+    primary: "textarea-primary",
+    secondary: "textarea-secondary",
+    accent: "textarea-accent",
+    info: "textarea-info",
+    success: "textarea-success",
+    warning: "textarea-warning",
+    error: "textarea-error",
+};
+
+const TEXTAREA_VARIANT_CLASS: Record<TextareaStyle, string> = {
+    ghost: "textarea-ghost",
+};
+
 const buildTextareaClassName = ({
     size,
     color,
@@ -35,9 +58,9 @@ const buildTextareaClassName = ({
     className?: string;
 }) => {
     const classes = ["textarea"];
-    if (size) classes.push(`textarea-${size}`);
-    if (color) classes.push(`textarea-${color}`);
-    if (variant) classes.push(`textarea-${variant}`);
+    if (size) classes.push(TEXTAREA_SIZE_CLASS[size]);
+    if (color) classes.push(TEXTAREA_COLOR_CLASS[color]);
+    if (variant) classes.push(TEXTAREA_VARIANT_CLASS[variant]);
     if (fullWidth) classes.push("w-full");
     if (className) classes.push(className);
     return classes.join(" ");

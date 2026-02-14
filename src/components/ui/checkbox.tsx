@@ -23,10 +23,28 @@ export interface CheckboxProps
     onChange?: JSX.GenericEventHandler<HTMLInputElement>;
 }
 
+const CHECKBOX_COLOR_CLASS: Record<CheckboxColor, string> = {
+    neutral: "checkbox-neutral",
+    primary: "checkbox-primary",
+    secondary: "checkbox-secondary",
+    accent: "checkbox-accent",
+    info: "checkbox-info",
+    success: "checkbox-success",
+    warning: "checkbox-warning",
+    error: "checkbox-error",
+};
+
+const CHECKBOX_SIZE_CLASS: Record<CheckboxSize, string> = {
+    xs: "checkbox-xs",
+    sm: "checkbox-sm",
+    md: "checkbox-md",
+    lg: "checkbox-lg",
+};
+
 const buildCheckboxClassName = (color?: CheckboxColor, size?: CheckboxSize) => {
     const classes = ["checkbox"];
-    if (color) classes.push(`checkbox-${color}`);
-    if (size) classes.push(`checkbox-${size}`);
+    if (color) classes.push(CHECKBOX_COLOR_CLASS[color]);
+    if (size) classes.push(CHECKBOX_SIZE_CLASS[size]);
     return classes.join(" ");
 };
 

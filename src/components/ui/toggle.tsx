@@ -28,13 +28,32 @@ export interface ToggleProps
     onChange?: JSX.GenericEventHandler<HTMLInputElement>;
 }
 
+const TOGGLE_COLOR_CLASS: Record<ToggleColor, string> = {
+    neutral: "toggle-neutral",
+    primary: "toggle-primary",
+    secondary: "toggle-secondary",
+    accent: "toggle-accent",
+    info: "toggle-info",
+    success: "toggle-success",
+    warning: "toggle-warning",
+    error: "toggle-error",
+};
+
+const TOGGLE_SIZE_CLASS: Record<ToggleSize, string> = {
+    xs: "toggle-xs",
+    sm: "toggle-sm",
+    md: "toggle-md",
+    lg: "toggle-lg",
+    xl: "toggle-xl",
+};
+
 const buildToggleClassName = (color?: ToggleColor, size?: ToggleSize) => {
     const classes = ["toggle"];
     if (color) {
-        classes.push(`toggle-${color}`);
+        classes.push(TOGGLE_COLOR_CLASS[color]);
     }
     if (size) {
-        classes.push(`toggle-${size}`);
+        classes.push(TOGGLE_SIZE_CLASS[size]);
     }
     return classes;
 };
@@ -88,7 +107,7 @@ export const Toggle = forwardRef<HTMLInputElement, ToggleProps>(
             );
 
             return (
-                <label className={`${combined}`}>
+                <label className={combined}>
                     <input
                         ref={ref}
                         type="checkbox"
