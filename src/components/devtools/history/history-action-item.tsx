@@ -156,7 +156,7 @@ export const HistoryActionItem = ({ action }: HistoryActionItemProps) => {
 
     return (
         <div
-            className={`rounded-md border border-base-300 bg-base-100 ${ACTION_TYPE_COLORS[action.type]} ${action.pinned ? "ring-1 ring-warning/40 bg-warning/5" : ""}`}
+            className={`rounded-md border border-base-300 bg-base-100 ${ACTION_TYPE_COLORS[action.type]} ${action.pinned ? "bg-warning/5 ring-1 ring-warning/40" : ""}`}
         >
             <div
                 className="group flex cursor-pointer items-center justify-between gap-3 p-2 select-none hover:bg-base-200/70"
