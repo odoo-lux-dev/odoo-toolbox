@@ -39,7 +39,7 @@ export const FieldFilters = ({
                     onSearchChange((event.target as HTMLInputElement).value)
                 }
                 fullWidth
-                className="input-bordered"
+                className="input-bordered text-xs"
                 suffix={
                     <HugeiconsIcon
                         icon={Search01Icon}

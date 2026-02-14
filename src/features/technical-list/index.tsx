@@ -15,6 +15,23 @@ const technicalListExclusionRules = [
 const shouldExcludeTechnicalList = () =>
     technicalListExclusionRules.some((rule) => rule());
 
+const injectTechnicalListStyles = (root: ShadowRoot): void => {
+    if (
+        "adoptedStyleSheets" in Document.prototype &&
+        "replaceSync" in CSSStyleSheet.prototype
+    ) {
+        const sheet = new CSSStyleSheet();
+        sheet.replaceSync(technicalListStyles);
+        root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
+        return;
+    }
+
+    // Fallback for browsers/environments without constructable stylesheets
+    const style = document.createElement("style");
+    style.textContent = technicalListStyles;
+    root.appendChild(style);
+};
+
 export const initTechnicalList = (): void => {
     try {
         const showTechnicalList = getShowTechnicalList() === "true";
@@ -33,9 +50,7 @@ export const initTechnicalList = (): void => {
 
             shadowRoot = containerElement.attachShadow({ mode: "open" });
 
-            const style = document.createElement("style");
-            style.textContent = technicalListStyles;
-            shadowRoot.appendChild(style);
+            injectTechnicalListStyles(shadowRoot);
 
             const appRoot = document.createElement("div");
             appRoot.id = "x-odoo-technical-list-info-root";

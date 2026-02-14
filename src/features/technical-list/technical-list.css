@@ -1,1 +1,99 @@
 @import "@/theme/daisy-theme.css";
+
+/**
+ * Technical list sizing must stay stable across Odoo versions.
+ * Odoo v16 use a smaller host root font-size (12px), so rem-based values render smaller.
+ * Scope all size-related tailwind variable overrides to the technical list root only.
+ */
+[data-technical-list-root="true"] {
+    /* Stable base */
+    font-size: 16px;
+
+    /* Tailwind spacing scale base */
+    --spacing: 4px;
+
+    /* Tailwind breakpoints */
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+
+    /* Tailwind container sizes */
+    --container-3xs: 256px;
+    --container-2xs: 288px;
+    --container-xs: 320px;
+    --container-sm: 384px;
+    --container-md: 448px;
+    --container-lg: 512px;
+    --container-xl: 576px;
+    --container-2xl: 672px;
+    --container-3xl: 768px;
+    --container-4xl: 896px;
+    --container-5xl: 1024px;
+    --container-6xl: 1152px;
+    --container-7xl: 1280px;
+
+    /* Tailwind text sizes */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 30px;
+    --text-4xl: 36px;
+    --text-5xl: 48px;
+    --text-6xl: 60px;
+    --text-7xl: 72px;
+    --text-8xl: 96px;
+    --text-9xl: 128px;
+
+    /* Keep Tailwind line-height variables explicit and unitless */
+    --text-xs--line-height: 1.3333333333;
+    --text-sm--line-height: 1.4285714286;
+    --text-base--line-height: 1.5;
+    --text-lg--line-height: 1.5555555556;
+    --text-xl--line-height: 1.4;
+    --text-2xl--line-height: 1.3333333333;
+    --text-3xl--line-height: 1.2;
+    --text-4xl--line-height: 1.1111111111;
+    --text-5xl--line-height: 1;
+    --text-6xl--line-height: 1;
+    --text-7xl--line-height: 1;
+    --text-8xl--line-height: 1;
+    --text-9xl--line-height: 1;
+
+    /* Tailwind radius scale */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-3xl: 24px;
+    --radius-4xl: 32px;
+
+    /* DaisyUI size-related theme variables */
+    --radius-selector: 4px;
+    --radius-field: 8px;
+    --radius-box: 8px;
+    --size-selector: 4px;
+    --size-field: 4px;
+}
+
+/* Ensure both DaisyUI themes use px sizing inside technical list only */
+[data-technical-list-root="true"][data-theme="odoodark"],
+[data-technical-list-root="true"][data-theme="odoolight"] {
+    --radius-selector: 4px;
+    --radius-field: 8px;
+    --radius-box: 8px;
+    --size-selector: 4px;
+    --size-field: 4px;
+}
+
+/* Keep code element sizing consistent inside technical list */
+[data-technical-list-root="true"] code {
+    border-radius: 6px;
+    padding: 2px 6px;
+}
