@@ -1,7 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
     CodeIcon,
-    StarsIcon,
     DatabaseIcon,
     EyeIcon,
     FilterIcon,
@@ -10,6 +9,7 @@ import {
     StarIcon,
     ThreeDViewIcon,
     IdentificationIcon,
+    ZapIcon,
 } from "@hugeicons/core-free-icons";
 import { useTechnicalSidebar } from "./hooks/use-technical-sidebar";
 import { InfoItem } from "./info-item";
@@ -79,7 +79,7 @@ export const RecordInfo = () => {
             <InfoItem
                 icon={
                     <HugeiconsIcon
-                        icon={StarIcon}
+                        icon={ZapIcon}
                         size={14}
                         color="currentColor"
                         strokeWidth={1.6}
@@ -97,7 +97,7 @@ export const RecordInfo = () => {
             <InfoItem
                 icon={
                     <HugeiconsIcon
-                        icon={StarsIcon}
+                        icon={StarIcon}
                         size={14}
                         color="currentColor"
                         strokeWidth={1.6}
@@ -200,6 +200,8 @@ export const RecordInfo = () => {
                     <ModelActions
                         currentModel={viewInfo.currentModel}
                         currentRecordId={viewInfo.currentRecordId}
+                        actionType={viewInfo.actionType}
+                        actionId={viewInfo.actionId}
                     />
                 ) : null}
             </>

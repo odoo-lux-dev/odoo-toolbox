@@ -6,6 +6,7 @@ import {
     Key01Icon,
     ListViewIcon,
     Shield02Icon,
+    ZapIcon,
 } from "@hugeicons/core-free-icons";
 import {
     getModelAccessIds,
@@ -22,11 +23,15 @@ import { RecordDataViewer } from "./record-data-viewer";
 interface ModelActionsProps {
     currentModel: string;
     currentRecordId?: number;
+    actionType?: string;
+    actionId?: number;
 }
 
 export const ModelActions = ({
     currentModel,
     currentRecordId,
+    actionType,
+    actionId,
 }: ModelActionsProps) => {
     const loading = useSignal<string | null>(null);
     const showDataModal = useSignal(false);
@@ -136,6 +141,25 @@ export const ModelActions = ({
         }
     };
 
+    const handleViewCurrentAction = async () => {
+        if (!actionType || !actionId) {
+            return;
+        }
+
+        loading.value = "current-action";
+        try {
+            await openViewWithIds(
+                actionType,
+                [actionId],
+                `Odoo Toolbox - action ${actionType} (${actionId})`,
+            );
+        } catch (error) {
+            alert(error);
+        } finally {
+            loading.value = null;
+        }
+    };
+
     return (
         <div className="flex flex-wrap items-center justify-center gap-1 pt-2">
             <Button
@@ -202,6 +226,26 @@ export const ModelActions = ({
                 />
                 {loading.value === "actions" ? "Loading..." : "Server Actions"}
             </Button>
+            {actionType && actionId ? (
+                <Button
+                    className="gap-2 text-xs"
+                    variant="solid"
+                    size="sm"
+                    onClick={handleViewCurrentAction}
+                    disabled={loading.value !== null}
+                    title={`Open current action (${actionType}, ID: ${actionId})`}
+                >
+                    <HugeiconsIcon
+                        icon={ZapIcon}
+                        size={16}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                    {loading.value === "current-action"
+                        ? "Loading..."
+                        : "Current Action"}
+                </Button>
+            ) : null}
             {currentRecordId && (
                 <Button
                     className="gap-2 text-xs"
