@@ -102,6 +102,7 @@ declare global {
                                 name?: string;
                                 xml_id?: string;
                                 type?: string;
+                                id?: number;
                                 [key: string]: unknown;
                             };
                             [key: string]: unknown;

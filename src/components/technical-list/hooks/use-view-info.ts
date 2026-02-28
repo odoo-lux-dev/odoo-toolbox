@@ -533,6 +533,7 @@ export const useViewInfo = () => {
         let actionDomain: string | undefined;
         let actionXmlId: string | undefined;
         let actionType: string | undefined;
+        let actionId: number | undefined;
 
         try {
             const controller =
@@ -543,6 +544,7 @@ export const useViewInfo = () => {
             actionName = controller?.action?.name;
             actionXmlId = controller?.action?.xml_id;
             actionType = controller?.action?.type;
+            actionId = controller?.action?.id;
 
             if (
                 controller?.action?.domain &&
@@ -645,6 +647,7 @@ export const useViewInfo = () => {
             actionDomain,
             actionXmlId,
             actionType,
+            actionId,
         };
     }, [extractFieldInfo, extractButtonInfo, extractWebsiteInfo]);
 

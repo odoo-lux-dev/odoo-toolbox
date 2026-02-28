@@ -31,6 +31,7 @@ export interface ViewInfo {
     actionDomain?: string;
     actionXmlId?: string;
     actionType?: string;
+    actionId?: number;
 }
 
 export interface DebugFieldInfo {

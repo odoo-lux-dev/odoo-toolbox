@@ -9,6 +9,7 @@ import {
     Settings02Icon,
     StarIcon,
     ThreeDViewIcon,
+    IdentificationIcon,
 } from "@hugeicons/core-free-icons";
 import { useTechnicalSidebar } from "./hooks/use-technical-sidebar";
 import { InfoItem } from "./info-item";
@@ -104,6 +105,24 @@ export const RecordInfo = () => {
                 }
                 label="Action Name"
                 value={viewInfo.actionName}
+                copyable
+            />,
+        );
+    }
+
+    if (viewInfo?.actionId) {
+        items.push(
+            <InfoItem
+                icon={
+                    <HugeiconsIcon
+                        icon={IdentificationIcon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                    />
+                }
+                label="Action ID"
+                value={viewInfo.actionId.toString()}
                 copyable
             />,
         );
