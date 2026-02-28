@@ -38,6 +38,7 @@ export const SelectedFieldContent = () => {
                 <span>Selected Field</span>
             </div>
             <FieldItem
+                key={`${selectedFieldInfo.name}-${selectedFieldInfo.label ?? ""}`}
                 field={selectedFieldInfo}
                 onHighlight={highlightField}
                 onClearHighlight={clearFieldHighlight}
