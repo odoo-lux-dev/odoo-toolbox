@@ -113,14 +113,8 @@ function HomepageHero() {
                         to="/docs/intro"
                     >
                         <Translate id="homepage.hero.getStarted">
-                            Documentation
+                            Discover what's possible
                         </Translate>
-                    </Link>
-                    <Link
-                        className="button button--secondary button--lg"
-                        href="https://github.com/odoo-lux-dev/odoo-toolbox"
-                    >
-                        GitHub
                     </Link>
                 </div>
 
