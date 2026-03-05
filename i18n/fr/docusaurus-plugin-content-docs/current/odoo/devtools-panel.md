@@ -60,7 +60,7 @@ Laissez le champ vide pour retourner tous les champs du modèle.
 
 #### Filtres de domaine {#domain-filters}
 
-Les domaines suivent la [syntaxe de domaine Odoo](https://www.odoo.com/documentation/master/developer/reference/backend/orm.html#domains) standard : un tableau JSON de conditions combinées avec les opérateurs préfixes `&` (ET, par défaut) et `|` (OU).
+Les domaines suivent la [syntaxe de domaine Odoo](https://www.odoo.com/documentation/master/developer/reference/backend/orm.html#search-domains) standard : un tableau JSON de conditions combinées avec les opérateurs préfixes `&` (ET, par défaut) et `|` (OU).
 
 ```odoo-toolbox-docs/i18n/fr/docusaurus-plugin-content-docs/current/odoo/devtools-panel.md#L1-1
 [["state", "=", "done"], ["partner_id.country_id.code", "=", "US"]]

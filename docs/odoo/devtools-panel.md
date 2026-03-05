@@ -60,7 +60,7 @@ Leave the input empty to return every field on the model.
 
 #### Domain filters {#domain-filters}
 
-Domains follow the standard [Odoo domain syntax](https://www.odoo.com/documentation/master/developer/reference/backend/orm.html#domains): a JSON array of conditions combined with `&` (AND, default) and `|` (OR) prefix operators.
+Domains follow the standard [Odoo domain syntax](https://www.odoo.com/documentation/master/developer/reference/backend/orm.html#search-domains): a JSON array of conditions combined with `&` (AND, default) and `|` (OR) prefix operators.
 
 ```json
 [
