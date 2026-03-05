@@ -113,7 +113,7 @@ function HomepageHero() {
                         to="/docs/intro"
                     >
                         <Translate id="homepage.hero.getStarted">
-                            Get Started
+                            Documentation
                         </Translate>
                     </Link>
                     <Link
