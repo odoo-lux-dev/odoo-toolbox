@@ -386,6 +386,18 @@ code {
     color: var(--ifm-color-primary);
 }
 
+/* ─── Mobile sidebar: icon links in a row ─────────────────────────────────── */
+@media (max-width: 996px) {
+    li.menu__list-item:has(> a.header-icon-link) {
+        display: inline-flex;
+        vertical-align: middle;
+    }
+
+    ul.menu__list:has(> li.menu__list-item > a.header-icon-link) {
+        text-align: center;
+    }
+}
+
 /* ─── Image zoom (medium-zoom) ────────────────────────────────────────────── */
 /* Override navbar z-index (200) so the zoomed image renders on top */
 .medium-zoom-overlay,
