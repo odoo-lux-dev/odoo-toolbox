@@ -1,0 +1,22 @@
+{
+    "sidebar.tutorialSidebar.category.Odoo": {
+        "message": "Odoo",
+        "description": "The label for category 'Odoo' in sidebar 'tutorialSidebar'"
+    },
+    "sidebar.tutorialSidebar.category.Odoo.SH": {
+        "message": "Odoo.SH",
+        "description": "The label for category 'Odoo.SH' in sidebar 'tutorialSidebar'"
+    },
+    "sidebar.tutorialSidebar.doc.Getting Started": {
+        "message": "Démarrage rapide",
+        "description": "The label for the doc item 'Getting Started' in sidebar 'tutorialSidebar', linking to the doc intro"
+    },
+    "sidebar.tutorialSidebar.doc.Options": {
+        "message": "Options",
+        "description": "The label for the doc item 'Options' in sidebar 'tutorialSidebar', linking to the doc options"
+    },
+    "version.label": {
+        "message": "Actuel",
+        "description": "The label for version current"
+    }
+}

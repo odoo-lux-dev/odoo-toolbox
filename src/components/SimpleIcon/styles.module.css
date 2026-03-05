@@ -1,0 +1,12 @@
+/* Default: dark icon for light mode */
+.icon {
+    display: block;
+    flex-shrink: 0;
+    filter: brightness(0) opacity(0.55);
+    transition: opacity 0.15s ease;
+}
+
+/* Dark mode: white icon */
+[data-theme="dark"] .icon {
+    filter: brightness(0) invert(1) opacity(0.65);
+}

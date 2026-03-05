@@ -1,0 +1,284 @@
+/* ─── Hero ────────────────────────────────────────────────────────────────── */
+.heroBanner {
+    padding: 5rem 0 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: oklch(100% 0 0);
+    border-bottom: 1px solid oklch(93% 0 0);
+}
+
+[data-theme="dark"] .heroBanner {
+    background: oklch(18% 0.02 280);
+    border-bottom: 1px solid oklch(28% 0.04 280);
+}
+
+.heroBanner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse 70% 50% at 50% 0%,
+        color-mix(in oklab, oklch(46.49% 0.066 336.68) 8%, transparent),
+        transparent 100%
+    );
+    pointer-events: none;
+}
+
+[data-theme="dark"] .heroBanner::before {
+    background: radial-gradient(
+        ellipse 70% 50% at 50% 0%,
+        color-mix(in oklab, oklch(46.49% 0.066 336.68) 14%, transparent),
+        transparent 100%
+    );
+}
+
+/* ─── Hero content ────────────────────────────────────────────────────────── */
+.heroContent {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.heroBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: color-mix(
+        in oklab,
+        oklch(46.49% 0.066 336.68) 12%,
+        transparent
+    );
+    border: 1px solid
+        color-mix(in oklab, oklch(46.49% 0.066 336.68) 30%, transparent);
+    color: oklch(46.49% 0.066 336.68);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+[data-theme="dark"] .heroBadge {
+    background: color-mix(in oklab, oklch(62% 0.09 336.68) 12%, transparent);
+    border-color: color-mix(in oklab, oklch(62% 0.09 336.68) 30%, transparent);
+    color: oklch(72% 0.1 336.68);
+}
+
+.heroTitle {
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+    color: oklch(12% 0.02 280);
+}
+
+[data-theme="dark"] .heroTitle {
+    color: oklch(96% 0.01 280);
+}
+
+.heroSubtitle {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    line-height: 1.65;
+    color: oklch(38% 0.02 280);
+    max-width: 580px;
+    margin: 0 auto 2.25rem;
+}
+
+[data-theme="dark"] .heroSubtitle {
+    color: oklch(72% 0.02 280);
+}
+
+.heroButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+}
+
+/* ─── Compatibility badges ────────────────────────────────────────────────── */
+.heroBrowsers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    font-size: 0.82rem;
+    color: oklch(52% 0.02 280);
+}
+
+[data-theme="dark"] .heroBrowsers {
+    color: oklch(60% 0.02 280);
+}
+
+.browserGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+}
+
+.browserGroupSub {
+    font-size: 0.75rem;
+    opacity: 0.55;
+}
+
+.heroBrowsers .separator {
+    opacity: 0.25;
+}
+
+.browserDivider {
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background: currentColor;
+    opacity: 0.2;
+    margin: 0 0.3rem;
+    flex-shrink: 0;
+}
+
+/* ─── Feature cards ───────────────────────────────────────────────────────── */
+.features {
+    padding: 4rem 0;
+    background: oklch(99% 0 0);
+}
+
+[data-theme="dark"] .features {
+    background: oklch(20% 0.025 280);
+}
+
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .featuresGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.featureCard {
+    background: oklch(100% 0 0);
+    border: 1px solid oklch(93% 0 0);
+    border-radius: 0.75rem;
+    padding: 1.75rem;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
+}
+
+[data-theme="dark"] .featureCard {
+    background: oklch(22% 0.03 280);
+    border-color: oklch(28% 0.04 280);
+}
+
+.featureCard:hover {
+    border-color: color-mix(
+        in oklab,
+        oklch(46.49% 0.066 336.68) 50%,
+        transparent
+    );
+    box-shadow: 0 4px 20px -4px
+        color-mix(in oklab, oklch(46.49% 0.066 336.68) 15%, transparent);
+    transform: translateY(-2px);
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+[data-theme="dark"] .featureCard:hover {
+    border-color: color-mix(in oklab, oklch(62% 0.09 336.68) 50%, transparent);
+    box-shadow: 0 4px 20px -4px
+        color-mix(in oklab, oklch(62% 0.09 336.68) 20%, transparent);
+}
+
+.featureIcon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    background: color-mix(
+        in oklab,
+        oklch(46.49% 0.066 336.68) 10%,
+        transparent
+    );
+    border: 1px solid
+        color-mix(in oklab, oklch(46.49% 0.066 336.68) 20%, transparent);
+}
+
+[data-theme="dark"] .featureIcon {
+    background: color-mix(in oklab, oklch(62% 0.09 336.68) 12%, transparent);
+    border-color: color-mix(in oklab, oklch(62% 0.09 336.68) 22%, transparent);
+}
+
+.featureTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: oklch(12% 0.02 280);
+    letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .featureTitle {
+    color: oklch(94% 0.01 280);
+}
+
+.featureDescription {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: oklch(42% 0.02 280);
+    margin: 0;
+}
+
+[data-theme="dark"] .featureDescription {
+    color: oklch(66% 0.02 280);
+}
+
+/* ─── Section title ───────────────────────────────────────────────────────── */
+.sectionTitle {
+    text-align: center;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.6rem;
+    color: oklch(12% 0.02 280);
+}
+
+[data-theme="dark"] .sectionTitle {
+    color: oklch(96% 0.01 280);
+}
+
+.sectionSubtitle {
+    text-align: center;
+    font-size: 0.97rem;
+    color: oklch(42% 0.02 280);
+    margin-bottom: 2.5rem;
+}
+
+[data-theme="dark"] .sectionSubtitle {
+    color: oklch(62% 0.02 280);
+}
+
+@media screen and (max-width: 996px) {
+    .heroBanner {
+        padding: 3rem 1.5rem 2.5rem;
+    }
+}

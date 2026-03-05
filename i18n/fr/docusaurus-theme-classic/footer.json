@@ -1,0 +1,58 @@
+{
+    "link.item.label.Getting Started": {
+        "message": "Démarrage rapide",
+        "description": "The label of footer link with label=Getting Started linking to /docs/intro"
+    },
+    "link.item.label.DevTools Panel": {
+        "message": "Panneau DevTools",
+        "description": "The label of footer link with label=DevTools Panel linking to /docs/odoo/devtools-panel"
+    },
+    "link.item.label.Technical Sidebar": {
+        "message": "Barre latérale technique",
+        "description": "The label of footer link with label=Technical Sidebar linking to /docs/odoo/technical-sidebar"
+    },
+    "link.item.label.Odoo.SH Integration": {
+        "message": "Intégration Odoo.SH",
+        "description": "The label of footer link with label=Odoo.SH Integration linking to /docs/odoosh/overview"
+    },
+    "link.item.label.Options": {
+        "message": "Options",
+        "description": "The label of footer link with label=Options linking to /docs/options"
+    },
+    "link.item.label.Chrome Web Store": {
+        "message": "Chrome Web Store",
+        "description": "The label of footer link with label=Chrome Web Store linking to https://chromewebstore.google.com/detail/odoo-toolbox/jgobnmpfeomiffhbedhfgbhelcnnelkd"
+    },
+    "link.item.label.Firefox Add-ons": {
+        "message": "Firefox Add-ons",
+        "description": "The label of footer link with label=Firefox Add-ons linking to https://addons.mozilla.org/en-US/firefox/addon/odoo-toolbox/"
+    },
+    "link.item.label.GitHub": {
+        "message": "GitHub",
+        "description": "The label of footer link with label=GitHub linking to https://github.com/odoo-lux-dev/odoo-toolbox"
+    },
+    "link.item.label.Report an Issue": {
+        "message": "Signaler un problème",
+        "description": "The label of footer link with label=Report an Issue linking to https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=bug_report.yml"
+    },
+    "link.item.label.Suggest a Feature": {
+        "message": "Suggérer une fonctionnalité",
+        "description": "The label of footer link with label=Suggest a Feature linking to https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=feature_request.yml"
+    },
+    "link.title.Documentation": {
+        "message": "Documentation",
+        "description": "The title of the footer links column with title=Documentation in the footer"
+    },
+    "link.title.Install": {
+        "message": "Installer",
+        "description": "The title of the footer links column with title=Install in the footer"
+    },
+    "link.title.More": {
+        "message": "Liens",
+        "description": "The title of the footer links column with title=More in the footer"
+    },
+    "copyright": {
+        "message": "Construit avec Docusaurus",
+        "description": "The footer copyright"
+    }
+}

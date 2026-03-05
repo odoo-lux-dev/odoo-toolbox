@@ -1,0 +1,26 @@
+{
+  "title": {
+    "message": "Odoo Toolbox",
+    "description": "The title in the navbar"
+  },
+  "item.label.Documentation": {
+    "message": "Documentation",
+    "description": "Navbar item with label Documentation"
+  },
+  "item.label.Chrome Web Store": {
+    "message": "Chrome Web Store",
+    "description": "Navbar item with label Chrome Web Store"
+  },
+  "item.label.Firefox Add-ons": {
+    "message": "Firefox Add-ons",
+    "description": "Navbar item with label Firefox Add-ons"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "logo.alt": {
+    "message": "Odoo Toolbox Logo",
+    "description": "The alt text of navbar logo"
+  }
+}
