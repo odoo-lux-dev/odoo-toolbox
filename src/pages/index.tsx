@@ -17,37 +17,6 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
     {
-        icon: "⚡",
-        title: (
-            <Translate id="homepage.feature.devtools.title">
-                DevTools Panel
-            </Translate>
-        ),
-        description: (
-            <Translate id="homepage.feature.devtools.description">
-                Query, create, update and delete Odoo records directly from your
-                browser DevTools. Advanced RPC testing with domain filters,
-                field selection and more.
-            </Translate>
-        ),
-        link: "/docs/odoo/devtools-panel",
-    },
-    {
-        icon: "🔍",
-        title: (
-            <Translate id="homepage.feature.sidebar.title">
-                Technical Sidebar
-            </Translate>
-        ),
-        description: (
-            <Translate id="homepage.feature.sidebar.description">
-                Inspect fields, types, properties and metadata on any Odoo page.
-                Access the technical details of any field in just a few clicks.
-            </Translate>
-        ),
-        link: "/docs/odoo/technical-sidebar",
-    },
-    {
         icon: "🎯",
         title: (
             <Translate id="homepage.feature.popup.title">
@@ -78,6 +47,38 @@ const FeatureList: FeatureItem[] = [
             </Translate>
         ),
         link: "/docs/odoosh/overview",
+    },
+
+    {
+        icon: "🔍",
+        title: (
+            <Translate id="homepage.feature.sidebar.title">
+                Technical Sidebar
+            </Translate>
+        ),
+        description: (
+            <Translate id="homepage.feature.sidebar.description">
+                Inspect fields, types, properties and metadata on any Odoo page.
+                Access the technical details of any field in just a few clicks.
+            </Translate>
+        ),
+        link: "/docs/odoo/technical-sidebar",
+    },
+    {
+        icon: "⚡",
+        title: (
+            <Translate id="homepage.feature.devtools.title">
+                DevTools Panel
+            </Translate>
+        ),
+        description: (
+            <Translate id="homepage.feature.devtools.description">
+                Query, create, update and delete Odoo records directly from your
+                browser DevTools. Advanced RPC testing with domain filters,
+                field selection and more.
+            </Translate>
+        ),
+        link: "/docs/odoo/devtools-panel",
     },
 ];
 
