@@ -1,10 +1,14 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+    ArrowUpRight01Icon,
+    Bug01Icon,
     Download04Icon,
     GithubIcon,
+    Idea01Icon,
     Settings02Icon,
     StarIcon,
     Upload04Icon,
+    Book02Icon,
 } from "@hugeicons/core-free-icons";
 import { createRef } from "preact";
 import { ChangeEvent } from "preact/compat";
@@ -126,9 +130,9 @@ export const OptionsSidebar = () => {
                     {statusMessage}
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex w-full gap-1">
                     <button
-                        class="btn gap-2 btn-outline btn-sm btn-primary"
+                        class="btn btn-ghost btn-sm flex-1 gap-2 border border-base-content/15"
                         onClick={handleExport}
                     >
                         <HugeiconsIcon
@@ -140,7 +144,7 @@ export const OptionsSidebar = () => {
                         Export
                     </button>
                     <button
-                        class="btn gap-2 btn-outline btn-sm btn-primary"
+                        class="btn btn-ghost btn-sm flex-1 gap-2 border border-base-content/15"
                         onClick={handleImport}
                     >
                         <HugeiconsIcon
@@ -158,6 +162,80 @@ export const OptionsSidebar = () => {
                         ref={fileInputRef}
                         onInput={handleFileChange}
                     />
+                </div>
+                <div class="flex w-full flex-col">
+                    <a
+                        href="https://odoo-lux-dev.github.io/odoo-toolbox/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
+                    >
+                        <div class="flex items-center gap-2">
+                            <HugeiconsIcon
+                                icon={Book02Icon}
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                            <span>Documentation</span>
+                        </div>
+                        <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                            <HugeiconsIcon
+                                icon={ArrowUpRight01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                        </span>
+                    </a>
+                    <a
+                        href="https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=bug_report.yml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
+                    >
+                        <div class="flex items-center gap-2">
+                            <HugeiconsIcon
+                                icon={Bug01Icon}
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                            <span>Report a bug</span>
+                        </div>
+                        <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                            <HugeiconsIcon
+                                icon={ArrowUpRight01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                        </span>
+                    </a>
+                    <a
+                        href="https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=feature_request.yml"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
+                    >
+                        <div class="flex items-center gap-2">
+                            <HugeiconsIcon
+                                icon={Idea01Icon}
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                            <span>Suggest a feature</span>
+                        </div>
+                        <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                            <HugeiconsIcon
+                                icon={ArrowUpRight01Icon}
+                                size={14}
+                                color="currentColor"
+                                strokeWidth={2}
+                            />
+                        </span>
+                    </a>
                 </div>
                 <div class="flex items-center gap-2 text-xs">
                     <a
