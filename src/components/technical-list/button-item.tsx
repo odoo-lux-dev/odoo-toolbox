@@ -55,9 +55,10 @@ export const ButtonItem = ({
                     size="sm"
                     color={getButtonTypeColor(button.type)}
                     variant="outline"
-                    className="tracking-wide uppercase"
+                    className="max-w-[45%] overflow-hidden tracking-wide uppercase"
+                    title={button.type}
                 >
-                    {button.type}
+                    <span className="block truncate">{button.type}</span>
                 </Badge>
             </div>
 

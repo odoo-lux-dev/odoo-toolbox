@@ -76,9 +76,10 @@ export const FieldItem = ({
                     size="sm"
                     color={typeColor}
                     variant="outline"
-                    className="tracking-wide uppercase"
+                    className="max-w-[45%] overflow-hidden tracking-wide uppercase"
+                    title={typeLabel}
                 >
-                    {typeLabel}
+                    <span className="block truncate">{typeLabel}</span>
                 </Badge>
             </div>
 
