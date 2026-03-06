@@ -2,7 +2,7 @@
 sidebar_position: 1
 title: Overview
 hide_table_of_contents: true
-pagination_next: odoo/devtools-panel
+pagination_next: odoo/popup
 ---
 
 # Odoo
@@ -11,17 +11,17 @@ Odoo Toolbox enhances your experience on any Odoo instance with a set of tools d
 
 ## What's included {#whats-included}
 
-### [DevTools Panel](./devtools-panel) {#devtools-panel}
+### [Extension Popup](./popup) {#extension-popup}
 
-A full RPC testing interface embedded in your browser DevTools. Query models, create or update records, and call custom methods, without leaving your browser.
+Quick access to the most common developer actions: toggle debug mode, switch the extension theme, and navigate to your Odoo.SH favorites.
 
 ### [Technical Sidebar](./technical-sidebar) {#technical-sidebar}
 
 A floating inspection panel that overlays any Odoo page. Click any field to reveal its technical name, type, and metadata in real time.
 
-### [Extension Popup](./popup) {#extension-popup}
+### [DevTools Panel](./devtools-panel) {#devtools-panel}
 
-Quick access to the most common developer actions: toggle debug mode, switch the extension theme, and navigate to your Odoo.SH favorites.
+A full RPC testing interface embedded in your browser DevTools. Query models, create or update records, and call custom methods, without leaving your browser.
 
 ### [Additional Features](./additional-features) {#additional-features}
 

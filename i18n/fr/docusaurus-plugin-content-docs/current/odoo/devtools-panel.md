@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 title: Panneau DevTools
 toc_max_heading_level: 4
 ---

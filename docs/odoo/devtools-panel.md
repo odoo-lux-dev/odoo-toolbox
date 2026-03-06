@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 title: DevTools Panel
 toc_max_heading_level: 4
 ---
