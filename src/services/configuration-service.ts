@@ -53,12 +53,25 @@ export class ConfigurationService {
     }
 
     /**
-     * Align all local data with synced data from cloud
+     * Align all local data with synced data from cloud.
+     * Skips the override if sync storage is empty to avoid resetting local settings
+     * with defaults (e.g. when Firefox Sync hasn't run yet or is disabled).
      */
     async alignLocalDataWithSyncedData(): Promise<void> {
         Logger.info("Aligning local data with cloud data");
 
         try {
+            // Read raw sync storage before WXT processes it.
+            // If empty, WXT's init() would silently return defaults
+            // that would override existing local settings, which is undesirable.
+            const rawSync = await browser.storage.sync.get();
+            if (Object.keys(rawSync).length === 0) {
+                Logger.warn(
+                    "Sync storage is empty, skipping local data override to preserve existing settings",
+                );
+                return;
+            }
+
             const { favorites, settings, quickDomains } =
                 await this.retrieveSyncedData();
             await this.updateLocalData(favorites, settings, quickDomains);
