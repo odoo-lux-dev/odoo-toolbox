@@ -242,7 +242,7 @@
         "description": "The tagline displayed in the hero section of the homepage"
     },
     "homepage.hero.getStarted": {
-        "message": "Découvrir les possibilités",
+        "message": "Explorer les fonctionnalités",
         "description": "The label for the Get Started button in the hero section"
     },
     "homepage.features.title": {
