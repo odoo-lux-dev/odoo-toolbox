@@ -1,18 +1,27 @@
+import { extractBranchFromGitClone } from "@/utils/regex";
+
 /**
  * Adds a copy icon to the branch title element, allowing users to copy the branch name to the clipboard.
  */
 const addCopyIconToBranchTitle = (): void => {
+    const branchGithubCommand = document.querySelector(
+        "input.js_git_command",
+    ) as HTMLInputElement;
     const branchTitle = document.querySelector(
-        "div.o_branch_header_title h4",
-    ) as HTMLHeadingElement;
+        "div.o_branch_header_title",
+    ) as HTMLDivElement;
+    const branchName = extractBranchFromGitClone(
+        branchGithubCommand?.value || "",
+    );
 
     if (
         !branchTitle ||
-        branchTitle.querySelector(".x-odoo-sh-copy-branch-name")
+        branchTitle.querySelector(".x-odoo-sh-copy-branch-name") ||
+        !branchGithubCommand ||
+        !branchName
     )
         return;
 
-    const branchName = branchTitle.innerText;
     branchTitle.classList.add("d-flex", "align-items-center");
 
     const copyIconContainer = document.createElement("div");
@@ -36,10 +45,12 @@ const addCopyIconToBranchTitle = (): void => {
 const addCopyIconToBranchTitleBuildPage = (
     currentLine: HTMLDivElement,
 ): void => {
-    const branchName = currentLine.getAttribute("data-branch-name");
-    const buttonsRow = currentLine.querySelector(
-        ".btn-group",
+    const leftDiv = currentLine.querySelector(
+        ".o_sh_build_panel_left",
     ) as HTMLDivElement;
+    const nameDiv = leftDiv.querySelector(".o_branch_name") as HTMLDivElement;
+    const branchName = nameDiv?.innerText;
+    const buttonsRow = leftDiv.querySelector(".btn-group") as HTMLDivElement;
 
     if (
         !branchName ||

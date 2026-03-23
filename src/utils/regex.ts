@@ -30,4 +30,14 @@ const parseTaskTitle = async (taskTitle: string) => {
     return null;
 };
 
-export { isValidRegex, parseRegexInput, parseTaskTitle };
+const extractBranchFromGitClone = (command: string) => {
+    const match = command.match(/(?:--branch|-b)\s+(\S+)/);
+    return match ? match[1] : null;
+};
+
+export {
+    isValidRegex,
+    parseRegexInput,
+    parseTaskTitle,
+    extractBranchFromGitClone,
+};

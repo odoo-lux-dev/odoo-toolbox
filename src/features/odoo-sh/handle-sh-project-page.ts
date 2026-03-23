@@ -31,7 +31,7 @@ const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/;
  * @returns {Promise<void>} A promise that resolves once the observer has been set up and is monitoring for changes.
  */
 const handleProjectPage = async (): Promise<void> => {
-    const wrapper = document.querySelector("#wrapwrap");
+    const wrapper = document.querySelector(".odoo_sh_app_body");
     if (!wrapper) return;
     const favorites = await favoritesService.getFavoritesProjects();
     const {
@@ -60,27 +60,30 @@ const handleProjectPage = async (): Promise<void> => {
         mutations.forEach((mutation) => {
             if (mutation.type === "childList") {
                 for (const node of mutation.addedNodes) {
-                    if (node.nodeName === "HEADER" && !favoritesDone) {
+                    if (
+                        !favoritesDone &&
+                        node.nodeName === "DIV" &&
+                        (node as Element).classList.contains("project-menu")
+                    ) {
                         updateProjectList(favorites);
                         favoritesDone = true;
                     } else if (
                         node.nodeName === "DIV" &&
-                        // @ts-expect-error - TS doesn't recognize classList
-                        node.classList.contains("o_sh_panel_right")
+                        (node as Element).classList.contains("o_branch_header")
                     ) {
                         addCopyIconToBranchTitle();
-                        addGithubIconToBranchTitle();
                         addProjectTaskLinkBranchTitle(
                             currentFavoriteProject?.task_link || globalTaskUrl,
                         );
                     } else if (
                         node.nodeName === "DIV" &&
-                        (node as Element).classList.contains(
-                            "o_branches_listing",
-                        )
+                        (node as Element).classList.contains("o_branches_view")
                     ) {
-                        if (colorBlindMode) {
-                            addColorBlindClass(node);
+                        const branchListingDiv = (
+                            node as Element
+                        ).querySelector(".o_branches_listing");
+                        if (colorBlindMode && branchListingDiv) {
+                            addColorBlindClass(branchListingDiv);
                         }
                     } else if (
                         node.nodeName === "DIV" &&
