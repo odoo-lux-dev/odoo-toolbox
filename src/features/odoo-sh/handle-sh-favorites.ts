@@ -10,7 +10,7 @@ const removeFavorite = (projectName: string) =>
     favoritesService.deleteFromFavorites(projectName);
 
 const extractProjectName = (element: Element): string =>
-    element.getAttribute("onclick")?.match(/\/project\/([^']+)/)?.[1] || "";
+    element.querySelector("td:nth-child(2)")?.textContent?.trim() || "";
 
 const renameProjectName = (favoriteName: string, element: HTMLElement) => {
     element.innerText = favoriteName;
@@ -378,8 +378,8 @@ const updateProjectList = (favorites: Favorite[]): void => {
 
         if (targettedChild.children.length === 0) {
             const star = document.createElement("i");
-            star.className = "fa fa-star text-warning";
-            targettedChild.append(star);
+            star.className = "fa fa-star text-warning me-1";
+            targettedChild.prepend(star);
 
             if (tdProjectName)
                 renameProjectName(favoriteDisplayName, tdProjectName);
@@ -388,7 +388,7 @@ const updateProjectList = (favorites: Favorite[]): void => {
             !targettedChild.children[0].className.includes("fa-star")
         ) {
             targettedChild.children[0].classList.remove("fa-check");
-            targettedChild.children[0].classList.add("fa-star");
+            targettedChild.children[0].classList.add("fa-star", "me-1");
 
             if (tdProjectName)
                 renameProjectName(favoriteDisplayName, tdProjectName);
