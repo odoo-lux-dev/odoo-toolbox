@@ -359,42 +359,50 @@ const updateProjectList = (favorites: Favorite[]): void => {
     ) as HTMLElement;
     const tableBody = projectMenu.querySelector("table tbody") as HTMLElement;
     const projects = Array.from(tableBody.children);
+
+    const projectNames = new Map(
+        projects.map((p) => [p, extractProjectName(p)]),
+    );
+
     const sortedProjects = projects.toSorted((a, b) => {
-        const aRealName = extractProjectName(a);
-        const bRealName = extractProjectName(b);
-        const aFavorite = favorites.find((fav) => aRealName === fav.name);
-        const bFavorite = favorites.find((fav) => bRealName === fav.name);
-        const aIsFavorite = aFavorite !== undefined;
-        const bIsFavorite = bFavorite !== undefined;
-
-        if (!aIsFavorite && !bIsFavorite) return 0;
-
-        const targettedChild = aIsFavorite ? a.children[0] : b.children[0];
-        const parentTargettedChild = targettedChild.parentElement;
-        const tdProjectName = parentTargettedChild?.querySelectorAll("td")[1];
-        const favoriteDisplayName = aIsFavorite
-            ? aFavorite!.display_name
-            : bFavorite!.display_name;
-
-        if (targettedChild.children.length === 0) {
-            const star = document.createElement("i");
-            star.className = "fa fa-star text-warning me-1";
-            targettedChild.prepend(star);
-
-            if (tdProjectName)
-                renameProjectName(favoriteDisplayName, tdProjectName);
-        } else if (
-            targettedChild.children.length === 1 &&
-            !targettedChild.children[0].className.includes("fa-star")
-        ) {
-            targettedChild.children[0].classList.remove("fa-check");
-            targettedChild.children[0].classList.add("fa-star", "me-1");
-
-            if (tdProjectName)
-                renameProjectName(favoriteDisplayName, tdProjectName);
-        }
+        const aIsFavorite = favorites.some(
+            (fav) => projectNames.get(a) === fav.name,
+        );
+        const bIsFavorite = favorites.some(
+            (fav) => projectNames.get(b) === fav.name,
+        );
         return Number(bIsFavorite) - Number(aIsFavorite);
     });
+
+    for (const project of sortedProjects) {
+        const realName = projectNames.get(project);
+        const favorite = favorites.find((fav) => realName === fav.name);
+        if (!favorite) continue;
+
+        const firstChild = project.children[0];
+        const tdProjectName = firstChild.parentElement?.querySelectorAll(
+            "td",
+        )[1] as HTMLElement | undefined;
+
+        if (firstChild.children.length === 0) {
+            const star = document.createElement("i");
+            star.className = "fa fa-star text-warning me-1";
+            firstChild.prepend(star);
+
+            if (tdProjectName)
+                renameProjectName(favorite.display_name, tdProjectName);
+        } else if (
+            firstChild.children.length === 1 &&
+            !firstChild.children[0].className.includes("fa-star")
+        ) {
+            firstChild.children[0].classList.remove("fa-check");
+            firstChild.children[0].classList.add("fa-star", "me-1");
+
+            if (tdProjectName)
+                renameProjectName(favorite.display_name, tdProjectName);
+        }
+    }
+
     tableBody.append(...sortedProjects);
 };
 

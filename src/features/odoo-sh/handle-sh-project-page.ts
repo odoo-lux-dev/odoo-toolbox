@@ -40,7 +40,6 @@ const handleProjectPage = async (): Promise<void> => {
         colorBlindMode,
     } = await settingsService.getSettings();
 
-    let favoritesDone = false;
     const currentProjectName = window.location.href.match(
         REGEX_CURRENT_PROJECT_NAME,
     )?.groups?.project_name;
@@ -61,12 +60,10 @@ const handleProjectPage = async (): Promise<void> => {
             if (mutation.type === "childList") {
                 for (const node of mutation.addedNodes) {
                     if (
-                        !favoritesDone &&
                         node.nodeName === "DIV" &&
                         (node as Element).classList.contains("project-menu")
                     ) {
                         updateProjectList(favorites);
-                        favoritesDone = true;
                     } else if (
                         node.nodeName === "DIV" &&
                         (node as Element).classList.contains("o_branch_header")
