@@ -27,6 +27,7 @@ const addCopyIconToBranchTitle = (): void => {
     const copyIconContainer = document.createElement("div");
     const icon = document.createElement("i");
     icon.className = "fa fa-clone";
+    icon.style.fontSize = "14px";
     copyIconContainer.className = "x-odoo-sh-copy-branch-name";
     copyIconContainer.appendChild(icon);
     copyIconContainer.onclick = () => {
