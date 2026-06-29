@@ -1,314 +1,101 @@
-import type {
-    DebugModeType,
-    DefaultColorScheme,
-    TechnicalListPosition,
-} from "@/types";
+import type { DebugModeType, DefaultColorScheme, TechnicalListPosition } from "@/types";
 
 const getDefaultDebugMode = () =>
-    document.body.dataset.defaultDebugMode as DebugModeType | undefined;
+  document.body.dataset.defaultDebugMode as DebugModeType | undefined;
 const getShowTechnicalModel = () => document.body.dataset.showTechnicalModel;
-const getShowPrintOptionsHTML = () =>
-    document.body.dataset.showPrintOptionsHTML;
+const getShowPrintOptionsHTML = () => document.body.dataset.showPrintOptionsHTML;
 const getShowPrintOptionsPDF = () => document.body.dataset.showPrintOptionsPDF;
-const getDefaultColorScheme = () =>
-    document.body.dataset.defaultColorScheme as DefaultColorScheme;
+const getDefaultColorScheme = () => document.body.dataset.defaultColorScheme as DefaultColorScheme;
 const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
 const getTechnicalListPosition = () =>
-    document.body.dataset.technicalListPosition as TechnicalListPosition;
+  document.body.dataset.technicalListPosition as TechnicalListPosition;
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
 const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
 
 const isOnSpecificRecordPage = () => {
-    const odooWindowObject = window.odoo;
-    const recordLocalState =
-        odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.getLocalState?.();
+  const odooWindowObject = window.odoo;
+  const recordLocalState =
+    odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.getLocalState?.();
 
-    return (
-        (!!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService
-            ?.currentController?.props?.resId ||
-            !!recordLocalState?.resId) &&
-        !!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService
-            ?.currentController?.props?.resModel
-    );
+  return (
+    (!!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.props?.resId ||
+      !!recordLocalState?.resId) &&
+    !!odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.props?.resModel
+  );
 };
 
 const hasNewOdooURL = () => {
-    const odooWindowObject = window.odoo;
-    if (!odooWindowObject) return false;
+  const odooWindowObject = window.odoo;
+  if (!odooWindowObject) return false;
 
-    const currentVersion = odooWindowObject.info?.server_version_info
-        ?.slice(0, 2)
-        .join(".")
-        .replace(/^saas~/, "")
-        .replace(/\.0$/, "");
+  const currentVersion = odooWindowObject.info?.server_version_info
+    ?.slice(0, 2)
+    .join(".")
+    .replace(/^saas~/, "")
+    .replace(/\.0$/, "");
 
-    if (!currentVersion) return false;
+  if (!currentVersion) return false;
 
-    return parseFloat(currentVersion) >= 17.2;
+  return parseFloat(currentVersion) >= 17.2;
 };
 
 const getOdooVersion = () => {
-    const odooWindowObject = window.odoo;
+  const odooWindowObject = window.odoo;
 
-    return (
-        odooWindowObject?.info || odooWindowObject?.session_info
-    )?.server_version_info
-        ?.slice(0, 2)
-        .join(".")
-        .replace(/^saas~/, "")
-        .replace(/\.0$/, "");
+  return (odooWindowObject?.info || odooWindowObject?.session_info)?.server_version_info
+    ?.slice(0, 2)
+    .join(".")
+    .replace(/^saas~/, "")
+    .replace(/\.0$/, "");
 };
 
 const isOnNewURLPos = () => {
-    if (!hasNewOdooURL()) return false;
-    const odooWindowObject = window.odoo;
-    if (!odooWindowObject) return false;
+  if (!hasNewOdooURL()) return false;
+  const odooWindowObject = window.odoo;
+  if (!odooWindowObject) return false;
 
-    return (
-        odooWindowObject.__WOWL_DEBUG__?.root &&
-        "pos" in odooWindowObject.__WOWL_DEBUG__.root
-    );
-};
-
-interface ConfigFile {
-    settings?: {
-        enableDebugMode: string;
-        enablePrintOptionsPDF: boolean;
-        enablePrintOptionsHTML: boolean;
-        showTechnicalModel: boolean;
-        renameShProjectPage: boolean;
-        extensionTheme: string;
-        taskUrl: string;
-        taskUrlRegex: string;
-        nostalgiaMode: boolean;
-        colorBlindMode: boolean;
-        showLoginButtons: boolean;
-    };
-    favorites?: Array<{
-        name: string;
-        display_name: string;
-        sequence: number;
-        task_link: string;
-    }>;
-}
-
-const validateConfigFile = (
-    config: ConfigFile,
-): { valid: boolean; message: string } => {
-    if (!config.settings && !config.favorites) {
-        return {
-            valid: false,
-            message:
-                "File must contain at least 'settings' or 'favorites' properties.",
-        };
-    }
-
-    if (config.settings) {
-        if (typeof config.settings !== "object" || config.settings === null) {
-            return {
-                valid: false,
-                message: "'settings' must be an object.",
-            };
-        }
-
-        const requiredSettingsProps = [
-            "enableDebugMode",
-            "enablePrintOptionsPDF",
-            "enablePrintOptionsHTML",
-            "showTechnicalModel",
-            "renameShProjectPage",
-            "extensionTheme",
-            "taskUrl",
-            "taskUrlRegex",
-            "nostalgiaMode",
-            "colorBlindMode",
-        ];
-
-        const missingProps = requiredSettingsProps.filter(
-            (prop) => !Object.hasOwn(config.settings!, prop),
-        );
-
-        if (missingProps.length > 0) {
-            return {
-                valid: false,
-                message: `Settings missing required properties: ${missingProps.join(", ")}`,
-            };
-        }
-
-        if (
-            !["1", "disabled", "assets"].includes(
-                config.settings.enableDebugMode,
-            )
-        ) {
-            return {
-                valid: false,
-                message:
-                    "Invalid 'debugMode' value. Expected '1', 'disabled', or 'assets'.",
-            };
-        }
-
-        const booleanProps = [
-            "enablePrintOptionsHTML",
-            "enablePrintOptionsPDF",
-            "showTechnicalModel",
-            "renameShProjectPage",
-            "nostalgiaMode",
-            "colorBlindMode",
-        ] as const;
-
-        for (const prop of booleanProps) {
-            if (typeof config.settings[prop] !== "boolean") {
-                return {
-                    valid: false,
-                    message: `Property '${prop}' must be a boolean.`,
-                };
-            }
-        }
-
-        if (!["dark", "light"].includes(config.settings.extensionTheme)) {
-            return {
-                valid: false,
-                message:
-                    "Invalid 'extensionTheme' value. Expected 'dark' or 'light'.",
-            };
-        }
-
-        if (typeof config.settings.taskUrl !== "string") {
-            return {
-                valid: false,
-                message: "'taskUrl' must be a string.",
-            };
-        }
-
-        if (typeof config.settings.taskUrlRegex !== "string") {
-            return {
-                valid: false,
-                message: "'taskUrlRegex' must be a string.",
-            };
-        }
-    }
-
-    if (config.favorites) {
-        if (!Array.isArray(config.favorites)) {
-            return {
-                valid: false,
-                message: "'favorites' must be an array.",
-            };
-        }
-
-        for (let i = 0; i < config.favorites.length; i++) {
-            const favorite = config.favorites[i];
-
-            if (typeof favorite !== "object" || favorite === null) {
-                return {
-                    valid: false,
-                    message: `Favorite at index ${i} must be an object.`,
-                };
-            }
-
-            const requiredFavoriteProps = [
-                "name",
-                "display_name",
-                "sequence",
-                "task_link",
-            ];
-
-            const missingFavoriteProps = requiredFavoriteProps.filter(
-                (prop) => !Object.hasOwn(favorite, prop),
-            );
-
-            if (missingFavoriteProps.length > 0) {
-                return {
-                    valid: false,
-                    message: `Favorite at index ${i} is missing required properties: ${missingFavoriteProps.join(", ")}`,
-                };
-            }
-
-            if (
-                typeof favorite.name !== "string" ||
-                typeof favorite.display_name !== "string"
-            ) {
-                return {
-                    valid: false,
-                    message: `Favorite at index ${i}: 'name' and 'display_name' must be strings.`,
-                };
-            }
-
-            if (typeof favorite.sequence !== "number") {
-                return {
-                    valid: false,
-                    message: `Favorite at index ${i}: 'sequence' must be a number.`,
-                };
-            }
-
-            if (typeof favorite.task_link !== "string") {
-                return {
-                    valid: false,
-                    message: `Favorite at index ${i}: 'task_link' must be a string.`,
-                };
-            }
-        }
-    }
-
-    return { valid: true, message: "" };
-};
-
-const simpleDebounce = (func: Function, timeout: number) => {
-    let timeoutId: NodeJS.Timeout | null = null;
-
-    return (...args: unknown[]) => {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        timeoutId = setTimeout(() => {
-            func(...args);
-        }, timeout);
-    };
+  return odooWindowObject.__WOWL_DEBUG__?.root && "pos" in odooWindowObject.__WOWL_DEBUG__.root;
 };
 
 const retrieveIdFromAvatar = () => {
-    const res: Record<"partnerId" | "userId", number | null> = {
-        partnerId: null,
-        userId: null,
-    };
-    const odooVersion = getOdooVersion();
-    const userAvatar = document.querySelector(
-        ".o_user_avatar",
-    ) as HTMLImageElement | null;
+  const res: Record<"partnerId" | "userId", number | null> = {
+    partnerId: null,
+    userId: null,
+  };
+  const odooVersion = getOdooVersion();
+  const userAvatar = document.querySelector(".o_user_avatar") as HTMLImageElement | null;
 
-    if (!odooVersion || !userAvatar) return res;
+  if (!odooVersion || !userAvatar) return res;
 
-    const userAvatarLink = userAvatar.src;
+  const userAvatarLink = userAvatar.src;
 
-    if (parseFloat(odooVersion) >= 18.0) {
-        // Link example : */web/image/res.partner/3/avatar_128?unique=1768400056000
-        const partnerId = userAvatarLink.match(/\/res\.partner\/(\d+)/);
-        res.partnerId = partnerId ? parseInt(partnerId[1]) : null;
-    } else {
-        // Link example : */web/image?model=res.users&field=avatar_128&id=2
-        const avatarUrlSearchParams = new URL(userAvatarLink).searchParams;
-        const userId = avatarUrlSearchParams.get("id");
-        res.userId = userId ? parseInt(userId) : null;
-    }
+  if (parseFloat(odooVersion) >= 18.0) {
+    // Link example : */web/image/res.partner/3/avatar_128?unique=1768400056000
+    const partnerId = userAvatarLink.match(/\/res\.partner\/(\d+)/);
+    res.partnerId = partnerId ? parseInt(partnerId[1]) : null;
+  } else {
+    // Link example : */web/image?model=res.users&field=avatar_128&id=2
+    const avatarUrlSearchParams = new URL(userAvatarLink).searchParams;
+    const userId = avatarUrlSearchParams.get("id");
+    res.userId = userId ? parseInt(userId) : null;
+  }
 
-    return res;
+  return res;
 };
 
 export {
-    getDefaultDebugMode,
-    hasNewOdooURL,
-    isOnSpecificRecordPage,
-    getOdooVersion,
-    getShowTechnicalModel,
-    getShowPrintOptionsHTML,
-    getShowPrintOptionsPDF,
-    isOnNewURLPos,
-    validateConfigFile,
-    getDefaultColorScheme,
-    simpleDebounce,
-    getShowTechnicalList,
-    getTechnicalListPosition,
-    retrieveIdFromAvatar,
-    getShowLoginButtons,
-    getOdooToolboxTheme,
+  getDefaultDebugMode,
+  hasNewOdooURL,
+  isOnSpecificRecordPage,
+  getOdooVersion,
+  getShowTechnicalModel,
+  getShowPrintOptionsHTML,
+  getShowPrintOptionsPDF,
+  isOnNewURLPos,
+  getDefaultColorScheme,
+  getShowTechnicalList,
+  getTechnicalListPosition,
+  retrieveIdFromAvatar,
+  getShowLoginButtons,
+  getOdooToolboxTheme,
 };

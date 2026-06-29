@@ -1,120 +1,114 @@
-import { ComponentChildren } from "preact";
-import { useEffect, useId, useRef } from "preact/hooks";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { createEffect, createSignal, splitProps, Show, type JSX } from "solid-js";
+
+let modalIdCounter = 0;
+const useId = () => `solid-modal-${++modalIdCounter}`;
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
-export type DaisyModalPlacement = "top" | "middle" | "bottom" | "start" | "end";
+import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 
+export type DaisyModalPlacement = "top" | "middle" | "bottom" | "start" | "end";
 export type DaisyModalSize = "sm" | "md" | "lg" | "xl" | "full";
 
 interface DaisyModalProps {
-    open: boolean;
-    onClose?: () => void;
-    title?: ComponentChildren;
-    description?: ComponentChildren;
-    children?: ComponentChildren;
-    footer?: ComponentChildren;
-    placement?: DaisyModalPlacement;
-    size?: DaisyModalSize;
-    className?: string;
-    boxClassName?: string;
-    showCloseButton?: boolean;
+  open: boolean;
+  onClose?: () => void;
+  title?: JSX.Element;
+  description?: JSX.Element;
+  children?: JSX.Element;
+  footer?: JSX.Element;
+  placement?: DaisyModalPlacement;
+  size?: DaisyModalSize;
+  class?: string;
+  boxClass?: string;
+  showCloseButton?: boolean;
 }
 
 const placementClassMap: Record<DaisyModalPlacement, string> = {
-    top: "modal-top",
-    middle: "modal-middle",
-    bottom: "modal-bottom",
-    start: "modal-start",
-    end: "modal-end",
+  top: "modal-top",
+  middle: "modal-middle",
+  bottom: "modal-bottom",
+  start: "modal-start",
+  end: "modal-end",
 };
 
 const sizeClassMap: Record<DaisyModalSize, string> = {
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-xl",
-    full: "max-w-full",
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  full: "max-w-full",
 };
 
-export const Modal = ({
-    open,
-    onClose,
-    title,
-    description,
-    children,
-    footer,
-    placement = "middle",
-    size = "md",
-    className = "",
-    boxClassName = "",
-    showCloseButton = true,
-}: DaisyModalProps) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
-    const titleId = useId();
-    const descriptionId = useId();
+export const Modal = (props: DaisyModalProps) => {
+  const [local] = splitProps(props, [
+    "open",
+    "onClose",
+    "title",
+    "description",
+    "children",
+    "footer",
+    "placement",
+    "size",
+    "class",
+    "boxClass",
+    "showCloseButton",
+  ]);
+  const [dialogRef, setDialogRef] = createSignal<HTMLDialogElement>();
+  const titleId = useId();
+  const descriptionId = useId();
+  const placement = () => local.placement ?? "middle";
+  const size = () => local.size ?? "md";
+  const showCloseButton = () => local.showCloseButton ?? true;
 
-    useEffect(() => {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
+  createEffect(() => {
+    const dialog = dialogRef();
+    if (!dialog) return;
+    if (local.open && !dialog.open) dialog.showModal();
+    if (!local.open && dialog.open) dialog.close();
+  });
 
-        if (open && !dialog.open) {
-            dialog.showModal();
-        }
+  const handleClose = () => local.onClose?.();
 
-        if (!open && dialog.open) {
-            dialog.close();
-        }
-    }, [open]);
-
-    const handleClose = () => {
-        if (onClose) onClose();
-    };
-
-    const placementClass = placementClassMap[placement];
-    const sizeClass = sizeClassMap[size];
-
-    return (
-        <dialog
-            ref={dialogRef}
-            className={`modal ${placementClass} ${className}`}
-            aria-labelledby={title ? titleId : undefined}
-            aria-describedby={description ? descriptionId : undefined}
-            onClose={handleClose}
-            onCancel={handleClose}
-        >
-            <div className={`modal-box ${sizeClass} ${boxClassName}`}>
-                {showCloseButton ? (
-                    <form method="dialog">
-                        <button
-                            className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
-                            aria-label="Close"
-                        >
-                            <HugeiconsIcon
-                                icon={Cancel01Icon}
-                                size={16}
-                                color="currentColor"
-                                strokeWidth={2}
-                            />
-                        </button>
-                    </form>
-                ) : null}
-                {title ? (
-                    <h3 id={titleId} className="text-lg font-bold">
-                        {title}
-                    </h3>
-                ) : null}
-                {description ? (
-                    <p id={descriptionId} className="py-2 text-sm opacity-80">
-                        {description}
-                    </p>
-                ) : null}
-                {children ? <div>{children}</div> : null}
-                {footer ? <div className="modal-action">{footer}</div> : null}
-            </div>
-            <form method="dialog" className="modal-backdrop">
-                <button aria-label="Close">close</button>
-            </form>
-        </dialog>
-    );
+  return (
+    <dialog
+      ref={setDialogRef}
+      class={`modal ${placementClassMap[placement()]} ${local.class ?? ""}`}
+      aria-labelledby={local.title ? titleId : undefined}
+      aria-describedby={local.description ? descriptionId : undefined}
+      onClose={handleClose}
+      onCancel={handleClose}
+    >
+      <div class={`modal-box ${sizeClassMap[size()]} ${local.boxClass ?? ""}`}>
+        <Show when={showCloseButton()}>
+          <form method="dialog">
+            <button
+              class="btn absolute inset-e-2 top-2 btn-circle btn-ghost btn-sm"
+              aria-label="Close"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} size={16} color="currentColor" strokeWidth={2} />
+            </button>
+          </form>
+        </Show>
+        <Show when={local.title}>
+          <h3 id={titleId} class="text-lg font-bold">
+            {local.title}
+          </h3>
+        </Show>
+        <Show when={local.description}>
+          <p id={descriptionId} class="py-2 text-sm opacity-80">
+            {local.description}
+          </p>
+        </Show>
+        <Show when={local.children}>
+          <div>{local.children}</div>
+        </Show>
+        <Show when={local.footer}>
+          <div class="modal-action">{local.footer}</div>
+        </Show>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button aria-label="Close">close</button>
+      </form>
+    </dialog>
+  );
 };

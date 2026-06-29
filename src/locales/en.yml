@@ -1,0 +1,790 @@
+common:
+  loading: Loading...
+  cancel: Cancel
+  delete: Delete
+  save: Save
+  edit: Edit
+  remove: Remove
+  retry: Retry
+  clear: Clear
+  refresh: Refresh
+  close: Close
+  use: Use
+  error: Error
+  unknown: Unknown
+  unknown_error: Unknown error
+  no_data: No data available
+  copied: Copied!
+  copied_to_clipboard: Copied to clipboard!
+  failed_to_copy: Failed to copy to clipboard
+  fields: Fields
+  copy: Copy
+  download: Download
+  search: Search
+  loading_favorites: Loading favorites...
+  no_favorites: You have no favorite projects
+  no_favorites_hint: Click on the star icon next to the project name to add it to your favorites
+  take_me_to_sh: Take me to Odoo.sh projects page
+  favorite_projects: Favorite projects
+
+devtools:
+  nav:
+    search: Search
+    write: Write
+    create: Create
+    call_method: Call Method
+    unlink: Unlink
+    history: History
+  record_text:
+    singular_impacted: "This{model} record will be impacted"
+    singular_action: "This{model} record will be {action}"
+    plural_impacted: "These {count}{model} records will be impacted"
+    plural_action: "These {count}{model} records will be {action}"
+    method_call_singular: "The method {method} will be applied to this{model} record"
+    method_call_plural: "The method {method} will be applied to these {count}{model} records"
+  context_menu:
+    field_title: "Field: $1"
+    copy_field_name: Copy field name
+    copy_field_value: Copy field value
+    copy_relation_ids: "Copy relation IDs ($1)"
+    copy_record_json: "Copy record (JSON)"
+    copy_records_json: "Copy records (JSON)"
+    focus_record: Focus on record
+    open_in_odoo: Open in Odoo
+    open_in_odoo_popup: Open in Odoo popup
+    record_title: "Record: $1"
+    copy_record_id: Copy record ID
+  content:
+    insufficient_permissions: Insufficient Permissions
+    insufficient_permissions_desc: To access the Odoo Toolbox Devtools, you need to grant host permission for this domain.
+    grant_permission: Grant permission
+    detecting: Detecting Odoo version...
+    detecting_desc: Checking your current Odoo instance. This should only take a moment.
+    unable_to_reach: Unable to reach Odoo
+    valid_context_hint: "Be sure that you are in a valid context :"
+    on_odoo_instance: You're on an Odoo instance
+    inside_backend: You're inside the Odoo's backend (and not on the website)
+  sidebar:
+    model: Model
+    model_fetch_error: Models couldn't be fetched. Please enter your model name manually.
+    model_placeholder: Type to search for a model...
+    record_ids: Record IDs
+    record_ids_placeholder: "1,2,3 or [1,2,3]"
+    fields: Fields
+    fields_placeholder: All fields
+    domain: Domain
+    domain_help: Filter conditions in Odoo domain format.
+    domain_placeholder: '["field", "=", "value"]'
+    limit: Limit
+    limit_placeholder: "80"
+    offset: Offset
+    offset_placeholder: "0"
+    context: Context
+    context_help: Additional context for RPC calls in JSON format.
+    context_placeholder: '{ "lang": "fr_BE" }'
+    set_default_context: Set default context
+    order_by: Order By
+    order_by_help: Multiple selections will be applied in order.
+    order_by_placeholder: id desc
+    execute_hint: Click or press Ctrl+Enter to execute
+    execute_query: Execute Query
+    get_current: Get Current
+    get_current_hint: Get information from the current page
+    record_ids_search_help: Comma-separated IDs or array. Empty for all records.
+  write:
+    title: Update Data (JSON Format)
+    warning: "Warning: Data Modification"
+    warning_desc: Write operations will permanently modify the selected records. Please verify the data and target records before executing.
+    format_json: Format JSON
+    placeholder: |
+      Enter the data to update in JSON format, e.g.:
+      {
+        "name": "New Name",
+        "email": "new@email.com",
+        "active": true
+      }
+    updating: Updating...
+    update_records: Update Records
+    record_ids_help: Comma-separated IDs or JSON array of records to update.
+    load_records: Load Records
+    confirm_title: Execute Write Operation
+    confirm_message: Are you sure you want to update $1 record(s)? This action will modify the selected records permanently.
+    error_model: Model is required for write operation
+    error_ids: Record IDs are required for write operation
+    error_data: Write data is required
+    error_json: "JSON validation failed: $1"
+    success: Successfully updated $1 record(s) in $2
+    warning_false: Write operation completed but returned false
+    failed: Write operation failed
+    failed_detail: "Write operation failed: $1"
+    result_one_prefix: This
+    result_one_suffix: record will be updated
+    result_many_prefix: These
+    result_many_suffix: records will be updated
+  create:
+    title: Record Data (JSON Format)
+    warning: "Warning: Database Modification"
+    warning_desc: Creating a record will permanently add new data to your Odoo database. Please verify your input before proceeding.
+    format_json: Format JSON
+    placeholder: |
+      Enter the data for the new record in JSON format, e.g.:
+      {
+        "name": "New Record",
+        "email": "new@example.com",
+        "active": true
+      }
+    creating: Creating...
+    create_record: Create Record
+    confirm_title: Create New Record
+    confirm_message: Are you sure you want to create a new record in $1? This action will permanently add data to the database.
+    will_create: A new
+    record_created: record will be created
+    error_model: Please select a model first
+    error_data: Please provide data to create
+    error_json: Invalid JSON format
+    success: "Successfully created record in $1 (ID: $2)"
+    warning_no_id: Create operation completed but no ID returned
+    failed: Failed to create record
+    failed_add_fields: Failed to add required fields
+  call_method:
+    title: Method to Call
+    placeholder: action_confirm
+    warning: "Warning: Irreversible Operation"
+    warning_desc: Please carefully verify model, records, and method before executing. Changes are permanent and cannot be undone.
+    executing: Executing...
+    call_method: Call Method
+    record_ids_help: Comma-separated IDs or JSON array of records to call the method on.
+    load_records: Load Records
+    confirm_title: Call Method
+    confirm_message: Are you sure you want to call method "$1" on $2 record(s)? This action may modify the data.
+    error_model: Model is required for method call
+    error_method: Method name is required
+    error_ids: Record IDs are required for method call
+    success: Successfully called method "$1" on $2 record(s) in $3
+    failed: Method call failed
+    failed_detail: "Method call failed: $1"
+  unlink:
+    warning: "Warning: Destructive Operations"
+    warning_desc: These operations will modify or permanently delete records. Archive operations are reversible, but delete operations cannot be undone.
+    record_ids_help: Comma-separated IDs or JSON array of records to delete/archive.
+    load_records: Load Records
+    archive:
+      archiving: Archiving...
+      archive_records: Archive Records
+      confirm_title: Archive Records
+      confirm_message: Are you sure you want to archive $1 record(s)? Archived records will be hidden from normal views but can be unarchived later.
+      error: Model and IDs are required for archive operation
+      success: Successfully archived $1 record(s)
+      failed: Archive operation failed
+      failed_detail: "Archive operation failed: $1"
+    unarchive:
+      unarchiving: Unarchiving...
+      unarchive_records: Unarchive Records
+      confirm_title: Unarchive Records
+      confirm_message: Are you sure you want to unarchive $1 record(s)? They will become visible again in normal views.
+      error: Model and IDs are required for unarchive operation
+      success: Successfully unarchived $1 record(s)
+      failed: Unarchive operation failed
+      failed_detail: "Unarchive operation failed: $1"
+    delete:
+      deleting: Deleting...
+      delete_records: Delete Records
+      confirm_title: Delete Records
+      confirm_message: Are you sure you want to permanently delete $1 record(s)? This action cannot be undone and the data will be lost forever
+      error: Model and IDs are required for unlink operation
+      success: Successfully deleted $1 record(s)
+      failed: Delete operation failed
+      failed_detail: "Delete operation failed: $1"
+  history:
+    title: DevTools History
+    loading: Loading history...
+    error: "Failed to load history: $1"
+    refresh: Refresh
+    clear_all: Clear All
+    clear_confirm: Are you sure you want to clear all history? This action cannot be undone.
+    no_results: No Results Found
+    no_results_hint: Try adjusting your search terms or filters.
+    empty_title: No History Yet
+    empty_desc: Your DevTools actions will appear here. Start by performing searches, writes, or other operations.
+    actions_count: actions
+    pinned: Pinned
+    restore: Restore
+    restore_hint: This will navigate to the $1 tab and restore the parameters.
+    restore_success: Restored $1 action for $2
+    restore_failed: "Failed to restore action: $1"
+    collapse: Collapse
+    expand: Expand
+    database_title: "Database: $1"
+    unpin: Unpin
+    pin: Pin
+    pin_hint: Pin this action
+    unpin_hint: Unpin this action
+    saving: Saving...
+    removing: Removing...
+    remove_from_history: Remove from History
+    remove_confirm_title: Remove from history?
+    remove_confirm_desc: Are you sure you want to remove this action from history? This cannot be undone.
+    parameters: "Parameters:"
+    filters:
+      all_actions: All Actions
+      search: Search
+      write: Write
+      create: Create
+      call_method: Call Method
+      delete_archive: Delete/Archive
+      search_placeholder: Search actions, models...
+      type: Type
+      model: Model
+      all_models: All Models
+      clear_filters: Clear Filters
+      clear_filters_hint: Clear all filters
+      total_actions: "Total actions stored: $1 (last $2 actions are kept)"
+  domain_editor:
+    placeholder: 'Enter domain (e.g., [["active", "=", true]])'
+    help_label: Domain format help
+    help_title: Domain format help
+    python_supported: "🐍 Python domains are supported !"
+    format_intro: "You can use either JSON format or Python format:"
+    json_format: "JSON Format (Odoo RPC):"
+    python_format: "Python Format (Auto-converted):"
+    operators: "Domain operators (Polish notation):"
+    and_operator: AND operator
+    or_operator: OR operator
+    not_operator: NOT operator
+    conditions_format: "Conditions format: "
+    common_operators: "Common operators: "
+    loading_domains: Loading domains...
+    manage_domains: Manage domains
+    no_domain: No quick domain available
+    show_more: Show $1 more domains
+    manager_title: Quick Domain Manager
+    add_domain: Add Domain
+    update_domain: Update Domain
+    domain_value_title: "Domain: $1"
+    no_domains: No domains found.
+    no_domains_hint: Click "Add Domain" to create one.
+    edit_title: Edit Domain
+    add_title: Add New Domain
+    update: Update
+    add: Add
+    name: Name
+    name_placeholder: e.g., Active Records
+    domain_placeholder: 'e.g., [["active", "=", true]]'
+    use_hint: Use this domain
+    edit_hint: Edit domain
+    delete_hint: Delete domain
+  result_viewer:
+    loading_records: Loading records...
+    fields_count: field(s)
+    open_in_odoo: Open record(s) in Odoo
+    open_in_popup: Open record(s) in popup
+    copy_json: Copy as JSON
+    download_json: Download as JSON
+    list_view: List view
+    exit_pivot: Exit pivot view
+    pivot_view: Table view (click again to pivot)
+    pivot: Pivot
+    table: Table
+    list: List
+  record_search:
+    placeholder: Search in field names and values (expanded records only)...
+    of: of
+    match_found: 'Match found in hidden text: "$1"'
+    prev_hint: Previous result (Ctrl+Shift+G)
+    next_hint: Next result (Ctrl+G)
+    close_hint: Close search (Esc)
+    keys: keys
+    values: values
+  result_states:
+    empty: 'Configure your query and click "Execute" to see results'
+    executing: Executing query...
+    error: Query Error
+    no_records: No records found matching your criteria
+    page_of: Page $1 of $2
+    records_range: "$1-$2 / $3 record(s)"
+    records_found: $1 record(s) found
+  field_rendering:
+    no_ids: No valid IDs found
+    no_model: Cannot determine related model
+    loading_relational: Loading relational data...
+    error_prefix: "Error: "
+    no_related: No related data found
+    no_id: No ID
+    record_n: Record $1
+    excluded_fields: "Excluded fields from $1: $2"
+    focus_record: Focus on this record
+    open_in_odoo: Open record in Odoo
+    open_in_popup: Open record in popup
+    invalid_relational: Invalid relational field
+    switch_table: Switch to table view
+    switch_list: Switch to list view
+    open_relational_odoo: Open relational field in Odoo
+    open_relational_popup: Open relational field in popup
+  field_metadata:
+    unavailable: Field metadata is not available. If this is a new field, please restart devtools or modify the model to force a refresh.
+    field_label: "Field: $1"
+  selects:
+    select_option: Select an option...
+    loading: Loading...
+    search_fields: Search fields...
+    select_model: Select a model...
+    order_by_placeholder: Select fields to order by...
+    asc: (ASC)
+    desc: (DESC)
+    refresh_list: Refresh list
+    refreshing: Refreshing list
+    refresh_error: "Error: $1. You can try again or enter your value manually."
+    refresh_error_title: "Error: $1\n\nYou can try again (by clicking this button) or enter your value manually."
+    more_results: Showing first $1 results. Refine your search for more specific results.
+    excluded_title: "$1 - This field was excluded from the result due to compatibility issues. Middle-click to remove."
+    middle_click_remove: Middle-click to remove
+    remove_aria: Remove $1
+  virtual_table:
+    search_columns: Search all columns...
+    rows: rows
+    toggle_rows: Toggle rows
+    toggle_columns: Toggle columns
+    toggle_all: Toggle All
+    fields_header: Fields
+    ids_header: IDs
+  notifications:
+    invalid_fields: Invalid field detected
+    invalid_fields_plural: $1 invalid fields detected
+    invalid_fields_hint: "💡 Use the autocomplete suggestions or check the model fields"
+    required_missing: Required field missing
+    required_missing_plural: $1 required fields missing
+    required_missing_hint: "💡 Click below to add these fields with default values"
+    add_required: Add Required Field
+    add_required_plural: Add Required Fields
+    auto_add_required: "✨ Automatically add required field"
+    auto_add_required_plural: "✨ Automatically add required fields"
+    insert_template: Insert template with required fields
+    no_data_to_format: No JSON data to format
+    cannot_format_invalid: Cannot format invalid JSON
+    failed_auto_search: Failed to execute automatic search
+  error_display:
+    error_summary: Error Summary
+    error_data: Error Data
+    detailed_message: Detailed Message
+    arguments: Arguments
+    debug_traceback: Debug Traceback
+    context: Context
+    stack_trace: Stack Trace
+    full_error_object: Full Error Object
+    type: Type
+    model: Model
+    message: Message
+    code: Code
+    unknown: Unknown
+    not_available: N/A
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: Options
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: SH Favorites
+    documentation: Documentation
+    report_bug: Report a bug
+    suggest_feature: Suggest a feature
+    improve_translation: Improve a translation
+    github: GitHub Repository
+  favorites:
+    delete_title: Delete favorite?
+    delete_desc: Are you sure you want to delete "$1" from favorites?
+    edit_name: Edit $1 name
+    save_changes: Save changes
+    edit_task_link: Edit $1 task link
+    reset_changes: Reset changes
+    delete_favorite: Delete $1 from favorites
+    task_link_title: Edit task link for $1
+    task_link_desc: Set a custom task link for this project.
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: Link seems incorrect. Please verify.
+  backup:
+    exporting: Exporting your settings...
+    importing: Importing your settings...
+    export: Export
+    restore: Restore
+    error_export: "An error occured during the export: $1"
+    failed_read: Failed to read file content
+    invalid_config: "Invalid configuration file - $1"
+    success: Configuration successfully imported
+    error_import: "An error occured during file process: $1"
+    invalid_format: Invalid file format
+  settings:
+    language: Language
+    language_auto: Auto (browser)
+    language_desc: Choose the extension language
+    print_options: Print options
+    print_options_desc: This will allow you to print the page in PDF or HTML format without downloading it
+    pdf: PDF
+    html: HTML
+    color_blind: Enable color blind mode
+    color_blind_desc: This mode replace some colors and icons from Odoo.SH to a color blind friendly palette
+    login_buttons: Show login buttons
+    login_buttons_desc: Choose if you want to show the default login buttons for admin/demo/portal
+    nostalgia: Enable nostalgia mode
+    nostalgia_desc: This mode replace the original debug icons by monkey icons to remember the famous monkey extension
+    tab_title: Update the tab title on SH pages
+    tab_title_desc: Select whether to change the tab title on Odoo.SH pages to includes current project name
+    technical_model: Display technical model
+    technical_model_desc: Choose if you want to display the technical model onto the page (v17.2+)
+    color_scheme: Default color scheme
+    color_scheme_desc: Choose the default color scheme for Odoo 16 and above.
+    color_scheme_warning: This feature is experimental and may cause issues on some Odoo versions. If you encounter problems, set it back to "None".
+    color_none: None (Default)
+    color_none_tooltip: "None: lets Odoo manage it (user profile settings)"
+    color_system: System
+    color_system_tooltip: "System: follows your system preference"
+    color_light: Light
+    color_dark: Dark
+    debug_mode: Debug mode
+    debug_mode_desc: Choose how you want to enable the debug mode
+    debug_disabled: Disabled
+    debug_always: Always
+    debug_assets: Assets
+    debug_tests: Tests assets
+    debug_disabled_tooltip: "Disabled: Debug mode won't be forced. If it's triggered from the popup's toggle, it'll remove the debug mode from the active URL. If you reach a website with an active debug mode in the URL, it won't be removed nor replaced. Basically: it's like the monkey extension 🙈"
+    debug_always_tooltip: "Always: Debug mode will always be enabled"
+    debug_assets_tooltip: "Assets: Debug mode will always be enabled to assets"
+    debug_tests_tooltip: "Tests assets: Debug mode will always be enabled to tests assets"
+    debug_hint: You can also configure this by clicking the bug icon within the popup.
+    debug_hint_detail: A single click will toggle debug mode, a double click will activate assets debug, and a triple click will activate tests assets debug.
+    technical_sidebar: Enable technical sidebar
+    technical_sidebar_desc: Enable an advanced technical sidebar with comprehensive field and system information
+    sidebar_position: Sidebar position
+    left: Left
+    right: Right
+    sidebar_features: "Sidebar features:"
+    feature_field_info: "Field information: types, properties, debug data"
+    feature_db_details: "Database details: version, user, company info"
+    feature_website: "Website context: when on frontend pages"
+    feature_selector: "Element selector mode: click to select fields"
+    feature_copy: "Copy-to-clipboard functionality for all values"
+    feature_highlight: "Field highlighting on hover"
+    version_compat: "Version compatibility:"
+    stable_v16: "Fully stable from Odoo v16+"
+    earlier_versions: "Earlier versions may have limited informations"
+    works_both: "Works on both backend and website pages"
+    task_link_title: Task link on SH branch page
+    task_link_desc: Specify an URL to redirect to when clicking on the task link icon on SH branch page. Leave it empty to disable the feature.
+    task_link_placeholder_hint: "Use the {{ task_id }} placeholder to replace it with the task ID"
+    task_link_default: "By default, it's triggered with the following pattern: VERSION-TASKID-OPTIONAL_DESCRIPTION (e.g. 17.0-12345 , 15.0-6789-fixes)"
+    task_link_per_favorite: You can set up a specific URL per favorite from the "SH Favorites" page
+    task_link_label: Task link
+    branch_regex: Branch name regex
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: Regex seems incorrect. Please verify.
+
+popup:
+  header_your: Your
+  header_sh: Odoo.SH
+  header_projects: projects
+  footer:
+    light_theme: Switch to light theme
+    dark_theme: Switch to dark theme
+    disable_debug: Disable debug mode
+    enable_debug: Enable debug mode
+    disable_sidebar: Disable technical sidebar
+    enable_sidebar: Enable technical sidebar
+    open_options: Open extension's options
+    settings: Settings
+
+update:
+  error: Error occurred
+  title: Odoo Toolbox
+  default_desc: Odoo Toolbox has been updated with new features and improvements.
+  only_significant: This notification only appears for significant updates worth highlighting.
+  how_to_activate: How to activate
+  whats_new: What's new
+  open_settings: Open Settings
+  changelog: Changelog
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: Hide technical information
+    show: Show technical information
+    title: Technical List
+  side_panel:
+    search_placeholder: Search fields and buttons...
+    required_only: Required
+    readonly_only: Readonly
+    fields_only: Fields
+    buttons_only: Buttons
+    title: Odoo Toolbox
+    exit_selection: Exit selection mode
+    select_element: Select element
+    close: Close panel
+    fields_list: Fields list
+    buttons_list: Buttons list
+    no_match: No elements match your filters
+    no_fields: No technical fields or buttons found in this view
+    click_field_detail: Click on a field in the page to see its details
+    click_button_detail: Click on a button in the page to see its details
+    click_element_detail: Click on an element in the page to see its details
+    selected_field: Selected Field
+    selected_button: Selected Button
+    hover_hint: Hover to highlight in view
+    website_info: Website information
+    click_to_copy: Click values to copy
+    fields_found: fields
+    buttons_found: buttons
+    found: found
+  field_item:
+    copy_hint: Click to copy field name
+    invisible_when: "Invisible when: $1"
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    compute: Compute
+    related: Related
+    store: Store
+    model: Model
+    conditional_hint: "* indicates conditional behavior based on field state"
+    widget: Widget
+    relation: Relation
+    domain: Domain
+    context: Context
+    selection: Selection
+    required_condition: Required Condition
+    readonly_condition: Readonly Condition
+    invisible_condition: Invisible Condition
+    hide_value: Hide Value
+    show_value: Show Value
+  field_details:
+    title: "Field Details - $1"
+    loading: Loading field details...
+    not_found: Field not found
+    more_details: More details
+    name: Name
+    label: Label
+    type: Type
+    relation: Relation
+    relation_field: Relation Field
+    required: Required
+    readonly: Readonly
+    stored: Stored
+    compute: Compute
+    depends: Depends
+    copied: Copied
+    help: Help
+    size: Size
+    translatable: Translatable
+    indexed: Indexed
+    domain: Domain
+    groups: Groups
+    on_delete: On Delete
+    related: Related
+    modules: Modules
+    id: ID
+    model: Model
+  field_badge:
+    required: Required
+    readonly: Readonly
+    conditional_when: "$1 when: $2"
+  button_item:
+    copy_hint: Click to copy button name
+    string: String
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    invisible_when: "Invisible when: $1"
+    invisible_condition: Invisible Condition
+    context: Context
+    confirm: Confirm
+    help: Help
+    icon: Icon
+    hotkey: "Hotkey:"
+    conditional_hint: "* indicates conditional behavior based on button state"
+  model_actions:
+    view_fields: View model fields (ir.model.fields)
+    view_access: View model access rights (ir.model.access)
+    view_rules: View record rules (ir.rule)
+    view_server_actions: View server actions (ir.actions.server)
+    view_current_action: "Open current action ($1, ID: $2)"
+    view_record_data: View current record data
+    loading: Loading...
+    fields: Fields
+    access_rights: Access Rights
+    record_rules: Record Rules
+    server_actions: Server Actions
+    current_action: Current Action
+    data: Data
+    no_data: No data returned
+    record_data_title: "Record Data - $1 (ID: $2)"
+    view_title_fields: "Odoo Toolbox - $1 fields"
+    view_title_rules: "Odoo Toolbox - $1 record rules"
+    view_title_access: "Odoo Toolbox - $1 model access rights"
+    view_title_server: "Odoo Toolbox - $1 server actions"
+    view_title_action: "Odoo Toolbox - action $1 ($2)"
+    access: Access
+    view: View
+    view_view: View current view architecture
+    view_access_modal: View access rights and record rules
+    access_modal_title: "Access - $1"
+    more_details: More details
+    group: Group
+    rule: Rule
+    groups: Groups
+    domain: Domain
+    create: Create
+    read: Read
+    write: Write
+    delete: Delete
+    all_groups: All Groups
+    global: Global
+    no_domain: No domain restriction
+    no_access_rights: No access rights defined
+    no_record_rules: No record rules defined
+    loading_access: Loading access data...
+    granted: Granted
+    not_granted: Not granted
+  view_modal:
+    title: "Views - $1"
+    loading: Loading views...
+    not_found: No view found
+    base_view: Base View
+    inherited_views: Inherited Views
+    no_inherited: No inherited views
+    priority: Priority
+    module: Module
+    xml_id: XML ID
+    key: Key
+    view_arch: View XML
+    arch_title: "XML - $1"
+    no_arch: No XML available
+    copy_arch: Copy XML
+  database_info:
+    title: Database Information
+    version: Version
+    database: Database
+    server_info: Server Info
+    language: Language
+    debug_mode: Debug Mode
+  record_info:
+    title: Record Information
+    model: Model
+    record_id: Record ID
+    view_type: View Type
+    action_type: Action Type
+    action_name: Action Name
+    action_id: Action ID
+    action_xml_id: Action XML ID
+    action_context: Action Context
+    action_domain: Action Domain
+  website_info:
+    title: Website Information
+    logged_in: Logged In
+    public: Public
+    website_id: Website ID
+    main_object: Main Object
+    view_xml_id: View XML ID
+    view_id: View ID
+  states:
+    scanning: Scanning technical fields...
+  record_data:
+    loading: Loading record data...
+    please_wait: Please wait a moment.
+    copy_json: Copy JSON to clipboard
+  info_item:
+    click_to_copy: Click to copy
+  info_section:
+    collapse: Click to collapse
+    expand: Click to expand
+  debug_mode:
+    enabled: Enabled
+    assets: Assets
+    tests: Tests Assets
+    disabled: Disabled
+    unknown: Unknown
+  errors:
+    odoo_not_found: Odoo object not found
+    failed_view: Failed to load view information
+    failed_db: Failed to load database information
+  highlight:
+    selected: "✓ Selected"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Demo
+    portal: Portal
+    login_as: Login as
+    login_as_user: "Login as $1 user"
+  technical_model:
+    label: "Technical model :"
+  sh_favorites:
+    star_hint: Click to star project
+  sh_task_link:
+    open_task: Open related task
+    open_task_prefix: "Open task "
+  sh_rename:
+    branches: Branches
+    builds: Builds
+    status: Status
+    audit_logs: Audit Logs
+    settings: Settings
+
+services:
+  rpc:
+    http_error: "HTTP $1: $2"
+    version_not_supported: Odoo version not supported
+    model_required_search: Model is required for search
+    model_required_count: Model is required for search_count
+    model_required_read: Model is required for search_read
+    model_required_read_op: Model is required for read
+    ids_required: IDs are required for read
+    write_required: Model, IDs, and values are required for write
+    create_required: Model and values are required for create
+    archive_required: Model and IDs are required for archive
+    unarchive_required: Model and IDs are required for unarchive
+    unlink_required: Model and IDs are required for unlink
+    method_required: Model and method are required for method call
+    execute_action_unavailable: executeAction not available in this context
+    model_required_fields: Model is required for fields_get
+  errors:
+    devtools_unavailable: DevTools API not available
+    invalid_odoo_error: Invalid Odoo error response format
+    action_unavailable: Action service not available
+  quick_domains:
+    active_records: Active records
+    all_records: All records
+    exists: 'Quick domain with ID "$1" already exists'
+    not_found: 'Quick domain with ID "$1" not found'
+  config:
+    settings_object: Settings must be an object
+    favorites_array: Favorites must be an array
+    invalid_favorite: "Invalid favorite at index $1: must be an object"
+    missing_favorite_fields: "Invalid favorite at index $1: missing required fields"
+    domains_array: Quick domains must be an array
+    invalid_domain: "Invalid quick domain at index $1: must be an object"
+    missing_domain_fields: "Invalid quick domain at index $1: missing required fields"
+  current_page:
+    no_record: No record found on current page
+    found_records: "Found $1 record(s) ($2 view)"
+    unknown_view: unknown
+    found_list: "Found list view with domain filter for model: $1"
+    found_model: "Found model: $1 (no specific records)"
+    failed: Failed to get current page information
+  validation:
+    domain_must_be_array: Domain must be an array
+    invalid_domain_format: "Invalid domain format: $1"
+    unable_to_parse_domain: Unable to parse domain
+    invalid_domain_format_expected: Invalid domain format. Expected JSON array or Python list format.
+    model_required: Model is required
+    invalid_model_format: Invalid model format
+    invalid_domain_format_simple: Invalid domain format
+    invalid_ids_format: "Invalid IDs format (expected: comma-separated numbers)"
+    invalid_limit: "Invalid limit (must be between 1 and 10000)"
+    invalid_offset: "Invalid offset (must be 0 or greater)"
+    json_arrays_not_allowed: Arrays are not allowed. Please provide a JSON object with key-value pairs.
+    json_primitives_not_allowed: Primitive values are not allowed. Please provide a JSON object with key-value pairs.
+    json_objects_only: 'Only JSON objects are allowed. Please provide data as {"field": "value"}.'
+    json_empty_not_allowed: Empty JSON object is not allowed. Please provide data to update.
+    invalid_field: "Invalid field(s): $1. Please use the autocomplete suggestions or check the model fields."
+    missing_required_field: "Missing required field(s): $1. These fields must be provided when creating a record."
+    context_must_be_object: Context must be a JSON object.
+  no_valid_ids: No valid IDs found
+  invalid_context: "Invalid context format: $1"
+  invalid_json: Invalid JSON

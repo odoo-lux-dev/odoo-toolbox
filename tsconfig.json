@@ -1,7 +1,8 @@
 {
-    "compilerOptions": {
-        "jsx": "react-jsx",
-        "jsxImportSource": "preact"
-    },
-    "extends": "./.wxt/tsconfig.json"
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["bun-types"]
+  },
+  "extends": "./.wxt/tsconfig.json"
 }

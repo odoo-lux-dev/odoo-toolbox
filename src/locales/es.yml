@@ -1,0 +1,790 @@
+common:
+  loading: Cargando...
+  cancel: Cancelar
+  delete: Eliminar
+  save: Guardar
+  edit: Editar
+  remove: Quitar
+  retry: Reintentar
+  clear: Limpiar
+  refresh: Actualizar
+  close: Cerrar
+  use: Usar
+  error: Error
+  unknown: Desconocido
+  unknown_error: Error desconocido
+  no_data: Sin datos disponibles
+  copied: ¡Copiado!
+  copied_to_clipboard: ¡Copiado al portapapeles!
+  failed_to_copy: Error al copiar al portapapeles
+  fields: Campos
+  copy: Copiar
+  download: Descargar
+  search: Buscar
+  loading_favorites: Cargando favoritos...
+  no_favorites: No tienes proyectos favoritos
+  no_favorites_hint: Haz clic en el icono de estrella junto al nombre del proyecto para añadirlo a tus favoritos
+  take_me_to_sh: Llévame a la página de proyectos de Odoo.sh
+  favorite_projects: Proyectos favoritos
+
+devtools:
+  nav:
+    search: Buscar
+    write: Escribir
+    create: Crear
+    call_method: Llamar método
+    unlink: Eliminar
+    history: Historial
+  record_text:
+    singular_impacted: "Este registro{model} se verá afectado"
+    singular_action: "Este registro{model} será {action}"
+    plural_impacted: "Estos {count}{model} registros se verán afectados"
+    plural_action: "Estos {count}{model} registros serán {action}"
+    method_call_singular: "El método {method} se aplicará a este registro{model}"
+    method_call_plural: "El método {method} se aplicará a estos {count}{model} registros"
+  context_menu:
+    field_title: "Campo: $1"
+    copy_field_name: Copiar nombre del campo
+    copy_field_value: Copiar valor del campo
+    copy_relation_ids: "Copiar IDs de relación ($1)"
+    copy_record_json: "Copiar registro (JSON)"
+    copy_records_json: "Copiar registros (JSON)"
+    focus_record: Enfocar registro
+    open_in_odoo: Abrir en Odoo
+    open_in_odoo_popup: Abrir en popup de Odoo
+    record_title: "Registro: $1"
+    copy_record_id: Copiar ID del registro
+  content:
+    insufficient_permissions: Permisos insuficientes
+    insufficient_permissions_desc: Para acceder a las DevTools de Odoo Toolbox, debes conceder permiso de host para este dominio.
+    grant_permission: Conceder permiso
+    detecting: Detectando versión de Odoo...
+    detecting_desc: Comprobando tu instancia de Odoo actual. Esto solo tomará un momento.
+    unable_to_reach: No se puede conectar con Odoo
+    valid_context_hint: "Asegúrate de estar en un contexto válido :"
+    on_odoo_instance: Estás en una instancia de Odoo
+    inside_backend: Estás dentro del backend de Odoo (y no en el sitio web)
+  sidebar:
+    model: Modelo
+    model_fetch_error: No se pudieron obtener los modelos. Introduce el nombre del modelo manualmente.
+    model_placeholder: Escribe para buscar un modelo...
+    record_ids: IDs de registro
+    record_ids_placeholder: "1,2,3 o [1,2,3]"
+    fields: Campos
+    fields_placeholder: Todos los campos
+    domain: Dominio
+    domain_help: Condiciones de filtrado en formato de dominio de Odoo.
+    domain_placeholder: '["campo", "=", "valor"]'
+    limit: Límite
+    limit_placeholder: "80"
+    offset: Desplazamiento
+    offset_placeholder: "0"
+    context: Contexto
+    context_help: Contexto adicional para llamadas RPC en formato JSON.
+    context_placeholder: '{ "lang": "es_ES" }'
+    set_default_context: Establecer contexto por defecto
+    order_by: Ordenar por
+    order_by_help: Las selecciones múltiples se aplicarán en orden.
+    order_by_placeholder: id desc
+    execute_hint: Haz clic o presiona Ctrl+Enter para ejecutar
+    execute_query: Ejecutar consulta
+    get_current: Obtener actual
+    get_current_hint: Obtener información de la página actual
+    record_ids_search_help: IDs separados por comas o array. Vacío para todos los registros.
+  write:
+    title: Actualizar datos (formato JSON)
+    warning: "Advertencia: Modificación de datos"
+    warning_desc: Las operaciones de escritura modificarán permanentemente los registros seleccionados. Verifica los datos y los registros de destino antes de ejecutar.
+    format_json: Formatear JSON
+    placeholder: |
+      Introduce los datos a actualizar en formato JSON, ej.:
+      {
+        "name": "Nuevo nombre",
+        "email": "nuevo@email.com",
+        "active": true
+      }
+    updating: Actualizando...
+    update_records: Actualizar registros
+    record_ids_help: IDs separados por comas o array JSON de registros a actualizar.
+    load_records: Cargar registros
+    confirm_title: Ejecutar operación de escritura
+    confirm_message: "¿Estás seguro de que quieres actualizar $1 registro(s)? Esta acción modificará los registros seleccionados permanentemente."
+    error_model: El modelo es obligatorio para la operación de escritura
+    error_ids: Los IDs de registro son obligatorios para la operación de escritura
+    error_data: Los datos de escritura son obligatorios
+    error_json: "Validación JSON fallida: $1"
+    success: "Se actualizaron $1 registro(s) en $2 correctamente"
+    warning_false: Operación de escritura completada pero devolvió false
+    failed: Operación de escritura fallida
+    failed_detail: "Operación de escritura fallida: $1"
+    result_one_prefix: Este
+    result_one_suffix: registro será actualizado
+    result_many_prefix: Estos
+    result_many_suffix: registros serán actualizados
+  create:
+    title: Datos del registro (formato JSON)
+    warning: "Advertencia: Modificación de base de datos"
+    warning_desc: Crear un registro añadirá permanentemente nuevos datos a tu base de datos de Odoo. Verifica tu entrada antes de continuar.
+    format_json: Formatear JSON
+    placeholder: |
+      Introduce los datos del nuevo registro en formato JSON, ej.:
+      {
+        "name": "Nuevo registro",
+        "email": "nuevo@example.com",
+        "active": true
+      }
+    creating: Creando...
+    create_record: Crear registro
+    confirm_title: Crear nuevo registro
+    confirm_message: "¿Estás seguro de que quieres crear un nuevo registro en $1? Esta acción añadirá permanentemente datos a la base de datos."
+    will_create: Un nuevo
+    record_created: registro será creado
+    error_model: Selecciona un modelo primero
+    error_data: Proporciona datos para crear
+    error_json: Formato JSON inválido
+    success: "Registro creado en $1 correctamente (ID: $2)"
+    warning_no_id: Operación de creación completada pero no se devolvió ID
+    failed: Error al crear registro
+    failed_add_fields: Error al añadir campos obligatorios
+  call_method:
+    title: Método a llamar
+    placeholder: action_confirm
+    warning: "Advertencia: Operación irreversible"
+    warning_desc: Verifica cuidadosamente el modelo, los registros y el método antes de ejecutar. Los cambios son permanentes y no se pueden deshacer.
+    executing: Ejecutando...
+    call_method: Llamar método
+    record_ids_help: IDs separados por comas o array JSON de registros sobre los que llamar al método.
+    load_records: Cargar registros
+    confirm_title: Llamar método
+    confirm_message: '¿Estás seguro de que quieres llamar al método "$1" en $2 registro(s)? Esta acción puede modificar los datos.'
+    error_model: El modelo es obligatorio para llamar al método
+    error_method: El nombre del método es obligatorio
+    error_ids: Los IDs de registro son obligatorios para llamar al método
+    success: 'Método "$1" llamado correctamente en $2 registro(s) en $3'
+    failed: Llamada al método fallida
+    failed_detail: "Llamada al método fallida: $1"
+  unlink:
+    warning: "Advertencia: Operaciones destructivas"
+    warning_desc: Estas operaciones modificarán o eliminarán permanentemente registros. Las operaciones de archivado son reversibles, pero las de eliminación no se pueden deshacer.
+    record_ids_help: IDs separados por comas o array JSON de registros a eliminar/archivar.
+    load_records: Cargar registros
+    archive:
+      archiving: Archivando...
+      archive_records: Archivar registros
+      confirm_title: Archivar registros
+      confirm_message: "¿Estás seguro de que quieres archivar $1 registro(s)? Los registros archivados se ocultarán de las vistas normales pero se pueden desarchivar más tarde."
+      error: El modelo y los IDs son obligatorios para la operación de archivado
+      success: "Se archivaron $1 registro(s) correctamente"
+      failed: Operación de archivado fallida
+      failed_detail: "Operación de archivado fallida: $1"
+    unarchive:
+      unarchiving: Desarchivando...
+      unarchive_records: Desarchivar registros
+      confirm_title: Desarchivar registros
+      confirm_message: "¿Estás seguro de que quieres desarchivar $1 registro(s)? Volverán a ser visibles en las vistas normales."
+      error: El modelo y los IDs son obligatorios para la operación de desarchivado
+      success: "Se desarchivaron $1 registro(s) correctamente"
+      failed: Operación de desarchivado fallida
+      failed_detail: "Operación de desarchivado fallida: $1"
+    delete:
+      deleting: Eliminando...
+      delete_records: Eliminar registros
+      confirm_title: Eliminar registros
+      confirm_message: "¿Estás seguro de que quieres eliminar permanentemente $1 registro(s)? Esta acción no se puede deshacer y los datos se perderán para siempre"
+      error: El modelo y los IDs son obligatorios para la operación de eliminación
+      success: "Se eliminaron $1 registro(s) correctamente"
+      failed: Operación de eliminación fallida
+      failed_detail: "Operación de eliminación fallida: $1"
+  history:
+    title: Historial de DevTools
+    loading: Cargando historial...
+    error: "Error al cargar el historial: $1"
+    refresh: Actualizar
+    clear_all: Limpiar todo
+    clear_confirm: "¿Estás seguro de que quieres limpiar todo el historial? Esta acción no se puede deshacer."
+    no_results: No se encontraron resultados
+    no_results_hint: Prueba a ajustar tus términos de búsqueda o filtros.
+    empty_title: Aún no hay historial
+    empty_desc: Tus acciones de DevTools aparecerán aquí. Empieza realizando búsquedas, escrituras u otras operaciones.
+    actions_count: acciones
+    pinned: Fijado
+    restore: Restaurar
+    restore_hint: Esto navegará a la pestaña $1 y restaurará los parámetros.
+    restore_success: Restaurada $1 acción para $2
+    restore_failed: "Error al restaurar la acción: $1"
+    collapse: Contraer
+    expand: Expandir
+    database_title: "Base de datos: $1"
+    unpin: Desfijar
+    pin: Fijar
+    pin_hint: Fijar esta acción
+    unpin_hint: Desfijar esta acción
+    saving: Guardando...
+    removing: Eliminando...
+    remove_from_history: Quitar del historial
+    remove_confirm_title: "¿Quitar del historial?"
+    remove_confirm_desc: "¿Estás seguro de que quieres quitar esta acción del historial? Esto no se puede deshacer."
+    parameters: "Parámetros:"
+    filters:
+      all_actions: Todas las acciones
+      search: Buscar
+      write: Escribir
+      create: Crear
+      call_method: Llamar método
+      delete_archive: Eliminar/Archivar
+      search_placeholder: Buscar acciones, modelos...
+      type: Tipo
+      model: Modelo
+      all_models: Todos los modelos
+      clear_filters: Limpiar filtros
+      clear_filters_hint: Limpiar todos los filtros
+      total_actions: "Total de acciones almacenadas: $1 (se conservan las últimas $2 acciones)"
+  domain_editor:
+    placeholder: 'Introduce el dominio (ej., [["active", "=", true]])'
+    help_label: Ayuda de formato de dominio
+    help_title: Ayuda de formato de dominio
+    python_supported: "🐍 ¡Los dominios Python son compatibles!"
+    format_intro: "Puedes usar formato JSON o formato Python:"
+    json_format: "Formato JSON (Odoo RPC):"
+    python_format: "Formato Python (auto-convertido):"
+    operators: "Operadores de dominio (notación polaca):"
+    and_operator: Operador AND
+    or_operator: Operador OR
+    not_operator: Operador NOT
+    conditions_format: "Formato de condiciones: "
+    common_operators: "Operadores comunes: "
+    loading_domains: Cargando dominios...
+    manage_domains: Gestionar dominios
+    no_domain: No hay dominios rápidos disponibles
+    show_more: Mostrar $1 dominios más
+    manager_title: Gestor de dominios rápidos
+    add_domain: Añadir dominio
+    update_domain: Actualizar dominio
+    domain_value_title: "Dominio: $1"
+    no_domains: No se encontraron dominios.
+    no_domains_hint: Haz clic en "Añadir dominio" para crear uno.
+    edit_title: Editar dominio
+    add_title: Añadir nuevo dominio
+    update: Actualizar
+    add: Añadir
+    name: Nombre
+    name_placeholder: ej., Registros activos
+    domain_placeholder: 'ej., [["active", "=", true]]'
+    use_hint: Usar este dominio
+    edit_hint: Editar dominio
+    delete_hint: Eliminar dominio
+  result_viewer:
+    loading_records: Cargando registros...
+    fields_count: campo(s)
+    open_in_odoo: Abrir registro(s) en Odoo
+    open_in_popup: Abrir registro(s) en popup
+    copy_json: Copiar como JSON
+    download_json: Descargar como JSON
+    list_view: Vista de lista
+    exit_pivot: Salir de vista pivote
+    pivot_view: Vista de tabla (clic de nuevo para pivotar)
+    pivot: Pivotar
+    table: Tabla
+    list: Lista
+  record_search:
+    placeholder: Buscar en nombres y valores de campos (solo registros expandidos)...
+    of: de
+    match_found: 'Coincidencia encontrada en texto oculto: "$1"'
+    prev_hint: Resultado anterior (Ctrl+Shift+G)
+    next_hint: Siguiente resultado (Ctrl+G)
+    close_hint: Cerrar búsqueda (Esc)
+    keys: claves
+    values: valores
+  result_states:
+    empty: 'Configura tu consulta y haz clic en "Ejecutar" para ver los resultados'
+    executing: Ejecutando consulta...
+    error: Error de consulta
+    no_records: No se encontraron registros que coincidan con tus criterios
+    page_of: Página $1 de $2
+    records_range: "$1-$2 / $3 registro(s)"
+    records_found: "$1 registro(s) encontrado(s)"
+  field_rendering:
+    no_ids: No se encontraron IDs válidos
+    no_model: No se puede determinar el modelo relacionado
+    loading_relational: Cargando datos relacionales...
+    error_prefix: "Error: "
+    no_related: No se encontraron datos relacionados
+    no_id: Sin ID
+    record_n: Registro $1
+    excluded_fields: "Campos excluidos de $1: $2"
+    focus_record: Enfocar este registro
+    open_in_odoo: Abrir registro en Odoo
+    open_in_popup: Abrir registro en popup
+    invalid_relational: Campo relacional inválido
+    switch_table: Cambiar a vista de tabla
+    switch_list: Cambiar a vista de lista
+    open_relational_odoo: Abrir campo relacional en Odoo
+    open_relational_popup: Abrir campo relacional en popup
+  field_metadata:
+    unavailable: Los metadatos del campo no están disponibles. Si es un campo nuevo, reinicia las devtools o modifica el modelo para forzar una actualización.
+    field_label: "Campo: $1"
+  selects:
+    select_option: Selecciona una opción...
+    loading: Cargando...
+    search_fields: Buscar campos...
+    select_model: Selecciona un modelo...
+    order_by_placeholder: Selecciona campos para ordenar...
+    asc: (ASC)
+    desc: (DESC)
+    refresh_list: Actualizar lista
+    refreshing: Actualizando lista
+    refresh_error: "Error: $1. Puedes intentarlo de nuevo o introducir tu valor manualmente."
+    refresh_error_title: "Error: $1\n\nPuedes intentarlo de nuevo (haciendo clic en este botón) o introducir tu valor manualmente."
+    more_results: Mostrando los primeros $1 resultados. Refina tu búsqueda para resultados más específicos.
+    excluded_title: "$1 - Este campo fue excluido del resultado debido a problemas de compatibilidad. Clic medio para quitar."
+    middle_click_remove: Clic medio para quitar
+    remove_aria: Quitar $1
+  virtual_table:
+    search_columns: Buscar en todas las columnas...
+    rows: filas
+    toggle_rows: Alternar filas
+    toggle_columns: Alternar columnas
+    toggle_all: Alternar todo
+    fields_header: Campos
+    ids_header: IDs
+  notifications:
+    invalid_fields: Campo inválido detectado
+    invalid_fields_plural: "$1 campos inválidos detectados"
+    invalid_fields_hint: "💡 Usa las sugerencias de autocompletar o verifica los campos del modelo"
+    required_missing: Falta campo obligatorio
+    required_missing_plural: "Faltan $1 campos obligatorios"
+    required_missing_hint: "💡 Haz clic abajo para añadir estos campos con valores por defecto"
+    add_required: Añadir campo obligatorio
+    add_required_plural: Añadir campos obligatorios
+    auto_add_required: "✨ Añadir campo obligatorio automáticamente"
+    auto_add_required_plural: "✨ Añadir campos obligatorios automáticamente"
+    insert_template: Insertar plantilla con campos obligatorios
+    no_data_to_format: Sin datos JSON para formatear
+    cannot_format_invalid: No se puede formatear JSON inválido
+    failed_auto_search: Error al ejecutar la búsqueda automática
+  error_display:
+    error_summary: Resumen de error
+    error_data: Datos del error
+    detailed_message: Mensaje detallado
+    arguments: Argumentos
+    debug_traceback: Traza de depuración
+    context: Contexto
+    stack_trace: Traza de pila
+    full_error_object: Objeto de error completo
+    type: Tipo
+    model: Modelo
+    message: Mensaje
+    code: Código
+    unknown: Desconocido
+    not_available: N/D
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: Opciones
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: Favoritos SH
+    documentation: Documentación
+    report_bug: Reportar un bug
+    suggest_feature: Sugerir una función
+    improve_translation: Mejorar una traducción
+    github: Repositorio de GitHub
+  favorites:
+    delete_title: "¿Eliminar favorito?"
+    delete_desc: '¿Estás seguro de que quieres eliminar "$1" de favoritos?'
+    edit_name: Editar nombre de $1
+    save_changes: Guardar cambios
+    edit_task_link: Editar enlace de tarea de $1
+    reset_changes: Descartar cambios
+    delete_favorite: Eliminar $1 de favoritos
+    task_link_title: Editar enlace de tarea para $1
+    task_link_desc: Establece un enlace de tarea personalizado para este proyecto.
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: El enlace parece incorrecto. Verifícalo.
+  backup:
+    exporting: Exportando tu configuración...
+    importing: Importando tu configuración...
+    export: Exportar
+    restore: Restaurar
+    error_export: "Ocurrió un error durante la exportación: $1"
+    failed_read: Error al leer el contenido del archivo
+    invalid_config: "Archivo de configuración inválido - $1"
+    success: Configuración importada correctamente
+    error_import: "Ocurrió un error al procesar el archivo: $1"
+    invalid_format: Formato de archivo inválido
+  settings:
+    language: Idioma
+    language_auto: Automático (navegador)
+    language_desc: Elegir el idioma de la extensión
+    print_options: Opciones de impresión
+    print_options_desc: Esto te permitirá imprimir la página en formato PDF o HTML sin descargarla
+    pdf: PDF
+    html: HTML
+    color_blind: Activar modo daltonismo
+    color_blind_desc: Este modo reemplaza algunos colores e iconos de Odoo.SH por una paleta adaptada para daltonismo
+    login_buttons: Mostrar botones de inicio de sesión
+    login_buttons_desc: Elige si quieres mostrar los botones de inicio de sesión por defecto para admin/demo/portal
+    nostalgia: Activar modo nostalgia
+    nostalgia_desc: Este modo reemplaza los iconos de depuración originales por iconos de mono para recordar la famosa extensión del mono
+    tab_title: Actualizar el título de la pestaña en páginas de SH
+    tab_title_desc: Selecciona si quieres cambiar el título de la pestaña en las páginas de Odoo.SH para incluir el nombre del proyecto actual
+    technical_model: Mostrar modelo técnico
+    technical_model_desc: Elige si quieres mostrar el modelo técnico en la página (v17.2+)
+    color_scheme: Esquema de color por defecto
+    color_scheme_desc: Elige el esquema de color por defecto para Odoo 16 y superior.
+    color_scheme_warning: Esta función es experimental y puede causar problemas en algunas versiones de Odoo. Si encuentra problemas, vuelva a "Ninguno".
+    color_none: Ninguno (por defecto)
+    color_none_tooltip: "Ninguno: deja que Odoo lo gestione (configuración del perfil de usuario)"
+    color_system: Sistema
+    color_system_tooltip: "Sistema: sigue la preferencia de tu sistema"
+    color_light: Claro
+    color_dark: Oscuro
+    debug_mode: Modo depuración
+    debug_mode_desc: Elige cómo quieres activar el modo depuración
+    debug_disabled: Desactivado
+    debug_always: Siempre
+    debug_assets: Assets
+    debug_tests: Assets de pruebas
+    debug_disabled_tooltip: "Desactivado: El modo depuración no se forzará. Si se activa desde el botón del popup, se eliminará el modo depuración de la URL activa. Si llegas a un sitio web con modo depuración activo en la URL, no se eliminará ni reemplazará. Básicamente: es como la extensión del mono 🙈"
+    debug_always_tooltip: "Siempre: El modo depuración siempre estará activado"
+    debug_assets_tooltip: "Assets: El modo depuración siempre estará activado para assets"
+    debug_tests_tooltip: "Assets de pruebas: El modo depuración siempre estará activado para assets de pruebas"
+    debug_hint: También puedes configurar esto haciendo clic en el icono de bug dentro del popup.
+    debug_hint_detail: Un solo clic alternará el modo depuración, un doble clic activará depuración de assets, y un triple clic activará depuración de assets de pruebas.
+    technical_sidebar: Activar barra lateral técnica
+    technical_sidebar_desc: Activa una barra lateral técnica avanzada con información completa de campos y del sistema
+    sidebar_position: Posición de la barra lateral
+    left: Izquierda
+    right: Derecha
+    sidebar_features: "Funciones de la barra lateral:"
+    feature_field_info: "Información de campos: tipos, propiedades, datos de depuración"
+    feature_db_details: "Detalles de base de datos: versión, usuario, información de empresa"
+    feature_website: "Contexto del sitio web: cuando estás en páginas frontend"
+    feature_selector: "Modo selector de elementos: clic para seleccionar campos"
+    feature_copy: "Funcionalidad de copiar al portapapeles para todos los valores"
+    feature_highlight: "Resaltado de campos al pasar el ratón"
+    version_compat: "Compatibilidad de versión:"
+    stable_v16: "Totalmente estable desde Odoo v16+"
+    earlier_versions: "Versiones anteriores pueden tener información limitada"
+    works_both: "Funciona tanto en backend como en páginas del sitio web"
+    task_link_title: Enlace de tarea en página de rama de SH
+    task_link_desc: Especifica una URL para redirigir al hacer clic en el icono de enlace de tarea en la página de rama de SH. Déjalo vacío para desactivar la función.
+    task_link_placeholder_hint: "Usa el marcador {{ task_id }} para reemplazarlo con el ID de la tarea"
+    task_link_default: "Por defecto, se activa con el siguiente patrón: VERSION-TASKID-DESCRIPCION_OPCIONAL (ej. 17.0-12345 , 15.0-6789-fixes)"
+    task_link_per_favorite: Puedes configurar una URL específica por favorito desde la página "Favoritos SH"
+    task_link_label: Enlace de tarea
+    branch_regex: Regex del nombre de rama
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: El regex parece incorrecto. Verifícalo.
+
+popup:
+  header_your: Tus
+  header_sh: Odoo.SH
+  header_projects: proyectos
+  footer:
+    light_theme: Cambiar a tema claro
+    dark_theme: Cambiar a tema oscuro
+    disable_debug: Desactivar modo depuración
+    enable_debug: Activar modo depuración
+    disable_sidebar: Desactivar barra lateral técnica
+    enable_sidebar: Activar barra lateral técnica
+    open_options: Abrir opciones de la extensión
+    settings: Ajustes
+
+update:
+  error: Ocurrió un error
+  title: Odoo Toolbox
+  default_desc: Odoo Toolbox se ha actualizado con nuevas funciones y mejoras.
+  only_significant: Esta notificación solo aparece para actualizaciones significativas que merecen ser destacadas.
+  how_to_activate: Cómo activar
+  whats_new: Novedades
+  open_settings: Abrir ajustes
+  changelog: Registro de cambios
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: Ocultar información técnica
+    show: Mostrar información técnica
+    title: Lista técnica
+  side_panel:
+    search_placeholder: Buscar campos y botones...
+    required_only: Obligatorios
+    readonly_only: Lectura
+    fields_only: Campos
+    buttons_only: Botones
+    title: Odoo Toolbox
+    exit_selection: Salir del modo selección
+    select_element: Seleccionar elemento
+    close: Cerrar panel
+    fields_list: Lista de campos
+    buttons_list: Lista de botones
+    no_match: Ningún elemento coincide con tus filtros
+    no_fields: No se encontraron campos ni botones técnicos en esta vista
+    click_field_detail: Haz clic en un campo de la página para ver sus detalles
+    click_button_detail: Haz clic en un botón de la página para ver sus detalles
+    click_element_detail: Haz clic en un elemento de la página para ver sus detalles
+    selected_field: Campo seleccionado
+    selected_button: Botón seleccionado
+    hover_hint: Pasar el ratón para resaltar en la vista
+    website_info: Información del sitio web
+    click_to_copy: Haz clic en los valores para copiar
+    fields_found: campos
+    buttons_found: botones
+    found: encontrados
+  field_item:
+    copy_hint: Haz clic para copiar el nombre del campo
+    invisible_when: "Invisible cuando: $1"
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    compute: Calculado
+    related: Relacionado
+    store: Almacenado
+    model: Modelo
+    conditional_hint: "* indica comportamiento condicional según el estado del campo"
+    widget: Widget
+    relation: Relación
+    domain: Dominio
+    context: Contexto
+    selection: Selección
+    required_condition: Condición de obligatorio
+    readonly_condition: Condición de solo lectura
+    invisible_condition: Condición de invisible
+    hide_value: Ocultar valor
+    show_value: Mostrar valor
+  field_details:
+    title: "Detalles del campo - $1"
+    loading: Cargando detalles del campo...
+    not_found: Campo no encontrado
+    more_details: Más detalles
+    name: Nombre
+    label: Etiqueta
+    type: Tipo
+    relation: Relación
+    relation_field: Campo de relación
+    required: Requerido
+    readonly: Solo lectura
+    stored: Almacenado
+    compute: Calculado
+    depends: Depende de
+    copied: Copiado
+    help: Ayuda
+    size: Tamaño
+    translatable: Traducible
+    indexed: Indexado
+    domain: Dominio
+    groups: Grupos
+    on_delete: Al eliminar
+    related: Relacionado
+    modules: Módulos
+    id: ID
+    model: Modelo
+  field_badge:
+    required: Obligatorio
+    readonly: Solo lectura
+    conditional_when: "$1 cuando: $2"
+  button_item:
+    copy_hint: Haz clic para copiar el nombre del botón
+    string: Texto
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    invisible_when: "Invisible cuando: $1"
+    invisible_condition: Condición de invisible
+    context: Contexto
+    confirm: Confirmar
+    help: Ayuda
+    icon: Icono
+    hotkey: "Atajo:"
+    conditional_hint: "* indica comportamiento condicional según el estado del botón"
+  model_actions:
+    view_fields: Ver campos del modelo (ir.model.fields)
+    view_access: Ver derechos de acceso del modelo (ir.model.access)
+    view_rules: Ver reglas de registro (ir.rule)
+    view_server_actions: Ver acciones de servidor (ir.actions.server)
+    view_current_action: "Abrir acción actual ($1, ID: $2)"
+    view_record_data: Ver datos del registro actual
+    loading: Cargando...
+    fields: Campos
+    access_rights: Derechos de acceso
+    record_rules: Reglas de registro
+    server_actions: Acciones de servidor
+    current_action: Acción actual
+    data: Datos
+    no_data: No se devolvieron datos
+    record_data_title: "Datos del registro - $1 (ID: $2)"
+    view_title_fields: "Odoo Toolbox - campos de $1"
+    view_title_rules: "Odoo Toolbox - reglas de $1"
+    view_title_access: "Odoo Toolbox - derechos de acceso de $1"
+    view_title_server: "Odoo Toolbox - acciones de servidor de $1"
+    view_title_action: "Odoo Toolbox - acción $1 ($2)"
+    access: Acceso
+    view: Vista
+    view_view: Ver arquitectura de la vista actual
+    view_access_modal: Ver derechos de acceso y reglas de registro
+    access_modal_title: "Acceso - $1"
+    more_details: Más detalles
+    group: Grupo
+    rule: Regla
+    groups: Grupos
+    domain: Dominio
+    create: Crear
+    read: Leer
+    write: Escribir
+    delete: Eliminar
+    all_groups: Todos los grupos
+    global: Global
+    no_domain: Sin restricción de dominio
+    no_access_rights: Sin derechos de acceso definidos
+    no_record_rules: Sin reglas de registro definidas
+    loading_access: Cargando datos de acceso...
+    granted: Concedido
+    not_granted: No concedido
+  view_modal:
+    title: "Vistas - $1"
+    loading: Cargando vistas...
+    not_found: Ninguna vista encontrada
+    base_view: Vista base
+    inherited_views: Vistas heredadas
+    no_inherited: Sin vistas heredadas
+    priority: Prioridad
+    module: Módulo
+    xml_id: ID XML
+    key: Clave
+    view_arch: Ver XML
+    arch_title: "XML - $1"
+    no_arch: No hay XML disponible
+    copy_arch: Copiar XML
+  database_info:
+    title: Información de base de datos
+    version: Versión
+    database: Base de datos
+    server_info: Información del servidor
+    language: Idioma
+    debug_mode: Modo depuración
+  record_info:
+    title: Información del registro
+    model: Modelo
+    record_id: ID del registro
+    view_type: Tipo de vista
+    action_type: Tipo de acción
+    action_name: Nombre de la acción
+    action_id: ID de la acción
+    action_xml_id: ID XML de la acción
+    action_context: Contexto de la acción
+    action_domain: Dominio de la acción
+  website_info:
+    title: Información del sitio web
+    logged_in: Sesión iniciada
+    public: Público
+    website_id: ID del sitio web
+    main_object: Objeto principal
+    view_xml_id: ID XML de la vista
+    view_id: ID de la vista
+  states:
+    scanning: Escaneando campos técnicos...
+  record_data:
+    loading: Cargando datos del registro...
+    please_wait: Espera un momento.
+    copy_json: Copiar JSON al portapapeles
+  info_item:
+    click_to_copy: Haz clic para copiar
+  info_section:
+    collapse: Haz clic para contraer
+    expand: Haz clic para expandir
+  debug_mode:
+    enabled: Activado
+    assets: Assets
+    tests: Assets de pruebas
+    disabled: Desactivado
+    unknown: Desconocido
+  errors:
+    odoo_not_found: Objeto Odoo no encontrado
+    failed_view: Error al cargar la información de la vista
+    failed_db: Error al cargar la información de la base de datos
+  highlight:
+    selected: "✓ Seleccionado"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Demo
+    portal: Portal
+    login_as: Iniciar sesión como
+    login_as_user: "Iniciar sesión como usuario $1"
+  technical_model:
+    label: "Modelo técnico :"
+  sh_favorites:
+    star_hint: Haz clic para marcar el proyecto
+  sh_task_link:
+    open_task: Abrir tarea relacionada
+    open_task_prefix: "Abrir tarea "
+  sh_rename:
+    branches: Ramas
+    builds: Builds
+    status: Estado
+    audit_logs: Logs de auditoría
+    settings: Ajustes
+
+services:
+  rpc:
+    http_error: "HTTP $1: $2"
+    version_not_supported: Versión de Odoo no soportada
+    model_required_search: El modelo es obligatorio para buscar
+    model_required_count: El modelo es obligatorio para search_count
+    model_required_read: El modelo es obligatorio para search_read
+    model_required_read_op: El modelo es obligatorio para read
+    ids_required: Los IDs son obligatorios para read
+    write_required: Modelo, IDs y valores son obligatorios para write
+    create_required: Modelo y valores son obligatorios para create
+    archive_required: Modelo e IDs son obligatorios para archivar
+    unarchive_required: Modelo e IDs son obligatorios para desarchivar
+    unlink_required: Modelo e IDs son obligatorios para unlink
+    method_required: Modelo y método son obligatorios para llamar al método
+    execute_action_unavailable: executeAction no disponible en este contexto
+    model_required_fields: El modelo es obligatorio para fields_get
+  errors:
+    devtools_unavailable: API de DevTools no disponible
+    invalid_odoo_error: Formato de respuesta de error de Odoo inválido
+    action_unavailable: Servicio de acción no disponible
+  quick_domains:
+    active_records: Registros activos
+    all_records: Todos los registros
+    exists: 'El dominio rápido con ID "$1" ya existe'
+    not_found: 'No se encontró el dominio rápido con ID "$1"'
+  config:
+    settings_object: La configuración debe ser un objeto
+    favorites_array: Los favoritos deben ser un array
+    invalid_favorite: "Favorito inválido en el índice $1: debe ser un objeto"
+    missing_favorite_fields: "Favorito inválido en el índice $1: faltan campos obligatorios"
+    domains_array: Los dominios rápidos deben ser un array
+    invalid_domain: "Dominio rápido inválido en el índice $1: debe ser un objeto"
+    missing_domain_fields: "Dominio rápido inválido en el índice $1: faltan campos obligatorios"
+  current_page:
+    no_record: No se encontró registro en la página actual
+    found_records: "Se encontraron $1 registro(s) (vista $2)"
+    unknown_view: desconocida
+    found_list: "Vista de lista encontrada con filtro de dominio para el modelo: $1"
+    found_model: "Modelo encontrado: $1 (sin registros específicos)"
+    failed: Error al obtener la información de la página actual
+  validation:
+    domain_must_be_array: El dominio debe ser un array
+    invalid_domain_format: "Formato de dominio inválido: $1"
+    unable_to_parse_domain: No se puede analizar el dominio
+    invalid_domain_format_expected: Formato de dominio inválido. Se esperaba un array JSON o una lista en formato Python.
+    model_required: El modelo es obligatorio
+    invalid_model_format: Formato de modelo inválido
+    invalid_domain_format_simple: Formato de dominio inválido
+    invalid_ids_format: "Formato de IDs inválido (esperado: números separados por comas)"
+    invalid_limit: "Límite inválido (debe estar entre 1 y 10000)"
+    invalid_offset: "Desplazamiento inválido (debe ser 0 o mayor)"
+    json_arrays_not_allowed: No se permiten arrays. Proporciona un objeto JSON con pares clave-valor.
+    json_primitives_not_allowed: No se permiten valores primitivos. Proporciona un objeto JSON con pares clave-valor.
+    json_objects_only: 'Solo se permiten objetos JSON. Proporciona datos como {"campo": "valor"}.'
+    json_empty_not_allowed: No se permite un objeto JSON vacío. Proporciona datos para actualizar.
+    invalid_field: "Campo(s) inválido(s): $1. Usa las sugerencias de autocompletar o verifica los campos del modelo."
+    missing_required_field: "Falta(n) campo(s) obligatorio(s): $1. Estos campos deben proporcionarse al crear un registro."
+    context_must_be_object: El contexto debe ser un objeto JSON.
+  no_valid_ids: No se encontraron IDs válidos
+  invalid_context: "Formato de contexto inválido: $1"
+  invalid_json: JSON inválido

@@ -1,93 +1,84 @@
-import { ComponentChildren, JSX } from "preact";
+import { splitProps, type JSX } from "solid-js";
+
+import { cx } from "@/components/ui/cx";
 
 type TabsVariant = "boxed" | "bordered" | "lifted";
 type TabsPlacement = "top" | "bottom";
 type TabsSize = "xs" | "sm" | "md" | "lg" | "xl";
 
 export interface TabsProps extends JSX.HTMLAttributes<HTMLDivElement> {
-    variant?: TabsVariant;
-    placement?: TabsPlacement;
-    size?: TabsSize;
-    children: ComponentChildren;
+  variant?: TabsVariant;
+  placement?: TabsPlacement;
+  size?: TabsSize;
+  children: JSX.Element;
 }
 
-export interface TabProps extends JSX.HTMLAttributes<HTMLButtonElement> {
-    active?: boolean;
-    disabled?: boolean;
-    children: ComponentChildren;
+export interface TabProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+  active?: boolean;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+  children: JSX.Element;
 }
 
 const variantClassMap: Record<TabsVariant, string> = {
-    boxed: "tabs-box",
-    bordered: "tabs-border",
-    lifted: "tabs-lift",
+  boxed: "tabs-box",
+  bordered: "tabs-border",
+  lifted: "tabs-lift",
 };
 
 const placementClassMap: Record<TabsPlacement, string> = {
-    top: "tabs-top",
-    bottom: "tabs-bottom",
+  top: "tabs-top",
+  bottom: "tabs-bottom",
 };
 
 const sizeClassMap: Record<TabsSize, string> = {
-    xs: "tabs-xs",
-    sm: "tabs-sm",
-    md: "tabs-md",
-    lg: "tabs-lg",
-    xl: "tabs-xl",
+  xs: "tabs-xs",
+  sm: "tabs-sm",
+  md: "tabs-md",
+  lg: "tabs-lg",
+  xl: "tabs-xl",
 };
 
-const cx = (...classes: Array<string | undefined>) =>
-    classes.filter(Boolean).join(" ");
-
-export const Tabs = ({
-    variant,
-    placement,
-    size,
-    className,
-    children,
-    ...rest
-}: TabsProps) => {
-    const classes = cx(
-        "tabs",
-        variant ? variantClassMap[variant] : undefined,
-        placement ? placementClassMap[placement] : undefined,
-        size ? sizeClassMap[size] : undefined,
-        className,
+export const Tabs = (props: TabsProps) => {
+  const [local, rest] = splitProps(props, ["variant", "placement", "size", "class", "children"]);
+  const classes = () =>
+    cx(
+      "tabs",
+      local.variant ? variantClassMap[local.variant] : undefined,
+      local.placement ? placementClassMap[local.placement] : undefined,
+      local.size ? sizeClassMap[local.size] : undefined,
+      local.class,
     );
 
-    return (
-        <div role="tablist" className={classes} {...rest}>
-            {children}
-        </div>
-    );
+  return (
+    <div role="tablist" class={classes()} {...rest}>
+      {local.children}
+    </div>
+  );
 };
 
-export const Tab = ({
-    active = false,
-    disabled = false,
-    className,
-    children,
-    type = "button",
-    ...rest
-}: TabProps) => {
-    const classes = cx(
-        "tab",
-        active ? "tab-active" : undefined,
-        disabled ? "tab-disabled" : undefined,
-        className,
+export const Tab = (props: TabProps) => {
+  const [local, rest] = splitProps(props, ["active", "disabled", "class", "children", "type"]);
+  const type = () => local.type ?? "button";
+  const classes = () =>
+    cx(
+      "tab",
+      local.active ? "tab-active" : undefined,
+      local.disabled ? "tab-disabled" : undefined,
+      local.class,
     );
 
-    return (
-        <button
-            role="tab"
-            type={type}
-            className={classes}
-            aria-selected={active || undefined}
-            aria-disabled={disabled || undefined}
-            disabled={disabled}
-            {...rest}
-        >
-            {children}
-        </button>
-    );
+  return (
+    <button
+      role="tab"
+      type={type()}
+      class={classes()}
+      aria-selected={local.active || undefined}
+      aria-disabled={local.disabled || undefined}
+      disabled={local.disabled}
+      {...rest}
+    >
+      {local.children}
+    </button>
+  );
 };

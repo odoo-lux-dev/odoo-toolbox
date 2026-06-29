@@ -1,4 +1,8 @@
-import { render } from "preact";
-import { DevtoolsApp } from "./devtools.app";
+import { render } from "solid-js/web";
 
-render(<DevtoolsApp />, document.getElementById("root")!);
+import { DevtoolsApp } from "@/screens/devtools/App";
+import { initI18n } from "@/services/i18n-service";
+
+await initI18n();
+
+render(() => <DevtoolsApp />, document.getElementById("root")!);

@@ -1,0 +1,790 @@
+common:
+  loading: Chargement...
+  cancel: Annuler
+  delete: Supprimer
+  save: Enregistrer
+  edit: Modifier
+  remove: Retirer
+  retry: Réessayer
+  clear: Effacer
+  refresh: Rafraîchir
+  close: Fermer
+  use: Utiliser
+  error: Erreur
+  unknown: Inconnu
+  unknown_error: Erreur inconnue
+  no_data: Aucune donnée disponible
+  copied: Copié !
+  copied_to_clipboard: Copié dans le presse-papiers !
+  failed_to_copy: Échec de la copie dans le presse-papiers
+  fields: Champs
+  copy: Copier
+  download: Télécharger
+  search: Rechercher
+  loading_favorites: Chargement des favoris...
+  no_favorites: Vous n'avez aucun projet favori
+  no_favorites_hint: Cliquez sur l'icône étoile à côté du nom du projet pour l'ajouter à vos favoris
+  take_me_to_sh: Aller à la page des projets Odoo.sh
+  favorite_projects: Projets favoris
+
+devtools:
+  nav:
+    search: Recherche
+    write: Écriture
+    create: Création
+    call_method: Appel méthode
+    unlink: Suppression
+    history: Historique
+  record_text:
+    singular_impacted: "Cet enregistrement{model} sera impacté"
+    singular_action: "Cet enregistrement{model} sera {action}"
+    plural_impacted: "Ces {count}{model} enregistrements seront impactés"
+    plural_action: "Ces {count}{model} enregistrements seront {action}"
+    method_call_singular: "La méthode {method} sera appliquée à cet enregistrement{model}"
+    method_call_plural: "La méthode {method} sera appliquée à ces {count}{model} enregistrements"
+  context_menu:
+    field_title: "Champ : $1"
+    copy_field_name: Copier le nom du champ
+    copy_field_value: Copier la valeur du champ
+    copy_relation_ids: "Copier les IDs de relation ($1)"
+    copy_record_json: "Copier l'enregistrement (JSON)"
+    copy_records_json: "Copier les enregistrements (JSON)"
+    focus_record: Se concentrer sur l'enregistrement
+    open_in_odoo: Ouvrir dans Odoo
+    open_in_odoo_popup: Ouvrir dans une popup Odoo
+    record_title: "Enregistrement : $1"
+    copy_record_id: Copier l'ID de l'enregistrement
+  content:
+    insufficient_permissions: Permissions insuffisantes
+    insufficient_permissions_desc: Pour accéder aux DevTools d'Odoo Toolbox, vous devez accorder la permission d'hôte pour ce domaine.
+    grant_permission: Accorder la permission
+    detecting: Détection de la version d'Odoo...
+    detecting_desc: Vérification de votre instance Odoo actuelle. Cela ne devrait prendre qu'un instant.
+    unable_to_reach: Impossible de joindre Odoo
+    valid_context_hint: "Assurez-vous d'être dans un contexte valide :"
+    on_odoo_instance: Vous êtes sur une instance Odoo
+    inside_backend: Vous êtes dans le backend d'Odoo (et non sur le site web)
+  sidebar:
+    model: Modèle
+    model_fetch_error: Les modèles n'ont pas pu être récupérés. Veuillez saisir le nom du modèle manuellement.
+    model_placeholder: Tapez pour rechercher un modèle...
+    record_ids: IDs d'enregistrement
+    record_ids_placeholder: "1,2,3 ou [1,2,3]"
+    fields: Champs
+    fields_placeholder: Tous les champs
+    domain: Domaine
+    domain_help: Conditions de filtrage au format domaine Odoo.
+    domain_placeholder: '["champ", "=", "valeur"]'
+    limit: Limite
+    limit_placeholder: "80"
+    offset: Décalage
+    offset_placeholder: "0"
+    context: Contexte
+    context_help: Contexte supplémentaire pour les appels RPC au format JSON.
+    context_placeholder: '{ "lang": "fr_BE" }'
+    set_default_context: Définir le contexte par défaut
+    order_by: Trier par
+    order_by_help: Les sélections multiples seront appliquées dans l'ordre.
+    order_by_placeholder: id desc
+    execute_hint: Cliquez ou appuyez sur Ctrl+Entrée pour exécuter
+    execute_query: Exécuter la requête
+    get_current: Récupérer l'actuel
+    get_current_hint: Obtenir les informations de la page actuelle
+    record_ids_search_help: IDs séparés par des virgules ou tableau. Vide pour tous les enregistrements.
+  write:
+    title: Mettre à jour les données (format JSON)
+    warning: "Attention : Modification de données"
+    warning_desc: Les opérations d'écriture modifieront définitivement les enregistrements sélectionnés. Veuillez vérifier les données et les enregistrements cibles avant d'exécuter.
+    format_json: Formater le JSON
+    placeholder: |
+      Saisissez les données à mettre à jour au format JSON, ex. :
+      {
+        "name": "Nouveau nom",
+        "email": "nouvel@email.com",
+        "active": true
+      }
+    updating: Mise à jour...
+    update_records: Mettre à jour les enregistrements
+    record_ids_help: IDs séparés par des virgules ou tableau JSON des enregistrements à mettre à jour.
+    load_records: Charger les enregistrements
+    confirm_title: Exécuter l'opération d'écriture
+    confirm_message: Êtes-vous sûr de vouloir mettre à jour $1 enregistrement(s) ? Cette action modifiera les enregistrements sélectionnés de façon permanente.
+    error_model: Le modèle est requis pour l'opération d'écriture
+    error_ids: Les IDs d'enregistrement sont requis pour l'opération d'écriture
+    error_data: Les données d'écriture sont requises
+    error_json: "Échec de la validation JSON : $1"
+    success: $1 enregistrement(s) mis à jour avec succès dans $2
+    warning_false: Opération d'écriture terminée mais a retourné false
+    failed: Échec de l'opération d'écriture
+    failed_detail: "Échec de l'opération d'écriture : $1"
+    result_one_prefix: Cet enregistrement
+    result_one_suffix: sera mis à jour
+    result_many_prefix: Ces
+    result_many_suffix: enregistrements seront mis à jour
+  create:
+    title: Données de l'enregistrement (format JSON)
+    warning: "Attention : Modification de la base de données"
+    warning_desc: La création d'un enregistrement ajoutera définitivement de nouvelles données à votre base de données Odoo. Veuillez vérifier votre saisie avant de continuer.
+    format_json: Formater le JSON
+    placeholder: |
+      Saisissez les données du nouvel enregistrement au format JSON, ex. :
+      {
+        "name": "Nouvel enregistrement",
+        "email": "nouvel@exemple.com",
+        "active": true
+      }
+    creating: Création...
+    create_record: Créer l'enregistrement
+    confirm_title: Créer un nouvel enregistrement
+    confirm_message: Êtes-vous sûr de vouloir créer un nouvel enregistrement dans $1 ? Cette action ajoutera définitivement des données à la base de données.
+    will_create: Un nouvel enregistrement
+    record_created: sera créé
+    error_model: Veuillez d'abord sélectionner un modèle
+    error_data: Veuillez fournir des données à créer
+    error_json: Format JSON invalide
+    success: "Enregistrement créé avec succès dans $1 (ID : $2)"
+    warning_no_id: Opération de création terminée mais aucun ID retourné
+    failed: Échec de la création de l'enregistrement
+    failed_add_fields: Échec de l'ajout des champs requis
+  call_method:
+    title: Méthode à appeler
+    placeholder: action_confirm
+    warning: "Attention : Opération irréversible"
+    warning_desc: Veuillez vérifier soigneusement le modèle, les enregistrements et la méthode avant d'exécuter. Les modifications sont permanentes et ne peuvent pas être annulées.
+    executing: Exécution...
+    call_method: Appeler la méthode
+    record_ids_help: IDs séparés par des virgules ou tableau JSON des enregistrements sur lesquels appeler la méthode.
+    load_records: Charger les enregistrements
+    confirm_title: Appeler la méthode
+    confirm_message: Êtes-vous sûr de vouloir appeler la méthode « $1 » sur $2 enregistrement(s) ? Cette action peut modifier les données.
+    error_model: Le modèle est requis pour l'appel de méthode
+    error_method: Le nom de la méthode est requis
+    error_ids: Les IDs d'enregistrement sont requis pour l'appel de méthode
+    success: Méthode « $1 » appelée avec succès sur $2 enregistrement(s) dans $3
+    failed: Échec de l'appel de méthode
+    failed_detail: "Échec de l'appel de méthode : $1"
+  unlink:
+    warning: "Attention : Opérations destructives"
+    warning_desc: Ces opérations modifieront ou supprimeront définitivement des enregistrements. Les opérations d'archivage sont réversibles, mais les opérations de suppression ne peuvent pas être annulées.
+    record_ids_help: IDs séparés par des virgules ou tableau JSON des enregistrements à supprimer/archiver.
+    load_records: Charger les enregistrements
+    archive:
+      archiving: Archivage...
+      archive_records: Archiver les enregistrements
+      confirm_title: Archiver les enregistrements
+      confirm_message: Êtes-vous sûr de vouloir archiver $1 enregistrement(s) ? Les enregistrements archivés seront masqués des vues normales mais pourront être désarchivés ultérieurement.
+      error: Le modèle et les IDs sont requis pour l'opération d'archivage
+      success: $1 enregistrement(s) archivé(s) avec succès
+      failed: Échec de l'opération d'archivage
+      failed_detail: "Échec de l'opération d'archivage : $1"
+    unarchive:
+      unarchiving: Désarchivage...
+      unarchive_records: Désarchiver les enregistrements
+      confirm_title: Désarchiver les enregistrements
+      confirm_message: Êtes-vous sûr de vouloir désarchiver $1 enregistrement(s) ? Ils redeviendront visibles dans les vues normales.
+      error: Le modèle et les IDs sont requis pour l'opération de désarchivage
+      success: $1 enregistrement(s) désarchivé(s) avec succès
+      failed: Échec de l'opération de désarchivage
+      failed_detail: "Échec de l'opération de désarchivage : $1"
+    delete:
+      deleting: Suppression...
+      delete_records: Supprimer les enregistrements
+      confirm_title: Supprimer les enregistrements
+      confirm_message: Êtes-vous sûr de vouloir supprimer définitivement $1 enregistrement(s) ? Cette action est irréversible et les données seront perdues pour toujours
+      error: Le modèle et les IDs sont requis pour l'opération de suppression
+      success: $1 enregistrement(s) supprimé(s) avec succès
+      failed: Échec de l'opération de suppression
+      failed_detail: "Échec de l'opération de suppression : $1"
+  history:
+    title: Historique DevTools
+    loading: Chargement de l'historique...
+    error: "Échec du chargement de l'historique : $1"
+    refresh: Rafraîchir
+    clear_all: Tout effacer
+    clear_confirm: Êtes-vous sûr de vouloir effacer tout l'historique ? Cette action est irréversible.
+    no_results: Aucun résultat trouvé
+    no_results_hint: Essayez d'ajuster vos termes de recherche ou vos filtres.
+    empty_title: Pas encore d'historique
+    empty_desc: Vos actions DevTools apparaîtront ici. Commencez par effectuer des recherches, des écritures ou d'autres opérations.
+    actions_count: actions
+    pinned: Épinglé
+    restore: Restaurer
+    restore_hint: Cela naviguera vers l'onglet $1 et restaurera les paramètres.
+    restore_success: Action $1 restaurée pour $2
+    restore_failed: "Échec de la restauration de l'action : $1"
+    collapse: Réduire
+    expand: Développer
+    database_title: "Base de données : $1"
+    unpin: Désépingler
+    pin: Épingler
+    pin_hint: Épingler cette action
+    unpin_hint: Désépingler cette action
+    saving: Enregistrement...
+    removing: Suppression...
+    remove_from_history: Retirer de l'historique
+    remove_confirm_title: Retirer de l'historique ?
+    remove_confirm_desc: Êtes-vous sûr de vouloir retirer cette action de l'historique ? Cette action est irréversible.
+    parameters: "Paramètres :"
+    filters:
+      all_actions: Toutes les actions
+      search: Recherche
+      write: Écriture
+      create: Création
+      call_method: Appel méthode
+      delete_archive: Suppression/Archivage
+      search_placeholder: Rechercher actions, modèles...
+      type: Type
+      model: Modèle
+      all_models: Tous les modèles
+      clear_filters: Effacer les filtres
+      clear_filters_hint: Effacer tous les filtres
+      total_actions: "Total d'actions stockées : $1 (les $2 dernières actions sont conservées)"
+  domain_editor:
+    placeholder: 'Saisissez un domaine (ex., [["active", "=", true]])'
+    help_label: Aide sur le format de domaine
+    help_title: Aide sur le format de domaine
+    python_supported: "🐍 Les domaines Python sont supportés !"
+    format_intro: "Vous pouvez utiliser le format JSON ou le format Python :"
+    json_format: "Format JSON (Odoo RPC) :"
+    python_format: "Format Python (auto-converti) :"
+    operators: "Opérateurs de domaine (notation polonaise) :"
+    and_operator: Opérateur AND
+    or_operator: Opérateur OR
+    not_operator: Opérateur NOT
+    conditions_format: "Format des conditions : "
+    common_operators: "Opérateurs courants : "
+    loading_domains: Chargement des domaines...
+    manage_domains: Gérer les domaines
+    no_domain: Aucun domaine rapide disponible
+    show_more: Afficher $1 domaine(s) de plus
+    manager_title: Gestionnaire de domaines rapides
+    add_domain: Ajouter un domaine
+    update_domain: Mettre à jour le domaine
+    domain_value_title: "Domaine : $1"
+    no_domains: Aucun domaine trouvé.
+    no_domains_hint: Cliquez sur « Ajouter un domaine » pour en créer un.
+    edit_title: Modifier le domaine
+    add_title: Ajouter un nouveau domaine
+    update: Mettre à jour
+    add: Ajouter
+    name: Nom
+    name_placeholder: ex., Enregistrements actifs
+    domain_placeholder: 'ex., [["active", "=", true]]'
+    use_hint: Utiliser ce domaine
+    edit_hint: Modifier le domaine
+    delete_hint: Supprimer le domaine
+  result_viewer:
+    loading_records: Chargement des enregistrements...
+    fields_count: champ(s)
+    open_in_odoo: Ouvrir le(s) enregistrement(s) dans Odoo
+    open_in_popup: Ouvrir le(s) enregistrement(s) dans une popup
+    copy_json: Copier en JSON
+    download_json: Télécharger en JSON
+    list_view: Vue en liste
+    exit_pivot: Quitter la vue pivot
+    pivot_view: Vue tableau (cliquez à nouveau pour passer en vue pivot)
+    pivot: Pivot
+    table: Tableau
+    list: Liste
+  record_search:
+    placeholder: Rechercher dans les noms de champs et les valeurs (enregistrements développés uniquement)...
+    of: sur
+    match_found: "Correspondance trouvée dans le texte masqué : « $1 »"
+    prev_hint: Résultat précédent (Ctrl+Shift+G)
+    next_hint: Résultat suivant (Ctrl+G)
+    close_hint: Fermer la recherche (Échap)
+    keys: clés
+    values: valeurs
+  result_states:
+    empty: "Configurez votre requête et cliquez sur « Exécuter » pour voir les résultats"
+    executing: Exécution de la requête...
+    error: Erreur de requête
+    no_records: Aucun enregistrement ne correspond à vos critères
+    page_of: Page $1 sur $2
+    records_range: "$1-$2 / $3 enregistrement(s)"
+    records_found: $1 enregistrement(s) trouvé(s)
+  field_rendering:
+    no_ids: Aucun ID valide trouvé
+    no_model: Impossible de déterminer le modèle lié
+    loading_relational: Chargement des données relationnelles...
+    error_prefix: "Erreur : "
+    no_related: Aucune donnée liée trouvée
+    no_id: Pas d'ID
+    record_n: Enregistrement $1
+    excluded_fields: "Champs exclus de $1 : $2"
+    focus_record: Se concentrer sur cet enregistrement
+    open_in_odoo: Ouvrir l'enregistrement dans Odoo
+    open_in_popup: Ouvrir l'enregistrement dans une popup
+    invalid_relational: Champ relationnel invalide
+    switch_table: Passer en vue tableau
+    switch_list: Passer en vue liste
+    open_relational_odoo: Ouvrir le champ relationnel dans Odoo
+    open_relational_popup: Ouvrir le champ relationnel dans une popup
+  field_metadata:
+    unavailable: Les métadonnées du champ ne sont pas disponibles. S'il s'agit d'un nouveau champ, veuillez redémarrer les devtools ou modifier le modèle pour forcer un rafraîchissement.
+    field_label: "Champ : $1"
+  selects:
+    select_option: Sélectionner une option...
+    loading: Chargement...
+    search_fields: Rechercher des champs...
+    select_model: Sélectionner un modèle...
+    order_by_placeholder: Sélectionner les champs à trier...
+    asc: (ASC)
+    desc: (DESC)
+    refresh_list: Rafraîchir la liste
+    refreshing: Rafraîchissement de la liste
+    refresh_error: "Erreur : $1. Vous pouvez réessayer ou saisir votre valeur manuellement."
+    refresh_error_title: "Erreur : $1\n\nVous pouvez réessayer (en cliquant sur ce bouton) ou saisir votre valeur manuellement."
+    more_results: Affichage des $1 premiers résultats. Affinez votre recherche pour des résultats plus spécifiques.
+    excluded_title: "$1 - Ce champ a été exclu du résultat en raison de problèmes de compatibilité. Clic-molette pour retirer."
+    middle_click_remove: Clic-molette pour retirer
+    remove_aria: Retirer $1
+  virtual_table:
+    search_columns: Rechercher dans toutes les colonnes...
+    rows: lignes
+    toggle_rows: Filtrer les lignes
+    toggle_columns: Filtrer les colonnes
+    toggle_all: Tout afficher
+    fields_header: Champs
+    ids_header: IDs
+  notifications:
+    invalid_fields: Champ invalide détecté
+    invalid_fields_plural: $1 champs invalides détectés
+    invalid_fields_hint: "💡 Utilisez les suggestions d'autocomplétion ou vérifiez les champs du modèle"
+    required_missing: Champ requis manquant
+    required_missing_plural: $1 champs requis manquants
+    required_missing_hint: "💡 Cliquez ci-dessous pour ajouter ces champs avec des valeurs par défaut"
+    add_required: Ajouter le champ requis
+    add_required_plural: Ajouter les champs requis
+    auto_add_required: "✨ Ajouter automatiquement le champ requis"
+    auto_add_required_plural: "✨ Ajouter automatiquement les champs requis"
+    insert_template: Insérer un modèle avec les champs requis
+    no_data_to_format: Aucune donnée JSON à formater
+    cannot_format_invalid: Impossible de formater un JSON invalide
+    failed_auto_search: Échec de l'exécution de la recherche automatique
+  error_display:
+    error_summary: Résumé de l'erreur
+    error_data: Données de l'erreur
+    detailed_message: Message détaillé
+    arguments: Arguments
+    debug_traceback: Traceback de débogage
+    context: Contexte
+    stack_trace: Trace de la pile
+    full_error_object: Objet d'erreur complet
+    type: Type
+    model: Modèle
+    message: Message
+    code: Code
+    unknown: Inconnu
+    not_available: N/D
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: Options
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: Favoris SH
+    documentation: Documentation
+    report_bug: Signaler un bug
+    suggest_feature: Suggérer une fonctionnalité
+    improve_translation: Améliorer une traduction
+    github: Dépôt GitHub
+  favorites:
+    delete_title: Supprimer le favori ?
+    delete_desc: Êtes-vous sûr de vouloir supprimer « $1 » des favoris ?
+    edit_name: Modifier le nom de $1
+    save_changes: Enregistrer les modifications
+    edit_task_link: Modifier le lien de tâche de $1
+    reset_changes: Réinitialiser les modifications
+    delete_favorite: Supprimer $1 des favoris
+    task_link_title: Modifier le lien de tâche pour $1
+    task_link_desc: Définir un lien de tâche personnalisé pour ce projet.
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: Le lien semble incorrect. Veuillez vérifier.
+  backup:
+    exporting: Exportation de vos paramètres...
+    importing: Importation de vos paramètres...
+    export: Exporter
+    restore: Restaurer
+    error_export: "Une erreur s'est produite lors de l'export : $1"
+    failed_read: Échec de la lecture du contenu du fichier
+    invalid_config: "Fichier de configuration invalide - $1"
+    success: Configuration importée avec succès
+    error_import: "Une erreur s'est produite lors du traitement du fichier : $1"
+    invalid_format: Format de fichier invalide
+  settings:
+    language: Langue
+    language_auto: Auto (navigateur)
+    language_desc: Choisir la langue de l'extension
+    print_options: Options d'impression
+    print_options_desc: Cela vous permettra d'imprimer la page au format PDF ou HTML sans la télécharger
+    pdf: PDF
+    html: HTML
+    color_blind: Activer le mode daltonien
+    color_blind_desc: Ce mode remplace certaines couleurs et icônes d'Odoo.SH par une palette adaptée aux daltoniens
+    login_buttons: Afficher les boutons de connexion
+    login_buttons_desc: Choisir si vous souhaitez afficher les boutons de connexion par défaut pour admin/demo/portal
+    nostalgia: Activer le mode nostalgie
+    nostalgia_desc: Ce mode remplace les icônes de débogage d'origine par des icônes singe en souvenir de la célèbre extension monkey
+    tab_title: Mettre à jour le titre de l'onglet sur les pages SH
+    tab_title_desc: Sélectionner s'il faut changer le titre de l'onglet sur les pages Odoo.SH pour inclure le nom du projet actuel
+    technical_model: Afficher le modèle technique
+    technical_model_desc: Choisir si vous souhaitez afficher le modèle technique sur la page (v17.2+)
+    color_scheme: Schéma de couleur par défaut
+    color_scheme_desc: Choisir le schéma de couleur par défaut pour Odoo 16 et supérieur.
+    color_scheme_warning: Cette fonctionnalité est expérimentale et peut causer des problèmes sur certaines versions d'Odoo. En cas de problème, remettez la valeur sur "Aucun".
+    color_none: Aucun (par défaut)
+    color_none_tooltip: "Aucun : laisse Odoo le gérer (paramètres du profil utilisateur)"
+    color_system: Système
+    color_system_tooltip: "Système : suit la préférence de votre système"
+    color_light: Clair
+    color_dark: Sombre
+    debug_mode: Mode débogage
+    debug_mode_desc: Choisir comment vous souhaitez activer le mode débogage
+    debug_disabled: Désactivé
+    debug_always: Toujours
+    debug_assets: Assets
+    debug_tests: Assets de tests
+    debug_disabled_tooltip: "Désactivé : Le mode débogage ne sera pas forcé. S'il est déclenché par le bouton de la popup, il supprimera le mode débogage de l'URL active. Si vous atteignez un site web avec un mode débogage actif dans l'URL, il ne sera ni supprimé ni remplacé. En gros : c'est comme l'extension monkey 🙈"
+    debug_always_tooltip: "Toujours : Le mode débogage sera toujours activé"
+    debug_assets_tooltip: "Assets : Le mode débogage sera toujours activé pour les assets"
+    debug_tests_tooltip: "Assets de tests : Le mode débogage sera toujours activé pour les assets de tests"
+    debug_hint: Vous pouvez également configurer cela en cliquant sur l'icône bug dans la popup.
+    debug_hint_detail: Un simple clic basculera le mode débogage, un double clic activera le débogage des assets, et un triple clic activera le débogage des assets de tests.
+    technical_sidebar: Activer la barre latérale technique
+    technical_sidebar_desc: Activer une barre latérale technique avancée avec des informations complètes sur les champs et le système
+    sidebar_position: Position de la barre latérale
+    left: Gauche
+    right: Droite
+    sidebar_features: "Fonctionnalités de la barre latérale :"
+    feature_field_info: "Informations sur les champs : types, propriétés, données de débogage"
+    feature_db_details: "Détails de la base de données : version, utilisateur, infos société"
+    feature_website: "Contexte du site web : sur les pages frontend"
+    feature_selector: "Mode sélection d'élément : cliquez pour sélectionner des champs"
+    feature_copy: "Fonctionnalité de copie dans le presse-papiers pour toutes les valeurs"
+    feature_highlight: "Surlignage des champs au survol"
+    version_compat: "Compatibilité des versions :"
+    stable_v16: "Entièrement stable à partir d'Odoo v16+"
+    earlier_versions: "Les versions antérieures peuvent avoir des informations limitées"
+    works_both: "Fonctionne à la fois sur le backend et sur les pages du site web"
+    task_link_title: Lien de tâche sur la page de branche SH
+    task_link_desc: Spécifier une URL vers laquelle rediriger en cliquant sur l'icône du lien de tâche sur la page de branche SH. Laisser vide pour désactiver la fonctionnalité.
+    task_link_placeholder_hint: "Utilisez le placeholder {{ task_id }} pour le remplacer par l'ID de la tâche"
+    task_link_default: "Par défaut, il est déclenché avec le modèle suivant : VERSION-IDTACHE-DESCRIPTION_OPTIONNELLE (ex. 17.0-12345 , 15.0-6789-correctifs)"
+    task_link_per_favorite: Vous pouvez configurer une URL spécifique par favori depuis la page « Favoris SH »
+    task_link_label: Lien de tâche
+    branch_regex: Regex du nom de branche
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: La regex semble incorrecte. Veuillez vérifier.
+
+popup:
+  header_your: Vos Projets
+  header_sh: Odoo.SH
+  header_projects: ""
+  footer:
+    light_theme: Passer au thème clair
+    dark_theme: Passer au thème sombre
+    disable_debug: Désactiver le mode débogage
+    enable_debug: Activer le mode débogage
+    disable_sidebar: Désactiver la barre latérale technique
+    enable_sidebar: Activer la barre latérale technique
+    open_options: Ouvrir les options de l'extension
+    settings: Paramètres
+
+update:
+  error: Une erreur s'est produite
+  title: Odoo Toolbox
+  default_desc: Odoo Toolbox a été mis à jour avec de nouvelles fonctionnalités et améliorations.
+  only_significant: Cette notification n'apparaît que pour les mises à jour significatives méritant d'être mises en évidence.
+  how_to_activate: Comment activer
+  whats_new: Nouveautés
+  open_settings: Ouvrir les paramètres
+  changelog: Journal des modifications
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: Masquer les informations techniques
+    show: Afficher les informations techniques
+    title: Liste technique
+  side_panel:
+    search_placeholder: Rechercher des champs et boutons...
+    required_only: Requis
+    readonly_only: Lecture seule
+    fields_only: Champs
+    buttons_only: Boutons
+    title: Odoo Toolbox
+    exit_selection: Quitter le mode sélection
+    select_element: Sélectionner un élément
+    close: Fermer le panneau
+    fields_list: Liste des champs
+    buttons_list: Liste des boutons
+    no_match: Aucun élément ne correspond à vos filtres
+    no_fields: Aucun champ ou bouton technique trouvé dans cette vue
+    click_field_detail: Cliquez sur un champ dans la page pour voir ses détails
+    click_button_detail: Cliquez sur un bouton dans la page pour voir ses détails
+    click_element_detail: Cliquez sur un élément dans la page pour voir ses détails
+    selected_field: Champ sélectionné
+    selected_button: Bouton sélectionné
+    hover_hint: Survoler pour surligner dans la vue
+    website_info: Informations du site web
+    click_to_copy: Cliquez sur les valeurs pour copier
+    fields_found: champs
+    buttons_found: boutons
+    found: trouvés
+  field_item:
+    copy_hint: Cliquez pour copier le nom du champ
+    invisible_when: "Invisible quand : $1"
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    compute: Calculé
+    related: Lié
+    store: Stocké
+    model: Modèle
+    conditional_hint: "* indique un comportement conditionnel basé sur l'état du champ"
+    widget: Widget
+    relation: Relation
+    domain: Domaine
+    context: Contexte
+    selection: Sélection
+    required_condition: Condition requise
+    readonly_condition: Condition lecture seule
+    invisible_condition: Condition d'invisibilité
+    hide_value: Masquer la valeur
+    show_value: Afficher la valeur
+  field_details:
+    title: "Détails du champ - $1"
+    loading: Chargement des détails du champ...
+    not_found: Champ introuvable
+    more_details: Plus de détails
+    name: Nom
+    label: Libellé
+    type: Type
+    relation: Relation
+    relation_field: Champ de relation
+    required: Requis
+    readonly: Lecture seule
+    stored: Stocké
+    compute: Calculé
+    depends: Dépend de
+    copied: Copié
+    help: Aide
+    size: Taille
+    translatable: Traduisible
+    indexed: Indexé
+    domain: Domaine
+    groups: Groupes
+    on_delete: Suppression
+    related: Lié
+    modules: Modules
+    id: ID
+    model: Modèle
+  field_badge:
+    required: Requis
+    readonly: Lecture seule
+    conditional_when: "$1 quand : $2"
+  button_item:
+    copy_hint: Cliquez pour copier le nom du bouton
+    string: Libellé
+    invisible: Invisible
+    invisible_conditional: Invisible*
+    invisible_when: "Invisible quand : $1"
+    invisible_condition: Condition d'invisibilité
+    context: Contexte
+    confirm: Confirmation
+    help: Aide
+    icon: Icône
+    hotkey: "Raccourci :"
+    conditional_hint: "* indique un comportement conditionnel basé sur l'état du bouton"
+  model_actions:
+    view_fields: Voir les champs du modèle (ir.model.fields)
+    view_access: Voir les droits d'accès du modèle (ir.model.access)
+    view_rules: Voir les règles d'enregistrement (ir.rule)
+    view_server_actions: Voir les actions serveur (ir.actions.server)
+    view_current_action: "Ouvrir l'action actuelle ($1, ID : $2)"
+    view_record_data: Voir les données de l'enregistrement actuel
+    loading: Chargement...
+    fields: Champs
+    access_rights: Droits d'accès
+    record_rules: Règles d'enregistrement
+    server_actions: Actions serveur
+    current_action: Action actuelle
+    data: Données
+    no_data: Aucune donnée retournée
+    record_data_title: "Données de l'enregistrement - $1 (ID : $2)"
+    view_title_fields: "Odoo Toolbox - champs de $1"
+    view_title_rules: "Odoo Toolbox - règles d'enregistrement de $1"
+    view_title_access: "Odoo Toolbox - droits d'accès du modèle $1"
+    view_title_server: "Odoo Toolbox - actions serveur de $1"
+    view_title_action: "Odoo Toolbox - action $1 ($2)"
+    access: Accès
+    view: Vue
+    view_view: Voir l'architecture de la vue actuelle
+    view_access_modal: Voir les droits d'accès et règles d'enregistrement
+    access_modal_title: "Accès - $1"
+    more_details: Plus de détails
+    group: Groupe
+    rule: Règle
+    groups: Groupes
+    domain: Domaine
+    create: Créer
+    read: Lire
+    write: Écrire
+    delete: Supprimer
+    all_groups: Tous les groupes
+    global: Global
+    no_domain: Aucune restriction de domaine
+    no_access_rights: Aucun droit d'accès défini
+    no_record_rules: Aucune règle d'enregistrement définie
+    loading_access: Chargement des données d'accès...
+    granted: Accordé
+    not_granted: Non accordé
+  view_modal:
+    title: "Vues - $1"
+    loading: Chargement des vues...
+    not_found: Aucune vue trouvée
+    base_view: Vue de base
+    inherited_views: Vues héritées
+    no_inherited: Aucune vue héritée
+    priority: Priorité
+    module: Module
+    xml_id: ID XML
+    key: Clé
+    view_arch: Voir XML
+    arch_title: "XML - $1"
+    no_arch: Aucun XML disponible
+    copy_arch: Copier XML
+  database_info:
+    title: Informations de la base de données
+    version: Version
+    database: Base de données
+    server_info: Infos serveur
+    language: Langue
+    debug_mode: Mode débogage
+  record_info:
+    title: Informations de l'enregistrement
+    model: Modèle
+    record_id: ID de l'enregistrement
+    view_type: Type de vue
+    action_type: Type d'action
+    action_name: Nom de l'action
+    action_id: ID de l'action
+    action_xml_id: ID XML de l'action
+    action_context: Contexte de l'action
+    action_domain: Domaine de l'action
+  website_info:
+    title: Informations du site web
+    logged_in: Connecté
+    public: Public
+    website_id: ID du site web
+    main_object: Objet principal
+    view_xml_id: ID XML de la vue
+    view_id: ID de la vue
+  states:
+    scanning: Analyse des champs techniques...
+  record_data:
+    loading: Chargement des données de l'enregistrement...
+    please_wait: Veuillez patienter un instant.
+    copy_json: Copier le JSON dans le presse-papiers
+  info_item:
+    click_to_copy: Cliquez pour copier
+  info_section:
+    collapse: Cliquez pour réduire
+    expand: Cliquez pour développer
+  debug_mode:
+    enabled: Activé
+    assets: Assets
+    tests: Assets de tests
+    disabled: Désactivé
+    unknown: Inconnu
+  errors:
+    odoo_not_found: Objet Odoo introuvable
+    failed_view: Échec du chargement des informations de la vue
+    failed_db: Échec du chargement des informations de la base de données
+  highlight:
+    selected: "✓ Sélectionné"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Démo
+    portal: Portail
+    login_as: Se connecter en tant que
+    login_as_user: "Se connecter en tant qu'utilisateur $1"
+  technical_model:
+    label: "Modèle technique :"
+  sh_favorites:
+    star_hint: Cliquez pour ajouter le projet aux favoris
+  sh_task_link:
+    open_task: Ouvrir la tâche liée
+    open_task_prefix: "Ouvrir la tâche "
+  sh_rename:
+    branches: Branches
+    builds: Builds
+    status: Statut
+    audit_logs: Journaux d'audit
+    settings: Paramètres
+
+services:
+  rpc:
+    http_error: "HTTP $1 : $2"
+    version_not_supported: Version d'Odoo non supportée
+    model_required_search: Le modèle est requis pour la recherche
+    model_required_count: Le modèle est requis pour search_count
+    model_required_read: Le modèle est requis pour search_read
+    model_required_read_op: Le modèle est requis pour read
+    ids_required: Les IDs sont requis pour read
+    write_required: Le modèle, les IDs et les valeurs sont requis pour write
+    create_required: Le modèle et les valeurs sont requis pour create
+    archive_required: Le modèle et les IDs sont requis pour archive
+    unarchive_required: Le modèle et les IDs sont requis pour unarchive
+    unlink_required: Le modèle et les IDs sont requis pour unlink
+    method_required: Le modèle et la méthode sont requis pour l'appel de méthode
+    execute_action_unavailable: executeAction n'est pas disponible dans ce contexte
+    model_required_fields: Le modèle est requis pour fields_get
+  errors:
+    devtools_unavailable: API DevTools non disponible
+    invalid_odoo_error: Format de réponse d'erreur Odoo invalide
+    action_unavailable: Service d'action non disponible
+  quick_domains:
+    active_records: Enregistrements actifs
+    all_records: Tous les enregistrements
+    exists: "Le domaine rapide avec l'ID « $1 » existe déjà"
+    not_found: "Le domaine rapide avec l'ID « $1 » est introuvable"
+  config:
+    settings_object: Les paramètres doivent être un objet
+    favorites_array: Les favoris doivent être un tableau
+    invalid_favorite: "Favori invalide à l'index $1 : doit être un objet"
+    missing_favorite_fields: "Favori invalide à l'index $1 : champs requis manquants"
+    domains_array: Les domaines rapides doivent être un tableau
+    invalid_domain: "Domaine rapide invalide à l'index $1 : doit être un objet"
+    missing_domain_fields: "Domaine rapide invalide à l'index $1 : champs requis manquants"
+  current_page:
+    no_record: Aucun enregistrement trouvé sur la page actuelle
+    found_records: "$1 enregistrement(s) trouvé(s) (vue $2)"
+    unknown_view: inconnue
+    found_list: "Vue liste trouvée avec filtre de domaine pour le modèle : $1"
+    found_model: "Modèle trouvé : $1 (aucun enregistrement spécifique)"
+    failed: Échec de l'obtention des informations de la page actuelle
+  validation:
+    domain_must_be_array: Le domaine doit être un tableau
+    invalid_domain_format: "Format de domaine invalide : $1"
+    unable_to_parse_domain: Impossible d'analyser le domaine
+    invalid_domain_format_expected: Format de domaine invalide. Tableau JSON ou format de liste Python attendu.
+    model_required: Le modèle est requis
+    invalid_model_format: Format de modèle invalide
+    invalid_domain_format_simple: Format de domaine invalide
+    invalid_ids_format: "Format d'IDs invalide (attendu : nombres séparés par des virgules)"
+    invalid_limit: "Limite invalide (doit être entre 1 et 10000)"
+    invalid_offset: "Décalage invalide (doit être 0 ou supérieur)"
+    json_arrays_not_allowed: Les tableaux ne sont pas autorisés. Veuillez fournir un objet JSON avec des paires clé-valeur.
+    json_primitives_not_allowed: Les valeurs primitives ne sont pas autorisées. Veuillez fournir un objet JSON avec des paires clé-valeur.
+    json_objects_only: 'Seuls les objets JSON sont autorisés. Veuillez fournir les données sous la forme {"champ": "valeur"}.'
+    json_empty_not_allowed: L'objet JSON vide n'est pas autorisé. Veuillez fournir des données à mettre à jour.
+    invalid_field: "Champ(s) invalide(s) : $1. Veuillez utiliser les suggestions d'autocomplétion ou vérifier les champs du modèle."
+    missing_required_field: "Champ(s) requis manquant(s) : $1. Ces champs doivent être fournis lors de la création d'un enregistrement."
+    context_must_be_object: Le contexte doit être un objet JSON.
+  no_valid_ids: Aucun ID valide trouvé
+  invalid_context: "Format de contexte invalide : $1"
+  invalid_json: JSON invalide

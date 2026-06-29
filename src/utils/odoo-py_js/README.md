@@ -13,6 +13,6 @@ These files are distributed under the [GNU Lesser General Public License version
 
 ## Notes for downstream users
 
-- These files are used as-is, without functional modification.  
-- For full documentation, updates, or to obtain the original files, please refer to the Odoo upstream repository above.  
+- These files are used as-is, without functional modification.
+- For full documentation, updates, or to obtain the original files, please refer to the Odoo upstream repository above.
 - Please see the LICENSE file or the [Odoo repository's license text](https://github.com/odoo/odoo/blob/f0b80bd634c4a907a4df7d06d318572ccdeb2fca/LICENSE).

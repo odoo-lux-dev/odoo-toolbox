@@ -1,0 +1,77 @@
+name: Translation Report
+description: Report a translation error or suggest an improvement
+title: "[TRANSLATION] "
+labels: ["translation"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Odoo Toolbox translations!
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      description: Which language is affected?
+      options:
+        - "Français (fr)"
+        - "Español (es)"
+        - "العربية (ar)"
+        - "Deutsch (de)"
+        - "Português (BR) (pt_BR)"
+        - "Português (PT) (pt_PT)"
+        - "Italiano (it)"
+        - "Nederlands (nl)"
+        - "English (en)"
+        - "New language request"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What kind of issue is this?
+      options:
+        - "Translation error (wrong meaning, typos)"
+        - "Unnatural phrasing"
+        - "Missing translation (English text shown instead)"
+        - "RTL layout issue"
+        - "Suggestion for improvement"
+        - "New language request"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Where did you see it?
+      description: Which page/feature of the extension has the issue?
+      placeholder: "e.g. Options page > Sidebar, DevTools > Search tab, Popup, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-text
+    attributes:
+      label: Current text
+      description: The text that needs to be fixed (in the target language)
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-text
+    attributes:
+      label: Suggested correction
+      description: What should it say instead?
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Any other details, screenshots, or context

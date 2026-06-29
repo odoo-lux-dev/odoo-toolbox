@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-        
+
   - type: textarea
     id: bug-description
     attributes:
@@ -85,7 +85,7 @@ body:
         1. 
         2. 
         3. 
-        4. 
+        4.
     validations:
       required: true
 

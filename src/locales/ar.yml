@@ -1,0 +1,790 @@
+common:
+  loading: جارٍ التحميل...
+  cancel: إلغاء
+  delete: حذف
+  save: حفظ
+  edit: تعديل
+  remove: إزالة
+  retry: إعادة المحاولة
+  clear: مسح
+  refresh: تحديث
+  close: إغلاق
+  use: استخدام
+  error: خطأ
+  unknown: غير معروف
+  unknown_error: خطأ غير معروف
+  no_data: لا توجد بيانات متاحة
+  copied: تم النسخ!
+  copied_to_clipboard: تم النسخ إلى الحافظة!
+  failed_to_copy: فشل النسخ إلى الحافظة
+  fields: الحقول
+  copy: نسخ
+  download: تنزيل
+  search: بحث
+  loading_favorites: جارٍ تحميل المفضلة...
+  no_favorites: ليس لديك مشاريع مفضلة
+  no_favorites_hint: انقر على أيقونة النجمة بجانب اسم المشروع لإضافته إلى المفضلة
+  take_me_to_sh: خذني إلى صفحة مشاريع Odoo.sh
+  favorite_projects: المشاريع المفضلة
+
+devtools:
+  nav:
+    search: بحث
+    write: كتابة
+    create: إنشاء
+    call_method: استدعاء دالة
+    unlink: حذف
+    history: السجل
+  record_text:
+    singular_impacted: "سيتم التأثير على سجل{model} هذا"
+    singular_action: "سيتم {action} سجل{model} هذا"
+    plural_impacted: "سيتم التأثير على هذه السجلات {count}{model}"
+    plural_action: "سيتم {action} هذه السجلات {count}{model}"
+    method_call_singular: "سيتم تطبيق الدالة {method} على سجل{model} هذا"
+    method_call_plural: "سيتم تطبيق الدالة {method} على هذه السجلات {count}{model}"
+  context_menu:
+    field_title: "الحقل: $1"
+    copy_field_name: نسخ اسم الحقل
+    copy_field_value: نسخ قيمة الحقل
+    copy_relation_ids: "نسخ معرّفات العلاقات ($1)"
+    copy_record_json: "نسخ السجل (JSON)"
+    copy_records_json: "نسخ السجلات (JSON)"
+    focus_record: التركيز على السجل
+    open_in_odoo: فتح في Odoo
+    open_in_odoo_popup: فتح في نافذة Odoo المنبثقة
+    record_title: "السجل: $1"
+    copy_record_id: نسخ معرّف السجل
+  content:
+    insufficient_permissions: صلاحيات غير كافية
+    insufficient_permissions_desc: للوصول إلى أدوات تطوير Odoo Toolbox، يجب منح صلاحية المضيف لهذا النطاق.
+    grant_permission: منح الصلاحية
+    detecting: جارٍ اكتشاف إصدار Odoo...
+    detecting_desc: جارٍ التحقق من مثيل Odoo الحالي لديك. يجب أن يستغرق هذا لحظة فقط.
+    unable_to_reach: تعذّر الوصول إلى Odoo
+    valid_context_hint: "تأكد من أنك في سياق صالح :"
+    on_odoo_instance: أنت على مثيل Odoo
+    inside_backend: أنت داخل واجهة Odoo الخلفية (وليس على الموقع الإلكتروني)
+  sidebar:
+    model: النموذج
+    model_fetch_error: تعذّر جلب النماذج. يرجى إدخال اسم النموذج يدويًا.
+    model_placeholder: اكتب للبحث عن نموذج...
+    record_ids: معرّفات السجلات
+    record_ids_placeholder: "1,2,3 or [1,2,3]"
+    fields: الحقول
+    fields_placeholder: جميع الحقول
+    domain: النطاق
+    domain_help: شروط التصفية بصيغة نطاق Odoo.
+    domain_placeholder: '["field", "=", "value"]'
+    limit: الحد
+    limit_placeholder: "80"
+    offset: الإزاحة
+    offset_placeholder: "0"
+    context: السياق
+    context_help: سياق إضافي لنداءات RPC بصيغة JSON.
+    context_placeholder: '{ "lang": "fr_BE" }'
+    set_default_context: تعيين السياق الافتراضي
+    order_by: الترتيب حسب
+    order_by_help: سيتم تطبيق التحديدات المتعددة بالترتيب.
+    order_by_placeholder: id desc
+    execute_hint: انقر أو اضغط Ctrl+Enter للتنفيذ
+    execute_query: تنفيذ الاستعلام
+    get_current: جلب الحالي
+    get_current_hint: جلب المعلومات من الصفحة الحالية
+    record_ids_search_help: معرّفات مفصولة بفواصل أو مصفوفة. اتركه فارغًا لكل السجلات.
+  write:
+    title: تحديث البيانات (صيغة JSON)
+    warning: "تحذير: تعديل البيانات"
+    warning_desc: عمليات الكتابة ستعدّل السجلات المحددة بشكل دائم. يرجى التحقق من البيانات والسجلات المستهدفة قبل التنفيذ.
+    format_json: تنسيق JSON
+    placeholder: |
+      أدخل البيانات للتحديث بصيغة JSON، مثلاً:
+      {
+        "name": "New Name",
+        "email": "new@email.com",
+        "active": true
+      }
+    updating: جارٍ التحديث...
+    update_records: تحديث السجلات
+    record_ids_help: معرّفات مفصولة بفواصل أو مصفوفة JSON للسجلات المراد تحديثها.
+    load_records: تحميل السجلات
+    confirm_title: تنفيذ عملية الكتابة
+    confirm_message: هل أنت متأكد من أنك تريد تحديث $1 سجل/سجلات؟ سيقوم هذا الإجراء بتعديل السجلات المحددة بشكل دائم.
+    error_model: النموذج مطلوب لعملية الكتابة
+    error_ids: معرّفات السجلات مطلوبة لعملية الكتابة
+    error_data: بيانات الكتابة مطلوبة
+    error_json: "فشل التحقق من JSON: $1"
+    success: تم تحديث $1 سجل/سجلات بنجاح في $2
+    warning_false: اكتملت عملية الكتابة لكنها أعادت false
+    failed: فشلت عملية الكتابة
+    failed_detail: "فشلت عملية الكتابة: $1"
+    result_one_prefix: هذا
+    result_one_suffix: السجل سيتم تحديثه
+    result_many_prefix: هذه
+    result_many_suffix: السجلات سيتم تحديثها
+  create:
+    title: بيانات السجل (صيغة JSON)
+    warning: "تحذير: تعديل قاعدة البيانات"
+    warning_desc: إنشاء سجل سيضيف بيانات جديدة بشكل دائم إلى قاعدة بيانات Odoo لديك. يرجى التحقق من إدخالك قبل المتابعة.
+    format_json: تنسيق JSON
+    placeholder: |
+      أدخل بيانات السجل الجديد بصيغة JSON، مثلاً:
+      {
+        "name": "New Record",
+        "email": "new@example.com",
+        "active": true
+      }
+    creating: جارٍ الإنشاء...
+    create_record: إنشاء سجل
+    confirm_title: إنشاء سجل جديد
+    confirm_message: هل أنت متأكد من أنك تريد إنشاء سجل جديد في $1؟ سيضيف هذا الإجراء بيانات بشكل دائم إلى قاعدة البيانات.
+    will_create: سيتم إنشاء
+    record_created: سجل جديد
+    error_model: يرجى اختيار نموذج أولاً
+    error_data: يرجى تقديم بيانات للإنشاء
+    error_json: صيغة JSON غير صالحة
+    success: "تم إنشاء السجل بنجاح في $1 (المعرّف: $2)"
+    warning_no_id: اكتملت عملية الإنشاء لكن لم يُرجع أي معرّف
+    failed: فشل إنشاء السجل
+    failed_add_fields: فشل إضافة الحقول المطلوبة
+  call_method:
+    title: الدالة المطلوب استدعاؤها
+    placeholder: action_confirm
+    warning: "تحذير: عملية لا يمكن التراجع عنها"
+    warning_desc: يرجى التحقق بعناية من النموذج والسجلات والدالة قبل التنفيذ. التغييرات دائمة ولا يمكن التراجع عنها.
+    executing: جارٍ التنفيذ...
+    call_method: استدعاء الدالة
+    record_ids_help: معرّفات مفصولة بفواصل أو مصفوفة JSON للسجلات المراد استدعاء الدالة عليها.
+    load_records: تحميل السجلات
+    confirm_title: استدعاء الدالة
+    confirm_message: هل أنت متأكد من أنك تريد استدعاء الدالة "$1" على $2 سجل/سجلات؟ قد يقوم هذا الإجراء بتعديل البيانات.
+    error_model: النموذج مطلوب لاستدعاء الدالة
+    error_method: اسم الدالة مطلوب
+    error_ids: معرّفات السجلات مطلوبة لاستدعاء الدالة
+    success: تم استدعاء الدالة "$1" بنجاح على $2 سجل/سجلات في $3
+    failed: فشل استدعاء الدالة
+    failed_detail: "فشل استدعاء الدالة: $1"
+  unlink:
+    warning: "تحذير: عمليات مدمرة"
+    warning_desc: ستقوم هذه العمليات بتعديل أو حذف السجلات بشكل دائم. عمليات الأرشفة قابلة للعكس، لكن عمليات الحذف لا يمكن التراجع عنها.
+    record_ids_help: معرّفات مفصولة بفواصل أو مصفوفة JSON للسجلات المراد حذفها/أرشفتها.
+    load_records: تحميل السجلات
+    archive:
+      archiving: جارٍ الأرشفة...
+      archive_records: أرشفة السجلات
+      confirm_title: أرشفة السجلات
+      confirm_message: هل أنت متأكد من أنك تريد أرشفة $1 سجل/سجلات؟ سيتم إخفاء السجلات المؤرشفة من العروض العادية ولكن يمكن إلغاء أرشفتها لاحقًا.
+      error: النموذج والمعرّفات مطلوبة لعملية الأرشفة
+      success: تم أرشفة $1 سجل/سجلات بنجاح
+      failed: فشلت عملية الأرشفة
+      failed_detail: "فشلت عملية الأرشفة: $1"
+    unarchive:
+      unarchiving: جارٍ إلغاء الأرشفة...
+      unarchive_records: إلغاء أرشفة السجلات
+      confirm_title: إلغاء أرشفة السجلات
+      confirm_message: هل أنت متأكد من أنك تريد إلغاء أرشفة $1 سجل/سجلات؟ ستصبح مرئية مرة أخرى في العروض العادية.
+      error: النموذج والمعرّفات مطلوبة لعملية إلغاء الأرشفة
+      success: تم إلغاء أرشفة $1 سجل/سجلات بنجاح
+      failed: فشلت عملية إلغاء الأرشفة
+      failed_detail: "فشلت عملية إلغاء الأرشفة: $1"
+    delete:
+      deleting: جارٍ الحذف...
+      delete_records: حذف السجلات
+      confirm_title: حذف السجلات
+      confirm_message: هل أنت متأكد من أنك تريد حذف $1 سجل/سجلات نهائيًا؟ لا يمكن التراجع عن هذا الإجراء وستفقد البيانات إلى الأبد
+      error: النموذج والمعرّفات مطلوبة لعملية unlink
+      success: تم حذف $1 سجل/سجلات بنجاح
+      failed: فشلت عملية الحذف
+      failed_detail: "فشلت عملية الحذف: $1"
+  history:
+    title: سجل أدوات التطوير
+    loading: جارٍ تحميل السجل...
+    error: "فشل تحميل السجل: $1"
+    refresh: تحديث
+    clear_all: مسح الكل
+    clear_confirm: هل أنت متأكد من أنك تريد مسح كامل السجل؟ لا يمكن التراجع عن هذا الإجراء.
+    no_results: لا توجد نتائج
+    no_results_hint: حاول تعديل مصطلحات البحث أو عوامل التصفية.
+    empty_title: لا يوجد سجل بعد
+    empty_desc: ستظهر هنا إجراءات أدوات التطوير لديك. ابدأ بإجراء عمليات بحث أو كتابة أو عمليات أخرى.
+    actions_count: إجراءات
+    pinned: مثبّت
+    restore: استعادة
+    restore_hint: سيؤدي هذا إلى الانتقال إلى علامة التبويب $1 واستعادة المعاملات.
+    restore_success: تمت استعادة $1 إجراء لـ $2
+    restore_failed: "فشل استعادة الإجراء: $1"
+    collapse: طي
+    expand: توسيع
+    database_title: "قاعدة البيانات: $1"
+    unpin: إلغاء التثبيت
+    pin: تثبيت
+    pin_hint: تثبيت هذا الإجراء
+    unpin_hint: إلغاء تثبيت هذا الإجراء
+    saving: جارٍ الحفظ...
+    removing: جارٍ الإزالة...
+    remove_from_history: إزالة من السجل
+    remove_confirm_title: إزالة من السجل؟
+    remove_confirm_desc: هل أنت متأكد من أنك تريد إزالة هذا الإجراء من السجل؟ لا يمكن التراجع عن ذلك.
+    parameters: "المعاملات:"
+    filters:
+      all_actions: كل الإجراءات
+      search: بحث
+      write: كتابة
+      create: إنشاء
+      call_method: استدعاء دالة
+      delete_archive: حذف/أرشفة
+      search_placeholder: بحث في الإجراءات، النماذج...
+      type: النوع
+      model: النموذج
+      all_models: كل النماذج
+      clear_filters: مسح عوامل التصفية
+      clear_filters_hint: مسح كل عوامل التصفية
+      total_actions: "إجمالي الإجراءات المخزنة: $1 (يتم الاحتفاظ بآخر $2 إجراء)"
+  domain_editor:
+    placeholder: 'أدخل النطاق (مثلاً، [["active", "=", true]])'
+    help_label: مساعدة صيغة النطاق
+    help_title: مساعدة صيغة النطاق
+    python_supported: "🐍 يتم دعم نطاقات Python!"
+    format_intro: "يمكنك استخدام صيغة JSON أو صيغة Python:"
+    json_format: "صيغة JSON (Odoo RPC):"
+    python_format: "صيغة Python (تحويل تلقائي):"
+    operators: "عوامل تشغيل النطاق (تدوين بولندي):"
+    and_operator: عامل التشغيل AND
+    or_operator: عامل التشغيل OR
+    not_operator: عامل التشغيل NOT
+    conditions_format: "صيغة الشروط: "
+    common_operators: "عوامل التشغيل الشائعة: "
+    loading_domains: جارٍ تحميل النطاقات...
+    manage_domains: إدارة النطاقات
+    no_domain: لا يوجد نطاق سريع متاح
+    show_more: عرض $1 نطاقات إضافية
+    manager_title: مدير النطاقات السريعة
+    add_domain: إضافة نطاق
+    update_domain: تحديث النطاق
+    domain_value_title: "النطاق: $1"
+    no_domains: لا توجد نطاقات.
+    no_domains_hint: انقر على "إضافة نطاق" لإنشاء واحد.
+    edit_title: تعديل النطاق
+    add_title: إضافة نطاق جديد
+    update: تحديث
+    add: إضافة
+    name: الاسم
+    name_placeholder: مثلاً، السجلات النشطة
+    domain_placeholder: 'مثلاً، [["active", "=", true]]'
+    use_hint: استخدام هذا النطاق
+    edit_hint: تعديل النطاق
+    delete_hint: حذف النطاق
+  result_viewer:
+    loading_records: جارٍ تحميل السجلات...
+    fields_count: حقل/حقول
+    open_in_odoo: فتح السجل/السجلات في Odoo
+    open_in_popup: فتح السجل/السجلات في نافذة منبثقة
+    copy_json: نسخ كـ JSON
+    download_json: تنزيل كـ JSON
+    list_view: عرض القائمة
+    exit_pivot: الخروج من العرض المحوري
+    pivot_view: عرض الجدول (انقر مرة أخرى للتحوير)
+    pivot: تحوير
+    table: جدول
+    list: قائمة
+  record_search:
+    placeholder: البحث في أسماء وقيم الحقول (السجلات الموسعة فقط)...
+    of: من
+    match_found: 'تم العثور على تطابق في نص مخفي: "$1"'
+    prev_hint: النتيجة السابقة (Ctrl+Shift+G)
+    next_hint: النتيجة التالية (Ctrl+G)
+    close_hint: إغلاق البحث (Esc)
+    keys: المفاتيح
+    values: القيم
+  result_states:
+    empty: 'قم بتهيئة استعلامك وانقر على "تنفيذ" لعرض النتائج'
+    executing: جارٍ تنفيذ الاستعلام...
+    error: خطأ في الاستعلام
+    no_records: لا توجد سجلات تطابق معاييرك
+    page_of: الصفحة $1 من $2
+    records_range: "$1-$2 / $3 سجل/سجلات"
+    records_found: تم العثور على $1 سجل/سجلات
+  field_rendering:
+    no_ids: لم يتم العثور على معرّفات صالحة
+    no_model: تعذّر تحديد النموذج المرتبط
+    loading_relational: جارٍ تحميل البيانات العلائقية...
+    error_prefix: "خطأ: "
+    no_related: لم يتم العثور على بيانات مرتبطة
+    no_id: لا يوجد معرّف
+    record_n: السجل $1
+    excluded_fields: "الحقول المستبعدة من $1: $2"
+    focus_record: التركيز على هذا السجل
+    open_in_odoo: فتح السجل في Odoo
+    open_in_popup: فتح السجل في نافذة منبثقة
+    invalid_relational: حقل علائقي غير صالح
+    switch_table: التبديل إلى عرض الجدول
+    switch_list: التبديل إلى عرض القائمة
+    open_relational_odoo: فتح الحقل العلائقي في Odoo
+    open_relational_popup: فتح الحقل العلائقي في نافذة منبثقة
+  field_metadata:
+    unavailable: البيانات الوصفية للحقل غير متاحة. إذا كان هذا حقلاً جديدًا، يرجى إعادة تشغيل أدوات التطوير أو تعديل النموذج لفرض التحديث.
+    field_label: "الحقل: $1"
+  selects:
+    select_option: اختر خيارًا...
+    loading: جارٍ التحميل...
+    search_fields: ابحث في الحقول...
+    select_model: اختر نموذجًا...
+    order_by_placeholder: اختر الحقول للترتيب حسبها...
+    asc: (تصاعدي)
+    desc: (تنازلي)
+    refresh_list: تحديث القائمة
+    refreshing: جارٍ تحديث القائمة
+    refresh_error: "خطأ: $1. يمكنك المحاولة مرة أخرى أو إدخال قيمتك يدويًا."
+    refresh_error_title: "خطأ: $1\n\nيمكنك المحاولة مرة أخرى (بالنقر على هذا الزر) أو إدخال قيمتك يدويًا."
+    more_results: عرض أول $1 نتيجة. حسّن بحثك للحصول على نتائج أكثر تحديدًا.
+    excluded_title: "$1 - تم استبعاد هذا الحقل من النتيجة بسبب مشاكل في التوافق. انقر بالزر الأوسط للإزالة."
+    middle_click_remove: انقر بالزر الأوسط للإزالة
+    remove_aria: إزالة $1
+  virtual_table:
+    search_columns: ابحث في كل الأعمدة...
+    rows: صفوف
+    toggle_rows: تبديل الصفوف
+    toggle_columns: تبديل الأعمدة
+    toggle_all: تبديل الكل
+    fields_header: الحقول
+    ids_header: المعرّفات
+  notifications:
+    invalid_fields: تم اكتشاف حقل غير صالح
+    invalid_fields_plural: تم اكتشاف $1 حقول غير صالحة
+    invalid_fields_hint: "💡 استخدم اقتراحات الإكمال التلقائي أو تحقق من حقول النموذج"
+    required_missing: حقل مطلوب مفقود
+    required_missing_plural: $1 حقول مطلوبة مفقودة
+    required_missing_hint: "💡 انقر أدناه لإضافة هذه الحقول بقيم افتراضية"
+    add_required: إضافة الحقل المطلوب
+    add_required_plural: إضافة الحقول المطلوبة
+    auto_add_required: "✨ إضافة الحقل المطلوب تلقائيًا"
+    auto_add_required_plural: "✨ إضافة الحقول المطلوبة تلقائيًا"
+    insert_template: إدراج قالب مع الحقول المطلوبة
+    no_data_to_format: لا توجد بيانات JSON لتنسيقها
+    cannot_format_invalid: لا يمكن تنسيق JSON غير صالح
+    failed_auto_search: فشل في تنفيذ البحث التلقائي
+  error_display:
+    error_summary: ملخص الخطأ
+    error_data: بيانات الخطأ
+    detailed_message: رسالة مفصّلة
+    arguments: الوسائط
+    debug_traceback: تتبع التصحيح
+    context: السياق
+    stack_trace: تتبع المكدس
+    full_error_object: كائن الخطأ الكامل
+    type: النوع
+    model: النموذج
+    message: الرسالة
+    code: الرمز
+    unknown: غير معروف
+    not_available: غير متاح
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: الخيارات
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: مفضلة SH
+    documentation: الوثائق
+    report_bug: الإبلاغ عن خطأ
+    suggest_feature: اقتراح ميزة
+    improve_translation: تحسين ترجمة
+    github: مستودع GitHub
+  favorites:
+    delete_title: حذف من المفضلة؟
+    delete_desc: هل أنت متأكد من أنك تريد حذف "$1" من المفضلة؟
+    edit_name: تعديل اسم $1
+    save_changes: حفظ التغييرات
+    edit_task_link: تعديل رابط مهمة $1
+    reset_changes: إعادة التعيين
+    delete_favorite: حذف $1 من المفضلة
+    task_link_title: تعديل رابط المهمة لـ $1
+    task_link_desc: تعيين رابط مهمة مخصص لهذا المشروع.
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: يبدو الرابط غير صحيح. يرجى التحقق.
+  backup:
+    exporting: جارٍ تصدير إعداداتك...
+    importing: جارٍ استيراد إعداداتك...
+    export: تصدير
+    restore: استعادة
+    error_export: "حدث خطأ أثناء التصدير: $1"
+    failed_read: فشل قراءة محتوى الملف
+    invalid_config: "ملف تهيئة غير صالح - $1"
+    success: تم استيراد التهيئة بنجاح
+    error_import: "حدث خطأ أثناء معالجة الملف: $1"
+    invalid_format: صيغة ملف غير صالحة
+  settings:
+    language: اللغة
+    language_auto: تلقائي (المتصفح)
+    language_desc: اختر لغة الإضافة
+    print_options: خيارات الطباعة
+    print_options_desc: سيسمح لك هذا بطباعة الصفحة بصيغة PDF أو HTML دون تنزيلها
+    pdf: PDF
+    html: HTML
+    color_blind: تفعيل وضع عمى الألوان
+    color_blind_desc: يستبدل هذا الوضع بعض الألوان والأيقونات من Odoo.SH بلوحة ألوان ملائمة لعمى الألوان
+    login_buttons: إظهار أزرار تسجيل الدخول
+    login_buttons_desc: اختر ما إذا كنت تريد إظهار أزرار تسجيل الدخول الافتراضية لـ admin/demo/portal
+    nostalgia: تفعيل وضع الحنين
+    nostalgia_desc: يستبدل هذا الوضع أيقونات التصحيح الأصلية بأيقونات القرد لإحياء ذكرى إضافة القرد الشهيرة
+    tab_title: تحديث عنوان التبويب في صفحات SH
+    tab_title_desc: اختر ما إذا كنت تريد تغيير عنوان التبويب في صفحات Odoo.SH ليشمل اسم المشروع الحالي
+    technical_model: عرض النموذج التقني
+    technical_model_desc: اختر ما إذا كنت تريد عرض النموذج التقني على الصفحة (الإصدار 17.2+)
+    color_scheme: نظام الألوان الافتراضي
+    color_scheme_desc: اختر نظام الألوان الافتراضي لـ Odoo 16 وما فوق.
+    color_scheme_warning: هذه الميزة تجريبية وقد تسبب مشاكل في بعض إصدارات Odoo. إذا واجهت مشاكل، أعد التعيين إلى "لا شيء".
+    color_none: لا شيء (الافتراضي)
+    color_none_tooltip: "لا شيء: يترك لـ Odoo إدارته (إعدادات ملف المستخدم)"
+    color_system: النظام
+    color_system_tooltip: "النظام: يتبع تفضيل النظام لديك"
+    color_light: فاتح
+    color_dark: داكن
+    debug_mode: وضع التصحيح
+    debug_mode_desc: اختر كيف تريد تفعيل وضع التصحيح
+    debug_disabled: معطّل
+    debug_always: دائمًا
+    debug_assets: الأصول
+    debug_tests: أصول الاختبارات
+    debug_disabled_tooltip: "معطّل: لن يتم فرض وضع التصحيح. إذا تم تفعيله من مفتاح تبديل النافذة المنبثقة، فسيتم إزالة وضع التصحيح من الـ URL النشط. إذا وصلت إلى موقع إلكتروني مع وضع تصحيح نشط في الـ URL، فلن تتم إزالته أو استبداله. أساسًا: مثل إضافة القرد 🙈"
+    debug_always_tooltip: "دائمًا: سيتم تفعيل وضع التصحيح دائمًا"
+    debug_assets_tooltip: "الأصول: سيتم تفعيل وضع التصحيح دائمًا إلى الأصول"
+    debug_tests_tooltip: "أصول الاختبارات: سيتم تفعيل وضع التصحيح دائمًا إلى أصول الاختبارات"
+    debug_hint: يمكنك أيضًا تهيئة هذا بالنقر على أيقونة الخطأ داخل النافذة المنبثقة.
+    debug_hint_detail: نقرة واحدة ستبدّل وضع التصحيح، نقرة مزدوجة ستفعّل تصحيح الأصول، ونقرة ثلاثية ستفعّل تصحيح أصول الاختبارات.
+    technical_sidebar: تفعيل الشريط الجانبي التقني
+    technical_sidebar_desc: تفعيل شريط جانبي تقني متقدم مع معلومات شاملة عن الحقول والنظام
+    sidebar_position: موضع الشريط الجانبي
+    left: يسار
+    right: يمين
+    sidebar_features: "ميزات الشريط الجانبي:"
+    feature_field_info: "معلومات الحقل: الأنواع، الخصائص، بيانات التصحيح"
+    feature_db_details: "تفاصيل قاعدة البيانات: الإصدار، المستخدم، معلومات الشركة"
+    feature_website: "سياق الموقع الإلكتروني: عند وجودك في صفحات الواجهة الأمامية"
+    feature_selector: "وضع اختيار العنصر: انقر لاختيار الحقول"
+    feature_copy: "وظيفة النسخ إلى الحافظة لكل القيم"
+    feature_highlight: "إبراز الحقل عند التمرير"
+    version_compat: "توافق الإصدارات:"
+    stable_v16: "مستقر بالكامل من Odoo v16+"
+    earlier_versions: "الإصدارات السابقة قد تكون بمعلومات محدودة"
+    works_both: "يعمل على كل من الواجهة الخلفية وصفحات الموقع"
+    task_link_title: رابط المهمة في صفحة فرع SH
+    task_link_desc: حدد URL لإعادة التوجيه إليه عند النقر على أيقونة رابط المهمة في صفحة فرع SH. اتركه فارغًا لتعطيل الميزة.
+    task_link_placeholder_hint: "استخدم العنصر النائب {{ task_id }} لاستبداله بمعرّف المهمة"
+    task_link_default: "افتراضيًا، يتم تفعيله بالنمط التالي: VERSION-TASKID-OPTIONAL_DESCRIPTION (مثلاً 17.0-12345 ، 15.0-6789-fixes)"
+    task_link_per_favorite: يمكنك إعداد URL محدد لكل مفضلة من صفحة "مفضلة SH"
+    task_link_label: رابط المهمة
+    branch_regex: تعبير نمطي لاسم الفرع
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: يبدو التعبير النمطي غير صحيح. يرجى التحقق.
+
+popup:
+  header_your: مشاريع
+  header_sh: Odoo.SH
+  header_projects: الخاصة بك
+  footer:
+    light_theme: التبديل إلى السمة الفاتحة
+    dark_theme: التبديل إلى السمة الداكنة
+    disable_debug: تعطيل وضع التصحيح
+    enable_debug: تفعيل وضع التصحيح
+    disable_sidebar: تعطيل الشريط الجانبي التقني
+    enable_sidebar: تفعيل الشريط الجانبي التقني
+    open_options: فتح خيارات الإضافة
+    settings: الإعدادات
+
+update:
+  error: حدث خطأ
+  title: Odoo Toolbox
+  default_desc: تم تحديث Odoo Toolbox بميزات وتحسينات جديدة.
+  only_significant: تظهر هذه الإشعارات فقط للتحديثات المهمة التي تستحق الإبراز.
+  how_to_activate: كيفية التفعيل
+  whats_new: ما الجديد
+  open_settings: فتح الإعدادات
+  changelog: سجل التغييرات
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: إخفاء المعلومات التقنية
+    show: إظهار المعلومات التقنية
+    title: القائمة التقنية
+  side_panel:
+    search_placeholder: ابحث في الحقول والأزرار...
+    required_only: المطلوبة
+    readonly_only: للقراءة
+    fields_only: الحقول
+    buttons_only: الأزرار
+    title: Odoo Toolbox
+    exit_selection: الخروج من وضع الاختيار
+    select_element: اختيار عنصر
+    close: إغلاق اللوحة
+    fields_list: قائمة الحقول
+    buttons_list: قائمة الأزرار
+    no_match: لا توجد عناصر تطابق عوامل التصفية
+    no_fields: لا توجد حقول أو أزرار تقنية في هذا العرض
+    click_field_detail: انقر على حقل في الصفحة لعرض تفاصيله
+    click_button_detail: انقر على زر في الصفحة لعرض تفاصيله
+    click_element_detail: انقر على عنصر في الصفحة لعرض تفاصيله
+    selected_field: الحقل المحدد
+    selected_button: الزر المحدد
+    hover_hint: مرّر للتظليل في العرض
+    website_info: معلومات الموقع الإلكتروني
+    click_to_copy: انقر على القيم للنسخ
+    fields_found: حقول
+    buttons_found: أزرار
+    found: تم العثور على
+  field_item:
+    copy_hint: انقر لنسخ اسم الحقل
+    invisible_when: "غير مرئي عندما: $1"
+    invisible: غير مرئي
+    invisible_conditional: غير مرئي*
+    compute: محسوب
+    related: مرتبط
+    store: مخزّن
+    model: النموذج
+    conditional_hint: "* يشير إلى سلوك مشروط بناءً على حالة الحقل"
+    widget: Widget
+    relation: العلاقة
+    domain: النطاق
+    context: السياق
+    selection: الاختيار
+    required_condition: شرط الإلزام
+    readonly_condition: شرط القراءة فقط
+    invisible_condition: شرط عدم الظهور
+    hide_value: إخفاء القيمة
+    show_value: إظهار القيمة
+  field_details:
+    title: "تفاصيل الحقل - $1"
+    loading: جارٍ تحميل تفاصيل الحقل...
+    not_found: الحقل غير موجود
+    more_details: المزيد من التفاصيل
+    name: الاسم
+    label: التسمية
+    type: النوع
+    relation: العلاقة
+    relation_field: حقل العلاقة
+    required: مطلوب
+    readonly: للقراءة فقط
+    stored: مخزن
+    compute: محسوب
+    depends: يعتمد على
+    copied: منسوخ
+    help: مساعدة
+    size: الحجم
+    translatable: قابل للترجمة
+    indexed: مفهرس
+    domain: النطاق
+    groups: المجموعات
+    on_delete: عند الحذف
+    related: مرتبط
+    modules: الوحدات
+    id: المعرف
+    model: النموذج
+  field_badge:
+    required: مطلوب
+    readonly: للقراءة فقط
+    conditional_when: "$1 عندما: $2"
+  button_item:
+    copy_hint: انقر لنسخ اسم الزر
+    string: النص
+    invisible: غير مرئي
+    invisible_conditional: غير مرئي*
+    invisible_when: "غير مرئي عندما: $1"
+    invisible_condition: شرط عدم الظهور
+    context: السياق
+    confirm: تأكيد
+    help: مساعدة
+    icon: أيقونة
+    hotkey: "مفتاح الاختصار:"
+    conditional_hint: "* يشير إلى سلوك مشروط بناءً على حالة الزر"
+  model_actions:
+    view_fields: عرض حقول النموذج (ir.model.fields)
+    view_access: عرض حقوق الوصول للنموذج (ir.model.access)
+    view_rules: عرض قواعد السجلات (ir.rule)
+    view_server_actions: عرض إجراءات الخادم (ir.actions.server)
+    view_current_action: "فتح الإجراء الحالي ($1، المعرّف: $2)"
+    view_record_data: عرض بيانات السجل الحالي
+    loading: جارٍ التحميل...
+    fields: الحقول
+    access_rights: حقوق الوصول
+    record_rules: قواعد السجلات
+    server_actions: إجراءات الخادم
+    current_action: الإجراء الحالي
+    data: البيانات
+    no_data: لم تُرجع أي بيانات
+    record_data_title: "بيانات السجل - $1 (المعرّف: $2)"
+    view_title_fields: "Odoo Toolbox - حقول $1"
+    view_title_rules: "Odoo Toolbox - قواعد سجلات $1"
+    view_title_access: "Odoo Toolbox - حقوق وصول نموذج $1"
+    view_title_server: "Odoo Toolbox - إجراءات خادم $1"
+    view_title_action: "Odoo Toolbox - الإجراء $1 ($2)"
+    access: الوصول
+    view: عرض
+    view_view: عرض بنية العرض الحالي
+    view_access_modal: عرض حقوق الوصول وقواعد السجلات
+    access_modal_title: "الوصول - $1"
+    more_details: المزيد من التفاصيل
+    group: مجموعة
+    rule: قاعدة
+    groups: المجموعات
+    domain: النطاق
+    create: إنشاء
+    read: قراءة
+    write: كتابة
+    delete: حذف
+    all_groups: جميع المجموعات
+    global: عام
+    no_domain: لا يوجد قيد نطاق
+    no_access_rights: لا توجد حقوق وصول محددة
+    no_record_rules: لا توجد قواعد سجلات محددة
+    loading_access: جارٍ تحميل بيانات الوصول...
+    granted: ممنوح
+    not_granted: غير ممنوح
+  view_modal:
+    title: "العروض - $1"
+    loading: جارٍ تحميل العروض...
+    not_found: لا يوجد عرض
+    base_view: العرض الأساسي
+    inherited_views: العروض الموروثة
+    no_inherited: لا توجد عروض موروثة
+    priority: الأولوية
+    module: الوحدة
+    xml_id: معرف XML
+    key: المفتاح
+    view_arch: عرض XML
+    arch_title: "XML - $1"
+    no_arch: لا يوجد XML متاح
+    copy_arch: نسخ XML
+  database_info:
+    title: معلومات قاعدة البيانات
+    version: الإصدار
+    database: قاعدة البيانات
+    server_info: معلومات الخادم
+    language: اللغة
+    debug_mode: وضع التصحيح
+  record_info:
+    title: معلومات السجل
+    model: النموذج
+    record_id: معرّف السجل
+    view_type: نوع العرض
+    action_type: نوع الإجراء
+    action_name: اسم الإجراء
+    action_id: معرّف الإجراء
+    action_xml_id: XML ID للإجراء
+    action_context: سياق الإجراء
+    action_domain: نطاق الإجراء
+  website_info:
+    title: معلومات الموقع الإلكتروني
+    logged_in: مسجّل الدخول
+    public: عام
+    website_id: معرّف الموقع
+    main_object: الكائن الرئيسي
+    view_xml_id: XML ID للعرض
+    view_id: معرّف العرض
+  states:
+    scanning: جارٍ فحص الحقول التقنية...
+  record_data:
+    loading: جارٍ تحميل بيانات السجل...
+    please_wait: يرجى الانتظار لحظة.
+    copy_json: نسخ JSON إلى الحافظة
+  info_item:
+    click_to_copy: انقر للنسخ
+  info_section:
+    collapse: انقر للطي
+    expand: انقر للتوسيع
+  debug_mode:
+    enabled: مفعّل
+    assets: الأصول
+    tests: أصول الاختبارات
+    disabled: معطّل
+    unknown: غير معروف
+  errors:
+    odoo_not_found: لم يتم العثور على كائن Odoo
+    failed_view: فشل تحميل معلومات العرض
+    failed_db: فشل تحميل معلومات قاعدة البيانات
+  highlight:
+    selected: "✓ محدد"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Demo
+    portal: Portal
+    login_as: تسجيل الدخول كـ
+    login_as_user: "تسجيل الدخول كمستخدم $1"
+  technical_model:
+    label: "النموذج التقني :"
+  sh_favorites:
+    star_hint: انقر لتمييز المشروع بنجمة
+  sh_task_link:
+    open_task: فتح المهمة ذات الصلة
+    open_task_prefix: "فتح المهمة "
+  sh_rename:
+    branches: الفروع
+    builds: البناءات
+    status: الحالة
+    audit_logs: سجلات التدقيق
+    settings: الإعدادات
+
+services:
+  rpc:
+    http_error: "HTTP $1: $2"
+    version_not_supported: إصدار Odoo غير مدعوم
+    model_required_search: النموذج مطلوب للبحث
+    model_required_count: النموذج مطلوب لـ search_count
+    model_required_read: النموذج مطلوب لـ search_read
+    model_required_read_op: النموذج مطلوب للقراءة
+    ids_required: المعرّفات مطلوبة للقراءة
+    write_required: النموذج والمعرّفات والقيم مطلوبة للكتابة
+    create_required: النموذج والقيم مطلوبة للإنشاء
+    archive_required: النموذج والمعرّفات مطلوبة للأرشفة
+    unarchive_required: النموذج والمعرّفات مطلوبة لإلغاء الأرشفة
+    unlink_required: النموذج والمعرّفات مطلوبة لـ unlink
+    method_required: النموذج والدالة مطلوبة لاستدعاء الدالة
+    execute_action_unavailable: executeAction غير متاح في هذا السياق
+    model_required_fields: النموذج مطلوب لـ fields_get
+  errors:
+    devtools_unavailable: واجهة برمجة تطبيقات DevTools غير متاحة
+    invalid_odoo_error: صيغة استجابة خطأ Odoo غير صالحة
+    action_unavailable: خدمة الإجراءات غير متاحة
+  quick_domains:
+    active_records: السجلات النشطة
+    all_records: كل السجلات
+    exists: 'النطاق السريع بالمعرّف "$1" موجود مسبقًا'
+    not_found: 'النطاق السريع بالمعرّف "$1" غير موجود'
+  config:
+    settings_object: يجب أن تكون الإعدادات كائنًا
+    favorites_array: يجب أن تكون المفضلة مصفوفة
+    invalid_favorite: "مفضلة غير صالحة في الفهرس $1: يجب أن تكون كائنًا"
+    missing_favorite_fields: "مفضلة غير صالحة في الفهرس $1: حقول مطلوبة مفقودة"
+    domains_array: يجب أن تكون النطاقات السريعة مصفوفة
+    invalid_domain: "نطاق سريع غير صالح في الفهرس $1: يجب أن يكون كائنًا"
+    missing_domain_fields: "نطاق سريع غير صالح في الفهرس $1: حقول مطلوبة مفقودة"
+  current_page:
+    no_record: لم يتم العثور على سجل في الصفحة الحالية
+    found_records: "تم العثور على $1 سجل/سجلات (عرض $2)"
+    unknown_view: غير معروف
+    found_list: "تم العثور على عرض قائمة مع تصفية نطاق للنموذج: $1"
+    found_model: "تم العثور على النموذج: $1 (لا توجد سجلات محددة)"
+    failed: فشل في جلب معلومات الصفحة الحالية
+  validation:
+    domain_must_be_array: يجب أن يكون النطاق مصفوفة
+    invalid_domain_format: "صيغة نطاق غير صالحة: $1"
+    unable_to_parse_domain: تعذّر تحليل النطاق
+    invalid_domain_format_expected: صيغة نطاق غير صالحة. متوقع مصفوفة JSON أو صيغة قائمة Python.
+    model_required: النموذج مطلوب
+    invalid_model_format: صيغة نموذج غير صالحة
+    invalid_domain_format_simple: صيغة نطاق غير صالحة
+    invalid_ids_format: "صيغة معرّفات غير صالحة (المتوقع: أرقام مفصولة بفواصل)"
+    invalid_limit: "حد غير صالح (يجب أن يكون بين 1 و 10000)"
+    invalid_offset: "إزاحة غير صالحة (يجب أن تكون 0 أو أكبر)"
+    json_arrays_not_allowed: المصفوفات غير مسموح بها. يرجى تقديم كائن JSON بأزواج مفتاح-قيمة.
+    json_primitives_not_allowed: القيم البدائية غير مسموح بها. يرجى تقديم كائن JSON بأزواج مفتاح-قيمة.
+    json_objects_only: 'يُسمح فقط بكائنات JSON. يرجى تقديم البيانات كـ {"field": "value"}.'
+    json_empty_not_allowed: لا يُسمح بكائن JSON فارغ. يرجى تقديم بيانات للتحديث.
+    invalid_field: "حقل/حقول غير صالحة: $1. يرجى استخدام اقتراحات الإكمال التلقائي أو التحقق من حقول النموذج."
+    missing_required_field: "حقل/حقول مطلوبة مفقودة: $1. يجب تقديم هذه الحقول عند إنشاء سجل."
+    context_must_be_object: يجب أن يكون السياق كائن JSON.
+  no_valid_ids: لم يتم العثور على معرّفات صالحة
+  invalid_context: "صيغة سياق غير صالحة: $1"
+  invalid_json: JSON غير صالح
