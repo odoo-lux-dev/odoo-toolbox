@@ -1,54 +1,42 @@
-import { useEffect, useRef } from "preact/hooks";
+import { createEffect, createSignal } from "solid-js";
 
-/**
- * Hook that automatically adds a title when text is truncated with ellipsis
- * @param text - The full text to display
- * @param deps - Dependencies to re-check ellipsis
- */
 export const useEllipsisTitle = <T extends HTMLElement = HTMLElement>(
-    text: string,
-    deps: unknown[] = [],
-) => {
-    const ref = useRef<T>(null);
+  text: string,
+): ((el: T) => void) => {
+  const [ref, setRef] = createSignal<T>();
 
-    useEffect(() => {
-        const element = ref.current;
-        if (!element || !text) return;
+  createEffect(() => {
+    const element = ref();
+    if (!element || !text) return;
 
-        // Check if text is truncated
-        const isTextTruncated = element.scrollWidth > element.clientWidth;
+    const isTextTruncated = element.scrollWidth > element.clientWidth;
 
-        if (isTextTruncated) {
-            element.title = text;
-        } else {
-            element.removeAttribute("title");
-        }
-    }, [text, ...deps]);
+    if (isTextTruncated) {
+      element.title = text;
+    } else {
+      element.removeAttribute("title");
+    }
+  });
 
-    return ref;
+  return setRef;
 };
 
-/**
- * Simplified version that uses the element's textContent directly
- */
-export const useAutoEllipsisTitle = <T extends HTMLElement = HTMLElement>(
-    deps: unknown[] = [],
-) => {
-    const ref = useRef<T>(null);
+export const useAutoEllipsisTitle = <T extends HTMLElement = HTMLElement>(): ((el: T) => void) => {
+  const [ref, setRef] = createSignal<T>();
 
-    useEffect(() => {
-        const element = ref.current;
-        if (!element) return;
+  createEffect(() => {
+    const element = ref();
+    if (!element) return;
 
-        const text = element.textContent || "";
-        const isTextTruncated = element.scrollWidth > element.clientWidth;
+    const text = element.textContent || "";
+    const isTextTruncated = element.scrollWidth > element.clientWidth;
 
-        if (isTextTruncated && text) {
-            element.title = text;
-        } else {
-            element.removeAttribute("title");
-        }
-    }, deps);
+    if (isTextTruncated && text) {
+      element.title = text;
+    } else {
+      element.removeAttribute("title");
+    }
+  });
 
-    return ref;
+  return setRef;
 };

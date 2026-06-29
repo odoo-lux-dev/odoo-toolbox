@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "sortImports": true,
+  "ignorePatterns": [
+    "**/odoo-py_js/*.js",
+    "**/tests/**",
+    "**/node_modules/**",
+    "**/build/**",
+    "**/dist/**"
+  ]
+}

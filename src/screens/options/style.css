@@ -1,0 +1,6 @@
+@import url(https://fonts.bunny.net/css?family=noto-color-emoji:400);
+@import "@/theme/daisy-theme.css";
+
+.emoji-font {
+  font-family: "Noto Color Emoji", sans-serif;
+}

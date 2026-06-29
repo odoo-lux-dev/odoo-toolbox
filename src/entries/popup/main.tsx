@@ -1,4 +1,8 @@
-import { render } from "preact";
-import { App } from "./App";
+import { render } from "solid-js/web";
 
-render(<App />, document.body);
+import { App } from "@/screens/popup/App";
+import { initI18n } from "@/services/i18n-service";
+
+await initI18n();
+
+render(() => <App />, document.body);

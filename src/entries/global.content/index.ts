@@ -1,43 +1,29 @@
 import "./global-style.scss";
+import { initI18n } from "@/services/i18n-service";
+import { getDirection } from "@/services/i18n-service";
 import { settingsService } from "@/services/settings-service";
+import { SETTINGS_CONFIG } from "@/services/settings-service";
+import { injectTranslations } from "@/utils/i18n-page";
 
 export default defineContentScript({
-    matches: ["*://*/*"],
-    async main() {
-        /**
-         * Initializes the global content script by:
-         * - Loading user settings from storage
-         * - Applying settings as data attributes to document
-         * - Injecting the main functionality script
-         */
-        const settings = await settingsService.getSettings();
-        document.body.dataset.defaultDebugMode =
-            settings.enableDebugMode || "disabled";
-        document.body.dataset.showPrintOptionsPDF = (
-            settings.enablePrintOptionsPDF || false
-        ).toString();
-        document.body.dataset.showPrintOptionsHTML = (
-            settings.enablePrintOptionsHTML || false
-        ).toString();
-        document.body.dataset.showTechnicalModel = (
-            settings.showTechnicalModel || false
-        ).toString();
-        document.body.dataset.defaultColorScheme =
-            settings.defaultColorScheme || "none";
-        document.body.dataset.showTechnicalList = (
-            settings.showTechnicalList || false
-        ).toString();
-        document.body.dataset.technicalListPosition =
-            settings.technicalListPosition || "right";
-        document.body.dataset.showLoginButtons = (
-            settings.showLoginButtons || false
-        ).toString();
-        document.body.dataset.odooToolboxTheme = (
-            settings.extensionTheme || "dark"
-        ).toString();
+  matches: ["*://*/*"],
+  async main() {
+    const { locale, messages } = await initI18n();
+    injectTranslations({ messages, dir: getDirection(locale), locale });
 
-        await injectScript("/odoo-websites.js", {
-            keepInDom: true,
-        });
-    },
+    const settings = await settingsService.getSettings();
+
+    for (const def of SETTINGS_CONFIG) {
+      if (!def.datasetKey) continue;
+      const value = settings[def.key];
+      const datasetValue = def.datasetTransform
+        ? def.datasetTransform(value)
+        : String(value ?? def.default);
+      document.body.dataset[def.datasetKey] = datasetValue;
+    }
+
+    await injectScript("/odoo-websites.js", {
+      keepInDom: true,
+    });
+  },
 });

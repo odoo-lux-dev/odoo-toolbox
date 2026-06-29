@@ -1,65 +1,60 @@
-import { ComponentChildren, JSX } from "preact";
+import { splitProps, type JSX } from "solid-js";
+
+import { cx } from "@/components/ui/cx";
 
 type TableSize = "xs" | "sm" | "md" | "lg" | "xl";
 
-export interface TableProps
-    extends Omit<JSX.HTMLAttributes<HTMLTableElement>, "size"> {
-    size?: TableSize;
-    zebra?: boolean;
-    pinRows?: boolean;
-    pinCols?: boolean;
-    children: ComponentChildren;
+export interface TableProps extends Omit<JSX.HTMLAttributes<HTMLTableElement>, "size"> {
+  size?: TableSize;
+  zebra?: boolean;
+  pinRows?: boolean;
+  pinCols?: boolean;
+  children: JSX.Element;
 }
 
-export interface TableContainerProps
-    extends JSX.HTMLAttributes<HTMLDivElement> {
-    children: ComponentChildren;
+export interface TableContainerProps extends JSX.HTMLAttributes<HTMLDivElement> {
+  children: JSX.Element;
 }
 
 const sizeClassMap: Record<TableSize, string> = {
-    xs: "table-xs",
-    sm: "table-sm",
-    md: "table-md",
-    lg: "table-lg",
-    xl: "table-xl",
+  xs: "table-xs",
+  sm: "table-sm",
+  md: "table-md",
+  lg: "table-lg",
+  xl: "table-xl",
 };
 
-const cx = (...classes: Array<string | undefined>) =>
-    classes.filter(Boolean).join(" ");
-
-export const TableContainer = ({
-    className,
-    children,
-    ...rest
-}: TableContainerProps) => {
-    return (
-        <div className={cx("overflow-x-auto", className)} {...rest}>
-            {children}
-        </div>
-    );
+export const TableContainer = (props: TableContainerProps) => {
+  const [local, rest] = splitProps(props, ["class", "children"]);
+  return (
+    <div class={cx("overflow-x-auto", local.class)} {...rest}>
+      {local.children}
+    </div>
+  );
 };
 
-export const Table = ({
-    size,
-    zebra = false,
-    pinRows = false,
-    pinCols = false,
-    className,
-    children,
-    ...rest
-}: TableProps) => {
-    const classes = cx(
-        "table",
-        size ? sizeClassMap[size] : undefined,
-        zebra ? "table-zebra" : undefined,
-        pinRows ? "table-pin-rows" : undefined,
-        pinCols ? "table-pin-cols" : undefined,
-        className,
+export const Table = (props: TableProps) => {
+  const [local, rest] = splitProps(props, [
+    "size",
+    "zebra",
+    "pinRows",
+    "pinCols",
+    "class",
+    "children",
+  ]);
+  const classes = () =>
+    cx(
+      "table",
+      local.size ? sizeClassMap[local.size] : undefined,
+      local.zebra ? "table-zebra" : undefined,
+      local.pinRows ? "table-pin-rows" : undefined,
+      local.pinCols ? "table-pin-cols" : undefined,
+      local.class,
     );
 
-    return (
-        <table className={classes} {...rest}>
-            {children}
-        </table>
-    );
+  return (
+    <table class={classes()} {...rest}>
+      {local.children}
+    </table>
+  );
 };

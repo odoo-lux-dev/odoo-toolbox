@@ -1,11 +1,12 @@
-import { createHashHistory } from "history";
-import { render } from "preact";
-import { App } from "./App";
+import { render } from "solid-js/web";
 
-const history = createHashHistory();
+import { App } from "@/screens/options/App";
+import { initI18n } from "@/services/i18n-service";
 
-if (history.location.pathname === "/") {
-    history.replace("/options");
+await initI18n();
+
+if (!window.location.hash || window.location.hash === "#/") {
+  window.location.hash = "#/options";
 }
 
-render(<App />, document.body);
+render(() => <App />, document.body);

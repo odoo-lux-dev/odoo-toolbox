@@ -1,0 +1,790 @@
+common:
+  loading: Laden...
+  cancel: Annuleren
+  delete: Verwijderen
+  save: Opslaan
+  edit: Bewerken
+  remove: Verwijderen
+  retry: Opnieuw proberen
+  clear: Wissen
+  refresh: Vernieuwen
+  close: Sluiten
+  use: Gebruiken
+  error: Fout
+  unknown: Onbekend
+  unknown_error: Onbekende fout
+  no_data: Geen gegevens beschikbaar
+  copied: Gekopieerd!
+  copied_to_clipboard: Gekopieerd naar klembord!
+  failed_to_copy: Kopiëren naar klembord mislukt
+  fields: Velden
+  copy: Kopiëren
+  download: Downloaden
+  search: Zoeken
+  loading_favorites: Favorieten laden...
+  no_favorites: U heeft geen favoriete projecten
+  no_favorites_hint: Klik op het stericoon naast de projectnaam om het aan uw favorieten toe te voegen
+  take_me_to_sh: Breng me naar de Odoo.sh projectenpagina
+  favorite_projects: Favoriete projecten
+
+devtools:
+  nav:
+    search: Zoeken
+    write: Schrijven
+    create: Aanmaken
+    call_method: Methode aanroepen
+    unlink: Ontkoppelen
+    history: Geschiedenis
+  record_text:
+    singular_impacted: "Dit{model} record wordt beïnvloed"
+    singular_action: "Dit{model} record wordt {action}"
+    plural_impacted: "Deze {count}{model} records worden beïnvloed"
+    plural_action: "Deze {count}{model} records worden {action}"
+    method_call_singular: "De methode {method} wordt toegepast op dit{model} record"
+    method_call_plural: "De methode {method} wordt toegepast op deze {count}{model} records"
+  context_menu:
+    field_title: "Veld: $1"
+    copy_field_name: Veldnaam kopiëren
+    copy_field_value: Veldwaarde kopiëren
+    copy_relation_ids: "Relatie IDs kopiëren ($1)"
+    copy_record_json: "Record kopiëren (JSON)"
+    copy_records_json: "Records kopiëren (JSON)"
+    focus_record: Focus op record
+    open_in_odoo: Openen in Odoo
+    open_in_odoo_popup: Openen in Odoo pop-up
+    record_title: "Record: $1"
+    copy_record_id: Record ID kopiëren
+  content:
+    insufficient_permissions: Onvoldoende rechten
+    insufficient_permissions_desc: Voor toegang tot de Odoo Toolbox Devtools moet u hostrechten verlenen voor dit domein.
+    grant_permission: Rechten verlenen
+    detecting: Odoo versie detecteren...
+    detecting_desc: Uw huidige Odoo instantie controleren. Dit duurt slechts een moment.
+    unable_to_reach: Kan geen verbinding maken met Odoo
+    valid_context_hint: "Zorg ervoor dat u zich in een geldige context bevindt :"
+    on_odoo_instance: U bevindt zich op een Odoo instantie
+    inside_backend: U bevindt zich in de Odoo backend (en niet op de website)
+  sidebar:
+    model: Model
+    model_fetch_error: Modellen konden niet worden opgehaald. Voer uw modelnaam handmatig in.
+    model_placeholder: Typ om een model te zoeken...
+    record_ids: Record IDs
+    record_ids_placeholder: "1,2,3 of [1,2,3]"
+    fields: Velden
+    fields_placeholder: Alle velden
+    domain: Domein
+    domain_help: Filtervoorwaarden in Odoo domein formaat.
+    domain_placeholder: '["field", "=", "value"]'
+    limit: Limiet
+    limit_placeholder: "80"
+    offset: Offset
+    offset_placeholder: "0"
+    context: Context
+    context_help: Aanvullende context voor RPC aanroepen in JSON formaat.
+    context_placeholder: '{ "lang": "fr_BE" }'
+    set_default_context: Standaard context instellen
+    order_by: Sorteren op
+    order_by_help: Meerdere selecties worden in volgorde toegepast.
+    order_by_placeholder: id desc
+    execute_hint: Klik of druk op Ctrl+Enter om uit te voeren
+    execute_query: Query uitvoeren
+    get_current: Huidige ophalen
+    get_current_hint: Informatie van de huidige pagina ophalen
+    record_ids_search_help: Komma-gescheiden IDs of array. Leeg voor alle records.
+  write:
+    title: Gegevens bijwerken (JSON formaat)
+    warning: "Waarschuwing: Gegevenswijziging"
+    warning_desc: Schrijfbewerkingen wijzigen de geselecteerde records permanent. Controleer de gegevens en doelrecords voordat u uitvoert.
+    format_json: JSON formatteren
+    placeholder: |
+      Voer de bij te werken gegevens in JSON formaat in, bijv.:
+      {
+        "name": "New Name",
+        "email": "new@email.com",
+        "active": true
+      }
+    updating: Bijwerken...
+    update_records: Records bijwerken
+    record_ids_help: Komma-gescheiden IDs of JSON array van records om bij te werken.
+    load_records: Records laden
+    confirm_title: Schrijfbewerking uitvoeren
+    confirm_message: Weet u zeker dat u $1 record(s) wilt bijwerken? Deze actie wijzigt de geselecteerde records permanent.
+    error_model: Model is vereist voor schrijfbewerking
+    error_ids: Record IDs zijn vereist voor schrijfbewerking
+    error_data: Schrijfgegevens zijn vereist
+    error_json: "JSON validatie mislukt: $1"
+    success: Succesvol $1 record(s) bijgewerkt in $2
+    warning_false: Schrijfbewerking voltooid maar retourneerde false
+    failed: Schrijfbewerking mislukt
+    failed_detail: "Schrijfbewerking mislukt: $1"
+    result_one_prefix: Dit
+    result_one_suffix: record wordt bijgewerkt
+    result_many_prefix: Deze
+    result_many_suffix: records worden bijgewerkt
+  create:
+    title: Recordgegevens (JSON formaat)
+    warning: "Waarschuwing: Databasewijziging"
+    warning_desc: Het aanmaken van een record voegt permanent nieuwe gegevens toe aan uw Odoo database. Controleer uw invoer voordat u verdergaat.
+    format_json: JSON formatteren
+    placeholder: |
+      Voer de gegevens voor het nieuwe record in JSON formaat in, bijv.:
+      {
+        "name": "New Record",
+        "email": "new@example.com",
+        "active": true
+      }
+    creating: Aanmaken...
+    create_record: Record aanmaken
+    confirm_title: Nieuw record aanmaken
+    confirm_message: Weet u zeker dat u een nieuw record wilt aanmaken in $1? Deze actie voegt permanent gegevens toe aan de database.
+    will_create: Een nieuw
+    record_created: record wordt aangemaakt
+    error_model: Selecteer eerst een model
+    error_data: Geef gegevens op om aan te maken
+    error_json: Ongeldig JSON formaat
+    success: "Succesvol record aangemaakt in $1 (ID: $2)"
+    warning_no_id: Aanmaakbewerking voltooid maar geen ID geretourneerd
+    failed: Record aanmaken mislukt
+    failed_add_fields: Vereiste velden toevoegen mislukt
+  call_method:
+    title: Aan te roepen methode
+    placeholder: action_confirm
+    warning: "Waarschuwing: Onomkeerbare bewerking"
+    warning_desc: Controleer model, records en methode zorgvuldig voordat u uitvoert. Wijzigingen zijn permanent en kunnen niet ongedaan worden gemaakt.
+    executing: Uitvoeren...
+    call_method: Methode aanroepen
+    record_ids_help: Komma-gescheiden IDs of JSON array van records waarop de methode wordt aangeroepen.
+    load_records: Records laden
+    confirm_title: Methode aanroepen
+    confirm_message: Weet u zeker dat u methode "$1" wilt aanroepen op $2 record(s)? Deze actie kan de gegevens wijzigen.
+    error_model: Model is vereist voor methode-aanroep
+    error_method: Methode-naam is vereist
+    error_ids: Record IDs zijn vereist voor methode-aanroep
+    success: Succesvol methode "$1" aangeroepen op $2 record(s) in $3
+    failed: Methode-aanroep mislukt
+    failed_detail: "Methode-aanroep mislukt: $1"
+  unlink:
+    warning: "Waarschuwing: Vernietigende bewerkingen"
+    warning_desc: Deze bewerkingen wijzigen of verwijderen records permanent. Archiveringsbewerkingen zijn omkeerbaar, maar verwijderbewerkingen kunnen niet ongedaan worden gemaakt.
+    record_ids_help: Komma-gescheiden IDs of JSON array van records om te verwijderen/archiveren.
+    load_records: Records laden
+    archive:
+      archiving: Archiveren...
+      archive_records: Records archiveren
+      confirm_title: Records archiveren
+      confirm_message: Weet u zeker dat u $1 record(s) wilt archiveren? Gearchiveerde records worden verborgen uit normale weergaven maar kunnen later worden gedearchiveerd.
+      error: Model en IDs zijn vereist voor archiveringsbewerking
+      success: Succesvol $1 record(s) gearchiveerd
+      failed: Archiveringsbewerking mislukt
+      failed_detail: "Archiveringsbewerking mislukt: $1"
+    unarchive:
+      unarchiving: Dearchiveren...
+      unarchive_records: Records dearchiveren
+      confirm_title: Records dearchiveren
+      confirm_message: Weet u zeker dat u $1 record(s) wilt dearchiveren? Ze worden weer zichtbaar in normale weergaven.
+      error: Model en IDs zijn vereist voor dearchiveringsbewerking
+      success: Succesvol $1 record(s) gedearchiveerd
+      failed: Dearchiveringsbewerking mislukt
+      failed_detail: "Dearchiveringsbewerking mislukt: $1"
+    delete:
+      deleting: Verwijderen...
+      delete_records: Records verwijderen
+      confirm_title: Records verwijderen
+      confirm_message: Weet u zeker dat u $1 record(s) permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt en de gegevens gaan definitief verloren
+      error: Model en IDs zijn vereist voor ontkoppelingsbewerking
+      success: Succesvol $1 record(s) verwijderd
+      failed: Verwijderbewerking mislukt
+      failed_detail: "Verwijderbewerking mislukt: $1"
+  history:
+    title: DevTools geschiedenis
+    loading: Geschiedenis laden...
+    error: "Geschiedenis laden mislukt: $1"
+    refresh: Vernieuwen
+    clear_all: Alles wissen
+    clear_confirm: Weet u zeker dat u de volledige geschiedenis wilt wissen? Deze actie kan niet ongedaan worden gemaakt.
+    no_results: Geen resultaten gevonden
+    no_results_hint: Probeer uw zoektermen of filters aan te passen.
+    empty_title: Nog geen geschiedenis
+    empty_desc: Uw DevTools acties verschijnen hier. Begin met het uitvoeren van zoekopdrachten, schrijfacties of andere bewerkingen.
+    actions_count: acties
+    pinned: Vastgemaakt
+    restore: Herstellen
+    restore_hint: Dit navigeert naar het $1 tabblad en herstelt de parameters.
+    restore_success: $1 actie hersteld voor $2
+    restore_failed: "Actie herstellen mislukt: $1"
+    collapse: Samenvouwen
+    expand: Uitvouwen
+    database_title: "Database: $1"
+    unpin: Losmaken
+    pin: Vastmaken
+    pin_hint: Deze actie vastmaken
+    unpin_hint: Deze actie losmaken
+    saving: Opslaan...
+    removing: Verwijderen...
+    remove_from_history: Uit geschiedenis verwijderen
+    remove_confirm_title: Uit geschiedenis verwijderen?
+    remove_confirm_desc: Weet u zeker dat u deze actie uit de geschiedenis wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+    parameters: "Parameters:"
+    filters:
+      all_actions: Alle acties
+      search: Zoeken
+      write: Schrijven
+      create: Aanmaken
+      call_method: Methode aanroepen
+      delete_archive: Verwijderen/Archiveren
+      search_placeholder: Acties, modellen zoeken...
+      type: Type
+      model: Model
+      all_models: Alle modellen
+      clear_filters: Filters wissen
+      clear_filters_hint: Alle filters wissen
+      total_actions: "Totaal opgeslagen acties: $1 (laatste $2 acties worden bewaard)"
+  domain_editor:
+    placeholder: 'Voer domein in (bijv., [["active", "=", true]])'
+    help_label: Hulp bij domein formaat
+    help_title: Hulp bij domein formaat
+    python_supported: "🐍 Python domeinen worden ondersteund !"
+    format_intro: "U kunt zowel JSON als Python formaat gebruiken:"
+    json_format: "JSON formaat (Odoo RPC):"
+    python_format: "Python formaat (automatisch geconverteerd):"
+    operators: "Domein operatoren (Poolse notatie):"
+    and_operator: AND operator
+    or_operator: OR operator
+    not_operator: NOT operator
+    conditions_format: "Voorwaarden formaat: "
+    common_operators: "Veelgebruikte operatoren: "
+    loading_domains: Domeinen laden...
+    manage_domains: Domeinen beheren
+    no_domain: Geen snel domein beschikbaar
+    show_more: $1 extra domeinen tonen
+    manager_title: Snel Domein Beheerder
+    add_domain: Domein toevoegen
+    update_domain: Domein bijwerken
+    domain_value_title: "Domein: $1"
+    no_domains: Geen domeinen gevonden.
+    no_domains_hint: Klik op "Domein toevoegen" om er een aan te maken.
+    edit_title: Domein bewerken
+    add_title: Nieuw domein toevoegen
+    update: Bijwerken
+    add: Toevoegen
+    name: Naam
+    name_placeholder: bijv., Actieve records
+    domain_placeholder: 'bijv., [["active", "=", true]]'
+    use_hint: Dit domein gebruiken
+    edit_hint: Domein bewerken
+    delete_hint: Domein verwijderen
+  result_viewer:
+    loading_records: Records laden...
+    fields_count: veld(en)
+    open_in_odoo: Record(s) openen in Odoo
+    open_in_popup: Record(s) openen in pop-up
+    copy_json: Kopiëren als JSON
+    download_json: Downloaden als JSON
+    list_view: Lijstweergave
+    exit_pivot: Pivotweergave verlaten
+    pivot_view: Tabelweergave (klik opnieuw om te pivoteren)
+    pivot: Pivoteren
+    table: Tabel
+    list: Lijst
+  record_search:
+    placeholder: Zoek in veldnamen en waarden (alleen uitgeklapte records)...
+    of: van
+    match_found: 'Overeenkomst gevonden in verborgen tekst: "$1"'
+    prev_hint: Vorig resultaat (Ctrl+Shift+G)
+    next_hint: Volgend resultaat (Ctrl+G)
+    close_hint: Zoeken sluiten (Esc)
+    keys: sleutels
+    values: waarden
+  result_states:
+    empty: 'Configureer uw query en klik op "Uitvoeren" om resultaten te zien'
+    executing: Query uitvoeren...
+    error: Queryfout
+    no_records: Geen records gevonden die aan uw criteria voldoen
+    page_of: Pagina $1 van $2
+    records_range: "$1-$2 / $3 record(s)"
+    records_found: $1 record(s) gevonden
+  field_rendering:
+    no_ids: Geen geldige IDs gevonden
+    no_model: Kan gerelateerde model niet bepalen
+    loading_relational: Relationele gegevens laden...
+    error_prefix: "Fout: "
+    no_related: Geen gerelateerde gegevens gevonden
+    no_id: Geen ID
+    record_n: Record $1
+    excluded_fields: "Uitgesloten velden van $1: $2"
+    focus_record: Focus op dit record
+    open_in_odoo: Record openen in Odoo
+    open_in_popup: Record openen in pop-up
+    invalid_relational: Ongeldig relationeel veld
+    switch_table: Overschakelen naar tabelweergave
+    switch_list: Overschakelen naar lijstweergave
+    open_relational_odoo: Relationeel veld openen in Odoo
+    open_relational_popup: Relationeel veld openen in pop-up
+  field_metadata:
+    unavailable: Veldmetadata is niet beschikbaar. Als dit een nieuw veld is, herstart devtools of wijzig het model om een vernieuwing af te dwingen.
+    field_label: "Veld: $1"
+  selects:
+    select_option: Selecteer een optie...
+    loading: Laden...
+    search_fields: Velden zoeken...
+    select_model: Selecteer een model...
+    order_by_placeholder: Selecteer velden om op te sorteren...
+    asc: (Oplopend)
+    desc: (Aflopend)
+    refresh_list: Lijst vernieuwen
+    refreshing: Lijst vernieuwen
+    refresh_error: "Fout: $1. U kunt het opnieuw proberen of uw waarde handmatig invoeren."
+    refresh_error_title: "Fout: $1\n\nU kunt het opnieuw proberen (door op deze knop te klikken) of uw waarde handmatig invoeren."
+    more_results: Eerste $1 resultaten worden getoond. Verfijn uw zoekopdracht voor specifiekere resultaten.
+    excluded_title: "$1 - Dit veld is van het resultaat uitgesloten wegens compatibiliteitsproblemen. Middenklik om te verwijderen."
+    middle_click_remove: Middenklik om te verwijderen
+    remove_aria: $1 verwijderen
+  virtual_table:
+    search_columns: Alle kolommen doorzoeken...
+    rows: rijen
+    toggle_rows: Rijen in-/uitschakelen
+    toggle_columns: Kolommen in-/uitschakelen
+    toggle_all: Alles in-/uitschakelen
+    fields_header: Velden
+    ids_header: IDs
+  notifications:
+    invalid_fields: Ongeldig veld gedetecteerd
+    invalid_fields_plural: $1 ongeldige velden gedetecteerd
+    invalid_fields_hint: "💡 Gebruik de autocomplete-suggesties of controleer de modelvelden"
+    required_missing: Vereist veld ontbreekt
+    required_missing_plural: $1 vereiste velden ontbreken
+    required_missing_hint: "💡 Klik hieronder om deze velden met standaardwaarden toe te voegen"
+    add_required: Vereist veld toevoegen
+    add_required_plural: Vereiste velden toevoegen
+    auto_add_required: "✨ Vereist veld automatisch toevoegen"
+    auto_add_required_plural: "✨ Vereiste velden automatisch toevoegen"
+    insert_template: Sjabloon invoegen met vereiste velden
+    no_data_to_format: Geen JSON gegevens om te formatteren
+    cannot_format_invalid: Kan ongeldige JSON niet formatteren
+    failed_auto_search: Automatische zoekopdracht uitvoeren mislukt
+  error_display:
+    error_summary: Foutoverzicht
+    error_data: Foutgegevens
+    detailed_message: Gedetailleerd bericht
+    arguments: Argumenten
+    debug_traceback: Debug traceback
+    context: Context
+    stack_trace: Stack trace
+    full_error_object: Volledig foutobject
+    type: Type
+    model: Model
+    message: Bericht
+    code: Code
+    unknown: Onbekend
+    not_available: N/B
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: Opties
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: SH Favorieten
+    documentation: Documentatie
+    report_bug: Een bug melden
+    suggest_feature: Een functie voorstellen
+    improve_translation: Vertaling verbeteren
+    github: GitHub repository
+  favorites:
+    delete_title: Favoriet verwijderen?
+    delete_desc: Weet u zeker dat u "$1" uit favorieten wilt verwijderen?
+    edit_name: $1 naam bewerken
+    save_changes: Wijzigingen opslaan
+    edit_task_link: $1 taak-koppeling bewerken
+    reset_changes: Wijzigingen herstellen
+    delete_favorite: $1 uit favorieten verwijderen
+    task_link_title: Taak-koppeling bewerken voor $1
+    task_link_desc: Stel een aangepaste taak-koppeling in voor dit project.
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: Koppeling lijkt onjuist. Controleer a.u.b.
+  backup:
+    exporting: Uw instellingen exporteren...
+    importing: Uw instellingen importeren...
+    export: Exporteren
+    restore: Herstellen
+    error_export: "Er is een fout opgetreden tijdens het exporteren: $1"
+    failed_read: Bestandsinhoud lezen mislukt
+    invalid_config: "Ongeldig configuratiebestand - $1"
+    success: Configuratie succesvol geïmporteerd
+    error_import: "Er is een fout opgetreden tijdens bestandsverwerking: $1"
+    invalid_format: Ongeldig bestandsformaat
+  settings:
+    language: Taal
+    language_auto: Auto (browser)
+    language_desc: Kies de taal van de extensie
+    print_options: Printopties
+    print_options_desc: Hiermee kunt u de pagina afdrukken in PDF of HTML formaat zonder deze te downloaden
+    pdf: PDF
+    html: HTML
+    color_blind: Kleurenblindmodus inschakelen
+    color_blind_desc: Deze modus vervangt bepaalde kleuren en iconen van Odoo.SH door een kleurenbladvriendelijk palet
+    login_buttons: Inlogknoppen tonen
+    login_buttons_desc: Kies of u de standaard inlogknoppen voor admin/demo/portal wilt tonen
+    nostalgia: Nostalgiemodus inschakelen
+    nostalgia_desc: Deze modus vervangt de originele debug-iconen door aap-iconen om de beroemde aap-extensie te herinneren
+    tab_title: Tabbladtitel op SH pagina's bijwerken
+    tab_title_desc: Selecteer of de tabbladtitel op Odoo.SH pagina's moet worden gewijzigd om de huidige projectnaam te bevatten
+    technical_model: Technisch model tonen
+    technical_model_desc: Kies of u het technische model op de pagina wilt tonen (v17.2+)
+    color_scheme: Standaard kleurenschema
+    color_scheme_desc: Kies het standaard kleurenschema voor Odoo 16 en hoger.
+    color_scheme_warning: Deze functie is experimenteel en kan problemen veroorzaken op sommige Odoo-versies. Bij problemen, terugzetten naar "Geen".
+    color_none: Geen (Standaard)
+    color_none_tooltip: "Geen: laat Odoo het beheren (gebruikersprofielinstellingen)"
+    color_system: Systeem
+    color_system_tooltip: "Systeem: volgt uw systeemvoorkeur"
+    color_light: Licht
+    color_dark: Donker
+    debug_mode: Debugmodus
+    debug_mode_desc: Kies hoe u de debugmodus wilt inschakelen
+    debug_disabled: Uitgeschakeld
+    debug_always: Altijd
+    debug_assets: Assets
+    debug_tests: Tests assets
+    debug_disabled_tooltip: "Uitgeschakeld: Debugmodus wordt niet afgedwongen. Als het wordt geactiveerd via de schakelaar in de pop-up, wordt de debugmodus verwijderd uit de actieve URL. Als u een website bereikt met een actieve debugmodus in de URL, wordt deze niet verwijderd of vervangen. Eigenlijk: het is zoals de aap-extensie 🙈"
+    debug_always_tooltip: "Altijd: Debugmodus is altijd ingeschakeld"
+    debug_assets_tooltip: "Assets: Debugmodus is altijd ingeschakeld voor assets"
+    debug_tests_tooltip: "Tests assets: Debugmodus is altijd ingeschakeld voor tests assets"
+    debug_hint: U kunt dit ook configureren door op het bug-icoon in de pop-up te klikken.
+    debug_hint_detail: Een enkele klik schakelt de debugmodus in/uit, een dubbele klik activeert assets debug, en een driedubbele klik activeert tests assets debug.
+    technical_sidebar: Technische zijbalk inschakelen
+    technical_sidebar_desc: Schakel een geavanceerde technische zijbalk in met uitgebreide veld- en systeeminformatie
+    sidebar_position: Positie van zijbalk
+    left: Links
+    right: Rechts
+    sidebar_features: "Functies van zijbalk:"
+    feature_field_info: "Veldinformatie: typen, eigenschappen, debug-gegevens"
+    feature_db_details: "Database-details: versie, gebruiker, bedrijfsinfo"
+    feature_website: "Website-context: bij frontend pagina's"
+    feature_selector: "Element-selector modus: klik om velden te selecteren"
+    feature_copy: "Kopiëren-naar-klembord functionaliteit voor alle waarden"
+    feature_highlight: "Veldaccentuatie bij zweven"
+    version_compat: "Versiecompatibiliteit:"
+    stable_v16: "Volledig stabiel vanaf Odoo v16+"
+    earlier_versions: "Eerdere versies hebben mogelijk beperkte informatie"
+    works_both: "Werkt op zowel backend- als websitepagina's"
+    task_link_title: Taak-koppeling op SH branch-pagina
+    task_link_desc: Geef een URL op om naar door te verwijzen bij het klikken op het taak-koppeling-icoon op de SH branch-pagina. Laat leeg om de functie uit te schakelen.
+    task_link_placeholder_hint: "Gebruik de {{ task_id }} placeholder om deze te vervangen door de taak-ID"
+    task_link_default: "Standaard wordt het getriggerd met het volgende patroon: VERSION-TASKID-OPTIONAL_DESCRIPTION (bijv. 17.0-12345 , 15.0-6789-fixes)"
+    task_link_per_favorite: U kunt een specifieke URL per favoriet instellen vanaf de "SH Favorieten" pagina
+    task_link_label: Taak-koppeling
+    branch_regex: Regex voor branchnaam
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: Regex lijkt onjuist. Controleer a.u.b.
+
+popup:
+  header_your: Uw
+  header_sh: Odoo.SH
+  header_projects: projecten
+  footer:
+    light_theme: Overschakelen naar licht thema
+    dark_theme: Overschakelen naar donker thema
+    disable_debug: Debugmodus uitschakelen
+    enable_debug: Debugmodus inschakelen
+    disable_sidebar: Technische zijbalk uitschakelen
+    enable_sidebar: Technische zijbalk inschakelen
+    open_options: Opties van extensie openen
+    settings: Instellingen
+
+update:
+  error: Er is een fout opgetreden
+  title: Odoo Toolbox
+  default_desc: Odoo Toolbox is bijgewerkt met nieuwe functies en verbeteringen.
+  only_significant: Deze melding verschijnt alleen voor belangrijke updates die de moeite waard zijn om te belichten.
+  how_to_activate: Hoe te activeren
+  whats_new: Wat is er nieuw
+  open_settings: Instellingen openen
+  changelog: Changelog
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: Technische informatie verbergen
+    show: Technische informatie tonen
+    title: Technische lijst
+  side_panel:
+    search_placeholder: Velden en knoppen zoeken...
+    required_only: Vereiste
+    readonly_only: Alleen-lezen
+    fields_only: Velden
+    buttons_only: Knoppen
+    title: Odoo Toolbox
+    exit_selection: Selectiemodus verlaten
+    select_element: Element selecteren
+    close: Paneel sluiten
+    fields_list: Veldenlijst
+    buttons_list: Knoppenlijst
+    no_match: Geen elementen voldoen aan uw filters
+    no_fields: Geen technische velden of knoppen gevonden in deze weergave
+    click_field_detail: Klik op een veld in de pagina om de details te bekijken
+    click_button_detail: Klik op een knop in de pagina om de details te bekijken
+    click_element_detail: Klik op een element in de pagina om de details te bekijken
+    selected_field: Geselecteerd veld
+    selected_button: Geselecteerde knop
+    hover_hint: Zweef om te accentueren in weergave
+    website_info: Website-informatie
+    click_to_copy: Klik op waarden om te kopiëren
+    fields_found: velden
+    buttons_found: knoppen
+    found: gevonden
+  field_item:
+    copy_hint: Klik om veldnaam te kopiëren
+    invisible_when: "Onzichtbaar wanneer: $1"
+    invisible: Onzichtbaar
+    invisible_conditional: Onzichtbaar*
+    compute: Berekenen
+    related: Gerelateerd
+    store: Opslaan
+    model: Model
+    conditional_hint: "* geeft voorwaardelijk gedrag aan op basis van veldstatus"
+    widget: Widget
+    relation: Relatie
+    domain: Domein
+    context: Context
+    selection: Selectie
+    required_condition: Vereiste voorwaarde
+    readonly_condition: Alleen-lezen voorwaarde
+    invisible_condition: Onzichtbaar-voorwaarde
+    hide_value: Waarde verbergen
+    show_value: Waarde tonen
+  field_details:
+    title: "Velddetails - $1"
+    loading: Velddetails laden...
+    not_found: Veld niet gevonden
+    more_details: Meer details
+    name: Naam
+    label: Label
+    type: Type
+    relation: Relatie
+    relation_field: Relatieveld
+    required: Verplicht
+    readonly: Alleen-lezen
+    stored: Opgeslagen
+    compute: Berekend
+    depends: Afhankelijk van
+    copied: Gekopieerd
+    help: Help
+    size: Grootte
+    translatable: Vertaalbaar
+    indexed: Geïndexeerd
+    domain: Domein
+    groups: Groepen
+    on_delete: Bij verwijderen
+    related: Gerelateerd
+    modules: Modules
+    id: ID
+    model: Model
+  field_badge:
+    required: Vereist
+    readonly: Alleen-lezen
+    conditional_when: "$1 wanneer: $2"
+  button_item:
+    copy_hint: Klik om knopnaam te kopiëren
+    string: String
+    invisible: Onzichtbaar
+    invisible_conditional: Onzichtbaar*
+    invisible_when: "Onzichtbaar wanneer: $1"
+    invisible_condition: Onzichtbaar-voorwaarde
+    context: Context
+    confirm: Bevestigen
+    help: Help
+    icon: Icoon
+    hotkey: "Sneltoets:"
+    conditional_hint: "* geeft voorwaardelijk gedrag aan op basis van knopstatus"
+  model_actions:
+    view_fields: Modelvelden bekijken (ir.model.fields)
+    view_access: Model-toegangsrechten bekijken (ir.model.access)
+    view_rules: Recordregels bekijken (ir.rule)
+    view_server_actions: Serveracties bekijken (ir.actions.server)
+    view_current_action: "Huidige actie openen ($1, ID: $2)"
+    view_record_data: Huidige recordgegevens bekijken
+    loading: Laden...
+    fields: Velden
+    access_rights: Toegangsrechten
+    record_rules: Recordregels
+    server_actions: Serveracties
+    current_action: Huidige actie
+    data: Gegevens
+    no_data: Geen gegevens geretourneerd
+    record_data_title: "Recordgegevens - $1 (ID: $2)"
+    view_title_fields: "Odoo Toolbox - $1 velden"
+    view_title_rules: "Odoo Toolbox - $1 recordregels"
+    view_title_access: "Odoo Toolbox - $1 model-toegangsrechten"
+    view_title_server: "Odoo Toolbox - $1 serveracties"
+    view_title_action: "Odoo Toolbox - actie $1 ($2)"
+    access: Toegang
+    view: Weergave
+    view_view: Huidige weergave-architectuur bekijken
+    view_access_modal: Toegangsrechten en recordregels bekijken
+    access_modal_title: "Toegang - $1"
+    more_details: Meer details
+    group: Groep
+    rule: Regel
+    groups: Groepen
+    domain: Domein
+    create: Maken
+    read: Lezen
+    write: Schrijven
+    delete: Verwijderen
+    all_groups: Alle groepen
+    global: Algemeen
+    no_domain: Geen domeinbeperking
+    no_access_rights: Geen toegangsrechten gedefinieerd
+    no_record_rules: Geen recordregels gedefinieerd
+    loading_access: Toegangsgegevens laden...
+    granted: Toegekend
+    not_granted: Niet toegekend
+  view_modal:
+    title: "Weergaven - $1"
+    loading: Weergaven laden...
+    not_found: Geen weergave gevonden
+    base_view: Basisweergave
+    inherited_views: Overgeërfde weergaven
+    no_inherited: Geen overgeërfde weergaven
+    priority: Prioriteit
+    module: Module
+    xml_id: XML-ID
+    key: Sleutel
+    view_arch: XML bekijken
+    arch_title: "XML - $1"
+    no_arch: Geen XML beschikbaar
+    copy_arch: XML kopiëren
+  database_info:
+    title: Database-informatie
+    version: Versie
+    database: Database
+    server_info: Server-info
+    language: Taal
+    debug_mode: Debugmodus
+  record_info:
+    title: Record-informatie
+    model: Model
+    record_id: Record ID
+    view_type: Weergavetype
+    action_type: Actietype
+    action_name: Actienaam
+    action_id: Actie-ID
+    action_xml_id: Actie XML-ID
+    action_context: Actie-context
+    action_domain: Actie-domein
+  website_info:
+    title: Website-informatie
+    logged_in: Ingelogd
+    public: Publiek
+    website_id: Website-ID
+    main_object: Hoofdobject
+    view_xml_id: Weergave XML-ID
+    view_id: Weergave-ID
+  states:
+    scanning: Technische velden scannen...
+  record_data:
+    loading: Recordgegevens laden...
+    please_wait: Een ogenblik geduld a.u.b.
+    copy_json: JSON naar klembord kopiëren
+  info_item:
+    click_to_copy: Klik om te kopiëren
+  info_section:
+    collapse: Klik om samen te vouwen
+    expand: Klik om uit te vouwen
+  debug_mode:
+    enabled: Ingeschakeld
+    assets: Assets
+    tests: Tests Assets
+    disabled: Uitgeschakeld
+    unknown: Onbekend
+  errors:
+    odoo_not_found: Odoo object niet gevonden
+    failed_view: Weergave-informatie laden mislukt
+    failed_db: Database-informatie laden mislukt
+  highlight:
+    selected: "✓ Geselecteerd"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Demo
+    portal: Portal
+    login_as: Inloggen als
+    login_as_user: "Inloggen als $1 gebruiker"
+  technical_model:
+    label: "Technisch model :"
+  sh_favorites:
+    star_hint: Klik om project te markeren
+  sh_task_link:
+    open_task: Gerelateerde taak openen
+    open_task_prefix: "Taak openen "
+  sh_rename:
+    branches: Branches
+    builds: Builds
+    status: Status
+    audit_logs: Audit Logs
+    settings: Instellingen
+
+services:
+  rpc:
+    http_error: "HTTP $1: $2"
+    version_not_supported: Odoo versie niet ondersteund
+    model_required_search: Model is vereist voor zoekopdracht
+    model_required_count: Model is vereist voor search_count
+    model_required_read: Model is vereist voor search_read
+    model_required_read_op: Model is vereist voor read
+    ids_required: IDs zijn vereist voor read
+    write_required: Model, IDs en waarden zijn vereist voor schrijven
+    create_required: Model en waarden zijn vereist voor aanmaken
+    archive_required: Model en IDs zijn vereist voor archiveren
+    unarchive_required: Model en IDs zijn vereist voor dearchiveren
+    unlink_required: Model en IDs zijn vereist voor ontkoppelen
+    method_required: Model en methode zijn vereist voor methode-aanroep
+    execute_action_unavailable: executeAction niet beschikbaar in deze context
+    model_required_fields: Model is vereist voor fields_get
+  errors:
+    devtools_unavailable: DevTools API niet beschikbaar
+    invalid_odoo_error: Ongeldig Odoo foutresponsformaat
+    action_unavailable: Actieservice niet beschikbaar
+  quick_domains:
+    active_records: Actieve records
+    all_records: Alle records
+    exists: 'Snel domein met ID "$1" bestaat al'
+    not_found: 'Snel domein met ID "$1" niet gevonden'
+  config:
+    settings_object: Instellingen moeten een object zijn
+    favorites_array: Favorieten moeten een array zijn
+    invalid_favorite: "Ongeldige favoriet bij index $1: moet een object zijn"
+    missing_favorite_fields: "Ongeldige favoriet bij index $1: vereiste velden ontbreken"
+    domains_array: Snel domeinen moeten een array zijn
+    invalid_domain: "Ongeldig snel domein bij index $1: moet een object zijn"
+    missing_domain_fields: "Ongeldig snel domein bij index $1: vereiste velden ontbreken"
+  current_page:
+    no_record: Geen record gevonden op huidige pagina
+    found_records: "$1 record(s) gevonden ($2 weergave)"
+    unknown_view: onbekend
+    found_list: "Lijstweergave gevonden met domeinfilter voor model: $1"
+    found_model: "Model gevonden: $1 (geen specifieke records)"
+    failed: Informatie van huidige pagina ophalen mislukt
+  validation:
+    domain_must_be_array: Domein moet een array zijn
+    invalid_domain_format: "Ongeldig domein formaat: $1"
+    unable_to_parse_domain: Kan domein niet parseren
+    invalid_domain_format_expected: Ongeldig domein formaat. JSON array of Python lijst formaat verwacht.
+    model_required: Model is vereist
+    invalid_model_format: Ongeldig model formaat
+    invalid_domain_format_simple: Ongeldig domein formaat
+    invalid_ids_format: "Ongeldig IDs formaat (verwacht: komma-gescheiden nummers)"
+    invalid_limit: "Ongeldige limiet (moet tussen 1 en 10000 zijn)"
+    invalid_offset: "Ongeldige offset (moet 0 of groter zijn)"
+    json_arrays_not_allowed: Arrays zijn niet toegestaan. Geef een JSON object met sleutel-waarde paren.
+    json_primitives_not_allowed: Primitieve waarden zijn niet toegestaan. Geef een JSON object met sleutel-waarde paren.
+    json_objects_only: 'Alleen JSON objecten zijn toegestaan. Geef gegevens als {"field": "value"}.'
+    json_empty_not_allowed: Leeg JSON object is niet toegestaan. Geef gegevens om bij te werken.
+    invalid_field: "Ongeldig(e) veld(en): $1. Gebruik de autocomplete-suggesties of controleer de modelvelden."
+    missing_required_field: "Ontbrekend(e) vereist(e) veld(en): $1. Deze velden moeten worden opgegeven bij het aanmaken van een record."
+    context_must_be_object: Context moet een JSON object zijn.
+  no_valid_ids: Geen geldige IDs gevonden
+  invalid_context: "Ongeldig context formaat: $1"
+  invalid_json: Ongeldig JSON

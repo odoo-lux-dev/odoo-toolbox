@@ -1,0 +1,790 @@
+common:
+  loading: लोड हो रहा है...
+  cancel: रद्द करें
+  delete: हटाएं
+  save: सेव करें
+  edit: संपादित करें
+  remove: हटाएं
+  retry: पुनः प्रयास करें
+  clear: साफ़ करें
+  refresh: रिफ्रेश करें
+  close: बंद करें
+  use: उपयोग करें
+  error: त्रुटि
+  unknown: अज्ञात
+  unknown_error: अज्ञात त्रुटि
+  no_data: कोई डेटा उपलब्ध नहीं
+  copied: कॉपी हो गया!
+  copied_to_clipboard: क्लिपबोर्ड पर कॉपी हो गया!
+  failed_to_copy: क्लिपबोर्ड पर कॉपी करने में विफल
+  fields: Fields
+  copy: कॉपी करें
+  download: डाउनलोड करें
+  search: खोजें
+  loading_favorites: Favorites लोड हो रहे हैं...
+  no_favorites: आपके पास कोई पसंदीदा प्रोजेक्ट नहीं है
+  no_favorites_hint: प्रोजेक्ट नाम के बगल में स्टार आइकन पर क्लिक करके इसे अपनी पसंदीदा सूची में जोड़ें
+  take_me_to_sh: Odoo.sh प्रोजेक्ट्स पेज पर ले जाएं
+  favorite_projects: पसंदीदा प्रोजेक्ट्स
+
+devtools:
+  nav:
+    search: खोजें
+    write: लिखें
+    create: बनाएं
+    call_method: Method कॉल करें
+    unlink: हटाएं
+    history: History
+  record_text:
+    singular_impacted: "यह{model} रिकॉर्ड प्रभावित होगा"
+    singular_action: "यह{model} रिकॉर्ड {action} होगा"
+    plural_impacted: "ये {count}{model} रिकॉर्ड प्रभावित होंगे"
+    plural_action: "ये {count}{model} रिकॉर्ड {action} होंगे"
+    method_call_singular: "Method {method} इस{model} रिकॉर्ड पर लागू होगी"
+    method_call_plural: "Method {method} इन {count}{model} रिकॉर्ड्स पर लागू होगी"
+  context_menu:
+    field_title: "Field: $1"
+    copy_field_name: Field नाम कॉपी करें
+    copy_field_value: Field मान कॉपी करें
+    copy_relation_ids: "Relation IDs कॉपी करें ($1)"
+    copy_record_json: "रिकॉर्ड कॉपी करें (JSON)"
+    copy_records_json: "रिकॉर्ड्स कॉपी करें (JSON)"
+    focus_record: रिकॉर्ड पर फोकस करें
+    open_in_odoo: Odoo में खोलें
+    open_in_odoo_popup: Odoo popup में खोलें
+    record_title: "रिकॉर्ड: $1"
+    copy_record_id: रिकॉर्ड ID कॉपी करें
+  content:
+    insufficient_permissions: अपर्याप्त अनुमतियां
+    insufficient_permissions_desc: Odoo Toolbox Devtools तक पहुंचने के लिए, आपको इस डोमेन के लिए host permission देना होगा।
+    grant_permission: अनुमति दें
+    detecting: Odoo संस्करण का पता लगाया जा रहा है...
+    detecting_desc: आपके वर्तमान Odoo इंस्टेंस की जांच की जा रही है। इसमें केवल कुछ क्षण लगेंगे।
+    unable_to_reach: Odoo तक नहीं पहुंच सकते
+    valid_context_hint: "सुनिश्चित करें कि आप एक वैध context में हैं :"
+    on_odoo_instance: आप एक Odoo इंस्टेंस पर हैं
+    inside_backend: आप Odoo के backend के अंदर हैं (website पर नहीं)
+  sidebar:
+    model: Model
+    model_fetch_error: Models लाए नहीं जा सके। कृपया अपना model नाम मैन्युअली दर्ज करें।
+    model_placeholder: Model खोजने के लिए टाइप करें...
+    record_ids: रिकॉर्ड IDs
+    record_ids_placeholder: "1,2,3 or [1,2,3]"
+    fields: Fields
+    fields_placeholder: सभी Fields
+    domain: Domain
+    domain_help: Odoo domain प्रारूप में फ़िल्टर शर्तें।
+    domain_placeholder: '["field", "=", "value"]'
+    limit: सीमा
+    limit_placeholder: "80"
+    offset: Offset
+    offset_placeholder: "0"
+    context: Context
+    context_help: JSON प्रारूप में RPC कॉल के लिए अतिरिक्त context।
+    context_placeholder: '{ "lang": "fr_BE" }'
+    set_default_context: डिफ़ॉल्ट context सेट करें
+    order_by: क्रमबद्ध करें
+    order_by_help: कई चयन क्रम में लागू किए जाएंगे।
+    order_by_placeholder: id desc
+    execute_hint: निष्पादित करने के लिए क्लिक करें या Ctrl+Enter दबाएं
+    execute_query: क्वेरी निष्पादित करें
+    get_current: वर्तमान प्राप्त करें
+    get_current_hint: वर्तमान पेज से जानकारी प्राप्त करें
+    record_ids_search_help: कॉमा-सेपरेटेड IDs या array। सभी रिकॉर्ड्स के लिए खाली छोड़ें।
+  write:
+    title: डेटा अपडेट करें (JSON प्रारूप)
+    warning: "चेतावनी: डेटा संशोधन"
+    warning_desc: Write ऑपरेशन चयनित रिकॉर्ड्स को स्थायी रूप से संशोधित करेगा। कृपया निष्पादित करने से पहले डेटा और लक्षित रिकॉर्ड्स सत्यापित करें।
+    format_json: JSON फ़ॉर्मेट करें
+    placeholder: |
+      JSON प्रारूप में अपडेट करने के लिए डेटा दर्ज करें, उदाहरण के लिए:
+      {
+        "name": "नया नाम",
+        "email": "new@email.com",
+        "active": true
+      }
+    updating: अपडेट हो रहा है...
+    update_records: रिकॉर्ड्स अपडेट करें
+    record_ids_help: अपडेट करने के लिए रिकॉर्ड्स के कॉमा-सेपरेटेड IDs या JSON array।
+    load_records: रिकॉर्ड्स लोड करें
+    confirm_title: Write ऑपरेशन निष्पादित करें
+    confirm_message: क्या आप वाकई $1 रिकॉर्ड(s) अपडेट करना चाहते हैं? यह क्रिया चयनित रिकॉर्ड्स को स्थायी रूप से संशोधित करेगी।
+    error_model: Write ऑपरेशन के लिए Model आवश्यक है
+    error_ids: Write ऑपरेशन के लिए रिकॉर्ड IDs आवश्यक हैं
+    error_data: Write डेटा आवश्यक है
+    error_json: "JSON सत्यापन विफल: $1"
+    success: $2 में $1 रिकॉर्ड(s) सफलतापूर्वक अपडेट किए गए
+    warning_false: Write ऑपरेशन पूर्ण हुआ लेकिन false लौटाया
+    failed: Write ऑपरेशन विफल
+    failed_detail: "Write ऑपरेशन विफल: $1"
+    result_one_prefix: यह
+    result_one_suffix: रिकॉर्ड अपडेट होगा
+    result_many_prefix: ये
+    result_many_suffix: रिकॉर्ड्स अपडेट होंगे
+  create:
+    title: रिकॉर्ड डेटा (JSON प्रारूप)
+    warning: "चेतावनी: डेटाबेस संशोधन"
+    warning_desc: रिकॉर्ड बनाने से आपके Odoo डेटाबेस में नया डेटा स्थायी रूप से जुड़ जाएगा। कृपया आगे बढ़ने से पहले अपना इनपुट सत्यापित करें।
+    format_json: JSON फ़ॉर्मेट करें
+    placeholder: |
+      JSON प्रारूप में नए रिकॉर्ड के लिए डेटा दर्ज करें, उदाहरण के लिए:
+      {
+        "name": "नया रिकॉर्ड",
+        "email": "new@example.com",
+        "active": true
+      }
+    creating: बनाया जा रहा है...
+    create_record: रिकॉर्ड बनाएं
+    confirm_title: नया रिकॉर्ड बनाएं
+    confirm_message: क्या आप वाकई $1 में नया रिकॉर्ड बनाना चाहते हैं? यह क्रिया डेटाबेस में स्थायी रूप से डेटा जोड़ेगी।
+    will_create: एक नया
+    record_created: रिकॉर्ड बनाया जाएगा
+    error_model: कृपया पहले एक model चुनें
+    error_data: बनाने के लिए डेटा प्रदान करें
+    error_json: अमान्य JSON प्रारूप
+    success: "$1 में रिकॉर्ड सफलतापूर्वक बनाया गया (ID: $2)"
+    warning_no_id: Create ऑपरेशन पूर्ण हुआ लेकिन कोई ID नहीं लौटाया गया
+    failed: रिकॉर्ड बनाने में विफल
+    failed_add_fields: आवश्यक Fields जोड़ने में विफल
+  call_method:
+    title: कॉल करने के लिए Method
+    placeholder: action_confirm
+    warning: "चेतावनी: अपरिवर्तनीय ऑपरेशन"
+    warning_desc: कृपया निष्पादित करने से पहले model, रिकॉर्ड्स, और method को ध्यान से सत्यापित करें। परिवर्तन स्थायी हैं और पूर्ववत नहीं किए जा सकते।
+    executing: निष्पादित हो रहा है...
+    call_method: Method कॉल करें
+    record_ids_help: Method कॉल करने के लिए रिकॉर्ड्स के कॉमा-सेपरेटेड IDs या JSON array।
+    load_records: रिकॉर्ड्स लोड करें
+    confirm_title: Method कॉल करें
+    confirm_message: क्या आप वाकई $2 रिकॉर्ड(s) पर method "$1" कॉल करना चाहते हैं? यह क्रिया डेटा को संशोधित कर सकती है।
+    error_model: Method कॉल के लिए Model आवश्यक है
+    error_method: Method नाम आवश्यक है
+    error_ids: Method कॉल के लिए रिकॉर्ड IDs आवश्यक हैं
+    success: $3 में $2 रिकॉर्ड(s) पर method "$1" सफलतापूर्वक कॉल किया गया
+    failed: Method कॉल विफल
+    failed_detail: "Method कॉल विफल: $1"
+  unlink:
+    warning: "चेतावनी: विनाशकारी ऑपरेशन"
+    warning_desc: ये ऑपरेशन रिकॉर्ड्स को संशोधित या स्थायी रूप से हटाएंगे। Archive ऑपरेशन परिवर्तनीय हैं, लेकिन हटाने के ऑपरेशन पूर्ववत नहीं किए जा सकते।
+    record_ids_help: हटाने/archive करने के लिए रिकॉर्ड्स के कॉमा-सेपरेटेड IDs या JSON array।
+    load_records: रिकॉर्ड्स लोड करें
+    archive:
+      archiving: Archive हो रहा है...
+      archive_records: रिकॉर्ड्स Archive करें
+      confirm_title: रिकॉर्ड्स Archive करें
+      confirm_message: क्या आप वाकई $1 रिकॉर्ड(s) archive करना चाहते हैं? Archived रिकॉर्ड्स सामान्य views से छिप जाएंगे लेकिन बाद में unarchive किए जा सकते हैं।
+      error: Archive ऑपरेशन के लिए Model और IDs आवश्यक हैं
+      success: $1 रिकॉर्ड(s) सफलतापूर्वक archived किए गए
+      failed: Archive ऑपरेशन विफल
+      failed_detail: "Archive ऑपरेशन विफल: $1"
+    unarchive:
+      unarchiving: Unarchive हो रहा है...
+      unarchive_records: रिकॉर्ड्स Unarchive करें
+      confirm_title: रिकॉर्ड्स Unarchive करें
+      confirm_message: क्या आप वाकई $1 रिकॉर्ड(s) unarchive करना चाहते हैं? वे सामान्य views में फिर से दिखाई देंगे।
+      error: Unarchive ऑपरेशन के लिए Model और IDs आवश्यक हैं
+      success: $1 रिकॉर्ड(s) सफलतापूर्वक unarchived किए गए
+      failed: Unarchive ऑपरेशन विफल
+      failed_detail: "Unarchive ऑपरेशन विफल: $1"
+    delete:
+      deleting: हटाया जा रहा है...
+      delete_records: रिकॉर्ड्स हटाएं
+      confirm_title: रिकॉर्ड्स हटाएं
+      confirm_message: क्या आप वाकई $1 रिकॉर्ड(s) स्थायी रूप से हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती और डेटा हमेशा के लिए खो जाएगा
+      error: Unlink ऑपरेशन के लिए Model और IDs आवश्यक हैं
+      success: $1 रिकॉर्ड(s) सफलतापूर्वक हटाए गए
+      failed: हटाने का ऑपरेशन विफल
+      failed_detail: "हटाने का ऑपरेशन विफल: $1"
+  history:
+    title: DevTools History
+    loading: History लोड हो रही है...
+    error: "History लोड करने में विफल: $1"
+    refresh: रिफ्रेश करें
+    clear_all: सभी साफ़ करें
+    clear_confirm: क्या आप वाकई सभी history साफ़ करना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।
+    no_results: कोई परिणाम नहीं मिला
+    no_results_hint: अपने search शब्दों या filters को समायोजित करने का प्रयास करें।
+    empty_title: अभी तक कोई History नहीं
+    empty_desc: आपके DevTools actions यहां दिखाई देंगे। searches, writes, या अन्य ऑपरेशन करके शुरू करें।
+    actions_count: actions
+    pinned: Pinned
+    restore: पुनर्स्थापित करें
+    restore_hint: यह $1 tab पर नेविगेट करेगा और parameters पुनर्स्थापित करेगा।
+    restore_success: $2 के लिए $1 action पुनर्स्थापित किया गया
+    restore_failed: "Action पुनर्स्थापित करने में विफल: $1"
+    collapse: संक्षिप्त करें
+    expand: विस्तृत करें
+    database_title: "डेटाबेस: $1"
+    unpin: Unpin करें
+    pin: Pin करें
+    pin_hint: इस action को pin करें
+    unpin_hint: इस action को unpin करें
+    saving: सेव हो रहा है...
+    removing: हटाया जा रहा है...
+    remove_from_history: History से हटाएं
+    remove_confirm_title: History से हटाएं?
+    remove_confirm_desc: क्या आप वाकई इस action को history से हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।
+    parameters: "पैरामीटर्स:"
+    filters:
+      all_actions: सभी Actions
+      search: खोजें
+      write: Write
+      create: Create
+      call_method: Method कॉल करें
+      delete_archive: हटाएं/Archive
+      search_placeholder: Actions, models खोजें...
+      type: प्रकार
+      model: Model
+      all_models: सभी Models
+      clear_filters: Filters साफ़ करें
+      clear_filters_hint: सभी filters साफ़ करें
+      total_actions: "कुल actions संग्रहीत: $1 (अंतिम $2 actions रखे जाते हैं)"
+  domain_editor:
+    placeholder: 'Domain दर्ज करें (उदाहरण, [["active", "=", true]])'
+    help_label: Domain प्रारूप सहायता
+    help_title: Domain प्रारूप सहायता
+    python_supported: "🐍 Python domains समर्थित हैं!"
+    format_intro: "आप या तो JSON प्रारूप या Python प्रारूप का उपयोग कर सकते हैं:"
+    json_format: "JSON प्रारूप (Odoo RPC):"
+    python_format: "Python प्रारूप (स्वतः-रूपांतरित):"
+    operators: "Domain operators (Polish notation):"
+    and_operator: AND operator
+    or_operator: OR operator
+    not_operator: NOT operator
+    conditions_format: "शर्तें प्रारूप: "
+    common_operators: "सामान्य operators: "
+    loading_domains: Domains लोड हो रहे हैं...
+    manage_domains: Domains प्रबंधित करें
+    no_domain: कोई quick domain उपलब्ध नहीं
+    show_more: $1 और domains दिखाएं
+    manager_title: Quick Domain Manager
+    add_domain: Domain जोड़ें
+    update_domain: Domain अपडेट करें
+    domain_value_title: "Domain: $1"
+    no_domains: कोई domains नहीं मिले।
+    no_domains_hint: एक बनाने के लिए "Domain जोड़ें" पर क्लिक करें।
+    edit_title: Domain संपादित करें
+    add_title: नया Domain जोड़ें
+    update: अपडेट करें
+    add: जोड़ें
+    name: नाम
+    name_placeholder: उदाहरण, Active Records
+    domain_placeholder: 'उदाहरण, [["active", "=", true]]'
+    use_hint: इस domain का उपयोग करें
+    edit_hint: Domain संपादित करें
+    delete_hint: Domain हटाएं
+  result_viewer:
+    loading_records: रिकॉर्ड्स लोड हो रहे हैं...
+    fields_count: field(s)
+    open_in_odoo: रिकॉर्ड(s) Odoo में खोलें
+    open_in_popup: रिकॉर्ड(s) popup में खोलें
+    copy_json: JSON के रूप में कॉपी करें
+    download_json: JSON के रूप में डाउनलोड करें
+    list_view: List view
+    exit_pivot: Pivot view से बाहर निकलें
+    pivot_view: Table view (pivot के लिए फिर से क्लिक करें)
+    pivot: Pivot
+    table: Table
+    list: List
+  record_search:
+    placeholder: Field नामों और मानों में खोजें (केवल विस्तृत रिकॉर्ड्स)...
+    of: का
+    match_found: 'छिपे हुए टेक्स्ट में मिलान मिला: "$1"'
+    prev_hint: पिछला परिणाम (Ctrl+Shift+G)
+    next_hint: अगला परिणाम (Ctrl+G)
+    close_hint: खोज बंद करें (Esc)
+    keys: keys
+    values: values
+  result_states:
+    empty: 'परिणाम देखने के लिए अपनी क्वेरी कॉन्फ़िगर करें और "निष्पादित करें" पर क्लिक करें'
+    executing: क्वेरी निष्पादित हो रही है...
+    error: क्वेरी त्रुटि
+    no_records: आपके मानदंडों से मेल खाने वाले कोई रिकॉर्ड नहीं मिले
+    page_of: पेज $1 of $2
+    records_range: "$1-$2 / $3 रिकॉर्ड(s)"
+    records_found: $1 रिकॉर्ड(s) मिले
+  field_rendering:
+    no_ids: कोई वैध IDs नहीं मिले
+    no_model: संबंधित model निर्धारित नहीं किया जा सकता
+    loading_relational: Relational डेटा लोड हो रहा है...
+    error_prefix: "त्रुटि: "
+    no_related: कोई संबंधित डेटा नहीं मिला
+    no_id: कोई ID नहीं
+    record_n: रिकॉर्ड $1
+    excluded_fields: "$1 से बाहर रखे गए fields: $2"
+    focus_record: इस रिकॉर्ड पर फोकस करें
+    open_in_odoo: रिकॉर्ड Odoo में खोलें
+    open_in_popup: रिकॉर्ड popup में खोलें
+    invalid_relational: अमान्य relational field
+    switch_table: Table view पर स्विच करें
+    switch_list: List view पर स्विच करें
+    open_relational_odoo: Relational field Odoo में खोलें
+    open_relational_popup: Relational field popup में खोलें
+  field_metadata:
+    unavailable: Field मेटाडेटा उपलब्ध नहीं है। यदि यह एक नया field है, तो कृपया devtools पुनः आरंभ करें या रिफ्रेश के लिए model संशोधित करें।
+    field_label: "Field: $1"
+  selects:
+    select_option: एक विकल्प चुनें...
+    loading: लोड हो रहा है...
+    search_fields: Fields खोजें...
+    select_model: एक model चुनें...
+    order_by_placeholder: क्रमबद्ध करने के लिए fields चुनें...
+    asc: (ASC)
+    desc: (DESC)
+    refresh_list: सूची रिफ्रेश करें
+    refreshing: सूची रिफ्रेश हो रही है
+    refresh_error: "त्रुटि: $1। आप पुनः प्रयास कर सकते हैं या अपना मान मैन्युअली दर्ज कर सकते हैं।"
+    refresh_error_title: "त्रुटि: $1\n\nआप पुनः प्रयास कर सकते हैं (इस बटन पर क्लिक करके) या अपना मान मैन्युअली दर्ज कर सकते हैं।"
+    more_results: पहले $1 परिणाम दिखाए जा रहे हैं। अधिक विशिष्ट परिणामों के लिए अपनी खोज को परिष्कृत करें।
+    excluded_title: "$1 - यह field संगतता समस्याओं के कारण परिणाम से बाहर रखा गया था। हटाने के लिए middle-click करें।"
+    middle_click_remove: हटाने के लिए middle-click करें
+    remove_aria: $1 हटाएं
+  virtual_table:
+    search_columns: सभी columns खोजें...
+    rows: rows
+    toggle_rows: Rows टॉगल करें
+    toggle_columns: Columns टॉगल करें
+    toggle_all: सभी टॉगल करें
+    fields_header: Fields
+    ids_header: IDs
+  notifications:
+    invalid_fields: अमान्य field पाया गया
+    invalid_fields_plural: $1 अमान्य fields पाए गए
+    invalid_fields_hint: "💡 Autocomplete सुझावों का उपयोग करें या model fields की जांच करें"
+    required_missing: आवश्यक field अनुपस्थित
+    required_missing_plural: $1 आवश्यक fields अनुपस्थित
+    required_missing_hint: "💡 डिफ़ॉल्ट मानों के साथ इन fields को जोड़ने के लिए नीचे क्लिक करें"
+    add_required: आवश्यक Field जोड़ें
+    add_required_plural: आवश्यक Fields जोड़ें
+    auto_add_required: "✨ स्वचालित रूप से आवश्यक field जोड़ें"
+    auto_add_required_plural: "✨ स्वचालित रूप से आवश्यक fields जोड़ें"
+    insert_template: आवश्यक fields के साथ template डालें
+    no_data_to_format: फ़ॉर्मेट करने के लिए कोई JSON डेटा नहीं
+    cannot_format_invalid: अमान्य JSON को फ़ॉर्मेट नहीं किया जा सकता
+    failed_auto_search: स्वचालित खोज निष्पादित करने में विफल
+  error_display:
+    error_summary: त्रुटि सारांश
+    error_data: त्रुटि डेटा
+    detailed_message: विस्तृत संदेश
+    arguments: Arguments
+    debug_traceback: Debug Traceback
+    context: Context
+    stack_trace: Stack Trace
+    full_error_object: पूर्ण त्रुटि Object
+    type: प्रकार
+    model: Model
+    message: संदेश
+    code: Code
+    unknown: अज्ञात
+    not_available: N/A
+
+options:
+  sidebar:
+    title: Odoo Toolbox
+    options: विकल्प
+    odoo: Odoo
+    odoo_sh: Odoo.SH
+    sh_favorites: SH Favorites
+    documentation: दस्तावेज़ीकरण
+    report_bug: Bug रिपोर्ट करें
+    suggest_feature: सुविधा सुझाएं
+    improve_translation: अनुवाद में सुधार करें
+    github: GitHub रिपॉजिटरी
+  favorites:
+    delete_title: पसंदीदा हटाएं?
+    delete_desc: क्या आप वाकई "$1" को favorites से हटाना चाहते हैं?
+    edit_name: $1 नाम संपादित करें
+    save_changes: परिवर्तन सेव करें
+    edit_task_link: $1 task link संपादित करें
+    reset_changes: परिवर्तन रीसेट करें
+    delete_favorite: $1 को favorites से हटाएं
+    task_link_title: $1 के लिए task link संपादित करें
+    task_link_desc: इस प्रोजेक्ट के लिए एक कस्टम task link सेट करें।
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    link_incorrect: Link गलत प्रतीत होता है। कृपया सत्यापित करें।
+  backup:
+    exporting: आपकी सेटिंग्स export हो रही हैं...
+    importing: आपकी सेटिंग्स import हो रही हैं...
+    export: Export करें
+    restore: Restore करें
+    error_export: "Export के दौरान एक त्रुटि हुई: $1"
+    failed_read: फ़ाइल सामग्री पढ़ने में विफल
+    invalid_config: "अमान्य कॉन्फ़िगरेशन फ़ाइल - $1"
+    success: कॉन्फ़िगरेशन सफलतापूर्वक imported
+    error_import: "फ़ाइल प्रोसेसिंग में त्रुटि: $1"
+    invalid_format: अमान्य फ़ाइल प्रारूप
+  settings:
+    language: भाषा
+    language_auto: स्वचालित (ब्राउज़र)
+    language_desc: एक्सटेंशन भाषा चुनें
+    print_options: प्रिंट विकल्प
+    print_options_desc: यह आपको इसे डाउनलोड किए बिना पेज को PDF या HTML प्रारूप में प्रिंट करने की अनुमति देगा
+    pdf: PDF
+    html: HTML
+    color_blind: Color blind mode सक्षम करें
+    color_blind_desc: यह mode Odoo.SH के कुछ रंगों और आइकनों को color blind अनुकूल palette से बदल देता है
+    login_buttons: Login buttons दिखाएं
+    login_buttons_desc: चुनें कि क्या आप admin/demo/portal के लिए डिफ़ॉल्ट login buttons दिखाना चाहते हैं
+    nostalgia: Nostalgia mode सक्षम करें
+    nostalgia_desc: यह mode प्रसिद्ध monkey एक्सटेंशन को याद करने के लिए मूल debug आइकनों को monkey आइकनों से बदल देता है
+    tab_title: SH पेजों पर tab शीर्षक अपडेट करें
+    tab_title_desc: चुनें कि क्या Odoo.SH पेजों पर tab शीर्षक को वर्तमान प्रोजेक्ट नाम शामिल करने के लिए बदलना है
+    technical_model: तकनीकी model दिखाएं
+    technical_model_desc: चुनें कि क्या आप पेज पर तकनीकी model दिखाना चाहते हैं (v17.2+)
+    color_scheme: डिफ़ॉल्ट color scheme
+    color_scheme_desc: Odoo 16 और उससे ऊपर के लिए डिफ़ॉल्ट color scheme चुनें।
+    color_scheme_warning: यह सुविधा प्रायोगिक है और कुछ Odoo संस्करणों पर समस्याएं पैदा कर सकती है। यदि आपको समस्याएं आती हैं, तो इसे "None" पर वापस सेट करें।
+    color_none: कोई नहीं (डिफ़ॉल्ट)
+    color_none_tooltip: "None: Odoo इसे प्रबंधित करने देता है (उपयोगकर्ता प्रोफ़ाइल सेटिंग्स)"
+    color_system: सिस्टम
+    color_system_tooltip: "सिस्टम: आपकी सिस्टम प्राथमिकता का अनुसरण करता है"
+    color_light: हल्का
+    color_dark: गहरा
+    debug_mode: Debug mode
+    debug_mode_desc: चुनें कि आप debug mode को कैसे सक्षम करना चाहते हैं
+    debug_disabled: अक्षम
+    debug_always: हमेशा
+    debug_assets: Assets
+    debug_tests: Tests assets
+    debug_disabled_tooltip: "अक्षम: Debug mode को बाध्य नहीं किया जाएगा। यदि इसे popup के टॉगल से ट्रिगर किया जाता है, तो यह सक्रिय URL से debug mode को हटा देगा। यदि आप सक्रिय debug mode वाले URL पर पहुंचते हैं, तो इसे हटाया या बदला नहीं जाएगा। मूल रूप से: यह monkey एक्सटेंशन की तरह है 🙈"
+    debug_always_tooltip: "हमेशा: Debug mode हमेशा सक्षम रहेगा"
+    debug_assets_tooltip: "Assets: Debug mode हमेशा assets पर सक्षम रहेगा"
+    debug_tests_tooltip: "Tests assets: Debug mode हमेशा tests assets पर सक्षम रहेगा"
+    debug_hint: आप इसे popup के अंदर bug आइकन पर क्लिक करके भी कॉन्फ़िगर कर सकते हैं।
+    debug_hint_detail: एक क्लिक debug mode को टॉगल करेगा, दो क्लिक assets debug को सक्रिय करेंगे, और तीन क्लिक tests assets debug को सक्रिय करेंगे।
+    technical_sidebar: तकनीकी sidebar सक्षम करें
+    technical_sidebar_desc: व्यापक field और सिस्टम जानकारी के साथ एक उन्नत तकनीकी sidebar सक्षम करें
+    sidebar_position: Sidebar स्थिति
+    left: बाएं
+    right: दाएं
+    sidebar_features: "Sidebar सुविधाएँ:"
+    feature_field_info: "Field जानकारी: प्रकार, गुण, debug डेटा"
+    feature_db_details: "डेटाबेस विवरण: संस्करण, उपयोगकर्ता, कंपनी जानकारी"
+    feature_website: "Website context: frontend पेजों पर"
+    feature_selector: "Element selector mode: select करने के लिए क्लिक करें"
+    feature_copy: "सभी मानों के लिए clipboard पर कॉपी कार्यक्षमता"
+    feature_highlight: "Hover पर field highlighting"
+    version_compat: "संस्करण संगतता:"
+    stable_v16: "Odoo v16+ से पूरी तरह से stable"
+    earlier_versions: "पूर्व संस्करणों में सीमित जानकारी हो सकती है"
+    works_both: "backend और website दोनों पेजों पर काम करता है"
+    task_link_title: SH branch पेज पर task link
+    task_link_desc: SH branch पेज पर task link आइकन पर क्लिक करते समय redirect करने के लिए URL निर्दिष्ट करें। सुविधा को अक्षम करने के लिए खाली छोड़ें।
+    task_link_placeholder_hint: "{{ task_id }} placeholder का उपयोग करके इसे task ID से बदलें"
+    task_link_default: "डिफ़ॉल्ट रूप से, यह निम्न पैटर्न के साथ ट्रिगर होता है: VERSION-TASKID-OPTIONAL_DESCRIPTION (उदाहरण 17.0-12345, 15.0-6789-fixes)"
+    task_link_per_favorite: आप "SH Favorites" पेज से प्रति पसंदीदा एक विशिष्ट URL सेट कर सकते हैं
+    task_link_label: Task link
+    branch_regex: Branch नाम regex
+    regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
+    regex_incorrect: Regex गलत प्रतीत होता है। कृपया सत्यापित करें।
+
+popup:
+  header_your: आपके
+  header_sh: Odoo.SH
+  header_projects: प्रोजेक्ट्स
+  footer:
+    light_theme: हल्की theme पर स्विच करें
+    dark_theme: गहरी theme पर स्विच करें
+    disable_debug: Debug mode अक्षम करें
+    enable_debug: Debug mode सक्षम करें
+    disable_sidebar: तकनीकी sidebar अक्षम करें
+    enable_sidebar: तकनीकी sidebar सक्षम करें
+    open_options: एक्सटेंशन के विकल्प खोलें
+    settings: सेटिंग्स
+
+update:
+  error: त्रुटि हुई
+  title: Odoo Toolbox
+  default_desc: Odoo Toolbox नई सुविधाओं और सुधारों के साथ अपडेट किया गया है।
+  only_significant: यह अधिसूचना केवल हाइलाइट करने लायक महत्वपूर्ण अपडेट के लिए दिखाई देती है।
+  how_to_activate: सक्रिय करने का तरीका
+  whats_new: नया क्या है
+  open_settings: सेटिंग्स खोलें
+  changelog: Changelog
+  github: GitHub
+
+technical_list:
+  floating_button:
+    hide: तकनीकी जानकारी छिपाएं
+    show: तकनीकी जानकारी दिखाएं
+    title: तकनीकी सूची
+  side_panel:
+    search_placeholder: Fields और buttons खोजें...
+    required_only: आवश्यक
+    readonly_only: केवल पढ़ने योग्य
+    fields_only: Fields
+    buttons_only: Buttons
+    title: Odoo Toolbox
+    exit_selection: Selection mode से बाहर निकलें
+    select_element: Element चुनें
+    close: panel बंद करें
+    fields_list: Fields सूची
+    buttons_list: Buttons सूची
+    no_match: आपके filters से कोई elements मेल नहीं खाते
+    no_fields: इस view में कोई तकनीकी fields या buttons नहीं मिले
+    click_field_detail: विवरण देखने के लिए पेज पर एक field पर क्लिक करें
+    click_button_detail: विवरण देखने के लिए पेज पर एक button पर क्लिक करें
+    click_element_detail: विवरण देखने के लिए पेज पर एक element पर क्लिक करें
+    selected_field: चयनित Field
+    selected_button: चयनित Button
+    hover_hint: view में हाइलाइट करने के लिए hover करें
+    website_info: Website जानकारी
+    click_to_copy: कॉपी करने के लिए क्लिक करें
+    fields_found: fields
+    buttons_found: buttons
+    found: मिले
+  field_item:
+    copy_hint: Field नाम कॉपी करने के लिए क्लिक करें
+    invisible_when: "जब यह अदृश्य हो: $1"
+    invisible: अदृश्य
+    invisible_conditional: अदृश्य*
+    compute: Compute
+    related: Related
+    store: Store
+    model: Model
+    conditional_hint: "* field state के आधार पर सशर्त व्यवहार दर्शाता है"
+    widget: Widget
+    relation: Relation
+    domain: Domain
+    context: Context
+    selection: Selection
+    required_condition: आवश्यक शर्त
+    readonly_condition: केवल पढ़ने योग्य शर्त
+    invisible_condition: अदृश्य शर्त
+    hide_value: मान छिपाएं
+    show_value: मान दिखाएं
+  field_details:
+    title: "Field विवरण - $1"
+    loading: Field विवरण लोड हो रहे हैं...
+    not_found: Field नहीं मिला
+    more_details: अधिक विवरण
+    name: नाम
+    label: लेबल
+    type: प्रकार
+    relation: Relation
+    relation_field: Relation Field
+    required: आवश्यक
+    readonly: केवल पढ़ने योग्य
+    stored: Stored
+    compute: Compute
+    depends: Depends
+    copied: Copied
+    help: सहायता
+    size: Size
+    translatable: अनुवाद योग्य
+    indexed: Indexed
+    domain: Domain
+    groups: Groups
+    on_delete: On Delete
+    related: Related
+    modules: Modules
+    id: ID
+    model: Model
+  field_badge:
+    required: आवश्यक
+    readonly: केवल पढ़ने योग्य
+    conditional_when: "$1 जब: $2"
+  button_item:
+    copy_hint: Button नाम कॉपी करने के लिए क्लिक करें
+    string: String
+    invisible: अदृश्य
+    invisible_conditional: अदृश्य*
+    invisible_when: "जब यह अदृश्य हो: $1"
+    invisible_condition: अदृश्य शर्त
+    context: Context
+    confirm: पुष्टि करें
+    help: सहायता
+    icon: आइकन
+    hotkey: "Hotkey:"
+    conditional_hint: "* button state के आधार पर सशर्त व्यवहार दर्शाता है"
+  model_actions:
+    view_fields: Model fields देखें (ir.model.fields)
+    view_access: Model access rights देखें (ir.model.access)
+    view_rules: Record rules देखें (ir.rule)
+    view_server_actions: Server actions देखें (ir.actions.server)
+    view_current_action: "वर्तमान action खोलें ($1, ID: $2)"
+    view_record_data: वर्तमान रिकॉर्ड डेटा देखें
+    loading: लोड हो रहा है...
+    fields: Fields
+    access_rights: Access Rights
+    record_rules: Record Rules
+    server_actions: Server Actions
+    current_action: वर्तमान Action
+    data: डेटा
+    no_data: कोई डेटा नहीं लौटाया गया
+    record_data_title: "रिकॉर्ड डेटा - $1 (ID: $2)"
+    view_title_fields: "Odoo Toolbox - $1 fields"
+    view_title_rules: "Odoo Toolbox - $1 record rules"
+    view_title_access: "Odoo Toolbox - $1 model access rights"
+    view_title_server: "Odoo Toolbox - $1 server actions"
+    view_title_action: "Odoo Toolbox - action $1 ($2)"
+    access: Access
+    view: View
+    view_view: वर्तमान व्यू आर्किटेक्चर देखें
+    view_access_modal: Access rights और record rules देखें
+    access_modal_title: "Access - $1"
+    more_details: अधिक विवरण
+    group: Group
+    rule: Rule
+    groups: Groups
+    domain: Domain
+    create: Create
+    read: Read
+    write: Write
+    delete: Delete
+    all_groups: सभी Groups
+    global: Global
+    no_domain: कोई domain प्रतिबंध नहीं
+    no_access_rights: कोई access rights परिभाषित नहीं
+    no_record_rules: कोई record rules परिभाषित नहीं
+    loading_access: Access डेटा लोड हो रहा है...
+    granted: अनुमत
+    not_granted: अनुमत नहीं
+  view_modal:
+    title: "Views - $1"
+    loading: Views लोड हो रहे हैं...
+    not_found: कोई view नहीं मिला
+    base_view: Base View
+    inherited_views: Inherited Views
+    no_inherited: कोई inherited views नहीं
+    priority: Priority
+    module: Module
+    xml_id: XML ID
+    key: Key
+    view_arch: XML देखें
+    arch_title: "XML - $1"
+    no_arch: कोई XML उपलब्ध नहीं
+    copy_arch: XML कॉपी करें
+  database_info:
+    title: डेटाबेस जानकारी
+    version: संस्करण
+    database: डेटाबेस
+    server_info: Server जानकारी
+    language: भाषा
+    debug_mode: Debug Mode
+  record_info:
+    title: रिकॉर्ड जानकारी
+    model: Model
+    record_id: रिकॉर्ड ID
+    view_type: View प्रकार
+    action_type: Action प्रकार
+    action_name: Action नाम
+    action_id: Action ID
+    action_xml_id: Action XML ID
+    action_context: Action Context
+    action_domain: Action Domain
+  website_info:
+    title: Website जानकारी
+    logged_in: लॉग इन है
+    public: सार्वजनिक
+    website_id: Website ID
+    main_object: मुख्य Object
+    view_xml_id: View XML ID
+    view_id: View ID
+  states:
+    scanning: तकनीकी fields स्कैन हो रहे हैं...
+  record_data:
+    loading: रिकॉर्ड डेटा लोड हो रहा है...
+    please_wait: कृपया एक क्षण प्रतीक्षा करें।
+    copy_json: clipboard पर JSON कॉपी करें
+  info_item:
+    click_to_copy: कॉपी करने के लिए क्लिक करें
+  info_section:
+    collapse: संक्षिप्त करने के लिए क्लिक करें
+    expand: विस्तृत करने के लिए क्लिक करें
+  debug_mode:
+    enabled: सक्षम
+    assets: Assets
+    tests: Tests Assets
+    disabled: अक्षम
+    unknown: अज्ञात
+  errors:
+    odoo_not_found: Odoo object नहीं मिला
+    failed_view: View जानकारी लोड करने में विफल
+    failed_db: डेटाबेस जानकारी लोड करने में विफल
+  highlight:
+    selected: "✓ चयनित"
+
+page_features:
+  login_buttons:
+    admin: Admin
+    demo: Demo
+    portal: Portal
+    login_as: इस रूप में login करें
+    login_as_user: "$1 उपयोगकर्ता के रूप में login करें"
+  technical_model:
+    label: "तकनीकी model :"
+  sh_favorites:
+    star_hint: प्रोजेक्ट को star करने के लिए क्लिक करें
+  sh_task_link:
+    open_task: संबंधित task खोलें
+    open_task_prefix: "task खोलें "
+  sh_rename:
+    branches: Branches
+    builds: Builds
+    status: स्थिति
+    audit_logs: Audit Logs
+    settings: सेटिंग्स
+
+services:
+  rpc:
+    http_error: "HTTP $1: $2"
+    version_not_supported: Odoo संस्करण समर्थित नहीं
+    model_required_search: खोज के लिए Model आवश्यक है
+    model_required_count: search_count के लिए Model आवश्यक है
+    model_required_read: search_read के लिए Model आवश्यक है
+    model_required_read_op: read के लिए Model आवश्यक है
+    ids_required: read के लिए IDs आवश्यक हैं
+    write_required: write के लिए Model, IDs, और मान आवश्यक हैं
+    create_required: create के लिए Model और मान आवश्यक हैं
+    archive_required: archive के लिए Model और IDs आवश्यक हैं
+    unarchive_required: unarchive के लिए Model और IDs आवश्यक हैं
+    unlink_required: unlink के लिए Model और IDs आवश्यक हैं
+    method_required: method कॉल के लिए Model और method आवश्यक हैं
+    execute_action_unavailable: इस context में executeAction उपलब्ध नहीं है
+    model_required_fields: fields_get के लिए Model आवश्यक है
+  errors:
+    devtools_unavailable: DevTools API उपलब्ध नहीं
+    invalid_odoo_error: अमान्य Odoo त्रुटि प्रतिक्रिया प्रारूप
+    action_unavailable: Action service उपलब्ध नहीं
+  quick_domains:
+    active_records: सक्रिय रिकॉर्ड्स
+    all_records: सभी रिकॉर्ड्स
+    exists: 'ID "$1" वाला quick domain पहले से मौजूद है'
+    not_found: 'ID "$1" वाला quick domain नहीं मिला'
+  config:
+    settings_object: सेटिंग्स एक object होनी चाहिए
+    favorites_array: Favorites एक array होने चाहिए
+    invalid_favorite: "index $1 पर अमान्य favorite: object होना चाहिए"
+    missing_favorite_fields: "index $1 पर अमान्य favorite: आवश्यक fields अनुपस्थित"
+    domains_array: Quick domains एक array होने चाहिए
+    invalid_domain: "index $1 पर अमान्य quick domain: object होना चाहिए"
+    missing_domain_fields: "index $1 पर अमान्य quick domain: आवश्यक fields अनुपस्थित"
+  current_page:
+    no_record: वर्तमान पेज पर कोई रिकॉर्ड नहीं मिला
+    found_records: "$1 रिकॉर्ड(s) मिले ($2 view)"
+    unknown_view: अज्ञात
+    found_list: "model के लिए domain filter के साथ list view मिला: $1"
+    found_model: "Model मिला: $1 (कोई विशिष्ट रिकॉर्ड नहीं)"
+    failed: वर्तमान पेज की जानकारी प्राप्त करने में विफल
+  validation:
+    domain_must_be_array: Domain एक array होना चाहिए
+    invalid_domain_format: "अमान्य domain प्रारूप: $1"
+    unable_to_parse_domain: Domain पार्स करने में असमर्थ
+    invalid_domain_format_expected: अमान्य domain प्रारूप। JSON array या Python list प्रारूप अपेक्षित।
+    model_required: Model आवश्यक है
+    invalid_model_format: अमान्य model प्रारूप
+    invalid_domain_format_simple: अमान्य domain प्रारूप
+    invalid_ids_format: "अमान्य IDs प्रारूप (अपेक्षित: कॉमा-सेपरेटेड संख्याएं)"
+    invalid_limit: "अमान्य सीमा (1 और 10000 के बीच होनी चाहिए)"
+    invalid_offset: "अमान्य offset (0 या अधिक होना चाहिए)"
+    json_arrays_not_allowed: Arrays की अनुमति नहीं है। कृपया key-value pairs के साथ एक JSON object प्रदान करें।
+    json_primitives_not_allowed: Primitive मानों की अनुमति नहीं है। कृपया key-value pairs के साथ एक JSON object प्रदान करें।
+    json_objects_only: 'केवल JSON objects की अनुमति है। कृपया डेटा {"field": "value"} के रूप में प्रदान करें।'
+    json_empty_not_allowed: खाली JSON object की अनुमति नहीं है। कृपया अपडेट करने के लिए डेटा प्रदान करें।
+    invalid_field: "अमान्य field(s): $1। कृपया autocomplete सुझावों का उपयोग करें या model fields की जांच करें।"
+    missing_required_field: "अनुपस्थित आवश्यक field(s): $1। रिकॉर्ड बनाते समय इन fields को प्रदान किया जाना चाहिए।"
+    context_must_be_object: Context एक JSON object होना चाहिए।
+  no_valid_ids: कोई वैध IDs नहीं मिले
+  invalid_context: "अमान्य context प्रारूप: $1"
+  invalid_json: अमान्य JSON

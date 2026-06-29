@@ -1,64 +1,52 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
-import { useEffect } from "preact/hooks";
-import { useSettingValue } from "@/contexts/options-signals-hook";
+import { createEffect, splitProps, type JSX } from "solid-js";
+
+import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { useSettingValue } from "@/screens/options/options-signals";
 import { settingsService } from "@/services/settings-service";
 import { CHROME_STORAGE_SETTINGS_EXTENSION_THEME } from "@/utils/constants";
 
 export interface ThemeControllerProps {
-    className?: string;
-    iconSize?: number;
-    ariaLabel?: string;
-    dataToggleTheme?: string;
+  class?: string;
+  iconSize?: number;
+  ariaLabel?: string;
+  dataToggleTheme?: string;
 }
 
-export const ThemeController = ({
-    className = "",
-    iconSize = 20,
-    ariaLabel = "Toggle theme",
-    dataToggleTheme = "odoolight,odoodark",
-}: ThemeControllerProps) => {
-    const extensionTheme = useSettingValue(
-        CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
-    );
+export const ThemeController = (props: ThemeControllerProps) => {
+  const [local] = splitProps(props, ["class", "iconSize", "ariaLabel", "dataToggleTheme"]);
+  const extensionTheme = useSettingValue(CHROME_STORAGE_SETTINGS_EXTENSION_THEME);
+  const iconSize = () => local.iconSize ?? 20;
+  const ariaLabel = () => local.ariaLabel ?? "Toggle theme";
+  const dataToggleTheme = () => local.dataToggleTheme ?? "odoolight,odoodark";
 
-    useEffect(() => {
-        if (!extensionTheme.value) return;
-        const themeName =
-            extensionTheme.value === "dark" ? "odoodark" : "odoolight";
-        document.documentElement.setAttribute("data-theme", themeName);
-    }, [extensionTheme.value]);
+  createEffect(() => {
+    const theme = extensionTheme();
+    if (!theme) return;
+    const themeName = theme === "dark" ? "odoodark" : "odoolight";
+    document.documentElement.setAttribute("data-theme", themeName);
+  });
 
-    const handleThemeToggle = async () => {
-        await settingsService.toggleExtensionTheme();
-    };
+  const handleThemeToggle = async () => {
+    await settingsService.toggleExtensionTheme();
+  };
 
-    return (
-        <label className={`swap swap-rotate ${className}`.trim()}>
-            <input
-                type="checkbox"
-                className="theme-controller"
-                checked={extensionTheme.value === "dark"}
-                onChange={handleThemeToggle}
-                data-toggle-theme={dataToggleTheme}
-                aria-label={ariaLabel}
-            />
-            <span className="swap-on">
-                <HugeiconsIcon
-                    icon={Sun03Icon}
-                    size={iconSize}
-                    color="currentColor"
-                    strokeWidth={2}
-                />
-            </span>
-            <span className="swap-off">
-                <HugeiconsIcon
-                    icon={Moon02Icon}
-                    size={iconSize}
-                    color="currentColor"
-                    strokeWidth={2}
-                />
-            </span>
-        </label>
-    );
+  return (
+    <label class={`swap swap-rotate ${local.class ?? ""}`.trim()}>
+      <input
+        type="checkbox"
+        class="theme-controller"
+        checked={extensionTheme() === "dark"}
+        onChange={handleThemeToggle}
+        data-toggle-theme={dataToggleTheme()}
+        aria-label={ariaLabel()}
+      />
+      <span class="swap-on">
+        <HugeiconsIcon icon={Sun03Icon} size={iconSize()} color="currentColor" strokeWidth={2} />
+      </span>
+      <span class="swap-off">
+        <HugeiconsIcon icon={Moon02Icon} size={iconSize()} color="currentColor" strokeWidth={2} />
+      </span>
+    </label>
+  );
 };
