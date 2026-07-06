@@ -153,7 +153,8 @@ async function executeInContentScript(scriptId: string, params?: unknown | null)
   ): Record<string, unknown> | undefined => {
     if (!parentComponent) return undefined;
 
-    if (typeof parentComponent.name === "string" && matchingRegex.test(parentComponent.name)) {
+    const parentNames = [parentComponent.name, parentComponent.componentName];
+    if (parentNames.some((n) => typeof n === "string" && matchingRegex.test(n))) {
       return parentComponent;
     }
 
