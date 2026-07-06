@@ -6,6 +6,7 @@ import {
   CenterFocusIcon,
   Layers02Icon,
   ListViewIcon,
+  PivotIcon,
   TableIcon,
 } from "@hugeicons/core-free-icons";
 import { createMemo, createSignal, For, Match, Show, Switch, splitProps } from "solid-js";
@@ -247,7 +248,7 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [relatedRecordsExpanded, setRelatedRecordsExpanded] = createSignal<Set<number>>(new Set());
-  const [relationalViewMode, setRelationalViewMode] = createSignal<"list" | "table">("list");
+  const [relationalViewMode, setRelationalViewMode] = createSignal<"list" | "table" | "pivot">("list");
 
   const ids = () => extractIds(local.value);
   const modelName = () => getRelatedModel(local.fieldMetadata);
@@ -386,7 +387,7 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
               }
             >
               <Show
-                when={relationalViewMode() === "table"}
+                when={relationalViewMode() === "table" || relationalViewMode() === "pivot"}
                 fallback={
                   <div class="flex flex-col">
                     <For each={relatedData()}>
@@ -554,11 +555,12 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
                   </div>
                 }
               >
-                <div class="flex max-h-80 min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
+                <div class="flex max-h-80 min-h-0 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
                   <VirtualTable
                     data={relatedData()!}
                     allKeys={relatedAllKeys()}
                     handleTableContextMenu={handleRelationalTableContextMenu}
+                    pivoted={relationalViewMode() === "pivot"}
                   />
                 </div>
               </Show>
@@ -670,40 +672,51 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
                 }
               >
                 <IconButton
+                  label={t("devtools.result_viewer.list_view")}
+                  variant="ghost"
+                  size="xs"
+                  square
+                  class={`hover:text-success ${relationalViewMode() === "list" ? "text-success" : "text-base-content/60"}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRelationalViewMode("list");
+                  }}
+                  icon={
+                    <HugeiconsIcon
+                      icon={ListViewIcon}
+                      size={14}
+                      color="currentColor"
+                      strokeWidth={1.6}
+                    />
+                  }
+                />
+                <IconButton
                   label={
-                    relationalViewMode() === "list"
-                      ? t("devtools.field_rendering.switch_table")
-                      : t("devtools.field_rendering.switch_list")
+                    relationalViewMode() === "pivot"
+                      ? t("devtools.result_viewer.exit_pivot")
+                      : t("devtools.result_viewer.pivot_view")
                   }
                   variant="ghost"
                   size="xs"
                   square
-                  class={`text-base-content/60 hover:text-success ${relationalViewMode() === "table" ? "text-success" : ""}`}
+                  class={`hover:text-success ${relationalViewMode() !== "list" ? "text-success" : "text-base-content/60"}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setRelationalViewMode(relationalViewMode() === "list" ? "table" : "list");
+                    setRelationalViewMode(
+                      relationalViewMode() === "list"
+                        ? "table"
+                        : relationalViewMode() === "table"
+                          ? "pivot"
+                          : "table",
+                    );
                   }}
                   icon={
-                    <span
-                      class={`swap swap-rotate ${relationalViewMode() === "table" ? "swap-active" : ""}`}
-                    >
-                      <span class="swap-on">
-                        <HugeiconsIcon
-                          icon={ListViewIcon}
-                          size={14}
-                          color="currentColor"
-                          strokeWidth={1.6}
-                        />
-                      </span>
-                      <span class="swap-off">
-                        <HugeiconsIcon
-                          icon={TableIcon}
-                          size={14}
-                          color="currentColor"
-                          strokeWidth={1.6}
-                        />
-                      </span>
-                    </span>
+                    <HugeiconsIcon
+                      icon={relationalViewMode() === "pivot" ? PivotIcon : TableIcon}
+                      size={14}
+                      color="currentColor"
+                      strokeWidth={1.6}
+                    />
                   }
                 />
               </Show>

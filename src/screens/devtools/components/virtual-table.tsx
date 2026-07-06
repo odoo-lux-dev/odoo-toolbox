@@ -24,6 +24,7 @@ import {
   splitProps,
   onMount,
 } from "solid-js";
+import { Portal } from "solid-js/web";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
@@ -64,13 +65,20 @@ export const VirtualTable = (props: {
   const [visibleRowItems, setVisibleRowItems] = createSignal<VirtualItem[]>([]);
   const [visibleColItems, setVisibleColItems] = createSignal<VirtualItem[]>([]);
   const [rowTotal, setRowTotal] = createSignal(0);
+  const [dropdownPos, setDropdownPos] = createSignal<Record<string, string>>({});
 
   const debounceSetGlobalFilter = debounce((value: string) => setGlobalFilter(value), 300);
 
   let toggleRef: HTMLDivElement | null = null;
+  let dropdownRef: HTMLDivElement | null = null;
 
   const handleClickOutside = (e: MouseEvent) => {
-    if (toggleRef && !toggleRef.contains(e.target as Node)) {
+    const target = e.target as Node;
+    if (
+      toggleRef &&
+      !toggleRef.contains(target) &&
+      (!dropdownRef || !dropdownRef.contains(target))
+    ) {
       setShowColumnToggle(false);
     }
   };
@@ -78,6 +86,30 @@ export const VirtualTable = (props: {
   onMount(() => {
     document.addEventListener("click", handleClickOutside);
     onCleanup(() => document.removeEventListener("click", handleClickOutside));
+  });
+
+  const isRtl = createMemo(() => {
+    localeVersion();
+    return getDirection(getLocale()) === "rtl";
+  });
+
+  createEffect(() => {
+    if (showColumnToggle() && toggleRef) {
+      const rect = toggleRef.getBoundingClientRect();
+      if (isRtl()) {
+        setDropdownPos({
+          top: `${rect.bottom + 4}px`,
+          left: `${rect.left}px`,
+          right: "auto",
+        });
+      } else {
+        setDropdownPos({
+          top: `${rect.bottom + 4}px`,
+          right: `${window.innerWidth - rect.right}px`,
+          left: "auto",
+        });
+      }
+    }
   });
 
   const orderedKeys = createMemo(() => {
@@ -189,10 +221,6 @@ export const VirtualTable = (props: {
   const visibleHeaders = createMemo(
     () => table.getHeaderGroups()[0]?.headers.filter((h) => h.column.getIsVisible()) ?? [],
   );
-  const isRtl = createMemo(() => {
-    localeVersion();
-    return getDirection(getLocale()) === "rtl";
-  });
   const headerSizes = createMemo(() => visibleHeaders().map((h) => h.getSize()));
   const fullWidth = createMemo(() => headerSizes().reduce((s, w) => s + w, 0));
 
@@ -338,73 +366,83 @@ export const VirtualTable = (props: {
             <HugeiconsIcon icon={Settings02Icon} size={14} color="currentColor" strokeWidth={1.5} />
           </Button>
           <Show when={showColumnToggle()}>
-            <div class="absolute inset-e-0 top-full z-50 mt-1 max-h-60 w-48 overflow-auto rounded-lg border border-base-300 bg-base-100 p-2 shadow-lg">
-              <Show
-                when={!local.pivoted}
-                fallback={
-                  <>
-                    <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
-                      <input
-                        type="checkbox"
-                        class="checkbox checkbox-xs"
-                        checked={pivotDisplayKeys().every((k) => pivotRowVisibility()[k] !== false)}
-                        onChange={(e) => {
-                          if (e.currentTarget.checked) {
-                            setPivotRowVisibility({});
-                          } else {
-                            const hidden: Record<string, boolean> = {};
-                            for (const k of pivotDisplayKeys()) hidden[k] = false;
-                            setPivotRowVisibility(hidden);
-                          }
-                        }}
-                      />
-                      {t("devtools.virtual_table.toggle_all")}
-                    </label>
-                    <For each={pivotDisplayKeys()}>
-                      {(fieldKey) => (
-                        <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
-                          <input
-                            type="checkbox"
-                            class="checkbox checkbox-xs"
-                            checked={pivotRowVisibility()[fieldKey] !== false}
-                            onChange={(e) => {
-                              setPivotRowVisibility((prev) => ({
-                                ...prev,
-                                [fieldKey]: e.currentTarget.checked,
-                              }));
-                            }}
-                          />
-                          <span class="truncate">{fieldKey}</span>
-                        </label>
-                      )}
-                    </For>
-                  </>
-                }
+            <Portal>
+              <div
+                ref={(el) => {
+                  dropdownRef = el;
+                }}
+                class="fixed z-50 max-h-60 w-48 overflow-auto rounded-lg border border-base-300 bg-base-100 p-2 shadow-lg"
+                style={dropdownPos()}
               >
-                <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
-                  <input
-                    type="checkbox"
-                    class="checkbox checkbox-xs"
-                    checked={table.getIsAllColumnsVisible()}
-                    onChange={table.getToggleAllColumnsVisibilityHandler()}
-                  />
-                  {t("devtools.virtual_table.toggle_all")}
-                </label>
-                <For each={table.getAllLeafColumns()}>
-                  {(column) => (
-                    <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
-                      <input
-                        type="checkbox"
-                        class="checkbox checkbox-xs"
-                        checked={column.getIsVisible()}
-                        onChange={column.getToggleVisibilityHandler()}
-                      />
-                      <span class="truncate">{column.id}</span>
-                    </label>
-                  )}
-                </For>
-              </Show>
-            </div>
+                <Show
+                  when={!local.pivoted}
+                  fallback={
+                    <>
+                      <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
+                        <input
+                          type="checkbox"
+                          class="checkbox checkbox-xs"
+                          checked={pivotDisplayKeys().every(
+                            (k) => pivotRowVisibility()[k] !== false,
+                          )}
+                          onChange={(e) => {
+                            if (e.currentTarget.checked) {
+                              setPivotRowVisibility({});
+                            } else {
+                              const hidden: Record<string, boolean> = {};
+                              for (const k of pivotDisplayKeys()) hidden[k] = false;
+                              setPivotRowVisibility(hidden);
+                            }
+                          }}
+                        />
+                        {t("devtools.virtual_table.toggle_all")}
+                      </label>
+                      <For each={pivotDisplayKeys()}>
+                        {(fieldKey) => (
+                          <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
+                            <input
+                              type="checkbox"
+                              class="checkbox checkbox-xs"
+                              checked={pivotRowVisibility()[fieldKey] !== false}
+                              onChange={(e) => {
+                                setPivotRowVisibility((prev) => ({
+                                  ...prev,
+                                  [fieldKey]: e.currentTarget.checked,
+                                }));
+                              }}
+                            />
+                            <span class="truncate">{fieldKey}</span>
+                          </label>
+                        )}
+                      </For>
+                    </>
+                  }
+                >
+                  <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
+                    <input
+                      type="checkbox"
+                      class="checkbox checkbox-xs"
+                      checked={table.getIsAllColumnsVisible()}
+                      onChange={table.getToggleAllColumnsVisibilityHandler()}
+                    />
+                    {t("devtools.virtual_table.toggle_all")}
+                  </label>
+                  <For each={table.getAllLeafColumns()}>
+                    {(column) => (
+                      <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
+                        <input
+                          type="checkbox"
+                          class="checkbox checkbox-xs"
+                          checked={column.getIsVisible()}
+                          onChange={column.getToggleVisibilityHandler()}
+                        />
+                        <span class="truncate">{column.id}</span>
+                      </label>
+                    )}
+                  </For>
+                </Show>
+              </div>
+            </Portal>
           </Show>
         </div>
       </div>
