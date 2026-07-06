@@ -616,6 +616,8 @@ technical_list:
     view_title_fields: "Odoo Toolbox - $1 velden"
     view_title_rules: "Odoo Toolbox - $1 recordregels"
     view_title_access: "Odoo Toolbox - $1 model-toegangsrechten"
+    view_title_permissions: "Odoo Toolbox - $1 machtigingen"
+    view_title_restrictions: "Odoo Toolbox - $1 beperkingen"
     view_title_server: "Odoo Toolbox - $1 serveracties"
     view_title_action: "Odoo Toolbox - actie $1 ($2)"
     access: Toegang
@@ -640,6 +642,12 @@ technical_list:
     loading_access: Toegangsgegevens laden...
     granted: Toegekend
     not_granted: Niet toegekend
+    permissions: Machtigingen
+    restrictions: Beperkingen
+    permissions_desc: Machtigingen worden gecombineerd met een logische OF-operator.
+    restrictions_desc: Beperkingen worden gecombineerd met een logische EN-operator.
+    no_permissions: Geen machtigingen gedefinieerd
+    no_restrictions: Geen beperkingen gedefinieerd
   view_modal:
     title: "Weergaven - $1"
     loading: Weergaven laden...

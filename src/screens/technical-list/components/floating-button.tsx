@@ -22,7 +22,8 @@ export const FloatingButton = () => {
         "px-3",
         "gap-2",
         "overflow-hidden",
-        "min-w-9 max-w-9 hover:max-w-60",
+        "min-w-9 max-w-9",
+        !isExpanded() && "hover:max-w-60",
         position === "left" ? "justify-end" : "justify-start",
         isExpanded()
           ? "bg-accent hover:bg-accent text-accent-content"
@@ -40,7 +41,10 @@ export const FloatingButton = () => {
     >
       {position === "left" ? (
         <>
-          <span class="button-text text-xs font-medium whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+          <span
+            class="button-text text-xs font-medium whitespace-nowrap opacity-0 transition-opacity"
+            classList={{ "group-hover:opacity-100": !isExpanded() }}
+          >
             {t("technical_list.floating_button.title")}
           </span>
           <HugeiconsIcon
@@ -60,7 +64,10 @@ export const FloatingButton = () => {
             strokeWidth={1.6}
             class="shrink-0"
           />
-          <span class="button-text text-xs font-medium whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+          <span
+            class="button-text text-xs font-medium whitespace-nowrap opacity-0 transition-opacity"
+            classList={{ "group-hover:opacity-100": !isExpanded() }}
+          >
             {t("technical_list.floating_button.title")}
           </span>
         </>

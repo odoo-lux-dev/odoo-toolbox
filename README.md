@@ -112,7 +112,7 @@ This will create a zip file in the `dist` folder.
 
 # Translations
 
-Odoo Toolbox supports 9 languages. Translations are stored as YAML files in `src/locales/`.
+Odoo Toolbox supports internationalization. Translations are stored as YAML files in `src/locales/`.
 
 ## Supported Languages
 

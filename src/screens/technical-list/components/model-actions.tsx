@@ -17,9 +17,11 @@ import {
   getServerActionsIds,
   openViewWithIds,
 } from "@/services/content-script-rpc-service";
+import { getOdooInfoFromWindow } from "@/services/owl-runtime";
 import { t } from "@/utils/i18n-page";
 
 import { AccessModal } from "./access-modal";
+import { IrAccessModal } from "./ir-access-modal";
 import { RecordDataViewer } from "./record-data-viewer";
 import { ViewModal } from "./view-modal";
 
@@ -44,6 +46,9 @@ export const ModelActions = (props: ModelActionsProps) => {
   const [recordDataError, setRecordDataError] = createSignal<string | null>(null);
   const [showAccessModal, setShowAccessModal] = createSignal(false);
   const [showViewModal, setShowViewModal] = createSignal(false);
+
+  const odooInfo = getOdooInfoFromWindow(window.odoo as never);
+  const usesIrAccess = odooInfo.version !== null && odooInfo.version >= 19.4;
 
   const doActionFunction =
     window.odoo?.__WOWL_DEBUG__?.root?.actionService?.doAction ??
@@ -246,11 +251,22 @@ export const ModelActions = (props: ModelActionsProps) => {
           error={recordDataError()}
         />
       </Modal>
-      <AccessModal
-        open={showAccessModal()}
-        onClose={() => setShowAccessModal(false)}
-        model={currentModel()}
-      />
+      <Show
+        when={usesIrAccess}
+        fallback={
+          <AccessModal
+            open={showAccessModal()}
+            onClose={() => setShowAccessModal(false)}
+            model={currentModel()}
+          />
+        }
+      >
+        <IrAccessModal
+          open={showAccessModal()}
+          onClose={() => setShowAccessModal(false)}
+          model={currentModel()}
+        />
+      </Show>
       <ViewModal
         open={showViewModal()}
         onClose={() => setShowViewModal(false)}

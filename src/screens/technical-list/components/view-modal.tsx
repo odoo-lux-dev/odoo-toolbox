@@ -89,16 +89,12 @@ const DetailRow = (props: { label: string; children: any }) => (
 
 const ViewArchButton = (props: { arch: string | false | undefined; onClick: () => void }) => (
   <Show when={props.arch}>
-    <Button
-      variant="ghost"
-      size="xs"
-      class="mt-2 gap-1 text-xs"
-      onClick={props.onClick}
-      type="button"
-    >
-      <HugeiconsIcon icon={ViewIcon} size={12} color="currentColor" strokeWidth={1.6} />
-      {t("technical_list.view_modal.view_arch")}
-    </Button>
+    <div class="mt-2 flex justify-end">
+      <Button variant="ghost" size="xs" class="gap-1 text-xs" onClick={props.onClick} type="button">
+        <HugeiconsIcon icon={ViewIcon} size={12} color="currentColor" strokeWidth={1.6} />
+        {t("technical_list.view_modal.view_arch")}
+      </Button>
+    </div>
   </Show>
 );
 

@@ -616,6 +616,8 @@ technical_list:
     view_title_fields: "Odoo Toolbox - $1 fields"
     view_title_rules: "Odoo Toolbox - $1 record rules"
     view_title_access: "Odoo Toolbox - $1 model access rights"
+    view_title_permissions: "Odoo Toolbox - $1 अनुमतियां"
+    view_title_restrictions: "Odoo Toolbox - $1 प्रतिबंध"
     view_title_server: "Odoo Toolbox - $1 server actions"
     view_title_action: "Odoo Toolbox - action $1 ($2)"
     access: Access
@@ -640,6 +642,12 @@ technical_list:
     loading_access: Access डेटा लोड हो रहा है...
     granted: अनुमत
     not_granted: अनुमत नहीं
+    permissions: अनुमतियां
+    restrictions: प्रतिबंध
+    permissions_desc: अनुमतियां एक लॉजिकल OR ऑपरेटर के साथ संयोजित होती हैं।
+    restrictions_desc: प्रतिबंध एक लॉजिकल AND ऑपरेटर के साथ संयोजित होते हैं।
+    no_permissions: कोई अनुमति परिभाषित नहीं है
+    no_restrictions: कोई प्रतिबंध परिभाषित नहीं है
   view_modal:
     title: "Views - $1"
     loading: Views लोड हो रहे हैं...

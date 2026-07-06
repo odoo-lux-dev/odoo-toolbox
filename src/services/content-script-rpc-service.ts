@@ -1,6 +1,6 @@
 import { buildActWindowAction, openViewViaOwlRuntime } from "@/services/odoo-action";
 import { createOdooRpc } from "@/services/odoo-rpc-service";
-import type { FieldDetails, ModelAccessRight, ModelRecordRule, ViewRecord } from "@/types";
+import type { FieldDetails, IrAccess, ModelAccessRight, ModelRecordRule, ViewRecord } from "@/types";
 
 const pageContextRpc = createOdooRpc({
   getOrigin: async () => "",
@@ -71,6 +71,20 @@ export async function openViewWithIds(
   await openViewViaOwlRuntime(action, {});
 }
 
+export async function openViewWithDomain(
+  model: string,
+  domain: unknown[],
+  title?: string,
+): Promise<void> {
+  const action = buildActWindowAction({
+    model,
+    domain,
+    asPopup: true,
+    title,
+  });
+  await openViewViaOwlRuntime(action, {});
+}
+
 export async function getModelAccessRights(model: string): Promise<ModelAccessRight[]> {
   return executeOdooRpc<ModelAccessRight[]>("ir.model.access", "search_read", [
     [["model_id.model", "=", model]],
@@ -93,6 +107,17 @@ export async function getGroupNames(groupIds: number[]): Promise<Record<number, 
     [[["id", "in", groupIds]], ["display_name"]],
   );
   return Object.fromEntries(result.map((g) => [g.id, g.display_name]));
+}
+
+export async function getIrAccess(model: string): Promise<IrAccess[]> {
+  return executeOdooRpc<IrAccess[]>(
+    "ir.access",
+    "search_read",
+    [
+      [["model_id.model", "=", model]],
+      ["name", "group_id", "for_read", "for_write", "for_create", "for_unlink", "domain"],
+    ],
+  );
 }
 
 export async function getFieldDetails(

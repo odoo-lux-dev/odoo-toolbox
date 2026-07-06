@@ -616,6 +616,8 @@ technical_list:
     view_title_fields: "Odoo Toolbox - حقول $1"
     view_title_rules: "Odoo Toolbox - قواعد سجلات $1"
     view_title_access: "Odoo Toolbox - حقوق وصول نموذج $1"
+    view_title_permissions: "Odoo Toolbox - صلاحيات $1"
+    view_title_restrictions: "Odoo Toolbox - قيود $1"
     view_title_server: "Odoo Toolbox - إجراءات خادم $1"
     view_title_action: "Odoo Toolbox - الإجراء $1 ($2)"
     access: الوصول
@@ -640,6 +642,12 @@ technical_list:
     loading_access: جارٍ تحميل بيانات الوصول...
     granted: ممنوح
     not_granted: غير ممنوح
+    permissions: الصلاحيات
+    restrictions: القيود
+    permissions_desc: يتم دمج الصلاحيات معًا بعامل منطقي OR.
+    restrictions_desc: يتم دمج القيود معًا بعامل منطقي AND.
+    no_permissions: لا توجد صلاحيات محددة
+    no_restrictions: لا توجد قيود محددة
   view_modal:
     title: "العروض - $1"
     loading: جارٍ تحميل العروض...

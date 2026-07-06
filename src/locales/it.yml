@@ -616,6 +616,8 @@ technical_list:
     view_title_fields: "Odoo Toolbox - campi di $1"
     view_title_rules: "Odoo Toolbox - regole record di $1"
     view_title_access: "Odoo Toolbox - diritti di accesso del modello $1"
+    view_title_permissions: "Odoo Toolbox - permessi $1"
+    view_title_restrictions: "Odoo Toolbox - restrizioni $1"
     view_title_server: "Odoo Toolbox - azioni server di $1"
     view_title_action: "Odoo Toolbox - azione $1 ($2)"
     access: Accesso
@@ -640,6 +642,12 @@ technical_list:
     loading_access: Caricamento dati di accesso...
     granted: Concesso
     not_granted: Non concesso
+    permissions: Permessi
+    restrictions: Restrizioni
+    permissions_desc: I permessi sono combinati con un operatore logico OR.
+    restrictions_desc: Le restrizioni sono combinate con un operatore logico AND.
+    no_permissions: Nessun permesso definito
+    no_restrictions: Nessuna restrizione definita
   view_modal:
     title: "Viste - $1"
     loading: Caricamento viste...

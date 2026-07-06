@@ -47,6 +47,7 @@ export const buildActWindowAction = (opts: {
       [false, "kanban"],
       [false, "form"],
     ];
+    if (domain) action.domain = domain;
   }
 
   return action;

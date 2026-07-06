@@ -19,6 +19,17 @@ export interface ModelAccessRight {
   perm_unlink: boolean;
 }
 
+export interface IrAccess {
+  id: number;
+  name: string;
+  group_id: [number, string] | false;
+  for_create: boolean;
+  for_read: boolean;
+  for_write: boolean;
+  for_unlink: boolean;
+  domain: string | false;
+}
+
 export interface ModelRecordRule {
   id: number;
   name: string;
