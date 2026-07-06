@@ -235,7 +235,7 @@ export const FieldItem = (props: FieldItemProps) => {
           <Button
             variant="ghost"
             size="xs"
-            class="me-auto gap-2 text-xs"
+            class="gap-2 text-xs"
             onClick={(event) => {
               event.stopPropagation();
               setShowValue(!showValue());
@@ -251,7 +251,7 @@ export const FieldItem = (props: FieldItemProps) => {
         <Button
           variant="ghost"
           size="xs"
-          class="gap-2 text-xs"
+          class="ms-auto gap-2 text-xs"
           onClick={() => setShowDetailsModal(true)}
           type="button"
         >
