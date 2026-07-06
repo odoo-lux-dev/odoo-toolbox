@@ -24,6 +24,7 @@ body:
         - "Italiano (it)"
         - "Nederlands (nl)"
         - "English (en)"
+        - "हिन्दी (hi)"
         - "New language request"
     validations:
       required: true
