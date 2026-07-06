@@ -87,12 +87,12 @@ export async function getModelRecordRules(model: string): Promise<ModelRecordRul
 
 export async function getGroupNames(groupIds: number[]): Promise<Record<number, string>> {
   if (groupIds.length === 0) return {};
-  const result = await executeOdooRpc<Array<{ id: number; name: string }>>(
+  const result = await executeOdooRpc<Array<{ id: number; display_name: string }>>(
     "res.groups",
     "search_read",
-    [[["id", "in", groupIds]], ["name"]],
+    [[["id", "in", groupIds]], ["display_name"]],
   );
-  return Object.fromEntries(result.map((g) => [g.id, g.name]));
+  return Object.fromEntries(result.map((g) => [g.id, g.display_name]));
 }
 
 export async function getFieldDetails(
