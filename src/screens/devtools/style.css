@@ -1,6 +1,11 @@
 @import "@/theme/daisy-theme.css";
 @import "solid-notifications/index.css";
 
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
 .cm-tooltip {
   z-index: 9999 !important;
   background: var(--color-base-200) !important;
