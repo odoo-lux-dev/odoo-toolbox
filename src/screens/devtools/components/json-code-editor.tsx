@@ -3,10 +3,12 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 import { json } from "@codemirror/lang-json";
 import {
   bracketMatching,
+  HighlightStyle,
   indentOnInput,
   syntaxHighlighting,
   defaultHighlightStyle,
 } from "@codemirror/language";
+import { tags as lezerTags } from "@lezer/highlight";
 import {
   EditorView,
   keymap,
@@ -125,6 +127,15 @@ const editorTheme = EditorView.theme({
   },
 });
 
+const jsonHighlightStyle = HighlightStyle.define([
+  { tag: lezerTags.string, color: "var(--color-success)" },
+  { tag: lezerTags.number, color: "var(--color-accent)" },
+  { tag: lezerTags.bool, color: "var(--color-warning)" },
+  { tag: lezerTags.null, color: "var(--color-warning)" },
+  { tag: lezerTags.propertyName, color: "var(--color-base-content)" },
+  { tag: lezerTags.punctuation, color: "var(--color-base-content)", opacity: "0.6" },
+]);
+
 const baseExtensions = () => [
   tooltips({ parent: document.body }),
   history(),
@@ -132,6 +143,7 @@ const baseExtensions = () => [
   bracketMatching(),
   indentOnInput(),
   closeBrackets(),
+  syntaxHighlighting(jsonHighlightStyle),
   syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
   highlightActiveLine(),
   drawSelection(),

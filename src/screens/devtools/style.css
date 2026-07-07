@@ -27,7 +27,60 @@
 }
 
 .cm-tooltip.cm-tooltip-autocomplete .cm-completionIcon {
-  display: none !important;
+  font-size: 0;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.cm-tooltip.cm-tooltip-autocomplete .cm-completionIcon::before {
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.cm-completionIcon-field-text::before {
+  content: "Aa";
+  color: var(--color-success);
+}
+.cm-completionIcon-field-number::before {
+  content: "#";
+  color: var(--color-info);
+}
+.cm-completionIcon-field-bool::before {
+  content: "✓";
+  color: var(--color-base-content);
+}
+.cm-completionIcon-field-date::before {
+  content: "D";
+  color: var(--color-error);
+}
+.cm-completionIcon-field-select::before {
+  content: "▾";
+  color: var(--color-warning);
+}
+.cm-completionIcon-field-m2o::before {
+  content: "→";
+  color: var(--color-accent);
+}
+.cm-completionIcon-field-o2m::before {
+  content: "⇉";
+  color: var(--color-neutral-content);
+}
+.cm-completionIcon-field-m2m::before {
+  content: "⇄";
+  color: var(--color-secondary);
+}
+.cm-completionIcon-field-binary::before {
+  content: "01";
+  color: var(--color-base-content);
+}
+.cm-completionIcon-field-json::before {
+  content: "{}";
+  color: var(--color-secondary);
+}
+.cm-completionIcon-field-other::before {
+  content: "•";
+  color: var(--color-base-content);
 }
 
 .cm-tooltip.cm-tooltip-autocomplete > ul > li {

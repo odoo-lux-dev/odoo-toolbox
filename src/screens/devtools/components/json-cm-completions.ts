@@ -108,10 +108,25 @@ function applyField(
   });
 }
 
+function fieldTypeToIconType(fieldType: string): string {
+  const t = fieldType.toLowerCase();
+  if (["char", "text", "html"].includes(t)) return "field-text";
+  if (["integer", "float", "monetary"].includes(t)) return "field-number";
+  if (["boolean"].includes(t)) return "field-bool";
+  if (["date", "datetime"].includes(t)) return "field-date";
+  if (["selection"].includes(t)) return "field-select";
+  if (["many2one", "m2o"].includes(t)) return "field-m2o";
+  if (["one2many", "o2m"].includes(t)) return "field-o2m";
+  if (["many2many", "m2m"].includes(t)) return "field-m2m";
+  if (["binary"].includes(t)) return "field-binary";
+  if (["json"].includes(t)) return "field-json";
+  return "field-other";
+}
+
 function suggestionToCompletion(suggestion: Suggestion, keyContext: KeyContext): Completion {
   return {
     label: suggestion.field,
-    type: "property",
+    type: fieldTypeToIconType(suggestion.type),
     detail: suggestion.type,
     info: suggestion.description,
     apply: (view, _completion, from, to) => {
