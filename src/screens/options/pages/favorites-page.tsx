@@ -105,11 +105,14 @@ export const FavoritesPage = () => {
             <h2 class="text-xl font-semibold">{t("common.favorite_projects")}</h2>
           </div>
           <div
-            class="flex max-h-[85vh] min-h-[85vh] flex-col gap-2 overflow-y-auto bg-base-300 pt-1.5"
-            ref={(el) => {
+            class="flex flex-col gap-2 pt-1.5"
+            ref={() => {
               onMount(() => {
-                const cleanup = attachAutoScroll(el);
-                onCleanup(cleanup);
+                const scrollContainer = document.getElementById("content-container");
+                if (scrollContainer) {
+                  const cleanup = attachAutoScroll(scrollContainer);
+                  onCleanup(cleanup);
+                }
               });
             }}
           >
