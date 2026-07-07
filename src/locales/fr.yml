@@ -431,8 +431,8 @@ options:
     tab_title_desc: Sélectionner s'il faut changer le titre de l'onglet sur les pages Odoo.SH pour inclure le nom du projet actuel
     technical_model: Afficher le modèle technique
     technical_model_desc: Choisir si vous souhaitez afficher le modèle technique sur la page (v17.2+)
-    color_scheme: Schéma de couleur par défaut
-    color_scheme_desc: Choisir le schéma de couleur par défaut pour Odoo 16 et supérieur.
+    color_scheme: Thème par défaut
+    color_scheme_desc: Choisir le thème par défaut pour Odoo 16 et supérieur.
     color_scheme_warning: Cette fonctionnalité est expérimentale et peut causer des problèmes sur certaines versions d'Odoo. En cas de problème, remettez la valeur sur "Aucun".
     color_none: Aucun (par défaut)
     color_none_tooltip: "Aucun : laisse Odoo le gérer (paramètres du profil utilisateur)"
