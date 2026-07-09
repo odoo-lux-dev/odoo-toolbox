@@ -5,6 +5,7 @@ import type {
   HistoryAction,
   HistoryActionType,
   HistoryActionV1,
+  HistoryActionV2,
 } from "@/types";
 
 import { Logger } from "./logger";
@@ -23,9 +24,10 @@ export class HistoryService {
     <StorageItemKey>`local:${HISTORY_STORAGE_KEY}`,
     {
       init: () => [],
-      version: 2,
+      version: 3,
       migrations: {
         2: (history: HistoryActionV1[]) => history.map((action) => ({ ...action, pinned: false })),
+        3: (history: HistoryActionV2[]) => history.map((action) => ({ ...action, label: "" })),
       },
     },
   );
@@ -143,6 +145,21 @@ export class HistoryService {
     }
   }
 
+  /**
+   * Set label for a specific action
+   */
+  async setActionLabel(actionId: string, label: string): Promise<void> {
+    try {
+      const history = await this.getHistory();
+      const updatedHistory = history.map((action) =>
+        action.id === actionId ? { ...action, label } : action,
+      );
+      await this.historyStorage.setValue(this.applyLimit(updatedHistory));
+    } catch (error) {
+      Logger.error("Failed to update history action label:", error);
+    }
+  }
+
   private sortHistory(history: HistoryAction[]): HistoryAction[] {
     return history.toSorted((a, b) => {
       const aPinned = a.pinned ? 1 : 0;
@@ -182,6 +199,8 @@ export const clearHistory = () => historyService.clearHistory();
 export const removeHistoryAction = (actionId: string) => historyService.removeAction(actionId);
 export const setHistoryActionPinned = (actionId: string, pinned: boolean) =>
   historyService.setActionPinned(actionId, pinned);
+export const setHistoryActionLabel = (actionId: string, label: string) =>
+  historyService.setActionLabel(actionId, label);
 export const getHistoryByType = (type: HistoryActionType) => historyService.getActionsByType(type);
 export const getHistoryByModel = (model: string) => historyService.getActionsByModel(model);
 export const watchHistory = (callback: (history: HistoryAction[]) => void) =>

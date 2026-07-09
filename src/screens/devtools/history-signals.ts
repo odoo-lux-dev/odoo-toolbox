@@ -77,6 +77,17 @@ export const setHistoryActionPinned = async (actionId: string, pinned: boolean) 
   }
 };
 
+export const setHistoryActionLabel = async (actionId: string, label: string) => {
+  try {
+    await historyService.setActionLabel(actionId, label);
+    setHistoryActionsSignal(await historyService.getHistory());
+  } catch (error) {
+    setHistoryErrorSignal(
+      error instanceof Error ? error.message : "Failed to update action label",
+    );
+  }
+};
+
 export const useHistoryState = () => {
   return {
     state: historyStateSignal,
@@ -85,6 +96,7 @@ export const useHistoryState = () => {
     clearHistory: clearAllHistory,
     removeAction: removeHistoryAction,
     setActionPinned: setHistoryActionPinned,
+    setActionLabel: setHistoryActionLabel,
 
     actions: historyActionsSignal,
     recent: recentHistoryActionsSignal,

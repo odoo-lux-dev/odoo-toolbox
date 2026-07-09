@@ -42,7 +42,12 @@ export const HistoryTab = () => {
 
     if (searchTerm().trim()) {
       const term = searchTerm().toLowerCase();
-      filtered = filtered.filter((action) => action.model.toLowerCase().includes(term));
+      filtered = filtered.filter(
+        (action) =>
+          action.model.toLowerCase().includes(term) ||
+          action.type.toLowerCase().includes(term) ||
+          (action.label ?? "").toLowerCase().includes(term),
+      );
     }
 
     const pinned = filtered.filter((action) => action.pinned);

@@ -7,6 +7,7 @@ export interface BaseHistoryAction {
   model: string;
   database?: string;
   pinned?: boolean;
+  label?: string;
 }
 
 export interface SearchHistoryAction extends BaseHistoryAction {
@@ -71,7 +72,8 @@ export type HistoryAction =
   | CallMethodHistoryAction
   | UnlinkHistoryAction;
 
-export type HistoryActionV1 = Omit<HistoryAction, "pinned">;
+export type HistoryActionV1 = Omit<HistoryAction, "pinned" | "label">;
+export type HistoryActionV2 = Omit<HistoryAction, "label">;
 
 export interface HistoryState {
   actions: HistoryAction[];

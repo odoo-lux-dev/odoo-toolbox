@@ -26,7 +26,11 @@ import {
   setRpcQuery,
   setWriteValues,
 } from "@/screens/devtools/devtools-signals";
-import { removeHistoryAction, setHistoryActionPinned } from "@/screens/devtools/history-signals";
+import {
+  removeHistoryAction,
+  setHistoryActionLabel,
+  setHistoryActionPinned,
+} from "@/screens/devtools/history-signals";
 import { navigate } from "@/screens/devtools/Layout";
 import { MAX_HISTORY_ENTRIES } from "@/services/history-service";
 import { getLocale, localeVersion, t } from "@/services/i18n-service";
@@ -251,6 +255,8 @@ export const HistoryActionItem = (props: HistoryActionItemProps) => {
   const [isDeleting, setIsDeleting] = createSignal(false);
   const [isPinning, setIsPinning] = createSignal(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
+  const [isEditingLabel, setIsEditingLabel] = createSignal(false);
+  const [labelDraft, setLabelDraft] = createSignal("");
 
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
@@ -281,6 +287,23 @@ export const HistoryActionItem = (props: HistoryActionItemProps) => {
     } finally {
       setIsPinning(false);
     }
+  };
+
+  const startEditLabel = () => {
+    setLabelDraft(props.action.label ?? "");
+    setIsEditingLabel(true);
+  };
+
+  const saveLabel = async () => {
+    const trimmed = labelDraft().trim();
+    if (trimmed !== (props.action.label ?? "")) {
+      await setHistoryActionLabel(props.action.id, trimmed);
+    }
+    setIsEditingLabel(false);
+  };
+
+  const cancelEditLabel = () => {
+    setIsEditingLabel(false);
   };
 
   const toggleExpanded = () => {
@@ -356,6 +379,30 @@ export const HistoryActionItem = (props: HistoryActionItemProps) => {
                 <span class="rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
                   {t("devtools.history.pinned")}
                 </span>
+                <Show when={props.action.label || isEditingLabel()}>
+                  <span class="opacity-50">•</span>
+                  <Show
+                    when={isEditingLabel()}
+                    fallback={
+                      <span class="font-medium text-base-content/80">{props.action.label}</span>
+                    }
+                  >
+                    <input
+                      ref={(el) => requestAnimationFrame(() => el.focus())}
+                      type="text"
+                      class="input-bordered input h-6 w-40 text-xs input-xs"
+                      value={labelDraft()}
+                      onInput={(e) => setLabelDraft(e.currentTarget.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveLabel();
+                        if (e.key === "Escape") cancelEditLabel();
+                      }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder={t("devtools.history.label_placeholder")}
+                    />
+                  </Show>
+                </Show>
               </Show>
               <Show when={props.action.database}>
                 <span class="opacity-50">•</span>
@@ -379,6 +426,47 @@ export const HistoryActionItem = (props: HistoryActionItemProps) => {
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
+          <Show when={props.action.pinned && !isEditingLabel()}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                startEditLabel();
+              }}
+              title={t("devtools.history.edit_label")}
+            >
+              <span class="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={PencilEdit01Icon}
+                  size={14}
+                  color="currentColor"
+                  strokeWidth={1.6}
+                />
+                <span>{t("devtools.history.edit_label")}</span>
+              </span>
+            </Button>
+          </Show>
+          <Show when={isEditingLabel()}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={saveLabel}
+              title={t("common.save")}
+            >
+              <span class="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={PencilEdit01Icon}
+                  size={14}
+                  color="currentColor"
+                  strokeWidth={1.6}
+                />
+                <span>{t("common.save")}</span>
+              </span>
+            </Button>
+          </Show>
           <Button
             type="button"
             variant="outline"

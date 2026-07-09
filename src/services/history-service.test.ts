@@ -218,6 +218,87 @@ describe("HistoryService - setActionPinned", () => {
   });
 });
 
+describe("HistoryService - setActionLabel", () => {
+  let service: InstanceType<typeof HistoryService>;
+
+  beforeEach(() => {
+    memoryStorage.clear();
+    HistoryService["instance"] = null;
+    service = HistoryService.getInstance();
+  });
+
+  test("should set a label on an action", async () => {
+    await service.addAction({
+      type: "search_read" as never,
+      model: "res.partner",
+    } as never);
+    const history = await service.getHistory();
+    const actionId = history[0].id;
+
+    await service.setActionLabel(actionId, "My custom label");
+    const updated = await service.getHistory();
+    expect(updated[0].label).toBe("My custom label");
+  });
+
+  test("should update an existing label", async () => {
+    await service.addAction({
+      type: "search_read" as never,
+      model: "res.partner",
+    } as never);
+    const history = await service.getHistory();
+    const actionId = history[0].id;
+
+    await service.setActionLabel(actionId, "First label");
+    await service.setActionLabel(actionId, "Updated label");
+    const updated = await service.getHistory();
+    expect(updated[0].label).toBe("Updated label");
+  });
+
+  test("should clear a label by setting empty string", async () => {
+    await service.addAction({
+      type: "search_read" as never,
+      model: "res.partner",
+    } as never);
+    const history = await service.getHistory();
+    const actionId = history[0].id;
+
+    await service.setActionLabel(actionId, "Some label");
+    await service.setActionLabel(actionId, "");
+    const updated = await service.getHistory();
+    expect(updated[0].label).toBe("");
+  });
+
+  test("should not affect other actions when setting a label", async () => {
+    await service.addAction({
+      type: "search_read" as never,
+      model: "res.partner",
+    } as never);
+    await service.addAction({
+      type: "search_read" as never,
+      model: "sale.order",
+    } as never);
+    const history = await service.getHistory();
+    const firstId = history[0].id;
+    const secondId = history[1].id;
+
+    await service.setActionLabel(firstId, "Label for first");
+    const updated = await service.getHistory();
+    expect(updated.find((a) => a.id === firstId)?.label).toBe("Label for first");
+    expect(updated.find((a) => a.id === secondId)?.label).toBeUndefined();
+  });
+
+  test("should not throw when setting label on non-existent id", async () => {
+    await service.addAction({
+      type: "search_read" as never,
+      model: "res.partner",
+    } as never);
+    await service.setActionLabel("nonexistent_id", "Label");
+    const history = await service.getHistory();
+    expect(history).toHaveLength(1);
+    expect(history[0].label).toBeUndefined();
+  });
+});
+
 describe("HistoryService - getActionsByType", () => {
   let service: InstanceType<typeof HistoryService>;
 
