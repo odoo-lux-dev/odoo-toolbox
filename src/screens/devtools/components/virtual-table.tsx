@@ -588,7 +588,16 @@ export const VirtualTable = (props: {
                               height: "100%",
                             }}
                           >
-                            <div class="w-full min-w-0 truncate" data-autofit-content>
+                            <div
+                              class="w-full min-w-0 truncate"
+                              data-autofit-content
+                              title={(() => {
+                                const v = cell.getValue();
+                                if (v === null || v === undefined) return "";
+                                if (typeof v === "object") return JSON.stringify(v);
+                                return String(v);
+                              })()}
+                            >
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </div>
                           </div>
