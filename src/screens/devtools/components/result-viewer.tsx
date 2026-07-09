@@ -322,35 +322,37 @@ export const ResultViewer = (props: ResultViewerProps) => {
                           <Button
                             size="sm"
                             variant="solid"
-                            active={viewMode() !== "list"}
-                            class="rounded-s-none"
-                            onClick={() => {
-                              if (viewMode() === "list") {
-                                setViewMode("table");
-                              } else if (viewMode() === "table") {
-                                setViewMode("pivot");
-                              } else {
-                                setViewMode("table");
-                              }
-                            }}
-                            title={
-                              viewMode() === "pivot"
-                                ? t("devtools.result_viewer.exit_pivot")
-                                : t("devtools.result_viewer.pivot_view")
-                            }
+                            active={viewMode() === "table"}
+                            class="rounded-none"
+                            onClick={() => setViewMode("table")}
+                            title={t("devtools.result_viewer.table_view")}
                           >
                             <span class="flex items-center gap-2">
                               <HugeiconsIcon
-                                icon={viewMode() === "pivot" ? PivotIcon : TableIcon}
+                                icon={TableIcon}
                                 size={16}
                                 color="currentColor"
                                 strokeWidth={1.5}
                               />
-                              <span>
-                                {viewMode() === "pivot"
-                                  ? t("devtools.result_viewer.pivot")
-                                  : t("devtools.result_viewer.table")}
-                              </span>
+                              <span>{t("devtools.result_viewer.table")}</span>
+                            </span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="solid"
+                            active={viewMode() === "pivot"}
+                            class="rounded-s-none"
+                            onClick={() => setViewMode("pivot")}
+                            title={t("devtools.result_viewer.pivot_view")}
+                          >
+                            <span class="flex items-center gap-2">
+                              <HugeiconsIcon
+                                icon={PivotIcon}
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                              />
+                              <span>{t("devtools.result_viewer.pivot")}</span>
                             </span>
                           </Button>
                         </Join>

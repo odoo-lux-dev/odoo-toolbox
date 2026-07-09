@@ -282,9 +282,10 @@ devtools:
     download_json: تنزيل كـ JSON
     list_view: عرض القائمة
     exit_pivot: الخروج من العرض المحوري
-    pivot_view: عرض الجدول (انقر مرة أخرى للتحوير)
+    pivot_view: العرض المحوري
     pivot: تحوير
     table: جدول
+    table_view: عرض الجدول
     list: قائمة
   record_search:
     placeholder: البحث في أسماء وقيم الحقول (السجلات الموسعة فقط)...

@@ -691,28 +691,37 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
                   }
                 />
                 <IconButton
-                  label={
-                    relationalViewMode() === "pivot"
-                      ? t("devtools.result_viewer.exit_pivot")
-                      : t("devtools.result_viewer.pivot_view")
-                  }
+                  label={t("devtools.result_viewer.table_view")}
                   variant="ghost"
                   size="xs"
                   square
-                  class={`hover:text-success ${relationalViewMode() !== "list" ? "text-success" : "text-base-content/60"}`}
+                  class={`hover:text-success ${relationalViewMode() === "table" ? "text-success" : "text-base-content/60"}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setRelationalViewMode(
-                      relationalViewMode() === "list"
-                        ? "table"
-                        : relationalViewMode() === "table"
-                          ? "pivot"
-                          : "table",
-                    );
+                    setRelationalViewMode("table");
                   }}
                   icon={
                     <HugeiconsIcon
-                      icon={relationalViewMode() === "pivot" ? PivotIcon : TableIcon}
+                      icon={TableIcon}
+                      size={14}
+                      color="currentColor"
+                      strokeWidth={1.6}
+                    />
+                  }
+                />
+                <IconButton
+                  label={t("devtools.result_viewer.pivot_view")}
+                  variant="ghost"
+                  size="xs"
+                  square
+                  class={`hover:text-success ${relationalViewMode() === "pivot" ? "text-success" : "text-base-content/60"}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRelationalViewMode("pivot");
+                  }}
+                  icon={
+                    <HugeiconsIcon
+                      icon={PivotIcon}
                       size={14}
                       color="currentColor"
                       strokeWidth={1.6}

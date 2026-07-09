@@ -282,9 +282,10 @@ devtools:
     download_json: Downloaden als JSON
     list_view: Lijstweergave
     exit_pivot: Pivotweergave verlaten
-    pivot_view: Tabelweergave (klik opnieuw om te pivoteren)
+    pivot_view: Pivotweergave
     pivot: Pivoteren
     table: Tabel
+    table_view: Tabelweergave
     list: Lijst
   record_search:
     placeholder: Zoek in veldnamen en waarden (alleen uitgeklapte records)...

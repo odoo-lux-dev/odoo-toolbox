@@ -282,9 +282,10 @@ devtools:
     download_json: Descarregar como JSON
     list_view: Vista de lista
     exit_pivot: Sair da vista pivô
-    pivot_view: Vista de tabela (clique novamente para pivotar)
+    pivot_view: Vista pivô
     pivot: Pivotar
     table: Tabela
+    table_view: Vista tabela
     list: Lista
   record_search:
     placeholder: Pesquisar em nomes e valores de campos (apenas registos expandidos)...

@@ -282,9 +282,10 @@ devtools:
     download_json: JSON के रूप में डाउनलोड करें
     list_view: List view
     exit_pivot: Pivot view से बाहर निकलें
-    pivot_view: Table view (pivot के लिए फिर से क्लिक करें)
+    pivot_view: Pivot दृश्य
     pivot: Pivot
     table: Table
+    table_view: Table दृश्य
     list: List
   record_search:
     placeholder: Field नामों और मानों में खोजें (केवल विस्तृत रिकॉर्ड्स)...

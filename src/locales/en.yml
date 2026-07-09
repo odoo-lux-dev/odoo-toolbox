@@ -282,9 +282,10 @@ devtools:
     download_json: Download as JSON
     list_view: List view
     exit_pivot: Exit pivot view
-    pivot_view: Table view (click again to pivot)
+    pivot_view: Pivot view
     pivot: Pivot
     table: Table
+    table_view: Table view
     list: List
   record_search:
     placeholder: Search in field names and values (expanded records only)...
