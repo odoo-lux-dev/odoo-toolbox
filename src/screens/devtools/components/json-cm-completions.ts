@@ -20,12 +20,6 @@ import {
 } from "@/screens/devtools/components/json-autocomplete-utils";
 import type { FieldMetadata } from "@/types";
 
-interface KeyContext {
-  type: "editing-key" | "fresh-key";
-  propertyNameNode?: SyntaxNode;
-  objectNode: SyntaxNode;
-}
-
 function findContainingObject(node: SyntaxNode): SyntaxNode | null {
   let n: SyntaxNode | null = node;
   while (n) {
@@ -50,64 +44,6 @@ function collectPropertyNames(objNode: SyntaxNode, state: EditorState): Set<stri
   return names;
 }
 
-function getKeyContext(nodeBefore: SyntaxNode): KeyContext | null {
-  if (nodeBefore.name === "PropertyName") {
-    const obj = findContainingObject(nodeBefore);
-    if (obj) {
-      return {
-        type: "editing-key",
-        propertyNameNode: nodeBefore,
-        objectNode: obj,
-      };
-    }
-  }
-
-  if (nodeBefore.name === "{" || nodeBefore.name === ",") {
-    const obj = findContainingObject(nodeBefore);
-    if (obj) {
-      return { type: "fresh-key", objectNode: obj };
-    }
-  }
-
-  return null;
-}
-
-function applyField(
-  view: EditorView,
-  suggestion: Suggestion,
-  keyContext: KeyContext,
-  from: number,
-  to: number,
-): void {
-  if (keyContext.type === "editing-key" && keyContext.propertyNameNode) {
-    const nameNode = keyContext.propertyNameNode;
-    view.dispatch({
-      changes: {
-        from: nameNode.from,
-        to: nameNode.to,
-        insert: `"${suggestion.field}"`,
-      },
-      selection: {
-        anchor: nameNode.from + suggestion.field.length + 2,
-      },
-    });
-    return;
-  }
-
-  const tpl = getValueTemplate(suggestion.type);
-  const textBefore = view.state.sliceDoc(0, from);
-  const textAfter = view.state.sliceDoc(to);
-  const commaBefore = needsCommaBefore(textBefore) ? ", " : "";
-  const commaAfter = needsCommaAfter(textAfter) ? "," : "";
-  const insertion = `${commaBefore}"${suggestion.field}": ${tpl.template}${commaAfter}`;
-  const cursorPos = from + commaBefore.length + suggestion.field.length + 4 + tpl.cursorOffset;
-
-  view.dispatch({
-    changes: { from, to, insert: insertion },
-    selection: { anchor: cursorPos },
-  });
-}
-
 function fieldTypeToIconType(fieldType: string): string {
   const t = fieldType.toLowerCase();
   if (["char", "text", "html"].includes(t)) return "field-text";
@@ -123,16 +59,121 @@ function fieldTypeToIconType(fieldType: string): string {
   return "field-other";
 }
 
-function suggestionToCompletion(suggestion: Suggestion, keyContext: KeyContext): Completion {
-  return {
-    label: suggestion.field,
-    type: fieldTypeToIconType(suggestion.type),
-    detail: suggestion.type,
-    info: suggestion.description,
-    apply: (view, _completion, from, to) => {
-      applyField(view, suggestion, keyContext, from, to);
-    },
-  };
+function applyField(view: EditorView, suggestion: Suggestion, from: number, to: number): void {
+  const tpl = getValueTemplate(suggestion.type);
+  const textBefore = view.state.sliceDoc(0, from);
+  const textAfter = view.state.sliceDoc(to);
+  const commaBefore = needsCommaBefore(textBefore) ? ", " : "";
+  const commaAfter = needsCommaAfter(textAfter) ? "," : "";
+  const insertion = `${commaBefore}"${suggestion.field}": ${tpl.template}${commaAfter}`;
+  const cursorPos = from + commaBefore.length + suggestion.field.length + 4 + tpl.cursorOffset;
+
+  view.dispatch({
+    changes: { from, to, insert: insertion },
+    selection: { anchor: cursorPos },
+  });
+}
+
+interface ValueContext {
+  fieldMeta: FieldMetadata;
+  valueFrom: number;
+  valueTo: number;
+  inString: boolean;
+}
+
+function getValueContext(
+  nodeBefore: SyntaxNode,
+  state: EditorState,
+  fieldsMetadata: Record<string, FieldMetadata>,
+): ValueContext | null {
+  let propNode: SyntaxNode | null = nodeBefore;
+  while (propNode && propNode.name !== "Property") {
+    propNode = propNode.parent;
+  }
+  if (!propNode) return null;
+
+  const nameNode = propNode.firstChild;
+  if (!nameNode || nameNode.name !== "PropertyName") return null;
+
+  const nameText = state.doc.sliceString(nameNode.from, nameNode.to);
+  const key = nameText.slice(1, -1);
+  const fieldMeta = fieldsMetadata[key];
+  if (!fieldMeta) return null;
+
+  let colonNode = nameNode.nextSibling;
+  while (colonNode && colonNode.name !== ":") {
+    colonNode = colonNode.nextSibling;
+  }
+  if (!colonNode) return null;
+
+  const cursorPos = state.selection.main.head;
+  if (cursorPos <= colonNode.to) return null;
+
+  let valueNode = colonNode.nextSibling;
+  let valueFrom: number;
+  let valueTo: number;
+  let inString = false;
+
+  if (valueNode && valueNode.name === "String") {
+    valueFrom = valueNode.from + 1;
+    valueTo = valueNode.to - 1;
+    if (valueTo < valueFrom) valueTo = valueFrom;
+    inString = true;
+  } else if (valueNode) {
+    valueFrom = valueNode.from;
+    valueTo = valueNode.to;
+  } else {
+    valueFrom = cursorPos;
+    valueTo = cursorPos;
+  }
+
+  return { fieldMeta, valueFrom, valueTo, inString };
+}
+
+function buildValueCompletions(ctx: ValueContext): Completion[] {
+  const meta = ctx.fieldMeta;
+
+  if (meta.type === "boolean") {
+    return [
+      { label: "true", type: "field-bool", apply: "true" },
+      { label: "false", type: "field-bool", apply: "false" },
+    ];
+  }
+
+  if (meta.type === "selection" && Array.isArray(meta.selection)) {
+    return meta.selection.map(([value, label]) => ({
+      label: value,
+      detail: label,
+      type: "field-select",
+      apply: ctx.inString ? value : `"${value}"`,
+    }));
+  }
+
+  return [];
+}
+
+function getFreshKeyContext(nodeBefore: SyntaxNode, state: EditorState): SyntaxNode | null {
+  if (nodeBefore.name === "{" || nodeBefore.name === ",") {
+    return findContainingObject(nodeBefore);
+  }
+
+  if (nodeBefore.name === "Object") {
+    return nodeBefore;
+  }
+
+  if (nodeBefore.name === "Property" && nodeBefore.parent?.name === "Object") {
+    return nodeBefore.parent;
+  }
+
+  if (
+    nodeBefore.parent?.name === "Property" &&
+    nodeBefore.parent.parent?.name === "Object" &&
+    state.selection.main.head >= nodeBefore.to
+  ) {
+    return nodeBefore.parent.parent;
+  }
+
+  return null;
 }
 
 export function fieldCompletions(
@@ -144,20 +185,58 @@ export function fieldCompletions(
     const fieldsMetadata = getFieldsMetadata();
     const tree = syntaxTree(ctx.state);
     const nodeBefore = tree.resolveInner(ctx.pos, -1);
-    const keyContext = getKeyContext(nodeBefore);
 
-    if (!keyContext) return null;
+    if (nodeBefore.name === "PropertyName") {
+      const nameText = ctx.state.doc.sliceString(nodeBefore.from, nodeBefore.to);
+      const partialText = nameText.slice(1, -1);
+      const objNode = findContainingObject(nodeBefore);
+      const usedFields = objNode ? collectPropertyNames(objNode, ctx.state) : new Set<string>();
+      usedFields.delete(partialText);
 
-    const usedFields = collectPropertyNames(keyContext.objectNode, ctx.state);
+      const options: Completion[] = Object.entries(fieldsMetadata)
+        .filter(([field]) => !usedFields.has(field))
+        .filter(
+          ([field]) => !partialText || field.toLowerCase().includes(partialText.toLowerCase()),
+        )
+        .slice(0, 1000)
+        .map(([field, meta]) => ({
+          label: field,
+          type: fieldTypeToIconType(meta.type),
+          detail: meta.type,
+          info: meta.string || field,
+          apply: (view, _completion, _from, _to) => {
+            view.dispatch({
+              changes: { from: nodeBefore.from, to: nodeBefore.to, insert: `"${field}"` },
+              selection: { anchor: nodeBefore.from + field.length + 2 },
+            });
+          },
+        }));
 
-    let partialText = "";
-    if (keyContext.type === "editing-key" && keyContext.propertyNameNode) {
-      const nameText = ctx.state.doc.sliceString(
-        keyContext.propertyNameNode.from,
-        keyContext.propertyNameNode.to,
-      );
-      partialText = nameText.slice(1, -1);
+      if (options.length === 0) return null;
+      return {
+        from: nodeBefore.from + 1,
+        to: Math.max(nodeBefore.from + 1, nodeBefore.to - 1),
+        options,
+        validFor: /^[\w]*$/,
+      };
     }
+
+    const valueContext = getValueContext(nodeBefore, ctx.state, fieldsMetadata);
+    if (valueContext) {
+      const options = buildValueCompletions(valueContext);
+      if (options.length === 0) return null;
+      return {
+        from: valueContext.valueFrom,
+        to: valueContext.valueTo,
+        options,
+        validFor: /^"?[\w-]*"?$/,
+      };
+    }
+
+    const objNode = getFreshKeyContext(nodeBefore, ctx.state);
+    if (!objNode) return null;
+
+    const usedFields = collectPropertyNames(objNode, ctx.state);
 
     let specialSuggestion: Suggestion | undefined;
     if (getMode() === "create" && getOnAddRequiredFields()) {
@@ -171,14 +250,7 @@ export function fieldCompletions(
       }
     }
 
-    const suggestions = buildSuggestions(
-      fieldsMetadata,
-      usedFields,
-      partialText,
-      1000,
-      specialSuggestion,
-    );
-
+    const suggestions = buildSuggestions(fieldsMetadata, usedFields, "", 1000, specialSuggestion);
     if (suggestions.length === 0) return null;
 
     const options: Completion[] = suggestions.map((s) => {
@@ -191,20 +263,20 @@ export function fieldCompletions(
           },
         };
       }
-      return suggestionToCompletion(s, keyContext);
+      return {
+        label: s.field,
+        type: fieldTypeToIconType(s.type),
+        detail: s.type,
+        info: s.description,
+        apply: (view, _completion, from, to) => {
+          applyField(view, s, from, to);
+        },
+      };
     });
 
-    let from = ctx.pos;
-    let to = ctx.pos;
-
-    if (keyContext.type === "editing-key" && keyContext.propertyNameNode) {
-      from = keyContext.propertyNameNode.from;
-      to = keyContext.propertyNameNode.to;
-    }
-
     return {
-      from,
-      to,
+      from: ctx.pos,
+      to: ctx.pos,
       options,
       validFor: /^"?[\w]*"?$/,
     };

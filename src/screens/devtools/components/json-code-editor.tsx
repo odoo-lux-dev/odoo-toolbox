@@ -1,4 +1,9 @@
-import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  startCompletion,
+} from "@codemirror/autocomplete";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { json } from "@codemirror/lang-json";
 import {
@@ -8,7 +13,6 @@ import {
   syntaxHighlighting,
   defaultHighlightStyle,
 } from "@codemirror/language";
-import { tags as lezerTags } from "@lezer/highlight";
 import {
   EditorView,
   keymap,
@@ -17,7 +21,10 @@ import {
   drawSelection,
   placeholder as placeholderExt,
   tooltips,
+  ViewPlugin,
+  type ViewUpdate,
 } from "@codemirror/view";
+import { tags as lezerTags } from "@lezer/highlight";
 import {
   createCodeMirror,
   createEditorControlledValue,
@@ -136,6 +143,28 @@ const jsonHighlightStyle = HighlightStyle.define([
   { tag: lezerTags.punctuation, color: "var(--color-base-content)", opacity: "0.6" },
 ]);
 
+const autoValueCompletionPlugin = ViewPlugin.fromClass(
+  class {
+    constructor(view: EditorView) {
+      this.check(view);
+    }
+    update(update: ViewUpdate) {
+      if (update.selectionSet || update.docChanged) {
+        this.check(update.view);
+      }
+    }
+    check(view: EditorView) {
+      const state = view.state;
+      const pos = state.selection.main.head;
+      const before1 = state.sliceDoc(Math.max(0, pos - 1), pos);
+      const before2 = state.sliceDoc(Math.max(0, pos - 2), Math.max(0, pos - 1));
+      if (before1 === '"' || (before1 === " " && before2 === ":")) {
+        setTimeout(() => startCompletion(view), 0);
+      }
+    }
+  },
+);
+
 const baseExtensions = () => [
   tooltips({ parent: document.body }),
   history(),
@@ -151,6 +180,7 @@ const baseExtensions = () => [
   json(),
   editorTheme,
   EditorView.lineWrapping,
+  autoValueCompletionPlugin,
 ];
 
 export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
