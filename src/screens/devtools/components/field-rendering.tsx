@@ -285,11 +285,19 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
       }
 
       const data = await odooRpcService.read(model, currentIds, []);
-      setRelatedData(Array.isArray(data) ? data : [data]);
+      const xmlIdMap = await odooRpcService.getXmlIds(model, currentIds);
+      const enrichedData = (Array.isArray(data) ? data : [data]).map((record) => ({
+        ...record,
+        xml_id: xmlIdMap[record.id as number] ?? false,
+      }));
+      setRelatedData(enrichedData);
 
       const fieldsResponse = await odooRpcService.getFieldsInfo(model);
       if (fieldsResponse && typeof fieldsResponse === "object") {
-        setRelatedFieldsMetadata(fieldsResponse as Record<string, FieldMetadata>);
+        setRelatedFieldsMetadata({
+          ...(fieldsResponse as Record<string, FieldMetadata>),
+          xml_id: { string: "External ID", type: "char" },
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("common.unknown_error"));

@@ -34,6 +34,7 @@ import {
 import { VirtualTable } from "@/screens/devtools/components/virtual-table";
 import { queryStore, resultStore } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
+import { odooRpcService } from "@/services/odoo-rpc-service";
 
 type ViewMode = "table" | "list" | "pivot" | "calendar";
 
@@ -64,6 +65,40 @@ export const ResultViewer = (props: ResultViewerProps) => {
   const errorDetails = () => resultStore.errorDetails;
   const isNewQuery = () => resultStore.isNewQuery;
 
+  const [xmlIdMap, setXmlIdMap] = createSignal<Record<number, string | false>>({});
+
+  createEffect(() => {
+    const currentData = data();
+    const model = queryStore.model;
+    if (!currentData || currentData.length === 0 || !model) {
+      setXmlIdMap({});
+      return;
+    }
+    const ids = currentData.map((r) => r.id as number).filter((id) => id != null);
+    if (ids.length === 0) {
+      setXmlIdMap({});
+      return;
+    }
+    odooRpcService.getXmlIds(model, ids).then(setXmlIdMap).catch(() => setXmlIdMap({}));
+  });
+
+  const enrichedData = createMemo(() => {
+    const currentData = data();
+    if (!currentData) return null;
+    const map = xmlIdMap();
+    if (Object.keys(map).length === 0) return currentData;
+    return currentData.map((record) => ({
+      ...record,
+      xml_id: map[record.id as number] ?? false,
+    }));
+  });
+
+  const enrichedFieldsMetadata = createMemo(() => {
+    const meta = fieldsMetadata();
+    if (!meta) return { xml_id: { string: "External ID", type: "char" } };
+    return { ...meta, xml_id: { string: "External ID", type: "char" } };
+  });
+
   const { copyToClipboard } = useCopyToClipboard();
   const { openRecords } = useRecordActions();
   const pagination = usePagination();
@@ -93,8 +128,8 @@ export const ResultViewer = (props: ResultViewerProps) => {
   });
 
   const { handleTableContextMenu } = useTableContextMenu({
-    data: () => data() || null,
-    fieldsMetadata: () => fieldsMetadata() || undefined,
+    data: () => enrichedData() || null,
+    fieldsMetadata: () => enrichedFieldsMetadata() || undefined,
     model: () => queryStore.model,
     handleFieldContextMenu,
   });
@@ -124,7 +159,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
   };
 
   const copyJson = (target: HTMLButtonElement) => {
-    const currentData = data();
+    const currentData = enrichedData();
     if (currentData) {
       const dataToCopy = currentData.length === 1 ? currentData[0] : currentData;
       copyToClipboard(JSON.stringify(dataToCopy, null, 2), target);
@@ -141,7 +176,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
   };
 
   const downloadJson = () => {
-    const currentData = data();
+    const currentData = enrichedData();
     if (currentData) {
       const dataToDownload = currentData.length === 1 ? currentData[0] : currentData;
       const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], {
@@ -159,7 +194,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
   };
 
   const allKeys = createMemo(() => {
-    const currentData = data();
+    const currentData = enrichedData();
     return currentData
       ? Array.from(new Set(currentData.flatMap((record) => Object.keys(record)))).sort((a, b) => {
           if (a === "id" && b !== "id") return -1;
@@ -175,13 +210,13 @@ export const ResultViewer = (props: ResultViewerProps) => {
         when={!error()}
         fallback={<ErrorState error={error()!} errorDetails={errorDetails()} />}
       >
-        <Show when={data() || loading()} fallback={<EmptyQueryState />}>
+        <Show when={enrichedData() || loading()} fallback={<EmptyQueryState />}>
           <Show
-            when={!(data() && data()!.length === 0 && !loading())}
+            when={!(enrichedData() && enrichedData()!.length === 0 && !loading())}
             fallback={<NoResultsState />}
           >
             <Show
-              when={data()}
+              when={enrichedData()}
               fallback={
                 <div class="flex h-full min-h-0 flex-col">
                   <div class="result-header sticky top-0 z-20 flex items-center justify-between border-b border-base-200 bg-base-100 px-4 py-3">
@@ -216,7 +251,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
                         </Show>
                       </div>
                     </Show>
-                    <Show when={queryStore.model && data() && data()!.length > 0}>
+                    <Show when={queryStore.model && enrichedData() && enrichedData()!.length > 0}>
                       <div class="flex items-center gap-1">
                         <IconButton
                           label={t("devtools.result_viewer.open_in_odoo")}
@@ -386,7 +421,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
                   </Show>
                 </div>
 
-                <Show when={data() && data()!.length > 0 && viewMode() === "list"}>
+                <Show when={enrichedData() && enrichedData()!.length > 0 && viewMode() === "list"}>
                   <RecordSearch expandedRecords={expandedRows} />
                 </Show>
 
@@ -401,8 +436,8 @@ export const ResultViewer = (props: ResultViewerProps) => {
                           fallback={
                             <div class="flex min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
                               <RecordRenderer
-                                records={data() || []}
-                                fieldsMetadata={fieldsMetadata()}
+                                records={enrichedData() || []}
+                                fieldsMetadata={enrichedFieldsMetadata()}
                                 clickableRow={true}
                                 showId={true}
                                 renderAsList={true}
@@ -414,7 +449,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
                         >
                           <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
                             <VirtualTable
-                              data={data() || []}
+                              data={enrichedData() || []}
                               allKeys={allKeys()}
                               handleTableContextMenu={handleTableContextMenu}
                               pivoted={viewMode() === "pivot"}
@@ -433,8 +468,8 @@ export const ResultViewer = (props: ResultViewerProps) => {
                     >
                       <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
                         <CalendarView
-                          data={data() || []}
-                          fieldsMetadata={fieldsMetadata() || undefined}
+                          data={enrichedData() || []}
+                          fieldsMetadata={enrichedFieldsMetadata() || undefined}
                           model={queryStore.model || undefined}
                         />
                       </div>

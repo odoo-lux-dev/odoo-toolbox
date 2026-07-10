@@ -203,6 +203,28 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     }) as Promise<Record<string, unknown>[]>;
   };
 
+  const getXmlIds = async (
+    model: string,
+    recordIds: number[],
+  ): Promise<Record<number, string | false>> => {
+    if (!model || recordIds.length === 0) return {};
+    try {
+      const result = await searchRead({
+        model: "ir.model.data",
+        domain: [["model", "=", model], ["res_id", "in", recordIds]],
+        fields: ["complete_name", "res_id"],
+        limit: recordIds.length,
+      });
+      const map: Record<number, string | false> = {};
+      for (const item of result) {
+        map[item.res_id as number] = (item.complete_name as string) || false;
+      }
+      return map;
+    } catch {
+      return {};
+    }
+  };
+
   const read = async (
     model: string,
     ids: number[],
@@ -429,6 +451,7 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     search,
     searchCount,
     searchRead,
+    getXmlIds,
     read,
     write,
     create,
