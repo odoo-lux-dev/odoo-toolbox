@@ -5,14 +5,19 @@ import {
   ArrowUpRight01Icon,
   CenterFocusIcon,
   Layers02Icon,
+  Search01Icon,
+  Settings04Icon,
 } from "@hugeicons/core-free-icons";
-import { For, Show, splitProps } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onCleanup, Show, splitProps } from "solid-js";
+import { Portal } from "solid-js/web";
 
 import { IconButton } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { useExpansion } from "@/screens/devtools/components/field-hooks";
 import { useFieldMetadata } from "@/screens/devtools/components/field-hooks";
 import { useModelExcludedFields } from "@/screens/devtools/components/field-hooks";
+import { extractIds } from "@/screens/devtools/components/field-rendering-helpers";
+import { isRelationalField } from "@/screens/devtools/components/field-rendering-helpers";
 import { useRecordActions } from "@/screens/devtools/components/record-hooks";
 import { useRecordContextMenu } from "@/screens/devtools/components/record-hooks";
 import { queryStore } from "@/screens/devtools/devtools-signals";
@@ -133,6 +138,130 @@ export const RecordRenderer = (props: RecordRendererProps) => {
       return a.localeCompare(b);
     });
 
+  interface RecordSettings {
+    hiddenFields: Set<string>;
+    hideStudioFields: boolean;
+    hideEmptyRelations: boolean;
+    hideFalseBooleans: boolean;
+  }
+
+  const defaultSettings = (): RecordSettings => ({
+    hiddenFields: new Set<string>(),
+    hideStudioFields: false,
+    hideEmptyRelations: false,
+    hideFalseBooleans: false,
+  });
+
+  const [perRecordSettings, setPerRecordSettings] = createSignal<Record<number, RecordSettings>>(
+    {},
+  );
+  const [settingsRecordIndex, setSettingsRecordIndex] = createSignal<number | null>(null);
+
+  const getSettings = (index: number): RecordSettings =>
+    perRecordSettings()[index] ?? defaultSettings();
+
+  const hasModifiedSettings = (index: number): boolean => {
+    const settings = perRecordSettings()[index];
+    if (!settings) return false;
+    return (
+      settings.hiddenFields.size > 0 ||
+      settings.hideStudioFields ||
+      settings.hideEmptyRelations ||
+      settings.hideFalseBooleans
+    );
+  };
+
+  const updateSettings = (index: number, patch: Partial<RecordSettings>) => {
+    setPerRecordSettings((prev) => ({
+      ...prev,
+      [index]: { ...(prev[index] ?? defaultSettings()), ...patch },
+    }));
+  };
+
+  const [showFieldToggle, setShowFieldToggle] = createSignal(false);
+  const [dropdownPos, setDropdownPos] = createSignal<Record<string, string>>({});
+  const [fieldSearch, setFieldSearch] = createSignal("");
+  let dropdownRef: HTMLDivElement | null = null;
+
+  const getFieldMeta = (key: string) =>
+    local.fieldsMetadata?.[key] || queryStore.fieldsMetadata?.[key] || null;
+
+  const isStudioField = (key: string) => key.startsWith("x_studio");
+
+  const isEmptyRelation = (key: string, record: Record<string, unknown>) => {
+    const meta = getFieldMeta(key);
+    if (!isRelationalField(meta)) return false;
+    return extractIds(record[key]).length === 0;
+  };
+
+  const isFalsyValue = (key: string, record: Record<string, unknown>) => {
+    const meta = getFieldMeta(key);
+    if (isRelationalField(meta)) return false;
+    const value = record[key];
+    return value === false || value === null || value === undefined || value === "";
+  };
+
+  const visibleKeysForRecord = (record: Record<string, unknown>, index: number) =>
+    allKeys().filter((key) => {
+      const settings = getSettings(index);
+      if (settings.hiddenFields.has(key)) return false;
+      if (settings.hideStudioFields && isStudioField(key)) return false;
+      if (settings.hideEmptyRelations && isEmptyRelation(key, record)) return false;
+      if (settings.hideFalseBooleans && isFalsyValue(key, record)) return false;
+      return true;
+    });
+
+  const dropdownKeys = createMemo(() => {
+    const search = fieldSearch().toLowerCase().trim();
+    if (!search) return allKeys();
+    return allKeys().filter((key) => key.toLowerCase().includes(search));
+  });
+
+  const toggleField = (fieldName: string) => {
+    const idx = settingsRecordIndex();
+    if (idx === null) return;
+    const settings = getSettings(idx);
+    const current = new Set(settings.hiddenFields);
+    if (current.has(fieldName)) {
+      current.delete(fieldName);
+    } else {
+      current.add(fieldName);
+    }
+    updateSettings(idx, { hiddenFields: current });
+  };
+
+  const toggleAllFields = (checked: boolean) => {
+    const idx = settingsRecordIndex();
+    if (idx === null) return;
+    updateSettings(idx, {
+      hiddenFields: checked ? new Set<string>() : new Set<string>(allKeys()),
+    });
+  };
+
+  const openFieldToggle = (e: MouseEvent, index: number) => {
+    e.stopPropagation();
+    setSettingsRecordIndex(index);
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    setDropdownPos({
+      position: "fixed",
+      top: `${rect.bottom + 4}px`,
+      right: `${window.innerWidth - rect.right}px`,
+    });
+    setShowFieldToggle(!showFieldToggle());
+  };
+
+  createEffect(() => {
+    if (!showFieldToggle()) return;
+    const handler = (e: MouseEvent) => {
+      if (!dropdownRef || !dropdownRef.contains(e.target as Node)) {
+        setShowFieldToggle(false);
+      }
+    };
+    window.addEventListener("click", handler);
+    onCleanup(() => window.removeEventListener("click", handler));
+  });
+
   const renderRecordField = (key: string, record: Record<string, unknown>) => {
     return (
       <RecordFieldRenderer
@@ -168,9 +297,41 @@ export const RecordRenderer = (props: RecordRendererProps) => {
             <Show
               when={local.renderAsList}
               fallback={
-                <div class="border border-base-200 bg-base-200" data-record-index={index()}>
+                <div
+                  class="relative border border-base-200 bg-base-200"
+                  data-record-index={index()}
+                >
+                  <div class="absolute top-2 right-2 z-10">
+                    <div class="relative">
+                      <IconButton
+                        label={t("devtools.field_rendering.toggle_fields")}
+                        variant="ghost"
+                        size="xs"
+                        square
+                        onClick={(e) => openFieldToggle(e as unknown as MouseEvent, index())}
+                        icon={
+                          <HugeiconsIcon
+                            icon={Settings04Icon}
+                            size={14}
+                            color="currentColor"
+                            strokeWidth={1.5}
+                          />
+                        }
+                      />
+                      <Show when={hasModifiedSettings(index())}>
+                        <span class="absolute top-0 right-0 size-1.5 rounded-full bg-warning" />
+                      </Show>
+                    </div>
+                  </div>
                   <LevelProvider level={(local.level ?? 0) + 1}>
-                    <For each={allKeys()}>{(key) => renderRecordField(key, record)}</For>
+                    <Show when={visibleKeysForRecord(record, index()).length === 0}>
+                      <div class="py-2 text-center text-xs text-base-content/50">
+                        {t("devtools.field_rendering.all_hidden")}
+                      </div>
+                    </Show>
+                    <For each={visibleKeysForRecord(record, index())}>
+                      {(key) => renderRecordField(key, record)}
+                    </For>
                   </LevelProvider>
                 </div>
               }
@@ -299,9 +460,38 @@ export const RecordRenderer = (props: RecordRendererProps) => {
                 </div>
 
                 <Show when={isExpanded()}>
-                  <div class="border-t border-base-200 bg-base-200 px-3 py-2">
+                  <div class="relative border-t border-base-200 bg-base-200 px-3 py-2">
+                    <div class="absolute top-2 right-2 z-10">
+                      <div class="relative">
+                        <IconButton
+                          label={t("devtools.field_rendering.toggle_fields")}
+                          variant="ghost"
+                          size="xs"
+                          square
+                          onClick={(e) => openFieldToggle(e as unknown as MouseEvent, index())}
+                          icon={
+                            <HugeiconsIcon
+                              icon={Settings04Icon}
+                              size={14}
+                              color="currentColor"
+                              strokeWidth={1.5}
+                            />
+                          }
+                        />
+                        <Show when={hasModifiedSettings(index())}>
+                          <span class="absolute top-0 right-0 size-1.5 rounded-full bg-warning" />
+                        </Show>
+                      </div>
+                    </div>
                     <LevelProvider level={(local.level ?? 0) + 1}>
-                      <For each={allKeys()}>{(key) => renderRecordField(key, record)}</For>
+                      <Show when={visibleKeysForRecord(record, index()).length === 0}>
+                        <div class="py-2 text-center text-xs text-base-content/50">
+                          {t("devtools.field_rendering.all_hidden")}
+                        </div>
+                      </Show>
+                      <For each={visibleKeysForRecord(record, index())}>
+                        {(key) => renderRecordField(key, record)}
+                      </For>
                     </LevelProvider>
                   </div>
                 </Show>
@@ -310,6 +500,122 @@ export const RecordRenderer = (props: RecordRendererProps) => {
           );
         }}
       </For>
+
+      <Show when={showFieldToggle()}>
+        <Portal>
+          <div
+            ref={(el) => {
+              dropdownRef = el;
+            }}
+            class="fixed z-9999 flex max-h-80 w-64 flex-col overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-lg"
+            style={dropdownPos()}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div class="border-b border-base-300 p-2">
+              <div class="relative">
+                <input
+                  type="text"
+                  class="input w-full pl-7 input-xs"
+                  placeholder={t("devtools.field_rendering.search_fields")}
+                  value={fieldSearch()}
+                  onInput={(e) => setFieldSearch(e.currentTarget.value)}
+                />
+                <span class="absolute top-1/2 left-2 -translate-y-1/2 text-base-content/40">
+                  <HugeiconsIcon
+                    icon={Search01Icon}
+                    size={12}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                </span>
+              </div>
+              <div class="mt-1.5 flex flex-col gap-0.5">
+                <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs select-none hover:bg-base-200">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-xs"
+                    checked={
+                      settingsRecordIndex() !== null &&
+                      getSettings(settingsRecordIndex()!).hideStudioFields
+                    }
+                    onChange={(e) =>
+                      settingsRecordIndex() !== null &&
+                      updateSettings(settingsRecordIndex()!, {
+                        hideStudioFields: e.currentTarget.checked,
+                      })
+                    }
+                  />
+                  {t("devtools.field_rendering.hide_studio")}
+                </label>
+                <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs select-none hover:bg-base-200">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-xs"
+                    checked={
+                      settingsRecordIndex() !== null &&
+                      getSettings(settingsRecordIndex()!).hideEmptyRelations
+                    }
+                    onChange={(e) =>
+                      settingsRecordIndex() !== null &&
+                      updateSettings(settingsRecordIndex()!, {
+                        hideEmptyRelations: e.currentTarget.checked,
+                      })
+                    }
+                  />
+                  {t("devtools.field_rendering.hide_empty_relations")}
+                </label>
+                <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs select-none hover:bg-base-200">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-xs"
+                    checked={
+                      settingsRecordIndex() !== null &&
+                      getSettings(settingsRecordIndex()!).hideFalseBooleans
+                    }
+                    onChange={(e) =>
+                      settingsRecordIndex() !== null &&
+                      updateSettings(settingsRecordIndex()!, {
+                        hideFalseBooleans: e.currentTarget.checked,
+                      })
+                    }
+                  />
+                  {t("devtools.field_rendering.hide_false_booleans")}
+                </label>
+              </div>
+              <label class="mt-1.5 flex items-center gap-2 border-t border-base-300 pt-1.5 text-xs font-medium">
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-xs"
+                  checked={
+                    settingsRecordIndex() !== null &&
+                    getSettings(settingsRecordIndex()!).hiddenFields.size === 0
+                  }
+                  onChange={(e) => toggleAllFields(e.currentTarget.checked)}
+                />
+                {t("devtools.field_rendering.toggle_all")}
+              </label>
+            </div>
+            <div class="overflow-auto">
+              <For each={dropdownKeys()}>
+                {(key) => (
+                  <label class="flex items-center gap-2 rounded-sm px-2 py-0.5 text-xs hover:bg-base-200">
+                    <input
+                      type="checkbox"
+                      class="checkbox checkbox-xs"
+                      checked={
+                        settingsRecordIndex() !== null &&
+                        !getSettings(settingsRecordIndex()!).hiddenFields.has(key)
+                      }
+                      onChange={() => toggleField(key)}
+                    />
+                    <span class="truncate font-mono">{key}</span>
+                  </label>
+                )}
+              </For>
+            </div>
+          </div>
+        </Portal>
+      </Show>
 
       <ContextMenu
         visible={contextMenu().visible}

@@ -357,6 +357,13 @@ devtools:
     switch_list: Overschakelen naar lijstweergave
     open_relational_odoo: Relationeel veld openen in Odoo
     open_relational_popup: Relationeel veld openen in pop-up
+    toggle_fields: Velden tonen/verbergen
+    toggle_all: Alles wisselen
+    all_hidden: Alle velden zijn verborgen
+    search_fields: Velden zoeken...
+    hide_studio: Studio-velden verbergen
+    hide_empty_relations: Lege relaties verbergen
+    hide_false_booleans: Falsy-velden verbergen
   field_metadata:
     unavailable: Veldmetadata is niet beschikbaar. Als dit een nieuw veld is, herstart devtools of wijzig het model om een vernieuwing af te dwingen.
     field_label: "Veld: $1"

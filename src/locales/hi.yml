@@ -357,6 +357,13 @@ devtools:
     switch_list: List view पर स्विच करें
     open_relational_odoo: Relational field Odoo में खोलें
     open_relational_popup: Relational field popup में खोलें
+    toggle_fields: फ़ील्ड दृश्यता टॉगल करें
+    toggle_all: सभी टॉगल करें
+    all_hidden: सभी फ़ील्ड छिपे हुए हैं
+    search_fields: फ़ील्ड खोजें...
+    hide_studio: Studio फ़ील्ड छिपाएं
+    hide_empty_relations: खाली संबंध छिपाएं
+    hide_false_booleans: Falsy फ़ील्ड छिपाएं
   field_metadata:
     unavailable: Field मेटाडेटा उपलब्ध नहीं है। यदि यह एक नया field है, तो कृपया devtools पुनः आरंभ करें या रिफ्रेश के लिए model संशोधित करें।
     field_label: "Field: $1"

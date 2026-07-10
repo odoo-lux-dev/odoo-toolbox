@@ -357,6 +357,13 @@ devtools:
     switch_list: Zur Listenansicht wechseln
     open_relational_odoo: Relationales Feld in Odoo öffnen
     open_relational_popup: Relationales Feld in Popup öffnen
+    toggle_fields: Felder ein-/ausblenden
+    toggle_all: Alle umschalten
+    all_hidden: Alle Felder sind ausgeblendet
+    search_fields: Felder suchen...
+    hide_studio: Studio-Felder ausblenden
+    hide_empty_relations: Leere Relationen ausblenden
+    hide_false_booleans: Falsy-Felder ausblenden
   field_metadata:
     unavailable: Feld-Metadaten sind nicht verfügbar. Wenn dies ein neues Feld ist, starten Sie die DevTools neu oder ändern Sie das Modell, um eine Aktualisierung zu erzwingen.
     field_label: "Feld: $1"

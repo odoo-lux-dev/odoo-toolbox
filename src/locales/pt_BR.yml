@@ -357,6 +357,13 @@ devtools:
     switch_list: Alternar para visão de lista
     open_relational_odoo: Abrir campo relacional no Odoo
     open_relational_popup: Abrir campo relacional no popup
+    toggle_fields: Mostrar/ocultar campos
+    toggle_all: Alternar tudo
+    all_hidden: Todos os campos estão ocultos
+    search_fields: Pesquisar campos...
+    hide_studio: Ocultar campos studio
+    hide_empty_relations: Ocultar relações vazias
+    hide_false_booleans: Ocultar campos falsy
   field_metadata:
     unavailable: Metadados do campo não disponíveis. Se for um campo novo, reinicie as devtools ou modifique o modelo para forçar uma atualização.
     field_label: "Campo: $1"

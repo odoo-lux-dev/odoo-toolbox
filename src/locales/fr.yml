@@ -357,6 +357,13 @@ devtools:
     switch_list: Passer en vue liste
     open_relational_odoo: Ouvrir le champ relationnel dans Odoo
     open_relational_popup: Ouvrir le champ relationnel dans une popup
+    toggle_fields: Afficher/masquer les champs
+    toggle_all: Tout basculer
+    all_hidden: Tous les champs sont masqués
+    search_fields: Rechercher des champs...
+    hide_studio: Masquer les champs studio
+    hide_empty_relations: Masquer les relations vides
+    hide_false_booleans: Masquer les champs falsy
   field_metadata:
     unavailable: Les métadonnées du champ ne sont pas disponibles. S'il s'agit d'un nouveau champ, veuillez redémarrer les devtools ou modifier le modèle pour forcer un rafraîchissement.
     field_label: "Champ : $1"

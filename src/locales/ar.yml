@@ -355,6 +355,13 @@ devtools:
     switch_list: التبديل إلى عرض القائمة
     open_relational_odoo: فتح الحقل العلائقي في Odoo
     open_relational_popup: فتح الحقل العلائقي في نافذة منبثقة
+    toggle_fields: إظهار/إخفاء الحقول
+    toggle_all: تبديل الكل
+    all_hidden: جميع الحقول مخفية
+    search_fields: البحث عن الحقول...
+    hide_studio: إخفاء حقول studio
+    hide_empty_relations: إخفاء العلاقات الفارغة
+    hide_false_booleans: إخفاء الحقول الفارغة
   field_metadata:
     unavailable: البيانات الوصفية للحقل غير متاحة. إذا كان هذا حقلاً جديدًا، يرجى إعادة تشغيل أدوات التطوير أو تعديل النموذج لفرض التحديث.
     field_label: "الحقل: $1"

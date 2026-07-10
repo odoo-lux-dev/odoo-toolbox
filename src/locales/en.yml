@@ -357,6 +357,13 @@ devtools:
     switch_list: Switch to list view
     open_relational_odoo: Open relational field in Odoo
     open_relational_popup: Open relational field in popup
+    toggle_fields: Toggle field visibility
+    toggle_all: Toggle all
+    all_hidden: All fields are hidden
+    search_fields: Search fields...
+    hide_studio: Hide studio fields
+    hide_empty_relations: Hide empty relations
+    hide_false_booleans: Hide falsy fields
   field_metadata:
     unavailable: Field metadata is not available. If this is a new field, please restart devtools or modify the model to force a refresh.
     field_label: "Field: $1"
