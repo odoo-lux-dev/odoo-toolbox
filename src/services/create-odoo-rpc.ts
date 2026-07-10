@@ -211,7 +211,10 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     try {
       const result = await searchRead({
         model: "ir.model.data",
-        domain: [["model", "=", model], ["res_id", "in", recordIds]],
+        domain: [
+          ["model", "=", model],
+          ["res_id", "in", recordIds],
+        ],
         fields: ["complete_name", "res_id"],
         limit: recordIds.length,
       });

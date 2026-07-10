@@ -79,7 +79,10 @@ export const ResultViewer = (props: ResultViewerProps) => {
       setXmlIdMap({});
       return;
     }
-    odooRpcService.getXmlIds(model, ids).then(setXmlIdMap).catch(() => setXmlIdMap({}));
+    odooRpcService
+      .getXmlIds(model, ids)
+      .then(setXmlIdMap)
+      .catch(() => setXmlIdMap({}));
   });
 
   const enrichedData = createMemo(() => {
