@@ -1,6 +1,12 @@
 import { buildActWindowAction, openViewViaOwlRuntime } from "@/services/odoo-action";
 import { createOdooRpc } from "@/services/odoo-rpc-service";
-import type { FieldDetails, IrAccess, ModelAccessRight, ModelRecordRule, ViewRecord } from "@/types";
+import type {
+  FieldDetails,
+  IrAccess,
+  ModelAccessRight,
+  ModelRecordRule,
+  ViewRecord,
+} from "@/types";
 
 const pageContextRpc = createOdooRpc({
   getOrigin: async () => "",
@@ -110,14 +116,10 @@ export async function getGroupNames(groupIds: number[]): Promise<Record<number, 
 }
 
 export async function getIrAccess(model: string): Promise<IrAccess[]> {
-  return executeOdooRpc<IrAccess[]>(
-    "ir.access",
-    "search_read",
-    [
-      [["model_id.model", "=", model]],
-      ["name", "group_id", "for_read", "for_write", "for_create", "for_unlink", "domain"],
-    ],
-  );
+  return executeOdooRpc<IrAccess[]>("ir.access", "search_read", [
+    [["model_id.model", "=", model]],
+    ["name", "group_id", "for_read", "for_write", "for_create", "for_unlink", "domain"],
+  ]);
 }
 
 export async function getFieldDetails(

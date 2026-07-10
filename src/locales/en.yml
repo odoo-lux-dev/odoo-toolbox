@@ -289,6 +289,40 @@ devtools:
     table: Table
     table_view: Table view
     list: List
+    calendar: Calendar
+    calendar_view: Calendar view
+  calendar:
+    previous_month: Previous month
+    next_month: Next month
+    previous: Previous
+    next: Next
+    today: Today
+    month: Month
+    week: Week
+    day: Day
+    more: more
+    record_details: Record details
+    date_field: Date field
+    date_field_tooltip: Select the date/datetime field to group records by in the calendar
+    mon: Mon
+    tue: Tue
+    wed: Wed
+    thu: Thu
+    fri: Fri
+    sat: Sat
+    sun: Sun
+    january: January
+    february: February
+    march: March
+    april: April
+    may: May
+    june: June
+    july: July
+    august: August
+    september: September
+    october: October
+    november: November
+    december: December
   record_search:
     placeholder: Search in field names and values (expanded records only)...
     of: of

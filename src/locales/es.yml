@@ -289,6 +289,40 @@ devtools:
     table: Tabla
     table_view: Vista tabla
     list: Lista
+    calendar: Calendario
+    calendar_view: Vista calendario
+  calendar:
+    previous_month: Mes anterior
+    next_month: Mes siguiente
+    previous: Anterior
+    next: Siguiente
+    month: Mes
+    week: Semana
+    day: Día
+    today: Hoy
+    more: más
+    record_details: Detalles del registro
+    date_field: Campo de fecha
+    date_field_tooltip: Seleccione el campo fecha/datetime para agrupar registros en el calendario
+    mon: Lun
+    tue: Mar
+    wed: Mié
+    thu: Jue
+    fri: Vie
+    sat: Sáb
+    sun: Dom
+    january: Enero
+    february: Febrero
+    march: Marzo
+    april: Abril
+    may: Mayo
+    june: Junio
+    july: Julio
+    august: Agosto
+    september: Septiembre
+    october: Octubre
+    november: Noviembre
+    december: Diciembre
   record_search:
     placeholder: Buscar en nombres y valores de campos (solo registros expandidos)...
     of: de

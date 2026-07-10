@@ -289,6 +289,40 @@ devtools:
     table: Tableau
     table_view: Vue tableau
     list: Liste
+    calendar: Calendrier
+    calendar_view: Vue calendrier
+  calendar:
+    previous_month: Mois précédent
+    next_month: Mois suivant
+    previous: Précédent
+    next: Suivant
+    month: Mois
+    week: Semaine
+    day: Jour
+    today: Aujourd'hui
+    more: de plus
+    record_details: Détails de l'enregistrement
+    date_field: Champ date
+    date_field_tooltip: Sélectionner le champ date/datetime pour grouper les enregistrements dans le calendrier
+    mon: Lun
+    tue: Mar
+    wed: Mer
+    thu: Jeu
+    fri: Ven
+    sat: Sam
+    sun: Dim
+    january: Janvier
+    february: Février
+    march: Mars
+    april: Avril
+    may: Mai
+    june: Juin
+    july: Juillet
+    august: Août
+    september: Septembre
+    october: Octobre
+    november: Novembre
+    december: Décembre
   record_search:
     placeholder: Rechercher dans les noms de champs et les valeurs (enregistrements développés uniquement)...
     of: sur

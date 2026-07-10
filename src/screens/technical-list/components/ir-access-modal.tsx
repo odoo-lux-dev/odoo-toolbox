@@ -12,7 +12,11 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Modal } from "@/components/ui/modal";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { getGroupNames, getIrAccess, openViewWithDomain } from "@/services/content-script-rpc-service";
+import {
+  getGroupNames,
+  getIrAccess,
+  openViewWithDomain,
+} from "@/services/content-script-rpc-service";
 import type { IrAccess } from "@/types";
 import { t } from "@/utils/i18n-page";
 
@@ -101,7 +105,10 @@ export const IrAccessModal = (props: IrAccessModalProps) => {
   const handleMoreDetailsPermissions = async () => {
     await openViewWithDomain(
       "ir.access",
-      [["model_id.model", "=", props.model], ["kind", "=", "permission"]],
+      [
+        ["model_id.model", "=", props.model],
+        ["kind", "=", "permission"],
+      ],
       t("technical_list.model_actions.view_title_permissions", [props.model]),
     );
   };
@@ -109,7 +116,10 @@ export const IrAccessModal = (props: IrAccessModalProps) => {
   const handleMoreDetailsRestrictions = async () => {
     await openViewWithDomain(
       "ir.access",
-      [["model_id.model", "=", props.model], ["kind", "=", "restriction"]],
+      [
+        ["model_id.model", "=", props.model],
+        ["kind", "=", "restriction"],
+      ],
       t("technical_list.model_actions.view_title_restrictions", [props.model]),
     );
   };

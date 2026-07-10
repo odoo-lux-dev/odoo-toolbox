@@ -82,9 +82,7 @@ export const setHistoryActionLabel = async (actionId: string, label: string) => 
     await historyService.setActionLabel(actionId, label);
     setHistoryActionsSignal(await historyService.getHistory());
   } catch (error) {
-    setHistoryErrorSignal(
-      error instanceof Error ? error.message : "Failed to update action label",
-    );
+    setHistoryErrorSignal(error instanceof Error ? error.message : "Failed to update action label");
   }
 };
 

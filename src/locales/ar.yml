@@ -289,6 +289,38 @@ devtools:
     table: جدول
     table_view: عرض الجدول
     list: قائمة
+    calendar: التقويم
+    calendar_view: عرض التقويم
+  calendar:
+    previous_month: الشهر السابق
+    next_month: الشهر التالي
+    previous: السابق
+    next: التالي
+    month: شهر
+    week: أسبوع
+    day: يوم
+    today: اليوم
+    more: المزيد
+    record_details: تفاصيل السجل
+    mon: إثن
+    tue: ثلا
+    wed: أرب
+    thu: خمي
+    fri: جمع
+    sat: سبت
+    sun: أحد
+    january: يناير
+    february: فبراير
+    march: مارس
+    april: أبريل
+    may: مايو
+    june: يونيو
+    july: يوليو
+    august: أغسطس
+    september: سبتمبر
+    october: أكتوبر
+    november: نوفمبر
+    december: ديسمبر
   record_search:
     placeholder: البحث في أسماء وقيم الحقول (السجلات الموسعة فقط)...
     of: من

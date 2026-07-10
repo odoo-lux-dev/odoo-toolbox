@@ -289,6 +289,40 @@ devtools:
     table: Tabel
     table_view: Tabelweergave
     list: Lijst
+    calendar: Kalender
+    calendar_view: Kalenderweergave
+  calendar:
+    previous_month: Vorige maand
+    next_month: Volgende maand
+    previous: Vorige
+    next: Volgende
+    month: Maand
+    week: Week
+    day: Dag
+    today: Vandaag
+    more: meer
+    record_details: Recorddetails
+    date_field: Datumveld
+    date_field_tooltip: Selecteer het datum/datetime-veld om records in de kalender te groeperen
+    mon: Maa
+    tue: Din
+    wed: Woe
+    thu: Don
+    fri: Vrij
+    sat: Zat
+    sun: Zon
+    january: Januari
+    february: Februari
+    march: Maart
+    april: April
+    may: Mei
+    june: Juni
+    july: Juli
+    august: Augustus
+    september: September
+    october: Oktober
+    november: November
+    december: December
   record_search:
     placeholder: Zoek in veldnamen en waarden (alleen uitgeklapte records)...
     of: van

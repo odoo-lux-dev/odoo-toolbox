@@ -1,7 +1,9 @@
 @import "@/theme/daisy-theme.css";
 @import "solid-notifications/index.css";
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   overflow: hidden;
 }

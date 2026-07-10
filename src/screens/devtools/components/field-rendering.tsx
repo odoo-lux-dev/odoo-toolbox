@@ -3,6 +3,7 @@ import {
   ArrowDown01Icon,
   ArrowRight01Icon,
   ArrowUpRight01Icon,
+  Calendar02Icon,
   CenterFocusIcon,
   Layers02Icon,
   ListViewIcon,
@@ -13,6 +14,7 @@ import { createMemo, createSignal, For, Match, Show, Switch, splitProps } from "
 
 import { IconButton } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { CalendarView } from "@/screens/devtools/components/calendar-view";
 import { ContextMenu } from "@/screens/devtools/components/context-menu";
 import { useModelExcludedFields } from "@/screens/devtools/components/field-hooks";
 import { FieldMetadataTooltip } from "@/screens/devtools/components/field-metadata-tooltip";
@@ -248,7 +250,9 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [relatedRecordsExpanded, setRelatedRecordsExpanded] = createSignal<Set<number>>(new Set());
-  const [relationalViewMode, setRelationalViewMode] = createSignal<"list" | "table" | "pivot">("list");
+  const [relationalViewMode, setRelationalViewMode] = createSignal<
+    "list" | "table" | "pivot" | "calendar"
+  >("list");
 
   const ids = () => extractIds(local.value);
   const modelName = () => getRelatedModel(local.fieldMetadata);
@@ -346,6 +350,12 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
     });
   });
 
+  const hasRelatedDateField = createMemo(() => {
+    const meta = relatedFieldsMetadata();
+    if (!meta) return false;
+    return Object.values(meta).some((m) => m.type === "date" || m.type === "datetime");
+  });
+
   const renderRelationalContent = () => {
     return (
       <Show
@@ -387,180 +397,201 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
               }
             >
               <Show
-                when={relationalViewMode() === "table" || relationalViewMode() === "pivot"}
+                when={relationalViewMode() === "calendar"}
                 fallback={
-                  <div class="flex flex-col">
-                    <For each={relatedData()}>
-                      {(record, index) => {
-                        const recordId = () => record.id as number;
-                        const expanded = () => relatedRecordsExpanded().has(index());
-                        return (
-                          <div class="overflow-hidden border-b border-base-200 bg-base-100 first:rounded-t-box last:rounded-b-box last:border-b-0">
-                            <div
-                              class="peer flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-base-300"
-                              onClick={() => handleRelatedRecordToggle(index())}
-                              onContextMenu={(e) =>
-                                handleRecordContextMenu(
-                                  e as unknown as MouseEvent,
-                                  record,
-                                  modelName() || undefined,
-                                )
-                              }
-                            >
-                              <span class="inline-flex size-4 shrink-0 items-center justify-center text-base-content/70">
-                                <Show
-                                  when={expanded()}
-                                  fallback={
-                                    <HugeiconsIcon
-                                      icon={ArrowRight01Icon}
-                                      size={16}
-                                      color="currentColor"
-                                      strokeWidth={1.6}
-                                    />
+                  <Show
+                    when={relationalViewMode() === "table" || relationalViewMode() === "pivot"}
+                    fallback={
+                      <div class="flex flex-col">
+                        <For each={relatedData()}>
+                          {(record, index) => {
+                            const recordId = () => record.id as number;
+                            const expanded = () => relatedRecordsExpanded().has(index());
+                            return (
+                              <div class="overflow-hidden border-b border-base-200 bg-base-100 first:rounded-t-box last:rounded-b-box last:border-b-0">
+                                <div
+                                  class="peer flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-base-300"
+                                  onClick={() => handleRelatedRecordToggle(index())}
+                                  onContextMenu={(e) =>
+                                    handleRecordContextMenu(
+                                      e as unknown as MouseEvent,
+                                      record,
+                                      modelName() || undefined,
+                                    )
                                   }
                                 >
-                                  <HugeiconsIcon
-                                    icon={ArrowDown01Icon}
-                                    size={16}
-                                    color="currentColor"
-                                    strokeWidth={1.6}
-                                  />
-                                </Show>
-                              </span>
-                              <span
-                                class="max-w-20 truncate text-xs font-medium text-primary"
-                                data-level={local.level ?? 0}
-                                data-searchable={recordId() ? String(recordId()) : ""}
-                                title={
-                                  recordId()
-                                    ? String(recordId())
-                                    : t("devtools.field_rendering.no_id")
-                                }
-                              >
-                                {recordId()
-                                  ? `#${recordId()}`
-                                  : t("devtools.field_rendering.no_id")}
-                              </span>
-                              <span
-                                class="min-w-0 flex-1 truncate text-xs font-semibold text-base-content"
-                                data-level={local.level ?? 0}
-                                data-searchable={
-                                  (record.name as string) ||
-                                  (record.display_name as string) ||
-                                  t("devtools.field_rendering.record_n", [String(index() + 1)])
-                                }
-                                title={
-                                  (record.name as string) ||
-                                  (record.display_name as string) ||
-                                  t("devtools.field_rendering.record_n", [String(index() + 1)])
-                                }
-                              >
-                                {(record.name as string) ||
-                                  (record.display_name as string) ||
-                                  t("devtools.field_rendering.record_n", [String(index() + 1)])}
-                              </span>
-                              <Show when={recordId() && modelName()}>
-                                <div class="ml-auto flex items-center gap-1.5">
-                                  <Show when={modelHasExcludedFields() && expanded()}>
-                                    <span
-                                      class="inline-flex items-center text-warning"
-                                      title={t("devtools.field_rendering.excluded_fields", [
-                                        modelName() ?? "",
-                                        excludedFields().join(", "),
-                                      ])}
+                                  <span class="inline-flex size-4 shrink-0 items-center justify-center text-base-content/70">
+                                    <Show
+                                      when={expanded()}
+                                      fallback={
+                                        <HugeiconsIcon
+                                          icon={ArrowRight01Icon}
+                                          size={16}
+                                          color="currentColor"
+                                          strokeWidth={1.6}
+                                        />
+                                      }
                                     >
                                       <HugeiconsIcon
-                                        icon={Alert01Icon}
+                                        icon={ArrowDown01Icon}
                                         size={16}
                                         color="currentColor"
                                         strokeWidth={1.6}
                                       />
-                                    </span>
+                                    </Show>
+                                  </span>
+                                  <span
+                                    class="max-w-20 truncate text-xs font-medium text-primary"
+                                    data-level={local.level ?? 0}
+                                    data-searchable={recordId() ? String(recordId()) : ""}
+                                    title={
+                                      recordId()
+                                        ? String(recordId())
+                                        : t("devtools.field_rendering.no_id")
+                                    }
+                                  >
+                                    {recordId()
+                                      ? `#${recordId()}`
+                                      : t("devtools.field_rendering.no_id")}
+                                  </span>
+                                  <span
+                                    class="min-w-0 flex-1 truncate text-xs font-semibold text-base-content"
+                                    data-level={local.level ?? 0}
+                                    data-searchable={
+                                      (record.name as string) ||
+                                      (record.display_name as string) ||
+                                      t("devtools.field_rendering.record_n", [String(index() + 1)])
+                                    }
+                                    title={
+                                      (record.name as string) ||
+                                      (record.display_name as string) ||
+                                      t("devtools.field_rendering.record_n", [String(index() + 1)])
+                                    }
+                                  >
+                                    {(record.name as string) ||
+                                      (record.display_name as string) ||
+                                      t("devtools.field_rendering.record_n", [String(index() + 1)])}
+                                  </span>
+                                  <Show when={recordId() && modelName()}>
+                                    <div class="ml-auto flex items-center gap-1.5">
+                                      <Show when={modelHasExcludedFields() && expanded()}>
+                                        <span
+                                          class="inline-flex items-center text-warning"
+                                          title={t("devtools.field_rendering.excluded_fields", [
+                                            modelName() ?? "",
+                                            excludedFields().join(", "),
+                                          ])}
+                                        >
+                                          <HugeiconsIcon
+                                            icon={Alert01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                          />
+                                        </span>
+                                      </Show>
+                                      <IconButton
+                                        label={t("devtools.field_rendering.focus_record")}
+                                        variant="ghost"
+                                        size="sm"
+                                        square
+                                        class="text-base-content/60 hover:text-info"
+                                        onClick={(e) =>
+                                          handleFocusRelatedRecord(record, e as unknown as Event)
+                                        }
+                                        icon={
+                                          <HugeiconsIcon
+                                            icon={CenterFocusIcon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                          />
+                                        }
+                                      />
+                                      <IconButton
+                                        label={t("devtools.field_rendering.open_in_odoo")}
+                                        variant="ghost"
+                                        size="sm"
+                                        square
+                                        class="text-base-content/60 hover:text-primary"
+                                        onClick={(e) =>
+                                          handleOpenRelatedRecord(
+                                            record,
+                                            e as unknown as Event,
+                                            false,
+                                          )
+                                        }
+                                        icon={
+                                          <HugeiconsIcon
+                                            icon={ArrowUpRight01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                          />
+                                        }
+                                      />
+                                      <IconButton
+                                        label={t("devtools.field_rendering.open_in_popup")}
+                                        variant="ghost"
+                                        size="sm"
+                                        square
+                                        class="text-base-content/60 hover:text-warning"
+                                        onClick={(e) =>
+                                          handleOpenRelatedRecord(
+                                            record,
+                                            e as unknown as Event,
+                                            true,
+                                          )
+                                        }
+                                        icon={
+                                          <HugeiconsIcon
+                                            icon={Layers02Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={1.6}
+                                          />
+                                        }
+                                      />
+                                    </div>
                                   </Show>
-                                  <IconButton
-                                    label={t("devtools.field_rendering.focus_record")}
-                                    variant="ghost"
-                                    size="sm"
-                                    square
-                                    class="text-base-content/60 hover:text-info"
-                                    onClick={(e) =>
-                                      handleFocusRelatedRecord(record, e as unknown as Event)
-                                    }
-                                    icon={
-                                      <HugeiconsIcon
-                                        icon={CenterFocusIcon}
-                                        size={16}
-                                        color="currentColor"
-                                        strokeWidth={1.6}
-                                      />
-                                    }
-                                  />
-                                  <IconButton
-                                    label={t("devtools.field_rendering.open_in_odoo")}
-                                    variant="ghost"
-                                    size="sm"
-                                    square
-                                    class="text-base-content/60 hover:text-primary"
-                                    onClick={(e) =>
-                                      handleOpenRelatedRecord(record, e as unknown as Event, false)
-                                    }
-                                    icon={
-                                      <HugeiconsIcon
-                                        icon={ArrowUpRight01Icon}
-                                        size={16}
-                                        color="currentColor"
-                                        strokeWidth={1.6}
-                                      />
-                                    }
-                                  />
-                                  <IconButton
-                                    label={t("devtools.field_rendering.open_in_popup")}
-                                    variant="ghost"
-                                    size="sm"
-                                    square
-                                    class="text-base-content/60 hover:text-warning"
-                                    onClick={(e) =>
-                                      handleOpenRelatedRecord(record, e as unknown as Event, true)
-                                    }
-                                    icon={
-                                      <HugeiconsIcon
-                                        icon={Layers02Icon}
-                                        size={16}
-                                        color="currentColor"
-                                        strokeWidth={1.6}
-                                      />
-                                    }
-                                  />
                                 </div>
-                              </Show>
-                            </div>
-                            <Show when={expanded()}>
-                              <div
-                                class={`border-2 border-base-100 bg-base-200 px-3 py-2 not-last:border-y-0 peer-hover:border-base-300 ${index() === relatedData()!.length - 1 ? "rounded-b-box" : ""}`}
-                              >
-                                <RecordRenderer
-                                  records={[record]}
-                                  fieldsMetadata={relatedFieldsMetadata() || undefined}
-                                  level={local.level ?? 0}
-                                  parentModel={modelName() || undefined}
-                                  expandedRecords={() => new Set([0])}
-                                  renderAsList={false}
-                                />
+                                <Show when={expanded()}>
+                                  <div
+                                    class={`border-2 border-base-100 bg-base-200 px-3 py-2 not-last:border-y-0 peer-hover:border-base-300 ${index() === relatedData()!.length - 1 ? "rounded-b-box" : ""}`}
+                                  >
+                                    <RecordRenderer
+                                      records={[record]}
+                                      fieldsMetadata={relatedFieldsMetadata() || undefined}
+                                      level={local.level ?? 0}
+                                      parentModel={modelName() || undefined}
+                                      expandedRecords={() => new Set([0])}
+                                      renderAsList={false}
+                                    />
+                                  </div>
+                                </Show>
                               </div>
-                            </Show>
-                          </div>
-                        );
-                      }}
-                    </For>
-                  </div>
+                            );
+                          }}
+                        </For>
+                      </div>
+                    }
+                  >
+                    <div class="flex max-h-80 min-h-0 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
+                      <VirtualTable
+                        data={relatedData()!}
+                        allKeys={relatedAllKeys()}
+                        handleTableContextMenu={handleRelationalTableContextMenu}
+                        pivoted={relationalViewMode() === "pivot"}
+                      />
+                    </div>
+                  </Show>
                 }
               >
                 <div class="flex max-h-80 min-h-0 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
-                  <VirtualTable
+                  <CalendarView
                     data={relatedData()!}
-                    allKeys={relatedAllKeys()}
-                    handleTableContextMenu={handleRelationalTableContextMenu}
-                    pivoted={relationalViewMode() === "pivot"}
+                    fieldsMetadata={relatedFieldsMetadata() || undefined}
+                    model={modelName() || undefined}
                   />
                 </div>
               </Show>
@@ -728,6 +759,27 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
                     />
                   }
                 />
+                <Show when={hasRelatedDateField()}>
+                  <IconButton
+                    label={t("devtools.result_viewer.calendar_view")}
+                    variant="ghost"
+                    size="xs"
+                    square
+                    class={`hover:text-success ${relationalViewMode() === "calendar" ? "text-success" : "text-base-content/60"}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRelationalViewMode("calendar");
+                    }}
+                    icon={
+                      <HugeiconsIcon
+                        icon={Calendar02Icon}
+                        size={14}
+                        color="currentColor"
+                        strokeWidth={1.6}
+                      />
+                    }
+                  />
+                </Show>
               </Show>
               <IconButton
                 label={t("devtools.field_rendering.focus_record")}

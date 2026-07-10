@@ -1,5 +1,6 @@
 import {
   ArrowUpRight01Icon,
+  Calendar02Icon,
   Copy01Icon,
   Download04Icon,
   Layers02Icon,
@@ -9,11 +10,11 @@ import {
 } from "@hugeicons/core-free-icons";
 import { createEffect, createMemo, createSignal, For, Show, splitProps, type JSX } from "solid-js";
 
-import { Button } from "@/components/ui/button";
-import { IconButton } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Join } from "@/components/ui/join";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { CalendarView } from "@/screens/devtools/components/calendar-view";
 import { ContextMenu } from "@/screens/devtools/components/context-menu";
 import { usePagination } from "@/screens/devtools/components/record-hooks";
 import { useRecordActions } from "@/screens/devtools/components/record-hooks";
@@ -34,7 +35,7 @@ import { VirtualTable } from "@/screens/devtools/components/virtual-table";
 import { queryStore, resultStore } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
 
-type ViewMode = "table" | "list" | "pivot";
+type ViewMode = "table" | "list" | "pivot" | "calendar";
 
 interface ResultViewerProps {
   hideCopyButton?: boolean;
@@ -70,6 +71,19 @@ export const ResultViewer = (props: ResultViewerProps) => {
   const [viewMode, setViewMode] = createSignal<ViewMode>("list");
   const [expandedRows, setExpandedRows] = createSignal<Set<number>>(new Set());
   const { clearHighlights } = useRecordSearch();
+
+  const hasDateField = createMemo(() => {
+    const meta = fieldsMetadata();
+    if (!meta) return false;
+    const selected = queryStore.selectedFields;
+    const entries = Object.entries(meta).filter(
+      ([, m]) => m.type === "date" || m.type === "datetime",
+    );
+    if (selected.length > 0) {
+      return entries.some(([name]) => selected.includes(name));
+    }
+    return entries.length > 0;
+  });
 
   const { contextMenu, handleFieldContextMenu, closeContextMenu, getContextMenuItems } =
     useRecordContextMenu();
@@ -301,60 +315,71 @@ export const ResultViewer = (props: ResultViewerProps) => {
                       </Show>
                       <Show when={!local.hideSwitchViewButton}>
                         <Join>
-                          <Button
-                            size="sm"
+                          <IconButton
+                            label={t("devtools.result_viewer.list_view")}
                             variant="solid"
+                            size="sm"
                             active={viewMode() === "list"}
-                            onClick={() => setViewMode("list")}
-                            title={t("devtools.result_viewer.list_view")}
                             class="rounded-e-none"
-                          >
-                            <span class="flex items-center gap-2">
+                            onClick={() => setViewMode("list")}
+                            icon={
                               <HugeiconsIcon
                                 icon={ListViewIcon}
                                 size={16}
                                 color="currentColor"
                                 strokeWidth={1.5}
                               />
-                              <span>{t("devtools.result_viewer.list")}</span>
-                            </span>
-                          </Button>
-                          <Button
-                            size="sm"
+                            }
+                          />
+                          <IconButton
+                            label={t("devtools.result_viewer.table_view")}
                             variant="solid"
+                            size="sm"
                             active={viewMode() === "table"}
                             class="rounded-none"
                             onClick={() => setViewMode("table")}
-                            title={t("devtools.result_viewer.table_view")}
-                          >
-                            <span class="flex items-center gap-2">
+                            icon={
                               <HugeiconsIcon
                                 icon={TableIcon}
                                 size={16}
                                 color="currentColor"
                                 strokeWidth={1.5}
                               />
-                              <span>{t("devtools.result_viewer.table")}</span>
-                            </span>
-                          </Button>
-                          <Button
-                            size="sm"
+                            }
+                          />
+                          <IconButton
+                            label={t("devtools.result_viewer.pivot_view")}
                             variant="solid"
+                            size="sm"
                             active={viewMode() === "pivot"}
-                            class="rounded-s-none"
+                            class="rounded-none"
                             onClick={() => setViewMode("pivot")}
-                            title={t("devtools.result_viewer.pivot_view")}
-                          >
-                            <span class="flex items-center gap-2">
+                            icon={
                               <HugeiconsIcon
                                 icon={PivotIcon}
                                 size={16}
                                 color="currentColor"
                                 strokeWidth={1.5}
                               />
-                              <span>{t("devtools.result_viewer.pivot")}</span>
-                            </span>
-                          </Button>
+                            }
+                          />
+                          <IconButton
+                            label={t("devtools.result_viewer.calendar_view")}
+                            variant="solid"
+                            size="sm"
+                            active={viewMode() === "calendar"}
+                            class="rounded-s-none"
+                            onClick={() => setViewMode("calendar")}
+                            disabled={!hasDateField()}
+                            icon={
+                              <HugeiconsIcon
+                                icon={Calendar02Icon}
+                                size={16}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                              />
+                            }
+                          />
                         </Join>
                       </Show>
                     </div>
@@ -369,36 +394,49 @@ export const ResultViewer = (props: ResultViewerProps) => {
                   when={loading() && !isNewQuery()}
                   fallback={
                     <Show
-                      when={viewMode() === "table" || viewMode() === "pivot"}
+                      when={viewMode() === "calendar"}
                       fallback={
-                        <div class="flex min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
-                          <RecordRenderer
-                            records={data() || []}
-                            fieldsMetadata={fieldsMetadata()}
-                            clickableRow={true}
-                            showId={true}
-                            renderAsList={true}
-                            onExpandToggle={toggleRowExpansion}
-                            expandedRecords={expandedRows}
-                          />
-                        </div>
+                        <Show
+                          when={viewMode() === "table" || viewMode() === "pivot"}
+                          fallback={
+                            <div class="flex min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
+                              <RecordRenderer
+                                records={data() || []}
+                                fieldsMetadata={fieldsMetadata()}
+                                clickableRow={true}
+                                showId={true}
+                                renderAsList={true}
+                                onExpandToggle={toggleRowExpansion}
+                                expandedRecords={expandedRows}
+                              />
+                            </div>
+                          }
+                        >
+                          <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
+                            <VirtualTable
+                              data={data() || []}
+                              allKeys={allKeys()}
+                              handleTableContextMenu={handleTableContextMenu}
+                              pivoted={viewMode() === "pivot"}
+                            />
+                            <Show when={contextMenu().visible}>
+                              <ContextMenu
+                                visible={contextMenu().visible}
+                                position={contextMenu().position}
+                                items={contextMenuItems()}
+                                onClose={closeContextMenu}
+                              />
+                            </Show>
+                          </div>
+                        </Show>
                       }
                     >
                       <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
-                        <VirtualTable
+                        <CalendarView
                           data={data() || []}
-                          allKeys={allKeys()}
-                          handleTableContextMenu={handleTableContextMenu}
-                          pivoted={viewMode() === "pivot"}
+                          fieldsMetadata={fieldsMetadata() || undefined}
+                          model={queryStore.model || undefined}
                         />
-                        <Show when={contextMenu().visible}>
-                          <ContextMenu
-                            visible={contextMenu().visible}
-                            position={contextMenu().position}
-                            items={contextMenuItems()}
-                            onClose={closeContextMenu}
-                          />
-                        </Show>
                       </div>
                     </Show>
                   }

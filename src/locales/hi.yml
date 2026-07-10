@@ -289,6 +289,40 @@ devtools:
     table: Table
     table_view: Table दृश्य
     list: List
+    calendar: कैलेंडर
+    calendar_view: कैलेंडर दृश्य
+  calendar:
+    previous_month: पिछला महीना
+    next_month: अगला महीना
+    previous: पिछला
+    next: अगला
+    month: महीना
+    week: सप्ताह
+    day: दिन
+    today: आज
+    more: और
+    record_details: रिकॉर्ड विवरण
+    date_field: दिनांक फ़ील्ड
+    date_field_tooltip: कैलेंडर में रिकॉर्ड को समूहित करने के लिए दिनांक/दिनांकसमय फ़ील्ड चुनें
+    mon: सोम
+    tue: मंग
+    wed: बुध
+    thu: गुरु
+    fri: शुक्र
+    sat: शनि
+    sun: रवि
+    january: जनवरी
+    february: फरवरी
+    march: मार्च
+    april: अप्रैल
+    may: मई
+    june: जून
+    july: जुलाई
+    august: अगस्त
+    september: सितंबर
+    october: अक्टूबर
+    november: नवंबर
+    december: दिसंबर
   record_search:
     placeholder: Field नामों और मानों में खोजें (केवल विस्तृत रिकॉर्ड्स)...
     of: का
