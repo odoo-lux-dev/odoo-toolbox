@@ -123,6 +123,8 @@ export const DevtoolsApp = () => {
           duration={5000}
           showProgressBar
           pauseOnHover
+          pauseOnWindowInactive={false}
+          renderOnWindowInactive
           showDismissButton
           showIcon
           theme={null}
