@@ -65,6 +65,8 @@ export const [isSupportedSignal, setIsSupportedSignal] = createSignal<boolean | 
 export const [odooVersionSignal, setOdooVersionSignal] = createSignal<string | null>(null);
 export const [hasHostPermission, setHasHostPermission] = createSignal<boolean | null>(null);
 
+export const [xmlIdMapSignal, setXmlIdMapSignal] = createSignal<Record<number, string | false>>({});
+
 export const isQueryValid = () =>
   calculateQueryValidity({
     model: queryStore.model,
@@ -316,5 +318,23 @@ createRoot(() => {
         Logger.warn("Effect: Failed to load fields metadata for model:", currentModel, error);
       });
     }
+  });
+
+  createEffect(() => {
+    const currentData = resultStore.data;
+    const model = resultStore.model;
+    if (!currentData || currentData.length === 0 || !model) {
+      setXmlIdMapSignal({});
+      return;
+    }
+    const ids = currentData.map((r) => r.id as number).filter((id) => id != null);
+    if (ids.length === 0) {
+      setXmlIdMapSignal({});
+      return;
+    }
+    odooRpcService
+      .getXmlIds(model, ids)
+      .then(setXmlIdMapSignal)
+      .catch(() => setXmlIdMapSignal({}));
   });
 });

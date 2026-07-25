@@ -32,9 +32,8 @@ import {
   PaginationInfo,
 } from "@/screens/devtools/components/result-states";
 import { VirtualTable } from "@/screens/devtools/components/virtual-table";
-import { queryStore, resultStore } from "@/screens/devtools/devtools-signals";
+import { queryStore, resultStore, xmlIdMapSignal } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
-import { odooRpcService } from "@/services/odoo-rpc-service";
 
 type ViewMode = "table" | "list" | "pivot" | "calendar";
 
@@ -65,30 +64,10 @@ export const ResultViewer = (props: ResultViewerProps) => {
   const errorDetails = () => resultStore.errorDetails;
   const isNewQuery = () => resultStore.isNewQuery;
 
-  const [xmlIdMap, setXmlIdMap] = createSignal<Record<number, string | false>>({});
-
-  createEffect(() => {
-    const currentData = data();
-    const model = queryStore.model;
-    if (!currentData || currentData.length === 0 || !model) {
-      setXmlIdMap({});
-      return;
-    }
-    const ids = currentData.map((r) => r.id as number).filter((id) => id != null);
-    if (ids.length === 0) {
-      setXmlIdMap({});
-      return;
-    }
-    odooRpcService
-      .getXmlIds(model, ids)
-      .then(setXmlIdMap)
-      .catch(() => setXmlIdMap({}));
-  });
-
   const enrichedData = createMemo(() => {
     const currentData = data();
     if (!currentData) return null;
-    const map = xmlIdMap();
+    const map = xmlIdMapSignal();
     if (Object.keys(map).length === 0) return currentData;
     return currentData.map((record) => ({
       ...record,
