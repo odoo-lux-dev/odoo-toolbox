@@ -46,12 +46,7 @@ const handleTechnicalReportsVersion17andAbove = async (targetNode: Element): Pro
     targetNode.parentElement?.querySelector("button.focus i.fa-print") !== null;
   const hasSinglePrintOption =
     !isPrintingOption && targetNode.querySelector("span i.fa-print") !== null;
-  if (
-    (!isPrintingOption && !hasSinglePrintOption) ||
-    (isPrintingOption && targetNode.nodeName !== "DIV") ||
-    (hasSinglePrintOption && targetNode.nodeName !== "SPAN")
-  )
-    return;
+  if ((!isPrintingOption && !hasSinglePrintOption) || targetNode.nodeName !== "DIV") return;
 
   let printOptionsEntries: Element | undefined;
   if (hasSinglePrintOption) {
