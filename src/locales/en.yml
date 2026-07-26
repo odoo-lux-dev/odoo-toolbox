@@ -28,6 +28,15 @@ common:
   favorite_projects: Favorite projects
 
 devtools:
+  completions:
+    loading: "Loading fields..."
+    command_create_info: "Create new records and link them."
+    command_update_info: "Write values on the related record."
+    command_delete_info: "Remove the related record from the database."
+    command_unlink_info: "Remove the relation only."
+    command_link_info: "Add a relation to an existing record."
+    command_clear_info: "Remove all records from the relation."
+    command_set_info: "Replace the current relations."
   nav:
     search: Search
     write: Write

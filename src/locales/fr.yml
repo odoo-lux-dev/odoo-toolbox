@@ -28,6 +28,15 @@ common:
   favorite_projects: Projets favoris
 
 devtools:
+  completions:
+    loading: "Chargement des champs..."
+    command_create_info: "Crée de nouveaux enregistrements et les lie."
+    command_update_info: "Écrit les valeurs sur l'enregistrement lié."
+    command_delete_info: "Supprime l'enregistrement lié de la base de données."
+    command_unlink_info: "Supprime la relation uniquement."
+    command_link_info: "Ajoute une relation à un enregistrement existant."
+    command_clear_info: "Supprime tous les enregistrements de la relation."
+    command_set_info: "Remplace les relations actuelles."
   nav:
     search: Recherche
     write: Écriture

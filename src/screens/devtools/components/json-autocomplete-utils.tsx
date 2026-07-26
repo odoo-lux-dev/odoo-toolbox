@@ -43,6 +43,7 @@ export const generateExampleValue = (fieldMeta: FieldMetadata): unknown => {
     case "integer":
       return 42;
     case "float":
+    case "monetary":
       return 3.14;
     case "boolean":
       return true;
@@ -72,6 +73,7 @@ export const getValueTemplate = (fieldType: string): ValueTemplate => {
     case "many2one":
     case "integer":
     case "float":
+    case "monetary":
     case "boolean":
       return { template: "", cursorOffset: 0 };
     default:

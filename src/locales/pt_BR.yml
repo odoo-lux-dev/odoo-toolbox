@@ -28,6 +28,15 @@ common:
   favorite_projects: Projetos favoritos
 
 devtools:
+  completions:
+    loading: "Carregando campos..."
+    command_create_info: "Cria novos registros e os vincula."
+    command_update_info: "Grava valores no registro relacionado."
+    command_delete_info: "Remove o registro relacionado do banco de dados."
+    command_unlink_info: "Remove apenas a relação."
+    command_link_info: "Adiciona uma relação a um registro existente."
+    command_clear_info: "Remove todos os registros da relação."
+    command_set_info: "Substitui as relações atuais."
   nav:
     search: Pesquisar
     write: Escrever

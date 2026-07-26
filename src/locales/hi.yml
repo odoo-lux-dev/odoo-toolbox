@@ -28,6 +28,15 @@ common:
   favorite_projects: पसंदीदा प्रोजेक्ट्स
 
 devtools:
+  completions:
+    loading: "फ़ील्ड लोड हो रहे हैं..."
+    command_create_info: "नए रिकॉर्ड बनाता है और उन्हें जोड़ता है।"
+    command_update_info: "संबंधित रिकॉर्ड पर मान लिखता है।"
+    command_delete_info: "संबंधित रिकॉर्ड को डेटाबेस से हटाता है।"
+    command_unlink_info: "केवल संबंध हटाता है।"
+    command_link_info: "मौजूदा रिकॉर्ड से संबंध जोड़ता है।"
+    command_clear_info: "संबंध से सभी रिकॉर्ड हटाता है।"
+    command_set_info: "वर्तमान संबंध बदलता है।"
   nav:
     search: खोजें
     write: लिखें

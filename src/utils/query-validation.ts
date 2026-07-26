@@ -1,5 +1,6 @@
 import type { OdooDomain, RpcQueryState } from "@/types";
 import { parseRpcContext } from "@/utils/context-utils";
+import { parseJsonWithCommands } from "@/utils/command-utils";
 import { validateDomainStructure } from "@/utils/domain-utils";
 import { t } from "@/utils/i18n-page";
 import { evaluateExpr } from "@/utils/odoo-py_js/py.js";
@@ -302,7 +303,7 @@ export const validateJSON = (jsonString: string): { isValid: boolean; error?: st
   }
 
   try {
-    const parsed = JSON.parse(jsonString);
+    const parsed = parseJsonWithCommands(jsonString);
 
     // Must be an object (not null, not an array, not a primitive type)
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -359,7 +360,7 @@ export const validateFieldsExistence = (
   }
 
   try {
-    const parsed = JSON.parse(jsonValue);
+    const parsed = parseJsonWithCommands(jsonValue);
 
     // If it's not an object, it's handled by validateJSON
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -400,7 +401,7 @@ export const validateRequiredFields = (
   }
 
   try {
-    const parsed = JSON.parse(jsonValue);
+    const parsed = parseJsonWithCommands(jsonValue);
 
     // If it's not an object, it's handled by validateJSON
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {

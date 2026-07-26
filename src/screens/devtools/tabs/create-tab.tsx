@@ -34,6 +34,7 @@ import { Logger } from "@/services/logger";
 import { isOdooError } from "@/services/odoo-error";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { FieldMetadata } from "@/types";
+import { parseJsonWithCommands } from "@/utils/command-utils";
 import { parseRpcContext } from "@/utils/context-utils";
 import { addCreateToHistory } from "@/utils/history-helpers";
 import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
@@ -189,7 +190,7 @@ export const CreateTab = () => {
 
       const createParams = {
         model: queryStore.model,
-        values: [JSON.parse(createData())],
+        values: [parseJsonWithCommands(createData()) as Record<string, unknown>],
         context: contextResult.value,
       };
       const createdIds = await odooRpcService.create(createParams);
@@ -203,7 +204,7 @@ export const CreateTab = () => {
         try {
           await addCreateToHistory(
             queryStore.model,
-            JSON.parse(createData()),
+            parseJsonWithCommands(createData()) as Record<string, unknown>,
             createdIds[0],
             database(),
           );

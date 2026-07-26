@@ -25,6 +25,14 @@ describe("generateExampleValue", () => {
     expect(result).toBe(42);
   });
 
+  test("should generate numeric example for monetary field", () => {
+    const field: FieldMetadata = { type: "monetary", string: "Amount" };
+
+    const result = generateExampleValue(field);
+
+    expect(result).toBe(3.14);
+  });
+
   test("should generate example for boolean field", () => {
     const field: FieldMetadata = { type: "boolean", string: "Active" };
 
@@ -108,6 +116,13 @@ describe("getValueTemplate", () => {
 
   test("should return empty template for integer", () => {
     const result = getValueTemplate("integer");
+
+    expect(result.template).toBe("");
+    expect(result.cursorOffset).toBe(0);
+  });
+
+  test("should return empty template for monetary", () => {
+    const result = getValueTemplate("monetary");
 
     expect(result.template).toBe("");
     expect(result.cursorOffset).toBe(0);

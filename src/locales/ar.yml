@@ -28,6 +28,15 @@ common:
   favorite_projects: المشاريع المفضلة
 
 devtools:
+  completions:
+    loading: "جارٍ تحميل الحقول..."
+    command_create_info: "ينشئ سجلات جديدة ويربطها."
+    command_update_info: "يكتب القيم على السجل المرتبط."
+    command_delete_info: "يزيل السجل المرتبط من قاعدة البيانات."
+    command_unlink_info: "يزيل العلاقة فقط."
+    command_link_info: "يضيف علاقة بسجل موجود."
+    command_clear_info: "يزيل كل السجلات من العلاقة."
+    command_set_info: "يستبدل العلاقات الحالية."
   nav:
     search: بحث
     write: كتابة

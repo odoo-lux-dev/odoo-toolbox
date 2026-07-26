@@ -28,6 +28,15 @@ common:
   favorite_projects: Favoriete projecten
 
 devtools:
+  completions:
+    loading: "Velden laden..."
+    command_create_info: "Maakt nieuwe records aan en koppelt ze."
+    command_update_info: "Schrijft waarden naar het gerelateerde record."
+    command_delete_info: "Verwijdert het gerelateerde record uit de database."
+    command_unlink_info: "Verwijdert alleen de relatie."
+    command_link_info: "Koppelt een relatie aan een bestaand record."
+    command_clear_info: "Verwijdert alle records uit de relatie."
+    command_set_info: "Vervangt de huidige relaties."
   nav:
     search: Zoeken
     write: Schrijven

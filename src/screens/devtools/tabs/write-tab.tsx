@@ -29,6 +29,7 @@ import {
 import { t } from "@/services/i18n-service";
 import { Logger } from "@/services/logger";
 import { odooRpcService } from "@/services/odoo-rpc-service";
+import { parseJsonWithCommands } from "@/utils/command-utils";
 import { parseRpcContext } from "@/utils/context-utils";
 import { addWriteToHistory } from "@/utils/history-helpers";
 import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
@@ -133,7 +134,7 @@ export const WriteTab = () => {
         throw new Error(t("services.no_valid_ids"));
       }
 
-      const values = JSON.parse(writeData());
+      const values = parseJsonWithCommands(writeData()) as Record<string, unknown>;
       const contextResult = parseRpcContext(queryStore.context || "");
 
       if (!contextResult.isValid) {

@@ -13,6 +13,7 @@ import {
   syntaxHighlighting,
   defaultHighlightStyle,
 } from "@codemirror/language";
+import { type Range } from "@codemirror/state";
 import {
   EditorView,
   keymap,
@@ -22,6 +23,8 @@ import {
   placeholder as placeholderExt,
   tooltips,
   ViewPlugin,
+  Decoration,
+  type DecorationSet,
   type ViewUpdate,
 } from "@codemirror/view";
 import { tags as lezerTags } from "@lezer/highlight";
@@ -32,9 +35,11 @@ import {
 } from "solid-codemirror";
 import { createEffect, createSignal, type JSX } from "solid-js";
 
+import { clearComodelFieldsCache, getComodelFields } from "@/screens/devtools/comodel-fields";
 import { fieldCompletions } from "@/screens/devtools/components/json-cm-completions";
 import { t } from "@/services/i18n-service";
 import type { FieldMetadata } from "@/types";
+import { formatJsonWithCommands } from "@/utils/command-utils";
 import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
 import { validateJSON } from "@/utils/query-validation";
 
@@ -60,16 +65,7 @@ export const useJsonEditor = (props: {
       return;
     }
     try {
-      const parsed = JSON.parse(jsonData());
-      let formatted = JSON.stringify(parsed, null, 2);
-      formatted = formatted.replace(
-        /\[\s*\n\s*([^[\]{}]*?)\n\s*\]/g,
-        (_m: string, content: string) =>
-          `[${content
-            .replace(/\s*,\s*/g, ", ")
-            .replace(/\s+/g, " ")
-            .trim()}]`,
-      );
+      const formatted = formatJsonWithCommands(jsonData());
       setJsonData(formatted);
       setJsonValidation(validateJSON(formatted));
     } catch {
@@ -132,6 +128,13 @@ const editorTheme = EditorView.theme({
   ".cm-activeLine": {
     backgroundColor: "transparent",
   },
+  ".cm-command-keyword": {
+    color: "var(--color-info)",
+  },
+  ".cm-command-action": {
+    color: "var(--color-info)",
+    fontStyle: "italic",
+  },
 });
 
 const jsonHighlightStyle = HighlightStyle.define([
@@ -139,7 +142,7 @@ const jsonHighlightStyle = HighlightStyle.define([
   { tag: lezerTags.number, color: "var(--color-accent)" },
   { tag: lezerTags.bool, color: "var(--color-warning)" },
   { tag: lezerTags.null, color: "var(--color-warning)" },
-  { tag: lezerTags.propertyName, color: "var(--color-base-content)" },
+  { tag: lezerTags.propertyName, color: "var(--color-secondary)" },
   { tag: lezerTags.punctuation, color: "var(--color-base-content)", opacity: "0.6" },
 ]);
 
@@ -160,9 +163,49 @@ const autoValueCompletionPlugin = ViewPlugin.fromClass(
       const before2 = state.sliceDoc(Math.max(0, pos - 2), Math.max(0, pos - 1));
       if (before1 === '"' || (before1 === " " && before2 === ":")) {
         setTimeout(() => startCompletion(view), 0);
+        return;
+      }
+      if (before1 === ".") {
+        const before = state.sliceDoc(Math.max(0, pos - 8), pos);
+        if (before === "Command.") {
+          setTimeout(() => startCompletion(view), 0);
+        }
       }
     }
   },
+);
+
+const commandMark = Decoration.mark({ class: "cm-command-keyword" });
+const actionMark = Decoration.mark({ class: "cm-command-action" });
+
+const commandHighlightPlugin = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet = Decoration.none;
+    constructor(view: EditorView) {
+      this.decorations = this.build(view);
+    }
+    update(update: ViewUpdate) {
+      if (update.docChanged || update.viewportChanged) {
+        this.decorations = this.build(update.view);
+      }
+    }
+    build(view: EditorView): DecorationSet {
+      const decos: Range<Decoration>[] = [];
+      const text = view.state.doc.toString();
+      const re = /\bCommand\.([a-zA-Z]+)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text)) !== null) {
+        const cmdFrom = m.index;
+        const cmdTo = cmdFrom + 7;
+        const actFrom = cmdTo + 1;
+        const actTo = actFrom + m[1].length;
+        decos.push(commandMark.range(cmdFrom, cmdTo));
+        decos.push(actionMark.range(actFrom, actTo));
+      }
+      return Decoration.set(decos, true);
+    }
+  },
+  { decorations: (v) => v.decorations },
 );
 
 const baseExtensions = () => [
@@ -181,6 +224,7 @@ const baseExtensions = () => [
   editorTheme,
   EditorView.lineWrapping,
   autoValueCompletionPlugin,
+  commandHighlightPlugin,
 ];
 
 export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
@@ -200,6 +244,7 @@ export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
     currentFieldsMetadata = props.fieldsMetadata ?? {};
     currentMode = props.mode;
     currentOnAddRequiredFields = props.onAddRequiredFields;
+    clearComodelFieldsCache();
   });
 
   createExtension(baseExtensions());
@@ -211,6 +256,7 @@ export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
           () => currentFieldsMetadata,
           () => currentMode,
           () => currentOnAddRequiredFields,
+          getComodelFields,
         ),
       ],
       defaultKeymap: true,

@@ -28,6 +28,15 @@ common:
   favorite_projects: Lieblingsprojekte
 
 devtools:
+  completions:
+    loading: "Felder werden geladen..."
+    command_create_info: "Erstellt neue Datensätze und verknüpft sie."
+    command_update_info: "Schreibt Werte auf den verknüpften Datensatz."
+    command_delete_info: "Entfernt den verknüpften Datensatz aus der Datenbank."
+    command_unlink_info: "Entfernt nur die Verknüpfung."
+    command_link_info: "Fügt eine Verknüpfung zu einem bestehenden Datensatz hinzu."
+    command_clear_info: "Entfernt alle Datensätze aus der Verknüpfung."
+    command_set_info: "Ersetzt die aktuellen Verknüpfungen."
   nav:
     search: Suchen
     write: Schreiben
