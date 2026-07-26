@@ -24,6 +24,10 @@
   color: var(--body-color);
   font-style: italic;
   margin-left: 3px;
+
+  &:not(.x-odoo-copying):hover {
+    opacity: 0.7;
+  }
 }
 
 .x-odoo-technical-print-option-loading-spinner {

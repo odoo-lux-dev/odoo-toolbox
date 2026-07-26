@@ -2,7 +2,7 @@ import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { handleLoginButtons } from "@/page-features/login-buttons";
 import { initTechnicalList } from "@/page-features/technical-list";
-import { handleTechnicalModelName } from "@/page-features/technical-model-name";
+import { handleTechnicalModelName, scheduleTechnicalModelNameInModals } from "@/page-features/technical-model-name";
 import {
   handleTechnicalReportsVersion15and16,
   handleTechnicalReportsVersion17andAbove,
@@ -34,15 +34,24 @@ const observeMenuOpening = () => {
   if (!targetNode) return;
 
   const callback: MutationCallback = (mutationsList) => {
+    let hasAddedElement = false;
+
     for (const mutation of mutationsList) {
-      if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        mutation.addedNodes.forEach(async (node) => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            if (parseFloat(odooVersion) >= 17.0) await handleVersion17AndAbove(node as Element);
-            else await handleVersion15and16(node as Element);
-          }
-        });
+      if (mutation.type !== "childList" || mutation.addedNodes.length === 0) continue;
+
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType !== Node.ELEMENT_NODE) continue;
+        hasAddedElement = true;
+        if (parseFloat(odooVersion) >= 17.0) {
+          void handleVersion17AndAbove(node as Element);
+        } else {
+          void handleVersion15and16(node as Element);
+        }
       }
+    }
+
+    if (hasAddedElement && parseFloat(odooVersion) >= 17.0) {
+      scheduleTechnicalModelNameInModals();
     }
   };
 

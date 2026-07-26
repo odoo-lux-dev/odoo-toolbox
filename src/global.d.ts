@@ -115,6 +115,25 @@ declare global {
             [key: string]: unknown;
           };
           pos?: unknown;
+          __owl__?: {
+            app?: {
+              env?: {
+                services?: {
+                  overlay?: {
+                    overlays?: Record<string, {
+                      props?: {
+                        subProps?: {
+                          actionProps?: {
+                            resModel?: string;
+                          };
+                        };
+                      };
+                    }>;
+                  };
+                };
+              };
+            };
+          };
           env?: {
             services?: {
               action?: {

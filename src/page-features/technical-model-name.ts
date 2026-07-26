@@ -1,5 +1,7 @@
+import { copyText } from "@/utils/clipboard";
 import { t } from "@/utils/i18n-page";
 import { getShowTechnicalModel, hasNewOdooURL, isOnNewURLPos } from "@/utils/utils";
+const FEEDBACK_DURATION_MS = 1200;
 
 /**
  * Creates a span element for displaying the technical model name in the Odoo application.
@@ -46,6 +48,7 @@ const appendModelNameToBreadcrumb = (
     ? `(${modelName})`
     : `<strong>${t("page_features.technical_model.label")}</strong> <i>${modelName}</i>`;
   const technicalModelNameSpan = createTechnicalModelNameSpan(spanClassNames, innerContent);
+  attachCopyOnClick(technicalModelNameSpan, modelName);
   breadcrumb.appendChild(technicalModelNameSpan);
 };
 
@@ -60,6 +63,8 @@ const appendModelNameToBreadcrumb = (
  *                               (breadcrumbs or control panels) to append the model name.
  */
 const handleTechnicalModelName = (targetNode: Element): void => {
+  if (targetNode.closest(".o_dialog, .o-overlay-item")) return;
+
   const showTechnicalModel = getShowTechnicalModel() === "true";
   if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return;
 
@@ -93,4 +98,82 @@ const handleTechnicalModelName = (targetNode: Element): void => {
   }
 };
 
-export { handleTechnicalModelName };
+const getOpenModalModels = (): string[] => {
+  const overlays =
+    window.odoo?.__WOWL_DEBUG__?.root?.__owl__?.app?.env?.services?.overlay?.overlays;
+  if (!overlays) return [];
+  return Object.values(overlays)
+    .map((o) => o.props?.subProps?.actionProps?.resModel)
+    .filter((m): m is string => Boolean(m));
+};
+
+const handleTechnicalModelNameInModals = (): void => {
+  if (getShowTechnicalModel() !== "true") return;
+
+  const modalModels = getOpenModalModels();
+  const dialogs = [...document.querySelectorAll<HTMLElement>(".o-overlay-item > .o_dialog")];
+
+  dialogs.forEach((dialog, index) => {
+    const modelName = modalModels[index];
+    if (!modelName) return;
+
+    const header = dialog.querySelector<HTMLElement>("header.modal-header");
+    if (!header) return;
+    if (header.querySelector("span.x-odoo-technical-model-name")) return;
+
+    const span = createTechnicalModelNameSpan(
+      ["x-odoo-technical-model-name", "x-odoo-technical-model-name-breadcrumb"],
+      `(${modelName})`,
+    );
+    const title = header.querySelector<HTMLElement>(".modal-title");
+    if (title) title.insertAdjacentElement("afterend", span);
+    else header.appendChild(span);
+
+    attachCopyOnClick(span, modelName);
+  });
+};
+
+let modalRefreshScheduled = false;
+
+const scheduleTechnicalModelNameInModals = (): void => {
+  if (modalRefreshScheduled) return;
+  modalRefreshScheduled = true;
+  requestAnimationFrame(() => {
+    modalRefreshScheduled = false;
+    handleTechnicalModelNameInModals();
+  });
+};
+
+const attachCopyOnClick = (span: HTMLSpanElement, modelName: string): void => {
+  // Can't use @/hooks/use-copy-to-clipboard as it relies on Tailwind classes not available here.
+  const copyTitle = t("common.copy");
+  span.style.cursor = "pointer";
+  span.title = copyTitle;
+
+  let busy = false;
+
+  span.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (busy) return;
+    busy = true;
+    span.style.cursor = "default";
+    span.title = "";
+    span.classList.add("x-odoo-copying");
+
+    const original = span.innerHTML;
+    const success = await copyText(modelName);
+    span.textContent = success ? `✓ ${t("common.copied")}` : `✗`;
+    span.style.color = success ? "var(--success, #28a745)" : "var(--danger, #dc3545)";
+
+    setTimeout(() => {
+      span.innerHTML = original;
+      span.style.removeProperty("color");
+      span.style.cursor = "pointer";
+      span.title = copyTitle;
+      span.classList.remove("x-odoo-copying");
+      busy = false;
+    }, FEEDBACK_DURATION_MS);
+  });
+};
+
+export { handleTechnicalModelName, scheduleTechnicalModelNameInModals };
