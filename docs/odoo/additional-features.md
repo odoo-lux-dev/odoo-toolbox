@@ -7,7 +7,7 @@ title: Additional Features
 
 This page covers the lighter features of Odoo Toolbox that improve your day-to-day experience on Odoo instances, without being a full-fledged tool in their own right.
 
-## Technical model name {#model-name}
+## Technical model name {/* #model-name */}
 
 On any Odoo record page, Odoo Toolbox displays the technical name of the current model directly in the interface. This information was historically present in the page URL, but is no longer the case since version 17.2.
 
@@ -19,7 +19,7 @@ This model name is therefore only displayed on Odoo version 17.2 and later.
 This is particularly useful when writing Python code, access rules, or XML views and you need the exact model name.
 :::
 
-## PDF / HTML report preview {#report-preview}
+## PDF / HTML report preview {/* #report-preview */}
 
 Odoo Toolbox adds quick access to reports directly from the print options of a record. You can access the associated report in **PDF** or **HTML** format without having to download the report every time.
 

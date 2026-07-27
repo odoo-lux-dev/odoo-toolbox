@@ -1,0 +1,360 @@
+{
+    "theme.ErrorPageContent.title": {
+        "message": "यह पेज क्रैश हो गया है।",
+        "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+        "message": "पुनः प्रयास करें",
+        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.NotFound.title": {
+        "message": "पेज नहीं मिला",
+        "description": "The title of the 404 page"
+    },
+    "theme.NotFound.p1": {
+        "message": "हम आपके द्वारा खोजी जा रही चीज़ नहीं पा सके।",
+        "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+        "message": "कृपया उस साइट के स्वामी से संपर्क करें जिसने आपको मूल URL से लिंक किया, और उन्हें बताएं कि उनका लिंक टूटा हुआ है।",
+        "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.BackToTopButton.buttonAriaLabel": {
+        "message": "पेज के शीर्ष पर वापस जाएं",
+        "description": "The ARIA label for the back to top button"
+    },
+    "theme.tags.tagsPageLink": {
+        "message": "सभी टैग देखें",
+        "description": "The label of the link targeting the tag list page"
+    },
+    "theme.colorToggle.ariaLabel": {
+        "message": "डार्क और लाइट मोड के बीच टॉगल करें (वर्तमान में {mode})",
+        "description": "The ARIA label for the color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+        "message": "डार्क मोड",
+        "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+        "message": "लाइट मोड",
+        "description": "The name for the light color mode"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+        "message": "ब्रेडक्रंब",
+        "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription.plurals": {
+        "message": "1 आइटम|{count} आइटम",
+        "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+        "message": "डॉक्यूमेंटेशन पेज",
+        "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.previous": {
+        "message": "पिछला",
+        "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.paginator.next": {
+        "message": "अगला",
+        "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+        "message": "साइडबार विस्तारित करें",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+        "message": "साइडबार विस्तारित करें",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+        "message": "साइडबार संक्षिप्त करें",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+        "message": "साइडबार संक्षिप्त करें",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+        "message": "Docs sidebar",
+        "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+        "message": "नेविगेशन बार बंद करें",
+        "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+        "message": "नेविगेशन बार खोलें/बंद करें",
+        "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.docs.sidebar.docBadgeTooltip": {
+        "message": "यह सामग्री सोर्स कोड से स्वचालित रूप से बनाई गई है।",
+        "description": "The tooltip text for the doc badge in the sidebar"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+        "message": "एक डॉक्यूमेंट टैग किया गया|{count} डॉक्यूमेंट टैग किए गए",
+        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.tagDocListPageTitle": {
+        "message": "{nDocsTagged} \"{tagName}\" के साथ",
+        "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.versionBadge.label": {
+        "message": "वर्शन: {versionLabel}"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+        "message": "यह {siteTitle} के आगामी वर्शन {versionLabel} की डॉक्यूमेंटेशन है।",
+        "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+        "message": "यह {siteTitle} {versionLabel} की डॉक्यूमेंटेशन है, जिसे अब सक्रिय रूप से अनुरक्षित नहीं किया जाता।",
+        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+        "message": "अद्यतन डॉक्यूमेंटेशन के लिए, {latestVersionLink} ({versionLabel}) देखें।",
+        "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+        "message": "नवीनतम वर्शन",
+        "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.common.editThisPage": {
+        "message": "इस पेज को एडिट करें",
+        "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+        "message": "{heading} का सीधा लिंक",
+        "description": "Title for link to heading"
+    },
+    "theme.lastUpdated.atDate": {
+        "message": " {date}",
+        "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+        "message": " {user} द्वारा",
+        "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+        "message": "अंतिम अपडेट{atDate}{byUser}",
+        "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+        "message": "वर्शन",
+        "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+        "message": "भाषाएं",
+        "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.tags.tagsListLabel": {
+        "message": "टैग:",
+        "description": "The label alongside a tag list"
+    },
+    "theme.AnnouncementBar.closeButtonAriaLabel": {
+        "message": "बंद करें",
+        "description": "The ARIA label for close button of announcement bar"
+    },
+    "theme.admonition.note": {
+        "message": "नोट",
+        "description": "The default label used for the Note admonition (:::note)"
+    },
+    "theme.admonition.tip": {
+        "message": "सुझाव",
+        "description": "The default label used for the Tip admonition (:::tip)"
+    },
+    "theme.admonition.danger": {
+        "message": "खतरा",
+        "description": "The default label used for the Danger admonition (:::danger)"
+    },
+    "theme.admonition.info": {
+        "message": "जानकारी",
+        "description": "The default label used for the Info admonition (:::info)"
+    },
+    "theme.admonition.caution": {
+        "message": "सावधानी",
+        "description": "The default label used for the Caution admonition (:::caution)"
+    },
+    "theme.admonition.warning": {
+        "message": "चेतावनी",
+        "description": "The default label used for the Warning admonition (:::warning)"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+        "message": "कोड कॉपी करें",
+        "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.copied": {
+        "message": "कॉपी हो गया",
+        "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copy": {
+        "message": "कॉपी करें",
+        "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+        "message": "वर्ड रैपिंग टॉगल करें",
+        "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+        "message": "← मुख्य मेनू पर वापस",
+        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+        "message": "इस पेज पर",
+        "description": "The label used by the button on the collapsible TOC component"
+    },
+    "theme.link.ariaLabelEmptyHref": {
+        "message": "गंतव्य के बिना लिंक",
+        "description": "The ARIA label for links without href"
+    },
+    "theme.SearchBar.seeAll": {
+        "message": "सभी परिणाम देखें"
+    },
+    "theme.SearchBar.label": {
+        "message": "खोजें",
+        "description": "The ARIA label and placeholder for search button"
+    },
+    "theme.SearchPage.inputPlaceholder": {
+        "message": "अपनी खोज यहां दर्ज करें",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.existingResultsTitle": {
+        "message": "\"{query}\" के लिए खोज परिणाम",
+        "description": "The search page title for non-empty query"
+    },
+    "theme.SearchPage.emptyResultsTitle": {
+        "message": "डॉक्यूमेंटेशन में खोजें",
+        "description": "The search page title for empty query"
+    },
+    "theme.SearchPage.resultsCount": {
+        "message": "{count} परिणाम|{count} परिणाम",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.fetchingNewResults": {
+        "message": "नए परिणाम प्राप्त कर रहे हैं...",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.noResultsText": {
+        "message": "कोई डॉक्यूमेंट नहीं मिला",
+        "description": "The paragraph for empty search result"
+    },
+    "homepage.hero.tagline": {
+        "message": "Odoo databases के लिए आपका नेविगेशन साथी",
+        "description": "The tagline displayed in the hero section of the homepage"
+    },
+    "homepage.hero.getStarted": {
+        "message": "फीचर्स एक्सप्लोर करें",
+        "description": "The label for the Get Started button in the hero section"
+    },
+    "homepage.features.title": {
+        "message": "वह सब कुछ जो आपको चाहिए",
+        "description": "The title for the features section on the homepage"
+    },
+    "homepage.features.subtitle": {
+        "message": "मुख्य फीचर्स, और खोजने के लिए बहुत कुछ!",
+        "description": "The subtitle for the features section on the homepage"
+    },
+    "homepage.feature.devtools.title": {
+        "message": "DevTools पैनल",
+        "description": "Title for the DevTools Panel feature card"
+    },
+    "homepage.feature.devtools.description": {
+        "message": "अपने ब्राउज़र के DevTools से सीधे Odoo रिकॉर्ड्स को क्वेरी, बनाना, एडिट और डिलीट करें। डोमेन फिल्टर, फ़ील्ड चयन और बहुत कुछ के साथ उन्नत RPC परीक्षण।",
+        "description": "Description for the DevTools Panel feature card"
+    },
+    "homepage.feature.sidebar.title": {
+        "message": "Technical Sidebar",
+        "description": "Title for the Technical Sidebar feature card"
+    },
+    "homepage.feature.sidebar.description": {
+        "message": "किसी भी Odoo पेज पर फ़ील्ड्स, प्रकार, गुण और मेटाडेटा इंस्पेक्ट करें। कुछ ही क्लिक्स में किसी फ़ील्ड की तकनीकी जानकारी प्राप्त करें।",
+        "description": "Description for the Technical Sidebar feature card"
+    },
+    "homepage.feature.popup.title": {
+        "message": "एक्सटेंशन पॉपअप",
+        "description": "Title for the Extension Popup feature card"
+    },
+    "homepage.feature.popup.description": {
+        "message": "Debug mode को टॉगल करने, थीम बदलने और अपने Odoo.SH प्रोजेक्ट फेवरेट्स तक त्वरित पहुंच। एक्सटेंशन आइकन पर एक ही क्लिक में सब कुछ।",
+        "description": "Description for the Extension Popup feature card"
+    },
+    "homepage.feature.odoosh.title": {
+        "message": "Odoo.SH इंटीग्रेशन",
+        "description": "Title for the Odoo.SH Integration feature card"
+    },
+    "homepage.feature.odoosh.description": {
+        "message": "फेवरेट्स, कस्टम नाम, ब्रांच यूटिलिटीज, GitHub लिंक और कलरब्लाइंड-फ्रेंडली स्टेटस इंडिकेटर्स के साथ अपने Odoo.SH प्रोजेक्ट्स प्रबंधित करें।",
+        "description": "Description for the Odoo.SH Integration feature card"
+    },
+    "theme.colorToggle.ariaLabel.mode.system": {
+        "message": "सिस्टम मोड",
+        "description": "The name for the system color mode"
+    },
+    "theme.DocSidebarItem.expandCategoryAriaLabel": {
+        "message": "साइडबार कैटेगरी '{label}' विस्तारित करें",
+        "description": "The ARIA label to expand the sidebar category"
+    },
+    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+        "message": "साइडबार कैटेगरी '{label}' संक्षिप्त करें",
+        "description": "The ARIA label to collapse the sidebar category"
+    },
+    "theme.IconExternalLink.ariaLabel": {
+        "message": "(नए टैब में खुलता है)",
+        "description": "The ARIA label for the external link icon"
+    },
+    "theme.NavBar.navAriaLabel": {
+        "message": "मुख्य",
+        "description": "The ARIA label for the main navigation"
+    },
+    "theme.docs.breadcrumbs.home": {
+        "message": "होम पेज",
+        "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
+        "message": "ड्रॉपडाउन मेनू विस्तारित करें",
+        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
+        "message": "ड्रॉपडाउन मेनू संक्षिप्त करें",
+        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
+    },
+    "theme.SearchBar.noResultsText": {
+        "message": "कोई परिणाम नहीं"
+    },
+    "theme.SearchBar.seeAllOutsideContext": {
+        "message": "\"{context}\" के बाहर सभी परिणाम देखें"
+    },
+    "theme.SearchBar.searchInContext": {
+        "message": "\"{context}\" में सभी परिणाम देखें"
+    },
+    "theme.SearchPage.searchContext.everywhere": {
+        "message": "हर जगह"
+    },
+    "theme.SearchPage.documentsFound.plurals": {
+        "message": "1 डॉक्यूमेंट मिला|{count} डॉक्यूमेंट मिले",
+        "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.contentVisibility.unlistedBanner.title": {
+        "message": "अनलिस्टेड पेज",
+        "description": "The unlisted content banner title"
+    },
+    "theme.contentVisibility.unlistedBanner.message": {
+        "message": "यह पेज अनलिस्टेड है। सर्च इंजन इसे इंडेक्स नहीं करेंगे, और केवल सीधे लिंक वाले यूज़र्स ही इसे एक्सेस कर सकते हैं।",
+        "description": "The unlisted content banner message"
+    },
+    "theme.contentVisibility.draftBanner.title": {
+        "message": "ड्राफ्ट पेज",
+        "description": "The draft content banner title"
+    },
+    "theme.contentVisibility.draftBanner.message": {
+        "message": "यह पेज एक ड्राफ्ट है। यह केवल डेवलपमेंट में दिखाई देगा और प्रोडक्शन बिल्ड से बाहर रखा जाएगा।",
+        "description": "The draft content banner message"
+    },
+    "theme.common.skipToMainContent": {
+        "message": "मुख्य सामग्री पर जाएं",
+        "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+    },
+    "theme.tags.tagsPageTitle": {
+        "message": "टैग",
+        "description": "The title of the tag list page"
+    }
+}

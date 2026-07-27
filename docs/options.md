@@ -18,6 +18,6 @@ Don't hesitate to explore it - it's the best way to make the extension your own 
 
 ![Options page](/img/options/overview.png)
 
-## Configuration export / import {#export-import}
+## Configuration export / import {/* #export-import */}
 
 The Options page also lets you export and import your entire configuration. Useful for backing up your settings or transferring them to another browser or machine.

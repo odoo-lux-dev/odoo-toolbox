@@ -7,15 +7,15 @@ title: Démarrage rapide
 
 **Odoo Toolbox** vise à améliorer l'expérience des utilisateurs et développeurs Odoo / Odoo.SH en ajoutant une variété d'outils et de fonctionnalités.
 
-## Installation {#installation}
+## Installation {/* #installation */}
 
-### Chromium {#chromium}
+### Chromium {/* #chromium */}
 
 1. Rendez-vous sur le [Chrome Web Store](https://chromewebstore.google.com/detail/odoo-toolbox/jgobnmpfeomiffhbedhfgbhelcnnelkd)
 2. Cliquez sur **Ajouter à Chrome**
 3. Confirmez en cliquant sur **Ajouter l'extension**
 
-### Firefox {#firefox}
+### Firefox {/* #firefox */}
 
 1. Rendez-vous sur la page [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/odoo-toolbox/)
 2. Cliquez sur **Ajouter à Firefox**
@@ -25,13 +25,13 @@ Une fois installée, l'icône Odoo Toolbox apparaît dans la barre d'outils de v
 
 ---
 
-## Démarrage rapide {#quick-start}
+## Démarrage rapide {/* #quick-start */}
 
-### 1. Accéder à une instance Odoo {#navigate-to-odoo}
+### 1. Accéder à une instance Odoo {/* #navigate-to-odoo */}
 
 Ouvrez votre navigateur et rendez-vous sur une instance Odoo en **version 14 ou supérieure**.
 
-### 2. Ouvrir la popup {#open-the-popup}
+### 2. Ouvrir la popup {/* #open-the-popup */}
 
 Cliquez sur l'icône **Odoo Toolbox** dans la barre d'outils de votre navigateur pour ouvrir la popup. Depuis celle-ci, vous pouvez :
 
@@ -40,7 +40,7 @@ Cliquez sur l'icône **Odoo Toolbox** dans la barre d'outils de votre navigateur
 - Accéder à vos **projets favoris Odoo.SH**
 - Ouvrir la **page Options** pour les réglages avancés
 
-### 3. Inspecter les champs avec la barre latérale technique {#inspect-fields}
+### 3. Inspecter les champs avec la barre latérale technique {/* #inspect-fields */}
 
 Sur n'importe quelle vue Odoo, un **bouton flottant** apparaît, par défaut, dans le coin inférieur droit de la page.
 
@@ -52,7 +52,7 @@ Sur n'importe quelle vue Odoo, un **bouton flottant** apparaît, par défaut, da
     - Type de champ (`Many2one`, `Char`, `Selection`, ...)
     - Propriétés et métadonnées supplémentaires
 
-### 4. Utiliser le panneau DevTools {#use-devtools-panel}
+### 4. Utiliser le panneau DevTools {/* #use-devtools-panel */}
 
 Le panneau DevTools vous permet d'interagir avec la couche RPC d'Odoo sans quitter votre navigateur.
 
@@ -65,7 +65,7 @@ Le panneau DevTools vous permet d'interagir avec la couche RPC d'Odoo sans quitt
 
 ---
 
-## Et ensuite ? {#whats-next}
+## Et ensuite ? {/* #whats-next */}
 
 Explorez la documentation de chaque section :
 

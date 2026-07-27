@@ -7,7 +7,7 @@ title: Fonctionnalités supplémentaires
 
 Cette page regroupe les fonctionnalités plus légères d'Odoo Toolbox qui améliorent votre expérience quotidienne sur les instances Odoo, sans pour autant constituer un outil à part entière.
 
-## Nom technique du modèle {#model-name}
+## Nom technique du modèle {/* #model-name */}
 
 Sur n'importe quelle page d'enregistrement Odoo, Odoo Toolbox affiche le nom technique du modèle courant directement dans l'interface. Cette information était historiquement présente dans l'URL de la page, mais ne l'est plus depuis la version 17.2.
 
@@ -19,7 +19,7 @@ Ce modèle s'affiche donc uniquement sur les versions 17.2 et ultérieures d'Odo
 Cette information est particulièrement utile lorsque vous rédigez du code Python, des règles d'accès ou des vues XML et que vous avez besoin du nom exact du modèle.
 :::
 
-## Aperçu de rapports PDF/HTML {#report-preview}
+## Aperçu de rapports PDF/HTML {/* #report-preview */}
 
 Odoo Toolbox ajoute un accès rapide aux rapports directement depuis les options d'impression d'un enregistrement. Vous pouvez accéder au rapport associé au format **PDF** ou **HTML** sans devoir télécharger le rapport à chaque fois.
 

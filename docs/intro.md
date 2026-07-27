@@ -7,15 +7,15 @@ title: Getting Started
 
 **Odoo Toolbox** aims to improve the experience of Odoo and Odoo.SH users and developers by adding a variety of tools and features.
 
-## Installation {#installation}
+## Installation {/* #installation */}
 
-### Chromium {#chromium}
+### Chromium {/* #chromium */}
 
 1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/odoo-toolbox/jgobnmpfeomiffhbedhfgbhelcnnelkd)
 2. Click **Add to Chrome**
 3. Confirm by clicking **Add extension**
 
-### Firefox {#firefox}
+### Firefox {/* #firefox */}
 
 1. Visit the [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/odoo-toolbox/) page
 2. Click **Add to Firefox**
@@ -25,13 +25,13 @@ Once installed, the Odoo Toolbox icon will appear in your browser toolbar.
 
 ---
 
-## Quick start {#quick-start}
+## Quick start {/* #quick-start */}
 
-### 1. Navigate to an Odoo instance {#navigate-to-odoo}
+### 1. Navigate to an Odoo instance {/* #navigate-to-odoo */}
 
 Open your browser and go to any Odoo instance running **version 14 or higher**.
 
-### 2. Open the Popup {#open-the-popup}
+### 2. Open the Popup {/* #open-the-popup */}
 
 Click the **Odoo Toolbox** icon in your browser toolbar to open the popup. From here you can:
 
@@ -40,7 +40,7 @@ Click the **Odoo Toolbox** icon in your browser toolbar to open the popup. From 
 - Access your **Odoo.SH project favorites**
 - Open the **Options page** for advanced settings
 
-### 3. Inspect fields with the Technical Sidebar {#inspect-fields}
+### 3. Inspect fields with the Technical Sidebar {/* #inspect-fields */}
 
 On any Odoo view, a **floating button** appears at the bottom-right corner (by default) of the page.
 
@@ -52,7 +52,7 @@ On any Odoo view, a **floating button** appears at the bottom-right corner (by d
     - Field type (`Many2one`, `Char`, `Selection`, ...)
     - Additional properties and metadata
 
-### 4. Use the DevTools Panel {#use-devtools-panel}
+### 4. Use the DevTools Panel {/* #use-devtools-panel */}
 
 The DevTools Panel lets you interact with the Odoo RPC layer without leaving your browser.
 
@@ -65,7 +65,7 @@ The DevTools Panel lets you interact with the Odoo RPC layer without leaving you
 
 ---
 
-## What's Next? {#whats-next}
+## What's Next? {/* #whats-next */}
 
 Explore the documentation for each section:
 

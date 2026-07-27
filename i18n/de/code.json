@@ -1,0 +1,360 @@
+{
+    "theme.ErrorPageContent.title": {
+        "message": "Diese Seite ist abgestürzt.",
+        "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+        "message": "Erneut versuchen",
+        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.NotFound.title": {
+        "message": "Seite nicht gefunden",
+        "description": "The title of the 404 page"
+    },
+    "theme.NotFound.p1": {
+        "message": "Wir konnten nicht finden, wonach Sie suchen.",
+        "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+        "message": "Bitte kontaktieren Sie den Eigentümer der Website, die Sie mit der ursprünglichen URL verlinkt hat, und teilen Sie ihm mit, dass der Link defekt ist.",
+        "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.BackToTopButton.buttonAriaLabel": {
+        "message": "Zurück zum Seitenanfang",
+        "description": "The ARIA label for the back to top button"
+    },
+    "theme.tags.tagsPageLink": {
+        "message": "Alle Tags anzeigen",
+        "description": "The label of the link targeting the tag list page"
+    },
+    "theme.colorToggle.ariaLabel": {
+        "message": "Zwischen Dunkel- und Hellmodus wechseln (aktuell {mode})",
+        "description": "The ARIA label for the color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+        "message": "Dunkelmodus",
+        "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+        "message": "Hellmodus",
+        "description": "The name for the light color mode"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+        "message": "Brotkrümelnavigation",
+        "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription.plurals": {
+        "message": "1 Element|{count} Elemente",
+        "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+        "message": "Dokumentationsseiten",
+        "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.previous": {
+        "message": "Zurück",
+        "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.paginator.next": {
+        "message": "Weiter",
+        "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+        "message": "Seitenleiste aufklappen",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+        "message": "Seitenleiste aufklappen",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+        "message": "Seitenleiste einklappen",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+        "message": "Seitenleiste einklappen",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+        "message": "Dokumentations-Seitenleiste",
+        "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+        "message": "Seitenleiste schließen",
+        "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+        "message": "Seitenleiste öffnen/schließen",
+        "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.docs.sidebar.docBadgeTooltip": {
+        "message": "Dieser Inhalt wurde automatisch aus dem Quellcode erstellt.",
+        "description": "The tooltip text for the doc badge in the sidebar"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+        "message": "Ein Dokument mit Tag|{count} Dokumente mit Tag",
+        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.tagDocListPageTitle": {
+        "message": "{nDocsTagged} mit \"{tagName}\"",
+        "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.versionBadge.label": {
+        "message": "Version: {versionLabel}"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+        "message": "Dies ist die Dokumentation für die kommende Version {versionLabel} von {siteTitle}.",
+        "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+        "message": "Dies ist die Dokumentation von {siteTitle} {versionLabel}, die nicht mehr aktiv gepflegt wird.",
+        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+        "message": "Für aktuelle Dokumentation siehe die {latestVersionLink} ({versionLabel}).",
+        "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+        "message": "neueste Version",
+        "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.common.editThisPage": {
+        "message": "Diese Seite bearbeiten",
+        "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+        "message": "Direkter Link zu {heading}",
+        "description": "Title for link to heading"
+    },
+    "theme.lastUpdated.atDate": {
+        "message": " am {date}",
+        "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+        "message": " von {user}",
+        "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+        "message": "Zuletzt aktualisiert{atDate}{byUser}",
+        "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+        "message": "Versionen",
+        "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+        "message": "Sprachen",
+        "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.tags.tagsListLabel": {
+        "message": "Tags:",
+        "description": "The label alongside a tag list"
+    },
+    "theme.AnnouncementBar.closeButtonAriaLabel": {
+        "message": "Schließen",
+        "description": "The ARIA label for close button of announcement bar"
+    },
+    "theme.admonition.note": {
+        "message": "Hinweis",
+        "description": "The default label used for the Note admonition (:::note)"
+    },
+    "theme.admonition.tip": {
+        "message": "Tipp",
+        "description": "The default label used for the Tip admonition (:::tip)"
+    },
+    "theme.admonition.danger": {
+        "message": "Gefahr",
+        "description": "The default label used for the Danger admonition (:::danger)"
+    },
+    "theme.admonition.info": {
+        "message": "Info",
+        "description": "The default label used for the Info admonition (:::info)"
+    },
+    "theme.admonition.caution": {
+        "message": "Achtung",
+        "description": "The default label used for the Caution admonition (:::caution)"
+    },
+    "theme.admonition.warning": {
+        "message": "Warnung",
+        "description": "The default label used for the Warning admonition (:::warning)"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+        "message": "Code kopieren",
+        "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.copied": {
+        "message": "Kopiert",
+        "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copy": {
+        "message": "Kopieren",
+        "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+        "message": "Zeilenumbruch aktivieren/deaktivieren",
+        "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+        "message": "← Zurück zum Hauptmenü",
+        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+        "message": "Auf dieser Seite",
+        "description": "The label used by the button on the collapsible TOC component"
+    },
+    "theme.link.ariaLabelEmptyHref": {
+        "message": "Link ohne Ziel",
+        "description": "The ARIA label for links without href"
+    },
+    "theme.SearchBar.seeAll": {
+        "message": "Alle Ergebnisse anzeigen"
+    },
+    "theme.SearchBar.label": {
+        "message": "Suchen",
+        "description": "The ARIA label and placeholder for search button"
+    },
+    "theme.SearchPage.inputPlaceholder": {
+        "message": "Geben Sie hier Ihre Suche ein",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.existingResultsTitle": {
+        "message": "Suchergebnisse für \"{query}\"",
+        "description": "The search page title for non-empty query"
+    },
+    "theme.SearchPage.emptyResultsTitle": {
+        "message": "Dokumentation durchsuchen",
+        "description": "The search page title for empty query"
+    },
+    "theme.SearchPage.resultsCount": {
+        "message": "{count} Ergebnis|{count} Ergebnisse",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.fetchingNewResults": {
+        "message": "Neue Ergebnisse werden abgerufen...",
+        "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.noResultsText": {
+        "message": "Kein Dokument gefunden",
+        "description": "The paragraph for empty search result"
+    },
+    "homepage.hero.tagline": {
+        "message": "Ihr Navigationsbegleiter für Odoo-Datenbanken",
+        "description": "The tagline displayed in the hero section of the homepage"
+    },
+    "homepage.hero.getStarted": {
+        "message": "Funktionen entdecken",
+        "description": "The label for the Get Started button in the hero section"
+    },
+    "homepage.features.title": {
+        "message": "Alles, was Sie brauchen",
+        "description": "The title for the features section on the homepage"
+    },
+    "homepage.features.subtitle": {
+        "message": "Die Kernfunktionen und viele weitere zum Entdecken!",
+        "description": "The subtitle for the features section on the homepage"
+    },
+    "homepage.feature.devtools.title": {
+        "message": "DevTools Panel",
+        "description": "Title for the DevTools Panel feature card"
+    },
+    "homepage.feature.devtools.description": {
+        "message": "Fragen Sie Odoo-Datensätze ab, erstellen, ändern und löschen Sie diese direkt aus den DevTools Ihres Browsers. Erweiterte RPC-Tests mit Domänenfiltern, Feldauswahl und mehr.",
+        "description": "Description for the DevTools Panel feature card"
+    },
+    "homepage.feature.sidebar.title": {
+        "message": "Technische Seitenleiste",
+        "description": "Title for the Technical Sidebar feature card"
+    },
+    "homepage.feature.sidebar.description": {
+        "message": "Inspizieren Sie Felder, Typen, Eigenschaften und Metadaten auf jeder Odoo-Seite. Greifen Sie mit wenigen Klicks auf die technischen Details eines Feldes zu.",
+        "description": "Description for the Technical Sidebar feature card"
+    },
+    "homepage.feature.popup.title": {
+        "message": "Erweiterungs-Popup",
+        "description": "Title for the Extension Popup feature card"
+    },
+    "homepage.feature.popup.description": {
+        "message": "Schneller Zugriff auf den Debug-Modus, Themenwechsel und Ihre Odoo.SH-Favoriten. Alles mit einem Klick auf das Erweiterungssymbol.",
+        "description": "Description for the Extension Popup feature card"
+    },
+    "homepage.feature.odoosh.title": {
+        "message": "Odoo.SH-Integration",
+        "description": "Title for the Odoo.SH Integration feature card"
+    },
+    "homepage.feature.odoosh.description": {
+        "message": "Verwalten Sie Ihre Odoo.SH-Projekte mit Favoriten, benutzerdefinierten Namen, Branch-Dienstprogrammen, GitHub-Links und farbenblindenfreundlichen Statusindikatoren.",
+        "description": "Description for the Odoo.SH Integration feature card"
+    },
+    "theme.colorToggle.ariaLabel.mode.system": {
+        "message": "Systemmodus",
+        "description": "The name for the system color mode"
+    },
+    "theme.DocSidebarItem.expandCategoryAriaLabel": {
+        "message": "Kategorie '{label}' der Seitenleiste aufklappen",
+        "description": "The ARIA label to expand the sidebar category"
+    },
+    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+        "message": "Kategorie '{label}' der Seitenleiste einklappen",
+        "description": "The ARIA label to collapse the sidebar category"
+    },
+    "theme.IconExternalLink.ariaLabel": {
+        "message": "(öffnet in einem neuen Tab)",
+        "description": "The ARIA label for the external link icon"
+    },
+    "theme.NavBar.navAriaLabel": {
+        "message": "Hauptnavigation",
+        "description": "The ARIA label for the main navigation"
+    },
+    "theme.docs.breadcrumbs.home": {
+        "message": "Startseite",
+        "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
+        "message": "Dropdown-Menü aufklappen",
+        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
+        "message": "Dropdown-Menü einklappen",
+        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
+    },
+    "theme.SearchBar.noResultsText": {
+        "message": "Keine Ergebnisse"
+    },
+    "theme.SearchBar.seeAllOutsideContext": {
+        "message": "Alle Ergebnisse außerhalb von \"{context}\" anzeigen"
+    },
+    "theme.SearchBar.searchInContext": {
+        "message": "Alle Ergebnisse innerhalb von \"{context}\" anzeigen"
+    },
+    "theme.SearchPage.searchContext.everywhere": {
+        "message": "Überall"
+    },
+    "theme.SearchPage.documentsFound.plurals": {
+        "message": "1 Dokument gefunden|{count} Dokumente gefunden",
+        "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.contentVisibility.unlistedBanner.title": {
+        "message": "Nicht gelistete Seite",
+        "description": "The unlisted content banner title"
+    },
+    "theme.contentVisibility.unlistedBanner.message": {
+        "message": "Diese Seite ist nicht gelistet. Suchmaschinen werden sie nicht indexieren, und nur Benutzer mit einem direkten Link können darauf zugreifen.",
+        "description": "The unlisted content banner message"
+    },
+    "theme.contentVisibility.draftBanner.title": {
+        "message": "Entwurfsseite",
+        "description": "The draft content banner title"
+    },
+    "theme.contentVisibility.draftBanner.message": {
+        "message": "Diese Seite ist ein Entwurf. Sie wird nur in der Entwicklung sichtbar sein und vom Produktions-Build ausgeschlossen.",
+        "description": "The draft content banner message"
+    },
+    "theme.common.skipToMainContent": {
+        "message": "Zum Hauptinhalt springen",
+        "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+    },
+    "theme.tags.tagsPageTitle": {
+        "message": "Tags",
+        "description": "The title of the tag list page"
+    }
+}

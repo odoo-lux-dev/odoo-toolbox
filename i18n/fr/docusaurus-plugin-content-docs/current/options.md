@@ -18,6 +18,6 @@ N'hésitez pas à l'explorer : c'est le meilleur moyen de vous approprier l'exte
 
 ![Page Options](/img/options/overview.png)
 
-## Export / Import de la configuration {#export-import}
+## Export / Import de la configuration {/* #export-import */}
 
 La page Options permet également d'exporter et d'importer l'ensemble de votre configuration. Utile pour sauvegarder vos réglages ou les transférer vers un autre navigateur ou une autre machine.

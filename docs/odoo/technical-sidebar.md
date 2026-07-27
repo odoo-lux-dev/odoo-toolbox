@@ -11,11 +11,11 @@ This feature only supports Odoo version 16 and later.
 
 The Technical Sidebar is a floating inspection panel that overlays any Odoo page. It lets you inspect fields, their types, properties, and metadata in real time without leaving the page or opening the DevTools.
 
-## Activate the sidebar {#activate-the-sidebar}
+## Activate the sidebar {/* #activate-the-sidebar */}
 
 The sidebar is activated from the [Extension Popup](./popup): click the extension icon in your browser toolbar, then enable the **Technical Sidebar** toggle. It can also be activated from the [extension options](../options).
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 The sidebar is an anchored panel on the side of the page. It contains:
 
@@ -31,9 +31,9 @@ The sidebar is an anchored panel on the side of the page. It contains:
 Debug mode does not need to be enabled to access the information.
 :::
 
-## Features {#features}
+## Features {/* #features */}
 
-### Database information {#database-information}
+### Database information {/* #database-information */}
 
 Information about the current database is displayed at the top of the sidebar, including:
 
@@ -44,7 +44,7 @@ Information about the current database is displayed at the top of the sidebar, i
 
 ![Technical Sidebar - database information](/img/technical-sidebar/database-information.png)
 
-### Record information {#record-information}
+### Record information {/* #record-information */}
 
 Information about the current view's record is displayed below the database information, including:
 
@@ -59,7 +59,7 @@ Information about the current view's record is displayed below the database info
 
 ![Technical Sidebar - record information](/img/technical-sidebar/record-information.png)
 
-#### Action buttons {#action-buttons}
+#### Action buttons {/* #action-buttons */}
 
 Several action buttons are also available in this section to perform different actions:
 
@@ -72,7 +72,7 @@ Several action buttons are also available in this section to perform different a
 
 ![Technical Sidebar - action buttons](/img/technical-sidebar/record-actions.png)
 
-### Field and action list {#fields-and-actions-list}
+### Field and action list {/* #fields-and-actions-list */}
 
 The fields and actions of the current model are listed in the sidebar with some technical information. Filters and a search bar are also available to quickly find a specific field or action.
 
@@ -80,7 +80,7 @@ Hovering over an item in the list highlights it on the page, allowing you to ide
 
 ![Technical Sidebar - hover](/img/technical-sidebar/fields-highlight.png)
 
-### Field or action details {#field-or-action-details}
+### Field or action details {/* #field-or-action-details */}
 
 It is also possible to enable a mode that lets you click on a field or action to display its technical details in the sidebar. This gives you focused information about that specific field or action.
 
