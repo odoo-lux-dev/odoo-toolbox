@@ -11,6 +11,7 @@ export interface I18nData {
 const I18N_ELEMENT_ID = "__odoo-toolbox-i18n";
 
 const getData = (): I18nData => {
+  if (typeof document === "undefined") return { messages: {}, dir: "ltr", locale: "en" };
   const el = document.getElementById(I18N_ELEMENT_ID);
   if (el?.textContent) {
     try {

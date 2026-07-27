@@ -28,11 +28,7 @@ import {
   type ViewUpdate,
 } from "@codemirror/view";
 import { tags as lezerTags } from "@lezer/highlight";
-import {
-  createCodeMirror,
-  createEditorControlledValue,
-  createEditorReadonly,
-} from "solid-codemirror";
+import { createCodeMirror, createEditorReadonly } from "solid-codemirror";
 import { createEffect, createSignal, type JSX } from "solid-js";
 
 import { clearComodelFieldsCache, getComodelFields } from "@/screens/devtools/comodel-fields";
@@ -263,7 +259,17 @@ export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
       activateOnTyping: true,
     }),
   );
-  createEditorControlledValue(editorView, () => props.value);
+  createEffect(() => {
+    const view = editorView();
+    if (!view) return;
+    const value = props.value;
+    const localValue = view.state.doc.toString();
+    if (localValue !== value) {
+      view.dispatch({
+        changes: { from: 0, to: localValue.length, insert: value ?? "" },
+      });
+    }
+  });
   createEditorReadonly(editorView, () => props.disabled ?? false);
 
   return (
