@@ -182,13 +182,14 @@ This extension requests the following permissions to provide its functionality:
 
 ## Required Permissions
 
-| Permission           | Purpose                                  | Justification                                                                                                          |
-| -------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **`storage`**        | Store user preferences and configuration | Save extension settings, Odoo.SH favorites, debug mode preferences, and DevTools history across browser sessions       |
-| **`tabs`**           | Access tab information                   | Read current tab URL to detect Odoo websites and apply extension features only on relevant pages                       |
-| **`alarms`**         | Schedule background tasks                | Manage data persistence and cleanup operations for stored favorites and history                                        |
-| **`scripting`**      | Execute scripts on web pages             | Inject content scripts into Odoo pages to enable DevTools RPC communication, debug mode toggle, and technical features |
-| **`clipboardWrite`** | Copy data to clipboard                   | Allow users to copy technical information (field values, branch names, etc.) with one-click actions                    |
+| Permission           | Purpose                                  | Justification                                                                                                                             |
+| -------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **`storage`**        | Store user preferences and configuration | Save extension settings, Odoo.SH favorites, debug mode preferences, and DevTools history across browser sessions                          |
+| **`tabs`**           | Access tab information                   | Read current tab URL to detect Odoo websites and apply extension features only on relevant pages                                          |
+| **`alarms`**         | Schedule background tasks                | Manage data persistence and cleanup operations for stored favorites and history                                                           |
+| **`scripting`**      | Execute scripts on web pages             | Inject content scripts into Odoo pages to enable DevTools RPC communication, debug mode toggle, and technical features                    |
+| **`clipboardWrite`** | Copy data to clipboard                   | Allow users to copy technical information (field values, branch names, etc.) with one-click actions                                       |
+| **`webNavigation`**  | Follow single-page navigations           | Used for Odoo.SH. The background uses the native navigation events to notify the content script to re-apply its features on route changes |
 
 ## Host Permissions
 

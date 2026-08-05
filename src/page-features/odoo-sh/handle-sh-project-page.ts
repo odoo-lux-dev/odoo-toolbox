@@ -4,7 +4,6 @@ import {
 } from "@/page-features/odoo-sh/handle-sh-branch-name-copy";
 import { addColorBlindClass } from "@/page-features/odoo-sh/handle-sh-colorblind-mode";
 import { updateProjectList } from "@/page-features/odoo-sh/handle-sh-favorites";
-import { addGithubIconToBranchTitle } from "@/page-features/odoo-sh/handle-sh-github-link";
 import {
   addProjectTaskLinkBranchTitle,
   addProjectTaskLinkBranchTitleBuildPage,
@@ -28,11 +27,11 @@ const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/;
  * name to the clipboard.
  *
  * @async
- * @returns {Promise<void>} A promise that resolves once the observer has been set up and is monitoring for changes.
+ * @returns {Promise<() => void>} A promise that resolves to a teardown function which disconnects the observer (used when navigating away from this page in the SPA).
  */
-const handleProjectPage = async (): Promise<void> => {
+const handleProjectPage = async (): Promise<() => void> => {
   const wrapper = document.querySelector(".odoo_sh_app_body");
-  if (!wrapper) return;
+  if (!wrapper) return () => {};
   const favorites = await favoritesService.getFavoritesProjects();
   const {
     renameShProjectPage,
@@ -100,6 +99,8 @@ const handleProjectPage = async (): Promise<void> => {
     childList: true,
     subtree: true,
   });
+
+  return () => observer.disconnect();
 };
 
 export { handleProjectPage };

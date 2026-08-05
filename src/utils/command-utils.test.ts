@@ -28,15 +28,11 @@ describe("hasCommandSyntax", () => {
 
 describe("preprocessCommands - single actions", () => {
   test("Command.create(values) -> [0, 0, values]", () => {
-    expect(preprocessCommands('Command.create({"name": "test"})')).toBe(
-      '[0, 0, {"name": "test"}]',
-    );
+    expect(preprocessCommands('Command.create({"name": "test"})')).toBe('[0, 0, {"name": "test"}]');
   });
 
   test("Command.update(id, values) -> [1, id, values]", () => {
-    expect(preprocessCommands('Command.update(1, {"name": "x"})')).toBe(
-      '[1, 1, {"name": "x"}]',
-    );
+    expect(preprocessCommands('Command.update(1, {"name": "x"})')).toBe('[1, 1, {"name": "x"}]');
   });
 
   test("Command.delete(id) -> [2, id, 0]", () => {
@@ -65,25 +61,19 @@ describe("preprocessCommands - single actions", () => {
   });
 
   test("tolerates whitespace around arguments", () => {
-    expect(preprocessCommands('Command.create( { "x": 1 } )')).toBe(
-      '[0, 0, { "x": 1 }]',
-    );
+    expect(preprocessCommands('Command.create( { "x": 1 } )')).toBe('[0, 0, { "x": 1 }]');
   });
 });
 
 describe("preprocessCommands - nesting & context", () => {
   test("expands nested commands inside create args", () => {
     const input = 'Command.create({"tag_ids": [Command.link(5), Command.link(6)]})';
-    expect(preprocessCommands(input)).toBe(
-      '[0, 0, {"tag_ids": [[4, 5, 0], [4, 6, 0]]}]',
-    );
+    expect(preprocessCommands(input)).toBe('[0, 0, {"tag_ids": [[4, 5, 0], [4, 6, 0]]}]');
   });
 
   test("expands commands inside a JSON object/array", () => {
     const input = '{"line_ids": [Command.create({"name": "a"}), Command.unlink(3)]}';
-    expect(preprocessCommands(input)).toBe(
-      '{"line_ids": [[0, 0, {"name": "a"}], [3, 3, 0]]}',
-    );
+    expect(preprocessCommands(input)).toBe('{"line_ids": [[0, 0, {"name": "a"}], [3, 3, 0]]}');
   });
 
   test("does not touch Command occurrences inside strings", () => {
@@ -110,9 +100,7 @@ describe("preprocessCommands - nesting & context", () => {
 
 describe("preprocessCommands - errors", () => {
   test("throws on unknown action", () => {
-    expect(() => preprocessCommands("Command.foo(1)")).toThrow(
-      /Unknown Command action: foo/,
-    );
+    expect(() => preprocessCommands("Command.foo(1)")).toThrow(/Unknown Command action: foo/);
   });
 
   test("leaves unbalanced commands untouched (JSON.parse reports the error)", () => {
@@ -138,9 +126,7 @@ describe("parseJsonWithCommands", () => {
   });
 
   test("expands Command calls into triples", () => {
-    expect(
-      parseJsonWithCommands('{"line_ids": [Command.link(5), Command.unlink(3)]}'),
-    ).toEqual({
+    expect(parseJsonWithCommands('{"line_ids": [Command.link(5), Command.unlink(3)]}')).toEqual({
       line_ids: [
         [4, 5, 0],
         [3, 3, 0],
@@ -256,8 +242,6 @@ describe("formatJsonWithCommands", () => {
   });
 
   test("preserves unknown Command calls (round-trips them)", () => {
-    expect(formatJsonWithCommands('{"x":Command.foo(1)}')).toBe(
-      '{\n  "x": Command.foo(1)\n}',
-    );
+    expect(formatJsonWithCommands('{"x":Command.foo(1)}')).toBe('{\n  "x": Command.foo(1)\n}');
   });
 });

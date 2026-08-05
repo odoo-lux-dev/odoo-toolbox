@@ -1,9 +1,14 @@
-import { CompletionContext, type Completion, type CompletionResult } from "@codemirror/autocomplete";
+import { describe, expect, test } from "bun:test";
+
+import {
+  CompletionContext,
+  type Completion,
+  type CompletionResult,
+} from "@codemirror/autocomplete";
 import { json } from "@codemirror/lang-json";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { describe, expect, test } from "bun:test";
 
 import { fieldCompletions } from "@/screens/devtools/components/json-cm-completions";
 import type { FieldMetadata } from "@/types";
@@ -117,7 +122,9 @@ describe("fieldCompletions - PropertyName apply", () => {
       view.destroy();
       throw new Error("No completion result");
     }
-    const option = result.options.find((o) => o.label === label) as (Completion & { apply: unknown }) | undefined;
+    const option = result.options.find((o) => o.label === label) as
+      | (Completion & { apply: unknown })
+      | undefined;
     if (!option) {
       view.destroy();
       throw new Error(`Option "${label}" not found`);
@@ -126,7 +133,10 @@ describe("fieldCompletions - PropertyName apply", () => {
     const to = result.to ?? cursor;
     if (typeof option.apply === "function") {
       (option.apply as (v: EditorView, c: Completion, f: number, t: number) => void)(
-        view, option, from, to,
+        view,
+        option,
+        from,
+        to,
       );
     }
     const newDoc = view.state.doc.toString();
@@ -137,37 +147,57 @@ describe("fieldCompletions - PropertyName apply", () => {
 
   test("one2many: replaces quoted name with property + value template, cursor inside []", () => {
     const doc = '{"ord"}';
-    const result = applyCompletion(doc, 4, {
-      order_line: { string: "Order Lines", type: "one2many", relation: "sale.order.line" },
-    }, "order_line");
+    const result = applyCompletion(
+      doc,
+      4,
+      {
+        order_line: { string: "Order Lines", type: "one2many", relation: "sale.order.line" },
+      },
+      "order_line",
+    );
     expect(result.doc).toBe('{"order_line": []}');
     expect(result.cursor).toBe(16);
   });
 
   test("char: replaces quoted name with property + empty string, cursor inside quotes", () => {
     const doc = '{"nam"}';
-    const result = applyCompletion(doc, 4, {
-      name: { string: "Name", type: "char" },
-    }, "name");
+    const result = applyCompletion(
+      doc,
+      4,
+      {
+        name: { string: "Name", type: "char" },
+      },
+      "name",
+    );
     expect(result.doc).toBe('{"name": ""}');
     expect(result.cursor).toBe(10);
   });
 
   test("integer: replaces quoted name with property + empty template", () => {
     const doc = '{"quan"}';
-    const result = applyCompletion(doc, 5, {
-      quantity: { string: "Quantity", type: "integer" },
-    }, "quantity");
+    const result = applyCompletion(
+      doc,
+      5,
+      {
+        quantity: { string: "Quantity", type: "integer" },
+      },
+      "quantity",
+    );
     expect(result.doc).toBe('{"quantity": }');
     expect(result.cursor).toBe(13);
   });
 
   test("preserves sibling properties when replacing quoted name", () => {
     const doc = '{"name": "foo", "lin"}';
-    const result = applyCompletion(doc, 19, {
-      name: { string: "Name", type: "char" },
-      line_ids: { string: "Lines", type: "one2many", relation: "account.move.line" },
-    }, "line_ids");
+    const result = applyCompletion(
+      doc,
+      19,
+      {
+        name: { string: "Name", type: "char" },
+        line_ids: { string: "Lines", type: "one2many", relation: "account.move.line" },
+      },
+      "line_ids",
+    );
     expect(result.doc).toBe('{"name": "foo", "line_ids": []}');
     expect(result.cursor).toBe(29);
   });

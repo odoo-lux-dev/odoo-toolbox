@@ -120,15 +120,18 @@ declare global {
               env?: {
                 services?: {
                   overlay?: {
-                    overlays?: Record<string, {
-                      props?: {
-                        subProps?: {
-                          actionProps?: {
-                            resModel?: string;
+                    overlays?: Record<
+                      string,
+                      {
+                        props?: {
+                          subProps?: {
+                            actionProps?: {
+                              resModel?: string;
+                            };
                           };
                         };
-                      };
-                    }>;
+                      }
+                    >;
                   };
                 };
               };

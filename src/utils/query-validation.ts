@@ -1,6 +1,6 @@
 import type { OdooDomain, RpcQueryState } from "@/types";
-import { parseRpcContext } from "@/utils/context-utils";
 import { parseJsonWithCommands } from "@/utils/command-utils";
+import { parseRpcContext } from "@/utils/context-utils";
 import { validateDomainStructure } from "@/utils/domain-utils";
 import { t } from "@/utils/i18n-page";
 import { evaluateExpr } from "@/utils/odoo-py_js/py.js";

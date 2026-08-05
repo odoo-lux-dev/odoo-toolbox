@@ -2,7 +2,10 @@ import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { handleLoginButtons } from "@/page-features/login-buttons";
 import { initTechnicalList } from "@/page-features/technical-list";
-import { handleTechnicalModelName, scheduleTechnicalModelNameInModals } from "@/page-features/technical-model-name";
+import {
+  handleTechnicalModelName,
+  scheduleTechnicalModelNameInModals,
+} from "@/page-features/technical-model-name";
 import {
   handleTechnicalReportsVersion15and16,
   handleTechnicalReportsVersion17andAbove,

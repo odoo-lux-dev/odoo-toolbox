@@ -4,6 +4,9 @@ import { Logger } from "@/services/logger";
 import { updateService } from "@/services/update-service";
 import { handleToggleDebugCommand } from "@/utils/background-utils";
 
+// Message sent to the Odoo.SH content script when the SPA changes its URL via the History API,
+const ROUTE_CHANGED_MESSAGE = { type: "odoosh:route-changed" };
+
 const COMMANDS: Record<string, () => void> = {
   "toggle-debug": () =>
     handleToggleDebugCommand()
@@ -92,6 +95,14 @@ export default defineBackground(() => {
       return true;
     }
     return false;
+  });
+
+  browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
+    // Only react to the top-level frame navigation.
+    if (details.frameId !== 0) return;
+    if (!details.url?.startsWith("https://www.odoo.sh/project")) return;
+
+    browser.tabs.sendMessage(details.tabId, ROUTE_CHANGED_MESSAGE).catch(() => undefined);
   });
 
   browser.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
