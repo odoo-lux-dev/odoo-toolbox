@@ -190,6 +190,7 @@ This extension requests the following permissions to provide its functionality:
 | **`scripting`**      | Execute scripts on web pages             | Inject content scripts into Odoo pages to enable DevTools RPC communication, debug mode toggle, and technical features                    |
 | **`clipboardWrite`** | Copy data to clipboard                   | Allow users to copy technical information (field values, branch names, etc.) with one-click actions                                       |
 | **`webNavigation`**  | Follow single-page navigations           | Used for Odoo.SH. The background uses the native navigation events to notify the content script to re-apply its features on route changes |
+| **`contextMenus`**   | Add items to the browser context menu    | Let users choose to disable debug mode on a domain, a path, or both, and manage those rules                                               |
 
 ## Host Permissions
 
