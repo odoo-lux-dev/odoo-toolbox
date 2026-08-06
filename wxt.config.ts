@@ -47,6 +47,9 @@ export default defineConfig({
       manifest.browser_specific_settings = {
         gecko: {
           id: "odoo_toolbox@thcl-saju",
+          data_collection_permissions: {
+            required: ["none"],
+          },
         },
       };
 
