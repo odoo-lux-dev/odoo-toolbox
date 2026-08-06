@@ -4,6 +4,7 @@ import {
   CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
   CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
   CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
+  CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS,
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
@@ -22,6 +23,13 @@ export type DebugModeType = "1" | "disabled" | "assets" | "assets,tests";
 export type DefaultColorScheme = "none" | "system" | "light" | "dark";
 
 export type TechnicalListPosition = "right" | "left";
+
+export type IgnoredDebugPath =
+  | { scope: "domain"; domain: string; deletable: boolean }
+  | { scope: "path"; path: string; deletable: boolean }
+  | { scope: "domain_path"; domain: string; path: string; deletable: boolean };
+
+export type DebugPathIgnoreScope = IgnoredDebugPath["scope"];
 
 export type StoredSettingsV1 = {
   [CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY]: "manual" | "1" | "0" | "assets";
@@ -92,4 +100,8 @@ export type StoredSettingsV14 = StoredSettingsV13 & {
   [CHROME_STORAGE_SETTINGS_USER_LOCALE]: string;
 };
 
-export type StoredSettings = StoredSettingsV14;
+export type StoredSettingsV15 = StoredSettingsV14 & {
+  [CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS]: IgnoredDebugPath[];
+};
+
+export type StoredSettings = StoredSettingsV15;

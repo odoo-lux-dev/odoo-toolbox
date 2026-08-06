@@ -466,6 +466,21 @@ options:
     success: Configuratie succesvol geïmporteerd
     error_import: "Er is een fout opgetreden tijdens bestandsverwerking: $1"
     invalid_format: Ongeldig bestandsformaat
+  ignored_debug:
+    title: Genegeerde paden voor debugmodus
+    desc: Pagina's die aan deze regels voldoen, krijgen geen gedwongen debugmodus van de extensie. Handig om sommige pagina's (zoals de demo/trial-trechter) onaangeroerd te laten.
+    hint: Je kunt ook een regel toevoegen door met rechts op een pagina te klikken en het contextmenu « Odoo Toolbox » te gebruiken.
+    scope_label: Omvang
+    scope_domain: Domein
+    scope_path: Pad (alle domeinen)
+    scope_domain_path: Pad (dit domein)
+    domain_placeholder: voorbeeld.com
+    path_placeholder: "/thanks/trial"
+    add: Toevoegen
+    delete: Verwijderen
+    empty: Nog geen genegeerde paden geconfigureerd
+    delete_title: Genegeerd pad verwijderen?
+    delete_desc: "Weet u zeker dat u « $1 » wilt verwijderen?"
   settings:
     language: Taal
     language_auto: Auto (browser)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Tests assets: Debugmodus is altijd ingeschakeld voor tests assets"
     debug_hint: U kunt dit ook configureren door op het bug-icoon in de pop-up te klikken.
     debug_hint_detail: Een enkele klik schakelt de debugmodus in/uit, een dubbele klik activeert assets debug, en een driedubbele klik activeert tests assets debug.
+    manage_ignored_paths: Genegeerde paden beheren
+    manage_ignored_paths_hint: Open de lijst van pagina's waar de debugmodus niet gedwongen mag worden.
     technical_sidebar: Technische zijbalk inschakelen
     technical_sidebar_desc: Schakel een geavanceerde technische zijbalk in met uitgebreide veld- en systeeminformatie
     sidebar_position: Positie van zijbalk
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex lijkt onjuist. Controleer a.u.b.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Debugmodus negeren op dit domein
+  path: Debugmodus negeren op dit pad (alle domeinen)
+  domain_path: Debugmodus negeren op dit pad (dit domein)
 popup:
   header_your: Uw
   header_sh: Odoo.SH

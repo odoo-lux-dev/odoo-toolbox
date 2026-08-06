@@ -464,6 +464,21 @@ options:
     success: تم استيراد التهيئة بنجاح
     error_import: "حدث خطأ أثناء معالجة الملف: $1"
     invalid_format: صيغة ملف غير صالحة
+  ignored_debug:
+    title: المسارات المتجاهلة لوضع التصحيح
+    desc: الصفحات التي تطابق هذه القواعد لن يُفرض عليها وضع التصحيح بواسطة الإضافة. مفيد لترك بعض الصفحات (مثل مسار العرض/التجربة) دون تغيير.
+    hint: يمكنك أيضًا إضافة قاعدة بالنقر بزر الماوس الأيمن على أي صفحة واستخدام قائمة السياق « Odoo Toolbox ».
+    scope_label: النطاق
+    scope_domain: النطاق
+    scope_path: المسار (جميع النطاقات)
+    scope_domain_path: المسار (هذا النطاق)
+    domain_placeholder: example.com
+    path_placeholder: "/thanks/trial"
+    add: إضافة
+    delete: حذف
+    empty: لا توجد مسارات متجاهلة مُهيأة بعد
+    delete_title: حذف المسار المتجاهل؟
+    delete_desc: "هل أنت متأكد أنك تريد حذف « $1 »؟"
   settings:
     language: اللغة
     language_auto: تلقائي (المتصفح)
@@ -503,6 +518,8 @@ options:
     debug_tests_tooltip: "أصول الاختبارات: سيتم تفعيل وضع التصحيح دائمًا إلى أصول الاختبارات"
     debug_hint: يمكنك أيضًا تهيئة هذا بالنقر على أيقونة الخطأ داخل النافذة المنبثقة.
     debug_hint_detail: نقرة واحدة ستبدّل وضع التصحيح، نقرة مزدوجة ستفعّل تصحيح الأصول، ونقرة ثلاثية ستفعّل تصحيح أصول الاختبارات.
+    manage_ignored_paths: إدارة المسارات المتجاهلة
+    manage_ignored_paths_hint: افتح قائمة الصفحات التي لا يجب فرض وضع التصحيح فيها.
     technical_sidebar: تفعيل الشريط الجانبي التقني
     technical_sidebar_desc: تفعيل شريط جانبي تقني متقدم مع معلومات شاملة عن الحقول والنظام
     sidebar_position: موضع الشريط الجانبي
@@ -529,6 +546,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: يبدو التعبير النمطي غير صحيح. يرجى التحقق.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: تجاهل وضع التصحيح على هذا النطاق
+  path: تجاهل وضع التصحيح على هذا المسار (جميع النطاقات)
+  domain_path: تجاهل وضع التصحيح على هذا المسار (هذا النطاق)
 popup:
   header_your: مشاريع
   header_sh: Odoo.SH

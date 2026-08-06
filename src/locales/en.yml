@@ -466,6 +466,21 @@ options:
     success: Configuration successfully imported
     error_import: "An error occured during file process: $1"
     invalid_format: Invalid file format
+  ignored_debug:
+    title: Ignored debug paths
+    desc: Pages matching these rules won't have their debug mode forced by the extension. This is useful to leave some pages (like the demo/trial funnel) untouched.
+    hint: You can also add a rule by right-clicking any page and using "Odoo Toolbox" context menu.
+    scope_label: Scope
+    scope_domain: Domain
+    scope_path: Path (all domains)
+    scope_domain_path: Path (this domain)
+    domain_placeholder: example.com
+    path_placeholder: "/thanks/trial"
+    add: Add
+    delete: Delete
+    empty: No ignored debug paths configured yet
+    delete_title: Delete ignored path?
+    delete_desc: Are you sure you want to delete "$1"?
   settings:
     language: Language
     language_auto: Auto (browser)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Tests assets: Debug mode will always be enabled to tests assets"
     debug_hint: You can also configure this by clicking the bug icon within the popup.
     debug_hint_detail: A single click will toggle debug mode, a double click will activate assets debug, and a triple click will activate tests assets debug.
+    manage_ignored_paths: Manage ignored paths
+    manage_ignored_paths_hint: Open the list of pages where the debug mode should not be forced.
     technical_sidebar: Enable technical sidebar
     technical_sidebar_desc: Enable an advanced technical sidebar with comprehensive field and system information
     sidebar_position: Sidebar position
@@ -530,6 +547,12 @@ options:
     branch_regex: Branch name regex
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex seems incorrect. Please verify.
+
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Ignore debug mode on this domain
+  path: Ignore debug mode on this path (all domains)
+  domain_path: Ignore debug mode on this path (this domain)
 
 popup:
   header_your: Your

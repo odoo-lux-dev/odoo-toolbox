@@ -466,6 +466,21 @@ options:
     success: Configuração importada com sucesso
     error_import: "Ocorreu um erro durante o processamento do ficheiro: $1"
     invalid_format: Formato de ficheiro inválido
+  ignored_debug:
+    title: Caminhos ignorados para o modo de depuração
+    desc: As páginas que correspondem a estas regras não terão o modo de depuração forçado pela extensão. É útil para deixar algumas páginas (como o funil demo/teste) intactas.
+    hint: Também pode adicionar uma regra clicando com o botão direito numa página e usando o menu de contexto « Odoo Toolbox ».
+    scope_label: Âmbito
+    scope_domain: Domínio
+    scope_path: Caminho (todos os domínios)
+    scope_domain_path: Caminho (este domínio)
+    domain_placeholder: exemplo.com
+    path_placeholder: "/thanks/trial"
+    add: Adicionar
+    delete: Eliminar
+    empty: Ainda não há caminhos ignorados configurados
+    delete_title: Eliminar caminho ignorado?
+    delete_desc: "Tem a certeza de que pretende eliminar « $1 »?"
   settings:
     language: Idioma
     language_auto: Automático (navegador)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Recursos de testes: O modo de depuração estará sempre ativado para recursos de testes"
     debug_hint: Também pode configurar isto clicando no ícone do inseto dentro do popup.
     debug_hint_detail: Um clique único alterna o modo de depuração, um duplo clique ativa a depuração de recursos e um triplo clique ativa a depuração de recursos de testes.
+    manage_ignored_paths: Gerir caminhos ignorados
+    manage_ignored_paths_hint: Abrir a lista de páginas onde o modo de depuração não deve ser forçado.
     technical_sidebar: Ativar barra lateral técnica
     technical_sidebar_desc: Ativar uma barra lateral técnica avançada com informações abrangentes de campos e sistema
     sidebar_position: Posição da barra lateral
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: O regex parece incorreto. Por favor, verifique.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Ignorar o modo debug neste domínio
+  path: Ignorar o modo debug neste caminho (todos os domínios)
+  domain_path: Ignorar o modo debug neste caminho (este domínio)
 popup:
   header_your: Os seus
   header_sh: Odoo.SH

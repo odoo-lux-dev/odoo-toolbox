@@ -1,7 +1,10 @@
-import { Alert01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons";
+import { Alert01Icon, InformationCircleIcon, Settings02Icon } from "@hugeicons/core-free-icons";
+import { createSignal } from "solid-js";
 
 import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { IgnoredDebugPathsModal } from "@/screens/options/components/ignored-debug-paths-modal";
 import { RadioOption } from "@/screens/options/components/radio-option";
 import { t } from "@/services/i18n-service";
 import { settingsService } from "@/services/settings-service";
@@ -75,28 +78,46 @@ const DebugModeAlert = () => (
   </Alert>
 );
 
-export const DebugModeOption = () => (
-  <RadioOption
-    id="debug-mode"
-    title={t("options.settings.debug_mode")}
-    tooltipContent={t("options.settings.debug_mode_desc")}
-    additionalTooltipContent={<DebugModeTooltipContent />}
-    settingKey={CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY}
-    defaultValue="disabled"
-    choices={[
-      {
-        value: "disabled",
-        label: t("options.settings.debug_disabled"),
-      },
-      { value: "1", label: t("options.settings.debug_always") },
-      { value: "assets", label: t("options.settings.debug_assets") },
-      {
-        value: "assets,tests",
-        label: t("options.settings.debug_tests"),
-      },
-    ]}
-    onChange={(value) => settingsService.setDebugMode(value as DebugModeType)}
-  >
-    <DebugModeAlert />
-  </RadioOption>
-);
+export const DebugModeOption = () => {
+  const [manageOpen, setManageOpen] = createSignal(false);
+
+  return (
+    <>
+      <RadioOption
+        id="debug-mode"
+        title={t("options.settings.debug_mode")}
+        tooltipContent={t("options.settings.debug_mode_desc")}
+        additionalTooltipContent={<DebugModeTooltipContent />}
+        settingKey={CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY}
+        defaultValue="disabled"
+        choices={[
+          {
+            value: "disabled",
+            label: t("options.settings.debug_disabled"),
+          },
+          { value: "1", label: t("options.settings.debug_always") },
+          { value: "assets", label: t("options.settings.debug_assets") },
+          {
+            value: "assets,tests",
+            label: t("options.settings.debug_tests"),
+          },
+        ]}
+        onChange={(value) => settingsService.setDebugMode(value as DebugModeType)}
+        footer={
+          <Button
+            size="sm"
+            variant="soft"
+            onClick={() => setManageOpen(true)}
+            title={t("options.settings.manage_ignored_paths_hint")}
+          >
+            <HugeiconsIcon icon={Settings02Icon} size={16} color="currentColor" strokeWidth={2} />
+            {t("options.settings.manage_ignored_paths")}
+          </Button>
+        }
+      >
+        <DebugModeAlert />
+      </RadioOption>
+      <IgnoredDebugPathsModal open={manageOpen()} onClose={() => setManageOpen(false)} />
+    </>
+  );
+};

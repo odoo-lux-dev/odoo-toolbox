@@ -466,6 +466,21 @@ options:
     success: Configurazione importata con successo
     error_import: "Si è verificato un errore durante l'elaborazione del file: $1"
     invalid_format: Formato file non valido
+  ignored_debug:
+    title: Percorsi ignorati per la modalità debug
+    desc: Le pagine che corrispondono a queste regole non vedranno forzata la modalità debug dall'estensione. Utile per lasciare intatte alcune pagine (come l'imbuto demo/prova).
+    hint: Puoi anche aggiungere una regola facendo clic con il tasto destro su una pagina e usando il menu contestuale « Odoo Toolbox ».
+    scope_label: Ambito
+    scope_domain: Dominio
+    scope_path: Percorso (tutti i domini)
+    scope_domain_path: Percorso (questo dominio)
+    domain_placeholder: esempio.com
+    path_placeholder: "/thanks/trial"
+    add: Aggiungi
+    delete: Elimina
+    empty: Nessun percorso ignorato configurato
+    delete_title: Eliminare il percorso ignorato?
+    delete_desc: "Vuoi davvero eliminare « $1 »?"
   settings:
     language: Lingua
     language_auto: Automatica (browser)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Asset di test: La modalità debug sarà sempre abilitata per gli asset di test"
     debug_hint: Puoi anche configurarlo cliccando l'icona dell'insetto nel popup.
     debug_hint_detail: Un singolo clic attiva la modalità debug, un doppio clic attiva il debug degli asset, e un triplo clic attiva il debug degli asset di test.
+    manage_ignored_paths: Gestisci percorsi ignorati
+    manage_ignored_paths_hint: Aprire l'elenco delle pagine dove la modalità debug non deve essere forzata.
     technical_sidebar: Abilita sidebar tecnica
     technical_sidebar_desc: Abilita una sidebar tecnica avanzata con informazioni complete sui campi e di sistema
     sidebar_position: Posizione sidebar
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: La regex sembra non corretta. Verificarla.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Ignora la modalità debug su questo dominio
+  path: Ignora la modalità debug su questo percorso (tutti i domini)
+  domain_path: Ignora la modalità debug su questo percorso (questo dominio)
 popup:
   header_your: I tuoi
   header_sh: Odoo.SH

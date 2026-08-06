@@ -466,6 +466,21 @@ options:
     success: Konfiguration erfolgreich importiert
     error_import: "Ein Fehler ist bei der Dateiverarbeitung aufgetreten: $1"
     invalid_format: Ungültiges Dateiformat
+  ignored_debug:
+    title: Ignorierte Pfade für den Debug-Modus
+    desc: Seiten, die diesen Regeln entsprechen, bekommen den Debug-Modus von der Erweiterung nicht erzwungen. Nützlich, um einige Seiten (wie den Demo-/Test-Trichter) unangetastet zu lassen.
+    hint: Sie können auch eine Regel hinzufügen, indem Sie mit der rechten Maustaste auf eine Seite klicken und das Kontextmenü "Odoo Toolbox" verwenden.
+    scope_label: Geltungsbereich
+    scope_domain: Domäne
+    scope_path: Pfad (alle Domänen)
+    scope_domain_path: Pfad (diese Domäne)
+    domain_placeholder: beispiel.com
+    path_placeholder: "/thanks/trial"
+    add: Hinzufügen
+    delete: Löschen
+    empty: Noch keine ignorierten Pfade konfiguriert
+    delete_title: Ignorierten Pfad löschen?
+    delete_desc: 'Sind Sie sicher, dass Sie "$1 löschen möchten?'
   settings:
     language: Sprache
     language_auto: Automatisch (Browser)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Test-Assets: Der Debug-Modus wird immer für Test-Assets aktiviert sein"
     debug_hint: Sie können dies auch konfigurieren, indem Sie auf das Käfer-Symbol im Popup klicken.
     debug_hint_detail: Ein einfacher Klick schaltet den Debug-Modus um, ein Doppelklick aktiviert den Asset-Debug und ein Dreifachklick aktiviert den Test-Asset-Debug.
+    manage_ignored_paths: Ignorierte Pfade verwalten
+    manage_ignored_paths_hint: Öffnen Sie die Liste der Seiten, auf denen der Debug-Modus nicht erzwungen werden soll.
     technical_sidebar: Technische Seitenleiste aktivieren
     technical_sidebar_desc: Aktiviert eine erweiterte technische Seitenleiste mit umfassenden Feld- und Systeminformationen
     sidebar_position: Position der Seitenleiste
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex scheint falsch zu sein. Bitte überprüfen.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Debug-Modus auf dieser Domäne ignorieren
+  path: Debug-Modus auf diesem Pfad ignorieren (alle Domänen)
+  domain_path: Debug-Modus auf diesem Pfad ignorieren (diese Domäne)
 popup:
   header_your: Ihre
   header_sh: Odoo.SH

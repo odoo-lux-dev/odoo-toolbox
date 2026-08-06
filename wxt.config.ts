@@ -14,7 +14,16 @@ export default defineConfig({
     const manifest: Partial<UserManifest> = {
       name: pkg.displayName ?? pkg.name,
       default_locale: "en",
-      permissions: ["storage", "tabs", "alarms", "scripting", "clipboardWrite", "webNavigation"],
+      permissions: [
+        "storage",
+        "tabs",
+        "alarms",
+        "scripting",
+        "clipboardWrite",
+        "webNavigation",
+        "contextMenus",
+        "notifications",
+      ],
       web_accessible_resources: [
         {
           matches: ["*://*/*"],

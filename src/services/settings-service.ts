@@ -5,6 +5,7 @@ import { Logger } from "@/services/logger";
 import type {
   DebugModeType,
   DefaultColorScheme,
+  IgnoredDebugPath,
   StoredSettings,
   StoredSettingsV1,
   StoredSettingsV10,
@@ -12,6 +13,7 @@ import type {
   StoredSettingsV12,
   StoredSettingsV13,
   StoredSettingsV14,
+  StoredSettingsV15,
   StoredSettingsV2,
   StoredSettingsV3,
   StoredSettingsV4,
@@ -28,6 +30,7 @@ import {
   CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
   CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
   CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
+  CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS,
   CHROME_STORAGE_SETTINGS_KEY,
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
@@ -124,6 +127,12 @@ export const SETTINGS_CONFIG: SettingDef[] = [
     key: "userLocale",
     default: "en",
   },
+  {
+    key: CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS,
+    default: [{ scope: "path" as const, path: "/thanks/trial", deletable: false }],
+    datasetKey: "ignoredDebugPaths",
+    datasetTransform: (v) => JSON.stringify(v ?? []),
+  },
 ];
 
 export const getSettingDefault = <K extends keyof StoredSettings>(key: K): StoredSettings[K] => {
@@ -201,6 +210,11 @@ const applyMigration = (
     case 14:
       current[CHROME_STORAGE_SETTINGS_USER_LOCALE] = "en";
       break;
+    case 15:
+      current[CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS] = [
+        { scope: "path", path: "/thanks/trial", deletable: false },
+      ];
+      break;
   }
   return current;
 };
@@ -214,6 +228,9 @@ const LOCAL_MIGRATIONS = {
   },
   4: (settings: StoredSettingsV13): StoredSettingsV14 => {
     return applyMigration(14, settings as Record<string, unknown>) as StoredSettingsV14;
+  },
+  5: (settings: StoredSettingsV14): StoredSettingsV15 => {
+    return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
   },
 };
 
@@ -257,6 +274,24 @@ const SYNC_MIGRATIONS = {
   14: (settings: StoredSettingsV13): StoredSettingsV14 => {
     return applyMigration(14, settings as Record<string, unknown>) as StoredSettingsV14;
   },
+  15: (settings: StoredSettingsV14): StoredSettingsV15 => {
+    return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
+  },
+};
+
+/**
+ * Serializes an ignored debug path into a comparable key so entries can be
+ * deduplicated regardless of which field their scope uses.
+ */
+const toIgnoredDebugPathKey = (path: IgnoredDebugPath): string => {
+  switch (path.scope) {
+    case "domain":
+      return `domain:${path.domain}`;
+    case "path":
+      return `path:${path.path}`;
+    case "domain_path":
+      return `domain:${path.domain}|path:${path.path}`;
+  }
 };
 
 class SettingsService {
@@ -264,7 +299,7 @@ class SettingsService {
     <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 4,
+      version: 5,
       migrations: LOCAL_MIGRATIONS,
     },
   );
@@ -273,7 +308,7 @@ class SettingsService {
     <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 14,
+      version: 15,
       migrations: SYNC_MIGRATIONS,
     },
   );
@@ -391,6 +426,35 @@ class SettingsService {
 
   async setUserLocale(locale: string): Promise<void> {
     return this.updateSetting(CHROME_STORAGE_SETTINGS_USER_LOCALE, locale);
+  }
+
+  async getIgnoredDebugPaths(): Promise<IgnoredDebugPath[]> {
+    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS];
+  }
+
+  async setIgnoredDebugPaths(paths: IgnoredDebugPath[]): Promise<void> {
+    return this.updateSetting(CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS, paths);
+  }
+
+  async addIgnoredDebugPath(path: IgnoredDebugPath): Promise<void> {
+    const paths = await this.getIgnoredDebugPaths();
+    const key = toIgnoredDebugPathKey(path);
+    if (paths.some((existing) => toIgnoredDebugPathKey(existing) === key)) {
+      Logger.info(`Path ${key} is already ignored`);
+      return;
+    }
+    return this.setIgnoredDebugPaths([...paths, path]);
+  }
+
+  async removeIgnoredDebugPath(path: IgnoredDebugPath): Promise<void> {
+    const key = toIgnoredDebugPathKey(path);
+    if (!path.deletable) {
+      Logger.info(`Path ${key} is undeletable`);
+      return;
+    }
+    const paths = await this.getIgnoredDebugPaths();
+    const updated = paths.filter((existing) => toIgnoredDebugPathKey(existing) !== key);
+    return this.setIgnoredDebugPaths(updated);
   }
 
   async getSyncedSettings(): Promise<StoredSettings> {

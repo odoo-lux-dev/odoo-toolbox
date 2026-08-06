@@ -466,6 +466,21 @@ options:
     success: Configuration importée avec succès
     error_import: "Une erreur s'est produite lors du traitement du fichier : $1"
     invalid_format: Format de fichier invalide
+  ignored_debug:
+    title: Chemins ignorés pour le mode debug
+    desc: Les pages correspondant à ces règles ne verront pas leur mode debug forcé par l'extension. Utile pour laisser certaines pages (comme l'entonnoir démo/essai) intactes.
+    hint: Vous pouvez aussi ajouter une règle en cliquant droit sur une page et en utilisant le menu contextuel « Odoo Toolbox ».
+    scope_label: Portée
+    scope_domain: Domaine
+    scope_path: Chemin (tous les domaines)
+    scope_domain_path: Chemin (ce domaine)
+    domain_placeholder: exemple.com
+    path_placeholder: "/thanks/trial"
+    add: Ajouter
+    delete: Supprimer
+    empty: Aucun chemin ignoré configuré pour le moment
+    delete_title: Supprimer le chemin ignoré ?
+    delete_desc: "Voulez-vous vraiment supprimer « $1 » ?"
   settings:
     language: Langue
     language_auto: Auto (navigateur)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Assets de tests : Le mode débogage sera toujours activé pour les assets de tests"
     debug_hint: Vous pouvez également configurer cela en cliquant sur l'icône bug dans la popup.
     debug_hint_detail: Un simple clic basculera le mode débogage, un double clic activera le débogage des assets, et un triple clic activera le débogage des assets de tests.
+    manage_ignored_paths: Gérer les chemins ignorés
+    manage_ignored_paths_hint: Ouvrir la liste des pages où le mode debug ne doit pas être forcé.
     technical_sidebar: Activer la barre latérale technique
     technical_sidebar_desc: Activer une barre latérale technique avancée avec des informations complètes sur les champs et le système
     sidebar_position: Position de la barre latérale
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: La regex semble incorrecte. Veuillez vérifier.
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: Ignorer le mode debug sur ce domaine
+  path: Ignorer le mode debug sur ce chemin (tous domaines)
+  domain_path: Ignorer le mode debug sur ce chemin (ce domaine)
 popup:
   header_your: Vos Projets
   header_sh: Odoo.SH

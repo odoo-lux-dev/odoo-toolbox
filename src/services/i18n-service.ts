@@ -10,8 +10,17 @@ import itYaml from "@/locales/it.yml";
 import nlYaml from "@/locales/nl.yml";
 import ptBRYaml from "@/locales/pt_BR.yml";
 import ptPTYaml from "@/locales/pt_PT.yml";
+import {
+  AUTO_LOCALE,
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  normalizeLocale,
+  resolveLocale,
+} from "@/services/i18n-locales";
 import { settingsService } from "@/services/settings-service";
 import { injectTranslations } from "@/utils/i18n-page";
+export { AUTO_LOCALE, SUPPORTED_LOCALES, normalizeLocale };
+export type { SupportedLocale } from "@/services/i18n-locales";
 
 interface LocaleConfig {
   yaml: Record<string, unknown>;
@@ -33,16 +42,8 @@ const LOCALES = {
   ar: { yaml: arYaml, flag: "🇸🇦", label: "العربية", rtl: true },
 } satisfies Record<string, LocaleConfig>;
 
-export const SUPPORTED_LOCALES = Object.keys(LOCALES) as [SupportedLocale, ...SupportedLocale[]];
-export type SupportedLocale = keyof typeof LOCALES;
-
-export const AUTO_LOCALE = "auto";
-
-const DEFAULT_LOCALE = "en";
-
-function getLocaleConfig(locale: string): LocaleConfig | undefined {
-  return (LOCALES as Record<string, LocaleConfig>)[locale];
-}
+export const getLocaleConfig = (locale: string): LocaleConfig | undefined =>
+  (LOCALES as Record<string, LocaleConfig>)[locale];
 
 export function getLocaleLabel(locale: string): { flag: string; label: string } {
   const config = getLocaleConfig(locale);
@@ -76,40 +77,6 @@ let currentMessages: Record<string, string> = getFlatMessages(DEFAULT_LOCALE);
 
 const [localeVersion, setLocaleVersion] = createSignal(0);
 export { localeVersion };
-
-export function normalizeLocale(locale: string): string {
-  const normalized = locale.toLowerCase().replace("-", "_");
-  if (getLocaleConfig(normalized)) return normalized;
-  const lang = normalized.split("_")[0];
-  const match = Object.keys(LOCALES).find((l) => l === lang || l.startsWith(lang + "_"));
-  return match ?? lang;
-}
-
-async function resolveLocale(): Promise<string> {
-  const stored = await settingsService.getUserLocale();
-
-  if (stored === AUTO_LOCALE) {
-    try {
-      const acceptLanguages = await browser.i18n.getAcceptLanguages();
-      for (const lang of acceptLanguages) {
-        const normalized = normalizeLocale(lang);
-        if (getLocaleConfig(normalized)) return normalized;
-      }
-      const uiLocale = normalizeLocale(browser.i18n.getUILanguage());
-      if (getLocaleConfig(uiLocale)) return uiLocale;
-    } catch {
-      // browser.i18n not available
-    }
-    return DEFAULT_LOCALE;
-  }
-
-  if (stored) {
-    const normalized = normalizeLocale(stored);
-    if (getLocaleConfig(normalized)) return normalized;
-  }
-
-  return DEFAULT_LOCALE;
-}
 
 export function getDirection(locale: string): "ltr" | "rtl" {
   return getLocaleConfig(locale)?.rtl ? "rtl" : "ltr";

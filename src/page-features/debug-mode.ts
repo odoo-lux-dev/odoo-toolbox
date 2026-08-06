@@ -1,7 +1,33 @@
-import type { DebugModeType } from "@/types";
+import type { DebugModeType, IgnoredDebugPath } from "@/types";
 import { getDefaultDebugMode } from "@/utils/utils";
 
-const IGNORED_PATHS = ["/thanks/trial"];
+const getIgnoredDebugPaths = (): IgnoredDebugPath[] => {
+  const raw = document.body.dataset.ignoredDebugPaths;
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as IgnoredDebugPath[];
+  } catch {
+    return [];
+  }
+};
+
+const isDebugPathIgnored = (url: URL): boolean => {
+  return getIgnoredDebugPaths().some((rule) => {
+    const hostname = url.hostname;
+    const pathname = url.pathname;
+
+    switch (rule.scope) {
+      case "domain":
+        return hostname === rule.domain;
+      case "path":
+        return pathname.includes(rule.path);
+      case "domain_path":
+        return hostname === rule.domain && pathname.includes(rule.path);
+      default:
+        return false;
+    }
+  });
+};
 
 /**
  * Sets the debug mode for the Odoo application based on the URL parameters and the default debug mode.
@@ -19,11 +45,7 @@ const setDebugMode = async (url: URL): Promise<{ reload: boolean; url?: string }
   const defaultDebugMode = getDefaultDebugMode();
   const odooWindowObject = window.odoo;
 
-  if (
-    odooWindowObject?.debug !== undefined &&
-    defaultDebugMode &&
-    !IGNORED_PATHS.some((path) => window.location.href.includes(path))
-  ) {
+  if (odooWindowObject?.debug !== undefined && defaultDebugMode && !isDebugPathIgnored(url)) {
     const params = url.searchParams;
     const urlDebugMode = params.get("debug");
 

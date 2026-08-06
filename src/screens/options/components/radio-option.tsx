@@ -20,6 +20,7 @@ export interface RadioOptionProps {
   defaultValue?: string;
   onChange: (value: string) => void | Promise<void>;
   children?: JSX.Element;
+  footer?: JSX.Element;
 }
 
 export const RadioOption = (props: RadioOptionProps) => {
@@ -60,12 +61,14 @@ export const RadioOption = (props: RadioOptionProps) => {
         fallback={
           <div id={props.id} class="flex flex-col gap-3">
             {renderChoices()}
+            <Show when={props.footer}>{props.footer}</Show>
           </div>
         }
       >
         <div id={props.id} class="flex flex-col gap-4">
           {props.children}
           <div class="flex flex-col gap-3">{renderChoices()}</div>
+          <Show when={props.footer}>{props.footer}</Show>
         </div>
       </Show>
     </OptionItem>

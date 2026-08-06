@@ -466,6 +466,21 @@ options:
     success: कॉन्फ़िगरेशन सफलतापूर्वक imported
     error_import: "फ़ाइल प्रोसेसिंग में त्रुटि: $1"
     invalid_format: अमान्य फ़ाइल प्रारूप
+  ignored_debug:
+    title: डिबग मोड के लिए अनदेखा किए गए पथ
+    desc: इन नियमों से मेल खाने वाले पृष्ठों पर डिबग मोड एक्सटेंशन द्वारा बाध्य नहीं किया जाएगा। कुछ पृष्ठों (जैसे डेमो/ट्रायल फ़नल) को अछूता छोड़ने के लिए यह उपयोगी है।
+    hint: आप किसी भी पृष्ठ पर राइट-क्लिक करके और « Odoo Toolbox » संदर्भ मेनू का उपयोग करके भी नियम जोड़ सकते हैं।
+    scope_label: दायरा
+    scope_domain: डोमेन
+    scope_path: पथ (सभी डोमेन)
+    scope_domain_path: पथ (यह डोमेन)
+    domain_placeholder: example.com
+    path_placeholder: "/thanks/trial"
+    add: जोड़ें
+    delete: हटाएँ
+    empty: अभी तक कोई अनदेखा पथ कॉन्फ़िगर नहीं किया गया है
+    delete_title: अनदेखा पथ हटाएँ?
+    delete_desc: "क्या आप वाकई « $1 » हटाना चाहते हैं?"
   settings:
     language: भाषा
     language_auto: स्वचालित (ब्राउज़र)
@@ -505,6 +520,8 @@ options:
     debug_tests_tooltip: "Tests assets: Debug mode हमेशा tests assets पर सक्षम रहेगा"
     debug_hint: आप इसे popup के अंदर bug आइकन पर क्लिक करके भी कॉन्फ़िगर कर सकते हैं।
     debug_hint_detail: एक क्लिक debug mode को टॉगल करेगा, दो क्लिक assets debug को सक्रिय करेंगे, और तीन क्लिक tests assets debug को सक्रिय करेंगे।
+    manage_ignored_paths: अनदेखे पथ प्रबंधित करें
+    manage_ignored_paths_hint: उन पृष्ठों की सूची खोलें जहाँ डिबग मोड बाध्य नहीं होना चाहिए।
     technical_sidebar: तकनीकी sidebar सक्षम करें
     technical_sidebar_desc: व्यापक field और सिस्टम जानकारी के साथ एक उन्नत तकनीकी sidebar सक्षम करें
     sidebar_position: Sidebar स्थिति
@@ -531,6 +548,11 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex गलत प्रतीत होता है। कृपया सत्यापित करें।
 
+browser_context_menu:
+  parent: Odoo Toolbox
+  domain: इस डोमेन पर डिबग मोड अनदेखा करें
+  path: इस पथ पर डिबग मोड अनदेखा करें (सभी डोमेन)
+  domain_path: इस पथ पर डिबग मोड अनदेखा करें (यह डोमेन)
 popup:
   header_your: आपके
   header_sh: Odoo.SH

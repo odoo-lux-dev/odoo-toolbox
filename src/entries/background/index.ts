@@ -1,3 +1,4 @@
+import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
 import { configurationService } from "@/services/configuration-service";
 import { Logger } from "@/services/logger";
@@ -46,6 +47,8 @@ const checkAndHandleAlarms = () => {
 };
 
 export default defineBackground(() => {
+  registerContextMenuHandlers();
+
   browser.runtime.onStartup.addListener(async () => {
     await configurationService.alignLocalDataWithSyncedData();
     checkAndHandleAlarms();
