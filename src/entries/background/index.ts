@@ -1,7 +1,9 @@
 import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
+import { getDebugModeUrl } from "@/page-features/debug-mode";
 import { configurationService } from "@/services/configuration-service";
 import { Logger } from "@/services/logger";
+import { settingsService } from "@/services/settings-service";
 import { updateService } from "@/services/update-service";
 import { handleToggleDebugCommand } from "@/utils/background-utils";
 
@@ -106,6 +108,34 @@ export default defineBackground(() => {
     if (!details.url?.startsWith("https://www.odoo.sh/project")) return;
 
     browser.tabs.sendMessage(details.tabId, ROUTE_CHANGED_MESSAGE).catch(() => undefined);
+  });
+
+  browser.webNavigation.onCommitted.addListener(async (details) => {
+    // Only react to the top-level frame.
+    if (details.frameId !== 0) return;
+
+    const defaultDebugMode = await settingsService.getDebugMode();
+    if (!defaultDebugMode || defaultDebugMode === "disabled") return;
+
+    // Check if we are on Odoo website
+    try {
+      const [result] = await browser.scripting.executeScript({
+        target: { tabId: details.tabId },
+        world: "MAIN",
+        func: () => typeof window.odoo !== "undefined",
+      });
+      if (!result?.result) return;
+    } catch {
+      // Non-injectable tab (chrome://, Web Store, etc.)
+      return;
+    }
+
+    const url = new URL(details.url);
+    const ignoredPaths = await settingsService.getIgnoredDebugPaths();
+    const targetUrl = getDebugModeUrl(url, { defaultDebugMode, ignoredPaths });
+    if (targetUrl && targetUrl !== details.url) {
+      await browser.tabs.update(details.tabId, { url: targetUrl });
+    }
   });
 
   browser.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
