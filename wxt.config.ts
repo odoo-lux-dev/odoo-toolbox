@@ -22,7 +22,6 @@ export default defineConfig({
         "clipboardWrite",
         "webNavigation",
         "contextMenus",
-        "notifications",
       ],
       web_accessible_resources: [
         {
