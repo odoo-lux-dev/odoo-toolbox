@@ -51,11 +51,12 @@ export const getDebugModeUrl = (
 };
 
 const setDebugMode = (url: URL): { reload: boolean; url?: string } => {
+  if (typeof window.odoo === "undefined") return { reload: false };
+
   const targetUrl = getDebugModeUrl(url, {
     defaultDebugMode: getDefaultDebugMode(),
     ignoredPaths: getIgnoredDebugPaths(),
   });
-  console.log({ targetUrl });
   return targetUrl ? { reload: true, url: targetUrl } : { reload: false };
 };
 
