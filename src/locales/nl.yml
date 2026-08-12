@@ -453,7 +453,7 @@ options:
     delete_favorite: $1 uit favorieten verwijderen
     task_link_title: Taak-koppeling bewerken voor $1
     task_link_desc: Stel een aangepaste taak-koppeling in voor dit project.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Koppeling lijkt onjuist. Controleer a.u.b.
   backup:
     exporting: Uw instellingen exporteren...
@@ -540,7 +540,7 @@ options:
     works_both: "Werkt op zowel backend- als websitepagina's"
     task_link_title: Taak-koppeling op SH branch-pagina
     task_link_desc: Geef een URL op om naar door te verwijzen bij het klikken op het taak-koppeling-icoon op de SH branch-pagina. Laat leeg om de functie uit te schakelen.
-    task_link_placeholder_hint: "Gebruik de {{ task_id }} placeholder om deze te vervangen door de taak-ID"
+    task_link_placeholder_hint: "Gebruik de {{task_id}} placeholder om deze te vervangen door de taak-ID"
     task_link_default: "Standaard wordt het getriggerd met het volgende patroon: VERSION-TASKID-OPTIONAL_DESCRIPTION (bijv. 17.0-12345 , 15.0-6789-fixes)"
     task_link_per_favorite: U kunt een specifieke URL per favoriet instellen vanaf de "SH Favorieten" pagina
     task_link_label: Taak-koppeling

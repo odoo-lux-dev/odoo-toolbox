@@ -453,7 +453,7 @@ options:
     delete_favorite: Delete $1 from favorites
     task_link_title: Edit task link for $1
     task_link_desc: Set a custom task link for this project.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Link seems incorrect. Please verify.
   backup:
     exporting: Exporting your settings...
@@ -540,7 +540,7 @@ options:
     works_both: "Works on both backend and website pages"
     task_link_title: Task link on SH branch page
     task_link_desc: Specify an URL to redirect to when clicking on the task link icon on SH branch page. Leave it empty to disable the feature.
-    task_link_placeholder_hint: "Use the {{ task_id }} placeholder to replace it with the task ID"
+    task_link_placeholder_hint: "Use the {{task_id}} placeholder to replace it with the task ID"
     task_link_default: "By default, it's triggered with the following pattern: VERSION-TASKID-OPTIONAL_DESCRIPTION (e.g. 17.0-12345 , 15.0-6789-fixes)"
     task_link_per_favorite: You can set up a specific URL per favorite from the "SH Favorites" page
     task_link_label: Task link

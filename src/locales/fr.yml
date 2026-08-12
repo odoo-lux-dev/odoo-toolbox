@@ -453,7 +453,7 @@ options:
     delete_favorite: Supprimer $1 des favoris
     task_link_title: Modifier le lien de tâche pour $1
     task_link_desc: Définir un lien de tâche personnalisé pour ce projet.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Le lien semble incorrect. Veuillez vérifier.
   backup:
     exporting: Exportation de vos paramètres...
@@ -540,7 +540,7 @@ options:
     works_both: "Fonctionne à la fois sur le backend et sur les pages du site web"
     task_link_title: Lien de tâche sur la page de branche SH
     task_link_desc: Spécifier une URL vers laquelle rediriger en cliquant sur l'icône du lien de tâche sur la page de branche SH. Laisser vide pour désactiver la fonctionnalité.
-    task_link_placeholder_hint: "Utilisez le placeholder {{ task_id }} pour le remplacer par l'ID de la tâche"
+    task_link_placeholder_hint: "Utilisez le placeholder {{task_id}} pour le remplacer par l'ID de la tâche"
     task_link_default: "Par défaut, il est déclenché avec le modèle suivant : VERSION-IDTACHE-DESCRIPTION_OPTIONNELLE (ex. 17.0-12345 , 15.0-6789-correctifs)"
     task_link_per_favorite: Vous pouvez configurer une URL spécifique par favori depuis la page « Favoris SH »
     task_link_label: Lien de tâche

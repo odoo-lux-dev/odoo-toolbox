@@ -453,7 +453,7 @@ options:
     delete_favorite: Elimina $1 dai preferiti
     task_link_title: Modifica collegamento task per $1
     task_link_desc: Imposta un collegamento task personalizzato per questo progetto.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Il collegamento sembra non corretto. Verificarlo.
   backup:
     exporting: Esportazione delle impostazioni...
@@ -540,7 +540,7 @@ options:
     works_both: "Funziona sia nelle pagine backend che del sito web"
     task_link_title: Collegamento task nella pagina branch SH
     task_link_desc: Specifica un URL a cui reindirizzare quando si clicca sull'icona del collegamento task nella pagina branch SH. Lascia vuoto per disabilitare la funzionalità.
-    task_link_placeholder_hint: "Usa il segnaposto {{ task_id }} per sostituirlo con l'ID del task"
+    task_link_placeholder_hint: "Usa il segnaposto {{task_id}} per sostituirlo con l'ID del task"
     task_link_default: "Per impostazione predefinita, viene attivato con il seguente pattern: VERSIONE-IDTASK-DESCRIZIONE_OPZIONALE (es. 17.0-12345 , 15.0-6789-fixes)"
     task_link_per_favorite: Puoi impostare un URL specifico per ogni preferito dalla pagina "Preferiti SH"
     task_link_label: Collegamento task

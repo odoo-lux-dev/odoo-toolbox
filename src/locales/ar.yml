@@ -451,7 +451,7 @@ options:
     delete_favorite: حذف $1 من المفضلة
     task_link_title: تعديل رابط المهمة لـ $1
     task_link_desc: تعيين رابط مهمة مخصص لهذا المشروع.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: يبدو الرابط غير صحيح. يرجى التحقق.
   backup:
     exporting: جارٍ تصدير إعداداتك...
@@ -538,7 +538,7 @@ options:
     works_both: "يعمل على كل من الواجهة الخلفية وصفحات الموقع"
     task_link_title: رابط المهمة في صفحة فرع SH
     task_link_desc: حدد URL لإعادة التوجيه إليه عند النقر على أيقونة رابط المهمة في صفحة فرع SH. اتركه فارغًا لتعطيل الميزة.
-    task_link_placeholder_hint: "استخدم العنصر النائب {{ task_id }} لاستبداله بمعرّف المهمة"
+    task_link_placeholder_hint: "استخدم العنصر النائب {{task_id}} لاستبداله بمعرّف المهمة"
     task_link_default: "افتراضيًا، يتم تفعيله بالنمط التالي: VERSION-TASKID-OPTIONAL_DESCRIPTION (مثلاً 17.0-12345 ، 15.0-6789-fixes)"
     task_link_per_favorite: يمكنك إعداد URL محدد لكل مفضلة من صفحة "مفضلة SH"
     task_link_label: رابط المهمة

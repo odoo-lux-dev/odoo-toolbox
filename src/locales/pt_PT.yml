@@ -453,7 +453,7 @@ options:
     delete_favorite: Eliminar $1 dos favoritos
     task_link_title: Editar ligação de tarefa para $1
     task_link_desc: Definir uma ligação de tarefa personalizada para este projeto.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: A ligação parece incorreta. Por favor, verifique.
   backup:
     exporting: A exportar as suas definições...
@@ -540,7 +540,7 @@ options:
     works_both: "Funciona tanto no backend como nas páginas do website"
     task_link_title: Ligação de tarefa na página de ramo SH
     task_link_desc: Especifique um URL para o qual redirecionar ao clicar no ícone de ligação de tarefa na página de ramo SH. Deixe vazio para desativar a funcionalidade.
-    task_link_placeholder_hint: "Use o marcador {{ task_id }} para o substituir pelo ID da tarefa"
+    task_link_placeholder_hint: "Use o marcador {{task_id}} para o substituir pelo ID da tarefa"
     task_link_default: "Por padrão, é acionado com o seguinte padrão: VERSION-TASKID-OPTIONAL_DESCRIPTION (ex. 17.0-12345 , 15.0-6789-fixes)"
     task_link_per_favorite: Pode configurar um URL específico por favorito a partir da página "Favoritos SH"
     task_link_label: Ligação de tarefa

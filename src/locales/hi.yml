@@ -453,7 +453,7 @@ options:
     delete_favorite: $1 को favorites से हटाएं
     task_link_title: $1 के लिए task link संपादित करें
     task_link_desc: इस प्रोजेक्ट के लिए एक कस्टम task link सेट करें।
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Link गलत प्रतीत होता है। कृपया सत्यापित करें।
   backup:
     exporting: आपकी सेटिंग्स export हो रही हैं...
@@ -540,7 +540,7 @@ options:
     works_both: "backend और website दोनों पेजों पर काम करता है"
     task_link_title: SH branch पेज पर task link
     task_link_desc: SH branch पेज पर task link आइकन पर क्लिक करते समय redirect करने के लिए URL निर्दिष्ट करें। सुविधा को अक्षम करने के लिए खाली छोड़ें।
-    task_link_placeholder_hint: "{{ task_id }} placeholder का उपयोग करके इसे task ID से बदलें"
+    task_link_placeholder_hint: "{{task_id}} placeholder का उपयोग करके इसे task ID से बदलें"
     task_link_default: "डिफ़ॉल्ट रूप से, यह निम्न पैटर्न के साथ ट्रिगर होता है: VERSION-TASKID-OPTIONAL_DESCRIPTION (उदाहरण 17.0-12345, 15.0-6789-fixes)"
     task_link_per_favorite: आप "SH Favorites" पेज से प्रति पसंदीदा एक विशिष्ट URL सेट कर सकते हैं
     task_link_label: Task link

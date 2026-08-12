@@ -453,7 +453,7 @@ options:
     delete_favorite: $1 aus Favoriten löschen
     task_link_title: Task-Link für $1 bearbeiten
     task_link_desc: Legen Sie einen benutzerdefinierten Task-Link für dieses Projekt fest.
-    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{ task_id }}"
+    task_link_placeholder: "https://www.odoo.com/odoo/project.task/{{task_id}}"
     link_incorrect: Link scheint falsch zu sein. Bitte überprüfen.
   backup:
     exporting: Ihre Einstellungen werden exportiert...
@@ -540,7 +540,7 @@ options:
     works_both: "Funktioniert sowohl im Backend als auch auf Website-Seiten"
     task_link_title: Task-Link auf der SH-Branch-Seite
     task_link_desc: Geben Sie eine URL an, zu der weitergeleitet wird, wenn Sie auf das Task-Link-Symbol auf der SH-Branch-Seite klicken. Leer lassen, um die Funktion zu deaktivieren.
-    task_link_placeholder_hint: "Verwenden Sie den Platzhalter {{ task_id }}, um ihn durch die Task-ID zu ersetzen"
+    task_link_placeholder_hint: "Verwenden Sie den Platzhalter {{task_id}}, um ihn durch die Task-ID zu ersetzen"
     task_link_default: "Standardmäßig wird es mit folgendem Muster ausgelöst: VERSION-TASKID-OPTIONALE_BESCHREIBUNG (z.B. 17.0-12345 , 15.0-6789-fixes)"
     task_link_per_favorite: Sie können eine spezifische URL pro Favorit auf der "SH-Favoriten"-Seite einrichten
     task_link_label: Task-Link
