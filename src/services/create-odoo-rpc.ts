@@ -16,6 +16,7 @@ import type {
   OdooActionParams,
 } from "@/types";
 import { t } from "@/utils/i18n-page";
+import { PSEUDO_FIELDS } from "@/utils/pseudo-fields";
 
 import { Logger } from "./logger";
 
@@ -127,26 +128,27 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     fields?: string[],
     fieldsMetadata?: Record<string, FieldMetadata>,
   ): Promise<FieldFilterResult> => {
-    const excludedFields = excludedFieldsConfig[model] || [];
+    // Per-model fields that must never be fetched (e.g. `raw`). They are filtered out AND reported so the UI can show them as excluded.
+    const perModelExcluded = excludedFieldsConfig[model] || [];
 
-    if (excludedFields.length === 0) {
-      return { filteredFields: fields, excludedFields: [] };
-    }
+    // Since pseudo-fields are resolved outside the RPC and merged into results, stripped them silently without being reported as excluded.
+    const stripFields = (names: string[]) =>
+      names.filter((f) => !perModelExcluded.includes(f) && !PSEUDO_FIELDS.includes(f));
 
     if (!fields || fields.length === 0) {
       try {
         const metadata = fieldsMetadata || (await getFieldsInfo(model));
         const allFieldNames = Object.keys(metadata);
-        const filteredFields = allFieldNames.filter((f) => !excludedFields.includes(f));
-        const actuallyExcluded = allFieldNames.filter((f) => excludedFields.includes(f));
+        const filteredFields = stripFields(allFieldNames);
+        const actuallyExcluded = allFieldNames.filter((f) => perModelExcluded.includes(f));
         return { filteredFields, excludedFields: actuallyExcluded };
       } catch {
         return { filteredFields: fields, excludedFields: [] };
       }
     }
 
-    const filteredFields = fields.filter((f) => !excludedFields.includes(f));
-    const actuallyExcluded = fields.filter((f) => excludedFields.includes(f));
+    const filteredFields = stripFields(fields);
+    const actuallyExcluded = fields.filter((f) => perModelExcluded.includes(f));
 
     if (filteredFields.length === 0) {
       return { filteredFields: ["id"], excludedFields: actuallyExcluded };

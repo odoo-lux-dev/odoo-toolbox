@@ -35,6 +35,7 @@ import { VirtualTable } from "@/screens/devtools/components/virtual-table";
 import { t } from "@/services/i18n-service";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { FieldMetadata } from "@/types";
+import { PSEUDO_FIELD_METADATA } from "@/utils/pseudo-fields";
 
 interface FieldRenderSwitchProps {
   value: unknown;
@@ -296,7 +297,7 @@ export const RelationalFieldRenderer = (props: RelationalFieldProps) => {
       if (fieldsResponse && typeof fieldsResponse === "object") {
         setRelatedFieldsMetadata({
           ...(fieldsResponse as Record<string, FieldMetadata>),
-          xml_id: { string: "External ID", type: "char" },
+          ...PSEUDO_FIELD_METADATA,
         });
       }
     } catch (err) {

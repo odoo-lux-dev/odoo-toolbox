@@ -8,7 +8,7 @@ import {
   TableIcon,
   PivotIcon,
 } from "@hugeicons/core-free-icons";
-import { createEffect, createMemo, createSignal, For, Show, splitProps, type JSX } from "solid-js";
+import { createEffect, createMemo, createSignal, Show, splitProps, type JSX } from "solid-js";
 
 import { Button, IconButton } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
@@ -34,6 +34,7 @@ import {
 import { VirtualTable } from "@/screens/devtools/components/virtual-table";
 import { queryStore, resultStore, xmlIdMapSignal } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
+import { PSEUDO_FIELD_METADATA } from "@/utils/pseudo-fields";
 
 type ViewMode = "table" | "list" | "pivot" | "calendar";
 
@@ -77,8 +78,7 @@ export const ResultViewer = (props: ResultViewerProps) => {
 
   const enrichedFieldsMetadata = createMemo(() => {
     const meta = fieldsMetadata();
-    if (!meta) return { xml_id: { string: "External ID", type: "char" } };
-    return { ...meta, xml_id: { string: "External ID", type: "char" } };
+    return { ...meta, ...PSEUDO_FIELD_METADATA };
   });
 
   const { copyToClipboard } = useCopyToClipboard();

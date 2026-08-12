@@ -17,6 +17,20 @@ describe("createOdooRpc - filterFields", () => {
     expect(result.excludedFields).toEqual([]);
   });
 
+  test("should strip pseudo-fields silently without reporting them as excluded", async () => {
+    const rpc = createRpc();
+    const result = await rpc.filterFields("res.partner", ["name", "email", "xml_id"]);
+    expect(result.filteredFields).toEqual(["name", "email"]);
+    expect(result.excludedFields).toEqual([]);
+  });
+
+  test("should fall back to ['id'] when only a pseudo-field is selected", async () => {
+    const rpc = createRpc();
+    const result = await rpc.filterFields("res.partner", ["xml_id"]);
+    expect(result.filteredFields).toEqual(["id"]);
+    expect(result.excludedFields).toEqual([]);
+  });
+
   test("should return undefined fields when no fields and model has no excluded config", async () => {
     const rpc = createRpc();
     const result = await rpc.filterFields("res.partner");

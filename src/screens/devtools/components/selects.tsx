@@ -20,6 +20,7 @@ import {
   setRpcQuery,
 } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
+import { PSEUDO_FIELD_METADATA } from "@/utils/pseudo-fields";
 
 export interface GenericSelectOption {
   value: string;
@@ -626,11 +627,24 @@ export const FieldSelect = (props: FieldSelectProps) => {
     const currentFieldsMetadata = queryStore.fieldsMetadata;
     if (!model() || !currentFieldsMetadata) return [];
 
-    return Object.entries(currentFieldsMetadata).map(([name, info]) => ({
+    const options = Object.entries(currentFieldsMetadata).map(([name, info]) => ({
       value: name,
       label: info.string || name,
       searchableText: `${name} ${info.string || name} ${info.type}`,
     }));
+
+    // Expose pseudo-fields (e.g. xml_id) so they can be picked like real fields.
+    for (const [name, info] of Object.entries(PSEUDO_FIELD_METADATA)) {
+      if (!currentFieldsMetadata[name]) {
+        options.push({
+          value: name,
+          label: info.string || name,
+          searchableText: `${name} ${info.string || name} ${info.type}`,
+        });
+      }
+    }
+
+    return options;
   });
 
   const currentValues = createMemo(() => {
