@@ -39,14 +39,20 @@ const handleProjectPage = async (): Promise<() => void> => {
     colorBlindMode,
   } = await settingsService.getSettings();
 
-  const currentProjectName = window.location.href.match(REGEX_CURRENT_PROJECT_NAME)?.groups
-    ?.project_name;
-  const currentFavoriteProject =
-    currentProjectName !== undefined
-      ? favorites.find((favorite) => favorite.name === currentProjectName)
-      : currentProjectName;
+  const getCurrentFavoriteProject = () => {
+    const currentProjectName = window.location.href.match(REGEX_CURRENT_PROJECT_NAME)?.groups
+      ?.project_name;
+    return {
+      currentProjectName,
+      currentFavoriteProject:
+        currentProjectName !== undefined
+          ? favorites.find((favorite) => favorite.name === currentProjectName)
+          : currentProjectName,
+    };
+  };
 
   const observer = new MutationObserver((mutations) => {
+    const { currentProjectName, currentFavoriteProject } = getCurrentFavoriteProject();
     if (renameShProjectPage)
       renameShProjectPageTitle(
         currentFavoriteProject?.display_name || currentProjectName || "",
