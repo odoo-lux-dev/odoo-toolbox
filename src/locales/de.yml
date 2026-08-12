@@ -799,6 +799,7 @@ page_features:
     label: "Technisches Modell:"
   sh_favorites:
     star_hint: Klicken Sie, um das Projekt zu markieren
+    search_placeholder: Projekte suchen...
   sh_task_link:
     open_task: Zugehörige Aufgabe öffnen
     open_task_prefix: "Aufgabe öffnen "

@@ -797,6 +797,7 @@ page_features:
     label: "النموذج التقني :"
   sh_favorites:
     star_hint: انقر لتمييز المشروع بنجمة
+    search_placeholder: ابحث عن المشاريع...
   sh_task_link:
     open_task: فتح المهمة ذات الصلة
     open_task_prefix: "فتح المهمة "

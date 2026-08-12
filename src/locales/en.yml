@@ -800,6 +800,7 @@ page_features:
     label: "Technical model :"
   sh_favorites:
     star_hint: Click to star project
+    search_placeholder: Search projects...
   sh_task_link:
     open_task: Open related task
     open_task_prefix: "Open task "

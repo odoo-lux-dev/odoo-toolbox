@@ -799,6 +799,7 @@ page_features:
     label: "Technisch model :"
   sh_favorites:
     star_hint: Klik om project te markeren
+    search_placeholder: Projecten zoeken...
   sh_task_link:
     open_task: Gerelateerde taak openen
     open_task_prefix: "Taak openen "

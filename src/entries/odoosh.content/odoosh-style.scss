@@ -249,6 +249,12 @@ $icon-size: 16px;
   }
 }
 
+.x-odoo-project-menu-search {
+  width: stretch !important;
+  margin-inline: 8px;
+  margin-block-end: 8px;
+}
+
 @keyframes hammer-hit {
   0%,
   100% {

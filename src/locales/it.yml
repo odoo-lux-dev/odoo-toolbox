@@ -799,6 +799,7 @@ page_features:
     label: "Modello tecnico :"
   sh_favorites:
     star_hint: Clicca per aggiungere il progetto ai preferiti
+    search_placeholder: Cerca progetti...
   sh_task_link:
     open_task: Apri task correlato
     open_task_prefix: "Apri task "

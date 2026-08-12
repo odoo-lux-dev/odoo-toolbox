@@ -799,6 +799,7 @@ page_features:
     label: "तकनीकी model :"
   sh_favorites:
     star_hint: प्रोजेक्ट को star करने के लिए क्लिक करें
+    search_placeholder: प्रोजेक्ट्स खोजें...
   sh_task_link:
     open_task: संबंधित task खोलें
     open_task_prefix: "task खोलें "

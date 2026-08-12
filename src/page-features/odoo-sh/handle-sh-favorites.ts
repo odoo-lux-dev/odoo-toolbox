@@ -357,6 +357,59 @@ const handleProjectListPageFavorites = async (): Promise<() => void> => {
 };
 
 /**
+ * Builds the search bar at the top of the project dropdown menu when it opens.
+ * Filters the project rows against both the user-friendly display name and the
+ * original Odoo name (stored in a dataset).
+ *
+ * @param {HTMLElement} projectMenu - The dropdown menu root element.
+ */
+const setupProjectMenuSearch = (projectMenu: HTMLElement): void => {
+  const scrollableMenu = projectMenu.querySelector<HTMLElement>(".scrollable-menu");
+  if (!scrollableMenu || projectMenu.querySelector(".x-odoo-project-menu-search")) return;
+
+  const searchInput = document.createElement("input");
+  searchInput.type = "text";
+  searchInput.className = "form-control form-control-sm x-odoo-project-menu-search";
+  searchInput.placeholder = t("page_features.sh_favorites.search_placeholder");
+
+  const getProjects = () =>
+    Array.from(scrollableMenu.querySelectorAll<HTMLElement>("a.d-contents.text-body"));
+
+  const applyFilter = (query: string) => {
+    const normalized = query.trim().toLowerCase();
+    for (const project of getProjects()) {
+      const originalName = (project.dataset.odooShOriginalName || "").toLowerCase();
+      const displayName = project.textContent?.toLowerCase() || "";
+      const matches =
+        !normalized || originalName.includes(normalized) || displayName.includes(normalized);
+      project.style.setProperty("display", matches ? "" : "none", "important");
+    }
+  };
+
+  const handleSearch = debounce((event: Event) => {
+    applyFilter((event.target as HTMLInputElement).value);
+  }, 150);
+
+  const handleSearchKeydown = (event: KeyboardEvent) => {
+    if (event.key !== "Enter") return;
+    applyFilter((event.target as HTMLInputElement).value);
+    const visibleProjects = getProjects().filter(
+      (project) => (project.style.display || "") !== "none",
+    );
+    if (visibleProjects.length === 1) {
+      event.preventDefault();
+      visibleProjects[0].click();
+    }
+  };
+
+  searchInput.addEventListener("input", handleSearch);
+  searchInput.addEventListener("keydown", handleSearchKeydown);
+
+  scrollableMenu.before(searchInput);
+  searchInput.focus();
+};
+
+/**
  * Updates the project list by sorting projects based on their favorite status and adding a star icon to favorite projects.
  *
  * @param {string[]} favorites - An array of favorite project names.
@@ -385,6 +438,7 @@ const updateProjectList = (favorites: Favorite[]): void => {
   });
 
   for (const project of sortedProjects) {
+    project.dataset.odooShOriginalName = projectNames.get(project) ?? "";
     const favorite = getFavorite(project);
     if (!favorite) continue;
 
@@ -407,6 +461,8 @@ const updateProjectList = (favorites: Favorite[]): void => {
   }
 
   scrollableMenu?.append(...sortedProjects);
+
+  setupProjectMenuSearch(projectMenu);
 };
 
 export { handleProjectListPageFavorites, updateProjectList };
