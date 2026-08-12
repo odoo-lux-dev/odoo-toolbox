@@ -41,7 +41,7 @@ interface IgnoredDebugPathsModalProps {
 
 export const IgnoredDebugPathsModal = (props: IgnoredDebugPathsModalProps) => {
   const [paths, setPaths] = createSignal<IgnoredDebugPath[]>([]);
-  const [scope, setScope] = createSignal<DebugPathIgnoreScope>("domain_path");
+  const [scope, setScope] = createSignal<DebugPathIgnoreScope>("domain");
   const [domain, setDomain] = createSignal("");
   const [path, setPath] = createSignal("");
   const [deleteTarget, setDeleteTarget] = createSignal<IgnoredDebugPath | null>(null);
@@ -59,7 +59,7 @@ export const IgnoredDebugPathsModal = (props: IgnoredDebugPathsModalProps) => {
   });
 
   const resetForm = () => {
-    setScope("domain_path");
+    setScope("domain");
     setDomain("");
     setPath("");
   };
@@ -120,6 +120,7 @@ export const IgnoredDebugPathsModal = (props: IgnoredDebugPathsModalProps) => {
             <select
               class="select select-sm md:w-44"
               aria-label={t("options.ignored_debug.scope_label")}
+              value={scope()}
               onChange={(e) => setScope(e.currentTarget.value as DebugPathIgnoreScope)}
             >
               <For each={SCOPE_OPTIONS}>
