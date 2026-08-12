@@ -475,6 +475,7 @@ options:
     scope_path: Pfad (alle Domänen)
     scope_domain_path: Pfad (diese Domäne)
     domain_placeholder: beispiel.com
+    domain_hint: "Die Domäne akzeptiert exakte Domänen, vollständige URLs, Wildcards (*.beispiel.com oder *foo*) oder eine Regex wie /\\.odoo\\.sh$/i"
     path_placeholder: "/thanks/trial"
     add: Hinzufügen
     delete: Löschen

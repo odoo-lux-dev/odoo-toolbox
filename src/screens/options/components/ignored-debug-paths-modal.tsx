@@ -1,6 +1,7 @@
-import { Delete02Icon, PlusSignIcon } from "@hugeicons/core-free-icons";
+import { Delete02Icon, InformationCircleIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 
+import { Alert } from "@/components/ui/alert";
 import { Button, IconButton } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
@@ -160,6 +161,24 @@ export const IgnoredDebugPathsModal = (props: IgnoredDebugPathsModalProps) => {
               {t("options.ignored_debug.add")}
             </Button>
           </form>
+
+          <Show when={scope() === "domain" || scope() === "domain_path"}>
+            <Alert
+              color="info"
+              variant="soft"
+              icon={
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  size={20}
+                  color="currentColor"
+                  strokeWidth={2}
+                />
+              }
+              class="text-sm"
+            >
+              <span>{t("options.ignored_debug.domain_hint")}</span>
+            </Alert>
+          </Show>
 
           <Show
             when={paths().length > 0}

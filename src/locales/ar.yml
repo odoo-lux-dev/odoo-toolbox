@@ -473,6 +473,7 @@ options:
     scope_path: المسار (جميع النطاقات)
     scope_domain_path: المسار (هذا النطاق)
     domain_placeholder: example.com
+    domain_hint: "يقبل المجال النطاقات الدقيقة، العناوين الكاملة، أحرف البدل (*.example.com أو *foo*) أو regex مثل /\\.odoo\\.sh$/i"
     path_placeholder: "/thanks/trial"
     add: إضافة
     delete: حذف

@@ -475,6 +475,7 @@ options:
     scope_path: पथ (सभी डोमेन)
     scope_domain_path: पथ (यह डोमेन)
     domain_placeholder: example.com
+    domain_hint: "डोमेन सटीक डोमेन, पूर्ण URLs, वाइल्डकार्ड (*.example.com या *foo*) या /\\.odoo\\.sh$/i जैसी regex स्वीकारता है"
     path_placeholder: "/thanks/trial"
     add: जोड़ें
     delete: हटाएँ

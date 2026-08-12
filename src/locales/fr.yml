@@ -475,6 +475,7 @@ options:
     scope_path: Chemin (tous les domaines)
     scope_domain_path: Chemin (ce domaine)
     domain_placeholder: exemple.com
+    domain_hint: "Le domaine accepte les domaines exacts, les URLs complètes, les wildcards (*.exemple.com ou *foo*) ou une regex comme /\\.odoo\\.sh$/i"
     path_placeholder: "/thanks/trial"
     add: Ajouter
     delete: Supprimer
