@@ -251,6 +251,7 @@ $icon-size: 16px;
 
 .x-odoo-project-menu-search {
   width: stretch !important;
+  width: -webkit-fill-available;
   margin-inline: 8px;
   margin-block-end: 8px;
 }
