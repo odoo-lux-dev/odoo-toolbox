@@ -400,6 +400,9 @@ devtools:
     toggle_all: Mostra/Nascondi Tutto
     fields_header: Campi
     ids_header: ID
+    total: Totale
+    show_totals: Mostra totali
+    no_value: Nessun valore
   notifications:
     invalid_fields: Campo non valido rilevato
     invalid_fields_plural: $1 campi non validi rilevati

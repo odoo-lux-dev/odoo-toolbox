@@ -400,6 +400,9 @@ devtools:
     toggle_all: Alles in-/uitschakelen
     fields_header: Velden
     ids_header: IDs
+    total: Totaal
+    show_totals: Totalen tonen
+    no_value: Geen waarde
   notifications:
     invalid_fields: Ongeldig veld gedetecteerd
     invalid_fields_plural: $1 ongeldige velden gedetecteerd

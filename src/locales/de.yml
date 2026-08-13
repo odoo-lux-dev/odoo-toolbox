@@ -400,6 +400,9 @@ devtools:
     toggle_all: Alle umschalten
     fields_header: Felder
     ids_header: IDs
+    total: Summe
+    show_totals: Summen anzeigen
+    no_value: Kein Wert
   notifications:
     invalid_fields: Ungültiges Feld erkannt
     invalid_fields_plural: $1 ungültige Felder erkannt

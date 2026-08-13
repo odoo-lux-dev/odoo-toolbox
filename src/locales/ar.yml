@@ -398,6 +398,9 @@ devtools:
     toggle_all: تبديل الكل
     fields_header: الحقول
     ids_header: المعرّفات
+    total: الإجمالي
+    show_totals: إظهار الإجماليات
+    no_value: لا توجد قيمة
   notifications:
     invalid_fields: تم اكتشاف حقل غير صالح
     invalid_fields_plural: تم اكتشاف $1 حقول غير صالحة

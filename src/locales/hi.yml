@@ -400,6 +400,9 @@ devtools:
     toggle_all: सभी टॉगल करें
     fields_header: Fields
     ids_header: IDs
+    total: कुल
+    show_totals: कुल दिखाएँ
+    no_value: कोई मूल्य नहीं
   notifications:
     invalid_fields: अमान्य field पाया गया
     invalid_fields_plural: $1 अमान्य fields पाए गए

@@ -400,6 +400,9 @@ devtools:
     toggle_all: Toggle All
     fields_header: Fields
     ids_header: IDs
+    total: Total
+    show_totals: Show totals
+    no_value: No value
   notifications:
     invalid_fields: Invalid field detected
     invalid_fields_plural: $1 invalid fields detected

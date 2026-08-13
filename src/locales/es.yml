@@ -400,6 +400,9 @@ devtools:
     toggle_all: Alternar todo
     fields_header: Campos
     ids_header: IDs
+    total: Total
+    show_totals: Mostrar totales
+    no_value: Sin valor
   notifications:
     invalid_fields: Campo inválido detectado
     invalid_fields_plural: "$1 campos inválidos detectados"

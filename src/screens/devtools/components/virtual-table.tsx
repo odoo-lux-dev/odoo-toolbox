@@ -41,10 +41,14 @@ const COLUMN_WIDTH = 150;
 const PIVOT_FIELD_COL_WIDTH = 200;
 const PIVOT_FIELD_KEY = "__pf__";
 const PIVOT_REC_PREFIX = "__pr_";
+const PIVOT_TOTAL_KEY = "__pt__";
+
+const NUMERIC_FIELD_TYPES = new Set(["float", "integer", "monetary"]);
 
 const [globalFilter, setGlobalFilter] = createSignal("");
 const [columnVisibility, setColumnVisibility] = createSignal<VisibilityState>({});
 const [pivotRowVisibility, setPivotRowVisibility] = createSignal<Record<string, boolean>>({});
+const [showPivotTotal, setShowPivotTotal] = createSignal(true);
 
 interface VirtualItem {
   index: number;
@@ -139,6 +143,23 @@ export const VirtualTable = (props: {
     return pivotDisplayKeys().filter((k) => k.toLowerCase().includes(search));
   });
 
+  const isNumericPivotField = (fieldKey: string): boolean =>
+    NUMERIC_FIELD_TYPES.has(queryStore.fieldsMetadata?.[fieldKey]?.type ?? "");
+
+  const computePivotTotal = (fieldKey: string): number | null => {
+    if (!isNumericPivotField(fieldKey)) return null;
+    let sum = 0;
+    for (const record of local.data) {
+      const value = record[fieldKey];
+      if (typeof value === "number") sum += value;
+    }
+    return sum;
+  };
+
+  const hasNumericPivotField = createMemo(() => pivotDisplayKeys().some(isNumericPivotField));
+
+  const showTotalColumn = createMemo(() => hasNumericPivotField() && showPivotTotal());
+
   const pivotedData = createMemo(() => {
     if (!local.pivoted) return null;
     const vis = pivotRowVisibility();
@@ -151,6 +172,7 @@ export const VirtualTable = (props: {
         for (let i = 0; i < local.data.length; i++) {
           row[`${PIVOT_REC_PREFIX}${i}__`] = local.data[i][fieldKey];
         }
+        if (showTotalColumn()) row[PIVOT_TOTAL_KEY] = computePivotTotal(fieldKey);
         return row;
       });
   });
@@ -159,7 +181,11 @@ export const VirtualTable = (props: {
 
   const pivotColumnKeys = createMemo<string[] | null>(() => {
     if (!local.pivoted) return null;
-    return [PIVOT_FIELD_KEY, ...local.data.map((_, i) => `${PIVOT_REC_PREFIX}${i}__`)];
+    return [
+      PIVOT_FIELD_KEY,
+      ...local.data.map((_, i) => `${PIVOT_REC_PREFIX}${i}__`),
+      ...(showTotalColumn() ? [PIVOT_TOTAL_KEY] : []),
+    ];
   });
 
   const tableCols = createMemo<ColumnDef<Record<string, unknown>>[]>(() => {
@@ -178,10 +204,26 @@ export const VirtualTable = (props: {
               </span>
             );
           }
+          if (key === PIVOT_TOTAL_KEY) {
+            const totalValue = info.getValue();
+            if (totalValue === null || totalValue === undefined) {
+              return (
+                <span class="block truncate font-mono text-xs text-base-content/40 italic">
+                  {t("devtools.virtual_table.no_value")}
+                </span>
+              );
+            }
+            return (
+              <span class="block truncate font-mono text-xs font-semibold">
+                <ValueRenderer value={totalValue} />
+              </span>
+            );
+          }
           return <ValueRenderer value={info.getValue()} />;
         },
         header: () => {
           if (key === PIVOT_FIELD_KEY) return "";
+          if (key === PIVOT_TOTAL_KEY) return t("devtools.virtual_table.total");
           const recIdx = Number(key.replace(PIVOT_REC_PREFIX, "").replace("__", ""));
           const record = local.data[recIdx];
           const id = record?.id;
@@ -333,7 +375,9 @@ export const VirtualTable = (props: {
   };
 
   const getPivotRecordIndex = (colKey: string): number | undefined => {
-    if (!local.pivoted || colKey === PIVOT_FIELD_KEY) return undefined;
+    if (!local.pivoted || colKey === PIVOT_FIELD_KEY || colKey === PIVOT_TOTAL_KEY) {
+      return undefined;
+    }
     return Number(colKey.replace(PIVOT_REC_PREFIX, "").replace("__", ""));
   };
 
@@ -429,6 +473,20 @@ export const VirtualTable = (props: {
                     when={!local.pivoted}
                     fallback={
                       <>
+                        <Show when={hasNumericPivotField()}>
+                          <label class="flex items-center gap-2 p-1 text-xs font-medium">
+                            <input
+                              type="checkbox"
+                              class="checkbox checkbox-xs"
+                              checked={showPivotTotal()}
+                              onChange={(e) => setShowPivotTotal(e.currentTarget.checked)}
+                            />
+                            {t("devtools.virtual_table.show_totals")}
+                          </label>
+                          <div class="divider my-1 text-[10px] font-medium tracking-wider text-base-content/50 uppercase">
+                            {t("devtools.virtual_table.fields_header")}
+                          </div>
+                        </Show>
                         <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
                           <input
                             type="checkbox"
