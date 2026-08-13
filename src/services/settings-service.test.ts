@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
-const { getSettingDefault, getDefaultSettings, getSettingFromDataset, SETTINGS_CONFIG } =
-  await import("@/services/settings-service");
+const {
+  getSettingDefault,
+  getDefaultSettings,
+  getSettingFromDataset,
+  SETTINGS_CONFIG,
+  sanitizeSettings,
+} = await import("@/services/settings-service");
 
 describe("SETTINGS_CONFIG", () => {
   test("should have at least one setting defined", () => {
@@ -67,6 +72,105 @@ describe("getDefaultSettings", () => {
     const b = getDefaultSettings();
     expect(a).not.toBe(b);
     expect(a).toEqual(b);
+  });
+});
+
+describe("sanitizeSettings", () => {
+  test("should return full defaults for undefined input", () => {
+    expect(sanitizeSettings(undefined)).toEqual(getDefaultSettings());
+  });
+
+  test("should return full defaults for non-object input", () => {
+    expect(sanitizeSettings(42)).toEqual(getDefaultSettings());
+    expect(sanitizeSettings("corrupted")).toEqual(getDefaultSettings());
+  });
+
+  test("should fill missing keys with defaults", () => {
+    const result = sanitizeSettings({ enablePrintOptionsPDF: true });
+    expect(result.enablePrintOptionsPDF).toBe(true);
+    expect(result).toEqual({
+      ...getDefaultSettings(),
+      enablePrintOptionsPDF: true,
+    });
+  });
+
+  test("should fall back to default when ignoredDebugPaths is undefined", () => {
+    const result = sanitizeSettings({ ignoredDebugPaths: undefined });
+    expect(result.ignoredDebugPaths).toEqual(getDefaultSettings().ignoredDebugPaths);
+  });
+
+  test("should fall back to default when ignoredDebugPaths is not an array", () => {
+    const result = sanitizeSettings({ ignoredDebugPaths: "/thanks/trial" });
+    expect(result.ignoredDebugPaths).toEqual(getDefaultSettings().ignoredDebugPaths);
+  });
+
+  test("should keep valid ignored debug paths and drop malformed ones", () => {
+    const result = sanitizeSettings({
+      ignoredDebugPaths: [
+        { scope: "domain", domain: "preprod.odoo.com", deletable: true },
+        { scope: "path", path: "/thanks/trial", deletable: false },
+        { scope: "domain_path", domain: "x.com", path: "/web", deletable: true },
+        { scope: "unknown", deletable: true },
+        { scope: "domain", deletable: true },
+        null,
+        "nope",
+      ],
+    });
+    expect(result.ignoredDebugPaths).toEqual([
+      { scope: "domain", domain: "preprod.odoo.com", deletable: true },
+      { scope: "path", path: "/thanks/trial", deletable: false },
+      { scope: "domain_path", domain: "x.com", path: "/web", deletable: true },
+    ]);
+  });
+
+  test("should fall back to default for invalid enum values", () => {
+    const result = sanitizeSettings({
+      enableDebugMode: "banana",
+      extensionTheme: "purple",
+      defaultColorScheme: "neon",
+      technicalListPosition: "up",
+    });
+    expect(result.enableDebugMode).toBe(getDefaultSettings().enableDebugMode);
+    expect(result.extensionTheme).toBe(getDefaultSettings().extensionTheme);
+    expect(result.defaultColorScheme).toBe(getDefaultSettings().defaultColorScheme);
+    expect(result.technicalListPosition).toBe(getDefaultSettings().technicalListPosition);
+  });
+
+  test("should keep valid enum values", () => {
+    const result = sanitizeSettings({
+      enableDebugMode: "assets",
+      extensionTheme: "light",
+      defaultColorScheme: "dark",
+      technicalListPosition: "left",
+    });
+    expect(result.enableDebugMode).toBe("assets");
+    expect(result.extensionTheme).toBe("light");
+    expect(result.defaultColorScheme).toBe("dark");
+    expect(result.technicalListPosition).toBe("left");
+  });
+
+  test("should fall back to default for wrong primitive types", () => {
+    const result = sanitizeSettings({
+      enablePrintOptionsPDF: "yes",
+      taskUrl: 123,
+      taskUrlRegex: ["-"],
+      userLocale: { code: "fr" },
+    });
+    expect(result.enablePrintOptionsPDF).toBe(false);
+    expect(result.taskUrl).toBe("");
+    expect(result.taskUrlRegex).toBe("/-(\\d+)-/");
+    expect(result.userLocale).toBe("en");
+  });
+
+  test("should preserve valid primitive values", () => {
+    const result = sanitizeSettings({
+      taskUrl: "https://odoo.com/{{task_id}}",
+      nostalgiaMode: true,
+      showLoginButtons: true,
+    });
+    expect(result.taskUrl).toBe("https://odoo.com/{{task_id}}");
+    expect(result.nostalgiaMode).toBe(true);
+    expect(result.showLoginButtons).toBe(true);
   });
 });
 

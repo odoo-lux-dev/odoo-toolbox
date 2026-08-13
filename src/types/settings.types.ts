@@ -18,11 +18,17 @@ import {
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
 } from "@/utils/constants";
 
-export type DebugModeType = "1" | "disabled" | "assets" | "assets,tests";
+export const DEBUG_MODE_TYPES = ["disabled", "1", "assets", "assets,tests"] as const;
+export type DebugModeType = (typeof DEBUG_MODE_TYPES)[number];
 
-export type DefaultColorScheme = "none" | "system" | "light" | "dark";
+export const EXTENSION_THEMES = ["dark", "light"] as const;
+export type ExtensionTheme = (typeof EXTENSION_THEMES)[number];
 
-export type TechnicalListPosition = "right" | "left";
+export const DEFAULT_COLOR_SCHEMES = ["none", "system", "light", "dark"] as const;
+export type DefaultColorScheme = (typeof DEFAULT_COLOR_SCHEMES)[number];
+
+export const TECHNICAL_LIST_POSITIONS = ["right", "left"] as const;
+export type TechnicalListPosition = (typeof TECHNICAL_LIST_POSITIONS)[number];
 
 export type IgnoredDebugPath =
   | { scope: "domain"; domain: string; deletable: boolean }
@@ -40,7 +46,7 @@ export type StoredSettingsV1 = {
 };
 
 export type StoredSettingsV2 = StoredSettingsV1 & {
-  [CHROME_STORAGE_SETTINGS_EXTENSION_THEME]: "dark" | "light";
+  [CHROME_STORAGE_SETTINGS_EXTENSION_THEME]: ExtensionTheme;
 };
 
 export type StoredSettingsV3 = Omit<

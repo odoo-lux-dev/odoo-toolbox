@@ -25,6 +25,12 @@ import type {
   TechnicalListPosition,
 } from "@/types";
 import {
+  DEBUG_MODE_TYPES,
+  DEFAULT_COLOR_SCHEMES,
+  EXTENSION_THEMES,
+  TECHNICAL_LIST_POSITIONS,
+} from "@/types/settings.types";
+import {
   CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
   CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
   CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
@@ -50,13 +56,15 @@ export interface SettingDef {
   default: StoredSettings[keyof StoredSettings];
   datasetKey?: string;
   datasetTransform?: (value: unknown) => string;
+  allowedValues?: readonly string[]; // when set, the stored value must be one of these strings
 }
 
 export const SETTINGS_CONFIG: SettingDef[] = [
   {
     key: "enableDebugMode",
-    default: "disabled" as DebugModeType,
+    default: "disabled",
     datasetKey: "defaultDebugMode",
+    allowedValues: DEBUG_MODE_TYPES,
   },
   {
     key: "enablePrintOptionsPDF",
@@ -84,6 +92,7 @@ export const SETTINGS_CONFIG: SettingDef[] = [
     key: "extensionTheme",
     default: "dark",
     datasetKey: "odooToolboxTheme",
+    allowedValues: EXTENSION_THEMES,
   },
   {
     key: "taskUrl",
@@ -103,8 +112,9 @@ export const SETTINGS_CONFIG: SettingDef[] = [
   },
   {
     key: "defaultColorScheme",
-    default: "none" as DefaultColorScheme,
+    default: "none",
     datasetKey: "defaultColorScheme",
+    allowedValues: DEFAULT_COLOR_SCHEMES,
   },
   {
     key: "showTechnicalList",
@@ -114,8 +124,9 @@ export const SETTINGS_CONFIG: SettingDef[] = [
   },
   {
     key: "technicalListPosition",
-    default: "right" as TechnicalListPosition,
+    default: "right",
     datasetKey: "technicalListPosition",
+    allowedValues: TECHNICAL_LIST_POSITIONS,
   },
   {
     key: "showLoginButtons",
@@ -128,7 +139,7 @@ export const SETTINGS_CONFIG: SettingDef[] = [
     default: "en",
   },
   {
-    key: CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS,
+    key: "ignoredDebugPaths",
     default: [{ scope: "path" as const, path: "/thanks/trial", deletable: false }],
     datasetKey: "ignoredDebugPaths",
     datasetTransform: (v) => JSON.stringify(v ?? []),
@@ -146,6 +157,62 @@ export const getDefaultSettings = (): StoredSettings => {
     (defaults as Record<string, unknown>)[def.key] = def.default;
   }
   return defaults;
+};
+
+const isIgnoredDebugPath = (value: unknown): value is IgnoredDebugPath => {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Partial<IgnoredDebugPath>;
+  switch (candidate.scope) {
+    case "domain":
+      return typeof candidate.domain === "string";
+    case "path":
+      return typeof candidate.path === "string";
+    case "domain_path":
+      return typeof candidate.domain === "string" && typeof candidate.path === "string";
+    default:
+      return false;
+  }
+};
+
+const sanitizeValue = (def: SettingDef, value: unknown): unknown => {
+  if (def.allowedValues) {
+    return typeof value === "string" && def.allowedValues.includes(value) ? value : def.default;
+  }
+  if (def.key === CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS) {
+    const defaultPaths = getSettingDefault(CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS);
+    if (!Array.isArray(value)) {
+      return defaultPaths.map((path) => ({ ...path }));
+    }
+    return value.filter(isIgnoredDebugPath);
+  }
+  if (typeof def.default === "boolean") {
+    return typeof value === "boolean" ? value : def.default;
+  }
+  if (typeof def.default === "string") {
+    return typeof value === "string" ? value : def.default;
+  }
+  return value ?? def.default;
+};
+
+/**
+ * Ensures a settings object always conforms to the schema.
+ *
+ * Missing keys, wrong types, invalid enum values and malformed entries are
+ * replaced by the configured defaults. This protects every reader against
+ * corrupted or partially-written data (e.g. bad values coming from the synced
+ * storage), so `undefined` can never leak into a setting that must be an
+ * array, boolean or string.
+ *
+ * @param input - A raw settings value, possibly partial or malformed.
+ * @returns A fully valid `StoredSettings` object.
+ */
+export const sanitizeSettings = (input: unknown): StoredSettings => {
+  const source = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  const result = getDefaultSettings() as Record<string, unknown>;
+  for (const def of SETTINGS_CONFIG) {
+    result[def.key] = sanitizeValue(def, source[def.key]);
+  }
+  return result as StoredSettings;
 };
 
 export const getSettingFromDataset = <K extends keyof StoredSettings>(
@@ -314,11 +381,11 @@ class SettingsService {
   );
 
   async getSettings(): Promise<StoredSettings> {
-    return this.settingsLocalStorage.getValue();
+    return sanitizeSettings(await this.settingsLocalStorage.getValue());
   }
 
   async setSettings(settings: StoredSettings): Promise<void> {
-    return this.settingsLocalStorage.setValue(settings);
+    return this.settingsLocalStorage.setValue(sanitizeSettings(settings));
   }
 
   watchSettings(callback: WatchCallback<StoredSettings | null>): () => void {
@@ -458,7 +525,7 @@ class SettingsService {
   }
 
   async getSyncedSettings(): Promise<StoredSettings> {
-    return this.settingsSyncStorage.getValue();
+    return sanitizeSettings(await this.settingsSyncStorage.getValue());
   }
 
   async persistSettingsToSync(): Promise<void> {
