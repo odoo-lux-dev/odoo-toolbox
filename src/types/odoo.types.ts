@@ -6,6 +6,18 @@ export type OdooDomainCondition = [string, OdooDomainOperator, unknown];
 export type OdooDomainLogical = "&" | "|" | "!";
 export type OdooDomain = (OdooDomainCondition | OdooDomainLogical)[];
 
+// Owl 2: overlays is a plain object keyed by overlay id.
+// Owl 3: overlays is a collection exposing `items()`.
+export interface OdooOverlayItem {
+  props?: {
+    subProps?: {
+      actionProps?: {
+        resModel?: string;
+      };
+    };
+  };
+}
+
 export interface OdooRpcParams {
   model: string;
   method: string;

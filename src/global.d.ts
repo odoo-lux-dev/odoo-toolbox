@@ -1,5 +1,7 @@
 // Global type declarations for the Odoo Toolbox project
 
+import type { OdooOverlayItem } from "@/types";
+
 /**
  * Augment the global Window interface to include Odoo-specific properties
  */
@@ -120,18 +122,8 @@ declare global {
               env?: {
                 services?: {
                   overlay?: {
-                    overlays?: Record<
-                      string,
-                      {
-                        props?: {
-                          subProps?: {
-                            actionProps?: {
-                              resModel?: string;
-                            };
-                          };
-                        };
-                      }
-                    >;
+                    // Owl 2 exposes a plain object keyed by overlay id, Owl 3 a collection exposing `items()`.
+                    overlays?: Record<string, OdooOverlayItem> | { items: () => OdooOverlayItem[] };
                   };
                 };
               };
