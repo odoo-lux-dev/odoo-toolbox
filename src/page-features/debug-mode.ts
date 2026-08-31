@@ -127,7 +127,13 @@ export const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
     params.set("debug", debugMode);
   }
 
-  return url.origin + url.pathname + (params.size > 0 ? `?${params.toString()}` : "") + url.hash;
+  const search =
+    params.size > 0
+      ? `?${[...params.entries()]
+          .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join("&")}`
+      : "";
+  return url.origin + url.pathname + search + url.hash;
 };
 
 export { setDebugMode };

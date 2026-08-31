@@ -176,4 +176,48 @@ describe("generateDebugModeUrl", () => {
     const result = generateDebugModeUrl(url("https://odoo.com/web?debug=assets"), "disabled");
     expect(result).toBe("https://odoo.com/web?debug=0");
   });
+
+  test("should encode spaces as %20 so Odoo search params stay parseable", () => {
+    const domain =
+      '["&", "&", ("is_absent", "=", True), ("company_id", "in", [4]), ("employee_id.name", "ilike", "(thcl)")]';
+    const groupBy = '["employee_id"]';
+    const input = new URL("https://www.odoo.com/odoo/time-off-overview");
+    input.searchParams.set("debug", "assets");
+    input.searchParams.set("domain", domain);
+    input.searchParams.set("groupBy", groupBy);
+
+    const result = generateDebugModeUrl(input, "assets");
+    expect(result).not.toContain("+");
+
+    const parseQuery = (search: string) => {
+      const parsed: Record<string, string> = {};
+      for (const part of search.slice(1).split("&")) {
+        const [key, value] = part.split("=");
+        parsed[key] = decodeURIComponent(value || "");
+      }
+      return parsed;
+    };
+    const query = new URL(result).search;
+    expect(parseQuery(query).domain).toBe(domain);
+    expect(parseQuery(query).groupBy).toBe(groupBy);
+  });
+
+  test("should preserve a literal + in a param value", () => {
+    const input = new URL("https://www.odoo.com/odoo/time-off-overview");
+    input.searchParams.set("debug", "assets");
+    input.searchParams.set("domain", '("phone", "ilike", "+32 1")');
+
+    const result = generateDebugModeUrl(input, "assets");
+
+    const parseQuery = (search: string) => {
+      const parsed: Record<string, string> = {};
+      for (const part of search.slice(1).split("&")) {
+        const [key, value] = part.split("=");
+        parsed[key] = decodeURIComponent(value || "");
+      }
+      return parsed;
+    };
+    const query = new URL(result).search;
+    expect(parseQuery(query).domain).toBe('("phone", "ilike", "+32 1")');
+  });
 });
