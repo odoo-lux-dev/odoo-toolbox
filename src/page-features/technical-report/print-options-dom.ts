@@ -1,4 +1,15 @@
 import { OrmReportRecord } from "@/types";
+import { getOdooVersion, getShowPrintOptionsHTML, getShowPrintOptionsPDF } from "@/utils/utils";
+
+import { HTML_ICON_SVG, PDF_ICON_SVG } from "./print-options-icons";
+
+// Odoo >= 20 dropped Font Awesome in favor of Material design icons (`<i class="oi" data-icon="...">`).
+// Fall back on the DOM itself just in case
+const isNewIconFormat = (): boolean => {
+  const odooVersion = getOdooVersion();
+  if (odooVersion !== undefined && parseFloat(odooVersion) >= 20) return true;
+  return document.querySelector('.oi[data-icon="print"]') !== null;
+};
 
 const generateTechnicalPrintOptionElement = (
   reportType: "html" | "pdf",
@@ -6,11 +17,18 @@ const generateTechnicalPrintOptionElement = (
   recordId: number,
   companies: number[],
 ): HTMLSpanElement => {
-  const iconClass = reportType === "html" ? "fa-html5" : "fa-file-pdf-o";
   const spanElement = document.createElement("span");
   spanElement.classList.add("x-odoo-technical-print-option");
   const spanIcon = document.createElement("i");
-  spanIcon.className = `fa ${iconClass}`;
+  if (isNewIconFormat()) {
+    spanElement.style.fontSize = "inherit";
+    spanIcon.style.display = "inline-block";
+    spanIcon.style.verticalAlign = "middle";
+    spanIcon.innerHTML = reportType === "html" ? HTML_ICON_SVG : PDF_ICON_SVG;
+  } else {
+    const iconClass = reportType === "html" ? "fa-html5" : "fa-file-pdf-o";
+    spanIcon.className = `fa ${iconClass}`;
+  }
   spanElement.appendChild(spanIcon);
   spanElement.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -89,7 +107,11 @@ const addLoadingIconOnPrintOption = (
     const loadingIconContainer = document.createElement("div");
     const loadingIcon = document.createElement("i");
     loadingIconContainer.className = "x-odoo-technical-print-option-loading-spinner";
-    loadingIcon.className = "fa fa-spinner fa-spin";
+    if (isNewIconFormat()) {
+      loadingIcon.classList.add("x-odoo-technical-print-option-spinner");
+    } else {
+      loadingIcon.className = "fa fa-spinner fa-spin";
+    }
     loadingIconContainer.appendChild(loadingIcon);
     applyRowStyling(row, isVersion15, loadingIconContainer);
   });
@@ -161,7 +183,5 @@ const appendTechnicalPrintOptions = async (
     hasSinglePrintOption,
   );
 };
-
-import { getOdooVersion, getShowPrintOptionsHTML, getShowPrintOptionsPDF } from "@/utils/utils";
 
 export { addLoadingIconOnPrintOption, removeLoadingIconOnPrintOption, appendTechnicalPrintOptions };
