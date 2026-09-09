@@ -551,6 +551,8 @@ options:
     branch_regex: Branch name regex
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex seems incorrect. Please verify.
+    download_full_log: Download full logs
+    download_full_log_desc: Add a button on Odoo.SH log viewer pages to download the complete raw log file instead of relying on the built-in viewer (which only renders one chunk at a time).
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -814,6 +816,12 @@ page_features:
     status: Status
     audit_logs: Audit Logs
     settings: Settings
+  sh_download_log:
+    download: Download full log
+    download_hint: Download the complete raw log file
+    downloading: Downloading...
+    downloaded: Downloaded!
+    download_failed: Download failed
 
 services:
   rpc:

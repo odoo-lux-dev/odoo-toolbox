@@ -53,6 +53,7 @@ This extension aims to enhance the experience of Odoo developers and Odoo.SH use
 - **Default dark mode setting for Odoo interfaces**
 - **Export and import extension configuration for easy sharing or backup**
 - **Quick access to GitHub repositories from branch pages**
+- **Download full Odoo.SH logs (raw file) directly from the log viewer pages**
 
 <br>
 

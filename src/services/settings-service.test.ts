@@ -172,6 +172,16 @@ describe("sanitizeSettings", () => {
     expect(result.nostalgiaMode).toBe(true);
     expect(result.showLoginButtons).toBe(true);
   });
+
+  test("should default downloadFullLog to false", () => {
+    expect(getDefaultSettings().downloadFullLog).toBe(false);
+    expect(sanitizeSettings(undefined).downloadFullLog).toBe(false);
+  });
+
+  test("should keep a valid downloadFullLog boolean value", () => {
+    expect(sanitizeSettings({ downloadFullLog: true }).downloadFullLog).toBe(true);
+    expect(sanitizeSettings({ downloadFullLog: "yes" }).downloadFullLog).toBe(false);
+  });
 });
 
 describe("getSettingFromDataset", () => {

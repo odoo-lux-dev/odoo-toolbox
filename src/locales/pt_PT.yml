@@ -551,6 +551,8 @@ options:
     branch_regex: Regex do nome do ramo
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: O regex parece incorreto. Por favor, verifique.
+    download_full_log: Transferir registos completos
+    download_full_log_desc: Adiciona um botão nas páginas do visualizador de registos do Odoo.SH para transferir o ficheiro de registo bruto completo em vez de depender do visualizador integrado (que mostra apenas um bloco de cada vez).
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -813,6 +815,12 @@ page_features:
     status: Estado
     audit_logs: Registos de Auditoria
     settings: Definições
+  sh_download_log:
+    download: Transferir registo completo
+    download_hint: Transferir o ficheiro de registo bruto completo
+    downloading: A transferir...
+    downloaded: Transferido!
+    download_failed: Falha na transferência
 
 services:
   rpc:

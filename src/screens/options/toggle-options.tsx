@@ -3,6 +3,7 @@ import { t } from "@/services/i18n-service";
 import { settingsService } from "@/services/settings-service";
 import {
   CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
+  CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
   CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
@@ -16,6 +17,16 @@ export const ColorBlindOption = () => (
     tooltipContent={t("options.settings.color_blind_desc")}
     settingKey={CHROME_STORAGE_SETTINGS_COLORBLIND_MODE}
     onToggle={(checked) => settingsService.setColorBlindMode(checked)}
+  />
+);
+
+export const DownloadLogOption = () => (
+  <ToggleOption
+    id="sh-download-full-log"
+    title={t("options.settings.download_full_log")}
+    tooltipContent={t("options.settings.download_full_log_desc")}
+    settingKey={CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG}
+    onToggle={(checked) => settingsService.setDownloadFullLog(checked)}
   />
 );
 

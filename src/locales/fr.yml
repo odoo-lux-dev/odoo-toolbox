@@ -551,6 +551,8 @@ options:
     branch_regex: Regex du nom de branche
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: La regex semble incorrecte. Veuillez vérifier.
+    download_full_log: Télécharger les journaux complets
+    download_full_log_desc: Ajouter un bouton sur les pages de visionneuse de journaux d'Odoo.SH pour télécharger le fichier journal brut complet au lieu de se fier à la visionneuse intégrée (qui n'affiche qu'une partie à la fois).
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -813,6 +815,12 @@ page_features:
     status: Statut
     audit_logs: Journaux d'audit
     settings: Paramètres
+  sh_download_log:
+    download: Télécharger le journal complet
+    download_hint: Télécharger le fichier journal brut complet
+    downloading: Téléchargement...
+    downloaded: Téléchargé !
+    download_failed: Échec du téléchargement
 
 services:
   rpc:

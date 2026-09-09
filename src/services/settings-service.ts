@@ -14,6 +14,7 @@ import type {
   StoredSettingsV13,
   StoredSettingsV14,
   StoredSettingsV15,
+  StoredSettingsV16,
   StoredSettingsV2,
   StoredSettingsV3,
   StoredSettingsV4,
@@ -49,6 +50,7 @@ import {
   CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
   CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
+  CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
 } from "@/utils/constants";
 
 export interface SettingDef {
@@ -143,6 +145,10 @@ export const SETTINGS_CONFIG: SettingDef[] = [
     default: [{ scope: "path" as const, path: "/thanks/trial", deletable: false }],
     datasetKey: "ignoredDebugPaths",
     datasetTransform: (v) => JSON.stringify(v ?? []),
+  },
+  {
+    key: "downloadFullLog",
+    default: false,
   },
 ];
 
@@ -282,6 +288,9 @@ const applyMigration = (
         { scope: "path", path: "/thanks/trial", deletable: false },
       ];
       break;
+    case 16:
+      current[CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG] = false;
+      break;
   }
   return current;
 };
@@ -298,6 +307,9 @@ const LOCAL_MIGRATIONS = {
   },
   5: (settings: StoredSettingsV14): StoredSettingsV15 => {
     return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
+  },
+  6: (settings: StoredSettingsV15): StoredSettingsV16 => {
+    return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
   },
 };
 
@@ -344,6 +356,9 @@ const SYNC_MIGRATIONS = {
   15: (settings: StoredSettingsV14): StoredSettingsV15 => {
     return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
   },
+  16: (settings: StoredSettingsV15): StoredSettingsV16 => {
+    return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
+  },
 };
 
 /**
@@ -366,7 +381,7 @@ class SettingsService {
     <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 5,
+      version: 6,
       migrations: LOCAL_MIGRATIONS,
     },
   );
@@ -375,7 +390,7 @@ class SettingsService {
     <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 15,
+      version: 16,
       migrations: SYNC_MIGRATIONS,
     },
   );
@@ -405,6 +420,10 @@ class SettingsService {
 
   async getDebugMode(): Promise<DebugModeType> {
     return (await this.getSettings())[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY];
+  }
+
+  async setDownloadFullLog(downloadFullLog: boolean): Promise<void> {
+    return this.updateSetting(CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG, downloadFullLog);
   }
 
   async setDebugMode(enableDebugMode: DebugModeType): Promise<void> {

@@ -4,6 +4,7 @@ import { TaskLinkOption } from "@/screens/options/task-link-option";
 import { TechnicalListOption } from "@/screens/options/technical-list";
 import {
   ColorBlindOption,
+  DownloadLogOption,
   LoginButtonsOption,
   NostalgiaModeOption,
   ShPageRenameOption,
@@ -20,5 +21,6 @@ export const ExtensionOptions = [
   { component: DebugModeOption, category: "Odoo" },
   { component: ShPageRenameOption, category: "Odoo.SH" },
   { component: ColorBlindOption, category: "Odoo.SH" },
+  { component: DownloadLogOption, category: "Odoo.SH" },
   { component: TaskLinkOption, category: "Odoo.SH" },
 ];

@@ -16,6 +16,7 @@ import {
   CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
   CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
+  CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
 } from "@/utils/constants";
 
 export const DEBUG_MODE_TYPES = ["disabled", "1", "assets", "assets,tests"] as const;
@@ -110,4 +111,8 @@ export type StoredSettingsV15 = StoredSettingsV14 & {
   [CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS]: IgnoredDebugPath[];
 };
 
-export type StoredSettings = StoredSettingsV15;
+export type StoredSettingsV16 = StoredSettingsV15 & {
+  [CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG]: boolean;
+};
+
+export type StoredSettings = StoredSettingsV16;

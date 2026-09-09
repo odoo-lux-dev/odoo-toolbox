@@ -551,6 +551,8 @@ options:
     branch_regex: Branch नाम regex
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex गलत प्रतीत होता है। कृपया सत्यापित करें।
+    download_full_log: पूर्ण लॉग डाउनलोड करें
+    download_full_log_desc: Odoo.SH लॉग व्यूअर पेजों पर एक बटन जोड़ता है ताकि बिल्ट-इन व्यूअर (जो एक बार में केवल एक भाग दिखाता है) पर निर्भर रहने के बजाय पूरी रॉ लॉग फ़ाइल डाउनलोड की जा सके।
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -813,6 +815,12 @@ page_features:
     status: स्थिति
     audit_logs: Audit Logs
     settings: सेटिंग्स
+  sh_download_log:
+    download: पूर्ण लॉग डाउनलोड करें
+    download_hint: पूरी रॉ लॉग फ़ाइल डाउनलोड करें
+    downloading: डाउनलोड हो रहा है...
+    downloaded: डाउनलोड हो गया!
+    download_failed: डाउनलोड विफल
 
 services:
   rpc:
