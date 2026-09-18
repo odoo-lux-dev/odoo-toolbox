@@ -553,6 +553,8 @@ options:
     regex_incorrect: O Regex parece incorreto. Por favor, verifique.
     download_full_log: Baixar logs completos
     download_full_log_desc: Adiciona um botão nas páginas do visualizador de logs do Odoo.SH para baixar o arquivo de log bruto completo em vez de depender do visualizador integrado (que mostra apenas um bloco por vez).
+    odoosh_login_button: Mostrar botão de login do Odoo.sh
+    odoosh_login_button_desc: Adiciona um botão "Entrar com Odoo.sh" na página de login. Ele só aparece em bancos hospedados no Odoo.sh e faz login pela sua sessão do Odoo.sh.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Baixando...
     downloaded: Baixado!
     download_failed: Falha no download
+
+  odoosh_login:
+    login: Entrar com Odoo.sh
+    login_hint: Entrar neste banco de dados com sua sessão do Odoo.sh
 
 services:
   rpc:

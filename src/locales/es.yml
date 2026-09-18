@@ -553,6 +553,8 @@ options:
     regex_incorrect: El regex parece incorrecto. Verifícalo.
     download_full_log: Descargar logs completos
     download_full_log_desc: Añadir un botón en las páginas del visor de logs de Odoo.SH para descargar el archivo de log bruto completo en lugar de depender del visor integrado (que solo muestra un fragmento a la vez).
+    odoosh_login_button: Mostrar botón de inicio de sesión de Odoo.sh
+    odoosh_login_button_desc: Añade un botón "Iniciar sesión con Odoo.sh" en la página de inicio de sesión. Solo aparece en bases de datos alojadas en Odoo.sh e inicia sesión con tu sesión de Odoo.sh.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Descargando...
     downloaded: ¡Descargado!
     download_failed: Error al descargar
+
+  odoosh_login:
+    login: Iniciar sesión con Odoo.sh
+    login_hint: Iniciar sesión en esta base de datos con tu sesión de Odoo.sh
 
 services:
   rpc:

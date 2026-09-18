@@ -553,6 +553,8 @@ options:
     regex_incorrect: La regex semble incorrecte. Veuillez vérifier.
     download_full_log: Télécharger les journaux complets
     download_full_log_desc: Ajouter un bouton sur les pages de visionneuse de journaux d'Odoo.SH pour télécharger le fichier journal brut complet au lieu de se fier à la visionneuse intégrée (qui n'affiche qu'une partie à la fois).
+    odoosh_login_button: Afficher le bouton de connexion Odoo.sh
+    odoosh_login_button_desc: Ajoute un bouton "Se connecter avec Odoo.sh" sur la page de connexion. Il n'apparaît que sur les bases hébergées sur Odoo.sh et vous connecte via votre session Odoo.sh.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Téléchargement...
     downloaded: Téléchargé !
     download_failed: Échec du téléchargement
+
+  odoosh_login:
+    login: Se connecter avec Odoo.sh
+    login_hint: Se connecter à cette base avec votre session Odoo.sh
 
 services:
   rpc:

@@ -10,7 +10,49 @@ const getShowTechnicalList = () => document.body.dataset.showTechnicalList;
 const getTechnicalListPosition = () =>
   document.body.dataset.technicalListPosition as TechnicalListPosition;
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
+const getShowOdooShLoginButton = () => document.body.dataset.showOdooShLoginButton;
 const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
+
+const ODOO_SH_SERVER_HEADER = "odoo.sh";
+
+const LOCAL_HOSTNAME_REGEXES = [
+  /^localhost$/,
+  /\.localhost$/,
+  /^::1$/,
+  /^0\.0\.0\.0$/,
+  /^127\.\d+\.\d+\.\d+$/, // loopback
+  /^10\.\d+\.\d+\.\d+$/, // RFC 1918
+  /^192\.168\.\d+\.\d+$/, // RFC 1918
+  /^169\.254\.\d+\.\d+$/, // link-local
+  /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/, // RFC 1918
+];
+
+const RUNBOT_HOSTNAME_REGEX = /\.runbot\d+\.odoo\.com$/;
+
+/**
+ * Detects whether the current database is hosted on Odoo.sh.
+ * The `Server` response header on Odoo requests is checked (it is set
+ * to `Odoo.sh` on every response served by the Odoo.sh).
+ */
+const isOdooShHosted = async (): Promise<boolean> => {
+  const { hostname } = window.location;
+  if (
+    RUNBOT_HOSTNAME_REGEX.test(hostname) ||
+    LOCAL_HOSTNAME_REGEXES.some((regex) => regex.test(hostname))
+  )
+    return false;
+
+  try {
+    const response = await fetch(window.location.origin, {
+      method: "GET",
+      cache: "no-store",
+      headers: { accept: "text/html" },
+    });
+    return response.headers.get("server")?.trim().toLowerCase() === ODOO_SH_SERVER_HEADER;
+  } catch {
+    return false;
+  }
+};
 
 const isOnSpecificRecordPage = () => {
   const odooWindowObject = window.odoo;
@@ -97,5 +139,7 @@ export {
   getTechnicalListPosition,
   retrieveIdFromAvatar,
   getShowLoginButtons,
+  getShowOdooShLoginButton,
   getOdooToolboxTheme,
+  isOdooShHosted,
 };

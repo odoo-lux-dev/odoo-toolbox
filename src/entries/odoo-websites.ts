@@ -1,6 +1,7 @@
 import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { handleLoginButtons } from "@/page-features/login-buttons";
+import { handleOdooShLoginButton } from "@/page-features/odoosh-login";
 import { initTechnicalList } from "@/page-features/technical-list";
 import {
   handleTechnicalModelName,
@@ -67,6 +68,7 @@ export default defineUnlistedScript(async () => {
 
   observeMenuOpening();
   handleLoginButtons();
+  handleOdooShLoginButton();
 
   const [colorSchemeSettings, debugModeSettings] = await Promise.all([
     setDefaultColorScheme(),

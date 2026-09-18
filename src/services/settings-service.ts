@@ -15,6 +15,7 @@ import type {
   StoredSettingsV14,
   StoredSettingsV15,
   StoredSettingsV16,
+  StoredSettingsV17,
   StoredSettingsV2,
   StoredSettingsV3,
   StoredSettingsV4,
@@ -44,6 +45,7 @@ import {
   CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
   CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
   CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
+  CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON,
   CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
   CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
   CHROME_STORAGE_SETTINGS_TASK_URL,
@@ -149,6 +151,12 @@ export const SETTINGS_CONFIG: SettingDef[] = [
   {
     key: "downloadFullLog",
     default: false,
+  },
+  {
+    key: "showOdooShLoginButton",
+    default: false,
+    datasetKey: "showOdooShLoginButton",
+    datasetTransform: (v) => String(v || false),
   },
 ];
 
@@ -291,6 +299,9 @@ const applyMigration = (
     case 16:
       current[CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG] = false;
       break;
+    case 17:
+      current[CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON] = false;
+      break;
   }
   return current;
 };
@@ -310,6 +321,9 @@ const LOCAL_MIGRATIONS = {
   },
   6: (settings: StoredSettingsV15): StoredSettingsV16 => {
     return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
+  },
+  7: (settings: StoredSettingsV16): StoredSettingsV17 => {
+    return applyMigration(17, settings as Record<string, unknown>) as StoredSettingsV17;
   },
 };
 
@@ -359,6 +373,9 @@ const SYNC_MIGRATIONS = {
   16: (settings: StoredSettingsV15): StoredSettingsV16 => {
     return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
   },
+  17: (settings: StoredSettingsV16): StoredSettingsV17 => {
+    return applyMigration(17, settings as Record<string, unknown>) as StoredSettingsV17;
+  },
 };
 
 /**
@@ -381,7 +398,7 @@ class SettingsService {
     <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 6,
+      version: 7,
       migrations: LOCAL_MIGRATIONS,
     },
   );
@@ -390,7 +407,7 @@ class SettingsService {
     <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 16,
+      version: 17,
       migrations: SYNC_MIGRATIONS,
     },
   );
@@ -504,6 +521,13 @@ class SettingsService {
 
   async setShowLoginButtons(showLoginButtons: boolean): Promise<void> {
     return this.updateSetting(CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS, showLoginButtons);
+  }
+
+  async setShowOdooShLoginButton(showOdooShLoginButton: boolean): Promise<void> {
+    return this.updateSetting(
+      CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON,
+      showOdooShLoginButton,
+    );
   }
 
   async getUserLocale(): Promise<string> {

@@ -553,6 +553,8 @@ options:
     regex_incorrect: Regex scheint falsch zu sein. Bitte überprüfen.
     download_full_log: Vollständige Logs herunterladen
     download_full_log_desc: Fügt auf Odoo.SH-Logansichtsseiten eine Schaltfläche hinzu, um die vollständige Roh-Logdatei herunterzuladen, anstatt sich auf die integrierte Anzeige zu verlassen (die jeweils nur einen Abschnitt rendert).
+    odoosh_login_button: Odoo.sh-Anmeldebutton anzeigen
+    odoosh_login_button_desc: Fügt einen "Mit Odoo.sh anmelden"-Button auf der Anmeldeseite hinzu. Er erscheint nur bei Datenbanken, die auf Odoo.sh gehostet werden, und meldet Sie über Ihre Odoo.sh-Sitzung an.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Wird heruntergeladen...
     downloaded: Heruntergeladen!
     download_failed: Download fehlgeschlagen
+
+  odoosh_login:
+    login: Mit Odoo.sh anmelden
+    login_hint: Mit Ihrer Odoo.sh-Sitzung bei dieser Datenbank anmelden
 
 services:
   rpc:

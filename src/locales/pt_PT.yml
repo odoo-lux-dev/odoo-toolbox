@@ -553,6 +553,8 @@ options:
     regex_incorrect: O regex parece incorreto. Por favor, verifique.
     download_full_log: Transferir registos completos
     download_full_log_desc: Adiciona um botão nas páginas do visualizador de registos do Odoo.SH para transferir o ficheiro de registo bruto completo em vez de depender do visualizador integrado (que mostra apenas um bloco de cada vez).
+    odoosh_login_button: Mostrar botão de início de sessão do Odoo.sh
+    odoosh_login_button_desc: Adiciona um botão "Iniciar sessão com Odoo.sh" na página de início de sessão. Só aparece em bases de dados alojadas no Odoo.sh e inicia sessão com a sua sessão do Odoo.sh.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: A transferir...
     downloaded: Transferido!
     download_failed: Falha na transferência
+
+  odoosh_login:
+    login: Iniciar sessão com Odoo.sh
+    login_hint: Iniciar sessão nesta base de dados com a sua sessão do Odoo.sh
 
 services:
   rpc:

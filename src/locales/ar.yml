@@ -551,6 +551,8 @@ options:
     regex_incorrect: يبدو التعبير النمطي غير صحيح. يرجى التحقق.
     download_full_log: تنزيل السجلات الكاملة
     download_full_log_desc: يضيف زراً في صفحات عارض السجلات في Odoo.SH لتنزيل ملف السجل الخام الكامل بدلاً من الاعتماد على العارض المدمج (الذي يعرض جزءاً واحداً فقط في كل مرة).
+    odoosh_login_button: إظهار زر تسجيل الدخول عبر Odoo.sh
+    odoosh_login_button_desc: يضيف زراً بعنوان "تسجيل الدخول عبر Odoo.sh" في صفحة تسجيل الدخول. يظهر فقط على قواعد البيانات المستضافة على Odoo.sh ويسجّل دخولك عبر جلسة Odoo.sh الخاصة بك.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -819,6 +821,10 @@ page_features:
     downloading: جارٍ التنزيل...
     downloaded: تم التنزيل!
     download_failed: فشل التنزيل
+
+  odoosh_login:
+    login: تسجيل الدخول عبر Odoo.sh
+    login_hint: تسجيل الدخول إلى قاعدة البيانات هذه عبر جلسة Odoo.sh الخاصة بك
 
 services:
   rpc:

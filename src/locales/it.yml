@@ -553,6 +553,8 @@ options:
     regex_incorrect: La regex sembra non corretta. Verificarla.
     download_full_log: Scarica i log completi
     download_full_log_desc: Aggiunge un pulsante nelle pagine del visualizzatore di log di Odoo.SH per scaricare il file di log grezzo completo invece di affidarsi al visualizzatore integrato (che mostra solo un blocco alla volta).
+    odoosh_login_button: Mostra pulsante di accesso Odoo.sh
+    odoosh_login_button_desc: Aggiunge un pulsante "Accedi con Odoo.sh" nella pagina di accesso. Appare solo sui database ospitati su Odoo.sh e consente l'accesso tramite la sessione Odoo.sh.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Download in corso...
     downloaded: Scaricato!
     download_failed: Download non riuscito
+
+  odoosh_login:
+    login: Accedi con Odoo.sh
+    login_hint: Accedi a questo database con la tua sessione Odoo.sh
 
 services:
   rpc:

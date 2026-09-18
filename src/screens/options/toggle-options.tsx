@@ -7,6 +7,7 @@ import {
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
   CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
+  CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON,
   CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
 } from "@/utils/constants";
 
@@ -37,6 +38,16 @@ export const LoginButtonsOption = () => (
     tooltipContent={t("options.settings.login_buttons_desc")}
     settingKey={CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS}
     onToggle={(checked) => settingsService.setShowLoginButtons(checked)}
+  />
+);
+
+export const OdooShLoginButtonOption = () => (
+  <ToggleOption
+    id="odoosh-login-button"
+    title={t("options.settings.odoosh_login_button")}
+    tooltipContent={t("options.settings.odoosh_login_button_desc")}
+    settingKey={CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON}
+    onToggle={(checked) => settingsService.setShowOdooShLoginButton(checked)}
   />
 );
 

@@ -553,6 +553,8 @@ options:
     regex_incorrect: Regex lijkt onjuist. Controleer a.u.b.
     download_full_log: Volledige logs downloaden
     download_full_log_desc: Voegt een knop toe op Odoo.SH-logviewerpagina's om het volledige ruwe logbestand te downloaden in plaats van te vertrouwen op de ingebouwde viewer (die slechts één blok tegelijk toont).
+    odoosh_login_button: Odoo.sh-loginknop tonen
+    odoosh_login_button_desc: Voegt een "Inloggen met Odoo.sh"-knop toe op de inlogpagina. Deze verschijnt alleen op databases die op Odoo.sh worden gehost en logt u in via uw Odoo.sh-sessie.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -821,6 +823,10 @@ page_features:
     downloading: Bezig met downloaden...
     downloaded: Gedownload!
     download_failed: Download mislukt
+
+  odoosh_login:
+    login: Inloggen met Odoo.sh
+    login_hint: Log in op deze database met uw Odoo.sh-sessie
 
 services:
   rpc:

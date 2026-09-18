@@ -182,6 +182,16 @@ describe("sanitizeSettings", () => {
     expect(sanitizeSettings({ downloadFullLog: true }).downloadFullLog).toBe(true);
     expect(sanitizeSettings({ downloadFullLog: "yes" }).downloadFullLog).toBe(false);
   });
+
+  test("should default showOdooShLoginButton to false", () => {
+    expect(getDefaultSettings().showOdooShLoginButton).toBe(false);
+    expect(sanitizeSettings(undefined).showOdooShLoginButton).toBe(false);
+  });
+
+  test("should keep a valid showOdooShLoginButton boolean value", () => {
+    expect(sanitizeSettings({ showOdooShLoginButton: true }).showOdooShLoginButton).toBe(true);
+    expect(sanitizeSettings({ showOdooShLoginButton: "yes" }).showOdooShLoginButton).toBe(false);
+  });
 });
 
 describe("getSettingFromDataset", () => {
