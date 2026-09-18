@@ -1,8 +1,18 @@
+.x-odoo-technical-print-options {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+}
+
 .x-odoo-technical-print-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
   margin-left: 5px;
-  cursor: pointer;
-  padding: 5px;
+  margin-block: calc(-1 * var(--bs-dropdown-item-padding-y, 0.25rem));
+  padding-block: var(--bs-dropdown-item-padding-y, 0.25rem);
+  padding-inline: 4px;
 
   &:hover {
     background-color: var(--light);
@@ -35,5 +45,18 @@
 
   i {
     height: fit-content;
+  }
+}
+
+.x-odoo-technical-print-option-spinner {
+  animation: x-odoo-print-option-spin 1s linear infinite;
+}
+
+@keyframes x-odoo-print-option-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

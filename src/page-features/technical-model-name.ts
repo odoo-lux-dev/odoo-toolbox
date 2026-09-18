@@ -1,3 +1,4 @@
+import type { OdooOverlayItem } from "@/types";
 import { copyText } from "@/utils/clipboard";
 import { t } from "@/utils/i18n-page";
 import { getShowTechnicalModel, hasNewOdooURL, isOnNewURLPos } from "@/utils/utils";
@@ -102,7 +103,14 @@ const getOpenModalModels = (): string[] => {
   const overlays =
     window.odoo?.__WOWL_DEBUG__?.root?.__owl__?.app?.env?.services?.overlay?.overlays;
   if (!overlays) return [];
-  return Object.values(overlays)
+
+  // Owl 3 exposes the overlays as a collection exposing `items()`, Owl 2 (legacy) as a plain object keyed by overlay id.
+  const overlayItems =
+    typeof (overlays as { items?: () => OdooOverlayItem[] }).items === "function"
+      ? (overlays as { items: () => OdooOverlayItem[] }).items()
+      : Object.values(overlays);
+
+  return overlayItems
     .map((o) => o.props?.subProps?.actionProps?.resModel)
     .filter((m): m is string => Boolean(m));
 };
