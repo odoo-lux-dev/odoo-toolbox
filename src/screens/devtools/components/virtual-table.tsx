@@ -1,12 +1,18 @@
 import { Search01Icon, Settings02Icon } from "@hugeicons/core-free-icons";
 import { debounce } from "@solid-primitives/scheduled";
 import {
-  createSolidTable,
-  getCoreRowModel,
-  getFilteredRowModel,
-  flexRender,
+  columnFilteringFeature,
+  columnResizingFeature,
+  columnSizingFeature,
+  columnVisibilityFeature,
+  createFilteredRowModel,
+  createTable,
+  filterFn_includesString,
+  FlexRender,
+  globalFilteringFeature,
+  tableFeatures,
   type ColumnDef,
-  type VisibilityState,
+  type ColumnVisibilityState,
 } from "@tanstack/solid-table";
 import {
   Virtualizer,
@@ -45,8 +51,20 @@ const PIVOT_TOTAL_KEY = "__pt__";
 
 const NUMERIC_FIELD_TYPES = new Set(["float", "integer", "monetary"]);
 
+type TableRow = Record<string, unknown>;
+
+const features = tableFeatures({
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  columnSizingFeature,
+  columnResizingFeature,
+  globalFilteringFeature,
+  filteredRowModel: createFilteredRowModel(),
+  filterFns: { includesString: filterFn_includesString },
+});
+
 const [globalFilter, setGlobalFilter] = createSignal("");
-const [columnVisibility, setColumnVisibility] = createSignal<VisibilityState>({});
+const [columnVisibility, setColumnVisibility] = createSignal<ColumnVisibilityState>({});
 const [pivotRowVisibility, setPivotRowVisibility] = createSignal<Record<string, boolean>>({});
 const [showPivotTotal, setShowPivotTotal] = createSignal(true);
 
@@ -188,7 +206,7 @@ export const VirtualTable = (props: {
     ];
   });
 
-  const tableCols = createMemo<ColumnDef<Record<string, unknown>>[]>(() => {
+  const tableCols = createMemo<ColumnDef<typeof features, TableRow>[]>(() => {
     if (local.pivoted) {
       return (pivotColumnKeys() ?? []).map((key) => ({
         id: key,
@@ -242,15 +260,14 @@ export const VirtualTable = (props: {
     }));
   });
 
-  const table = createSolidTable({
+  const table = createTable({
+    features,
     get data() {
       return displayData();
     },
     get columns() {
       return tableCols();
     },
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     state: {
@@ -262,7 +279,7 @@ export const VirtualTable = (props: {
       },
     },
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString" as any,
+    globalFilterFn: "includesString",
     onColumnVisibilityChange: setColumnVisibility,
   });
 
@@ -562,7 +579,9 @@ export const VirtualTable = (props: {
         class="relative w-full flex-1 overflow-auto text-xs"
         role="table"
         dir={isRtl() ? "rtl" : "ltr"}
-        classList={{ "select-none": Boolean(table.getState().columnSizingInfo.isResizingColumn) }}
+        classList={{
+          "select-none": Boolean(table.atoms.columnResizing.get().isResizingColumn),
+        }}
         onContextMenu={local.handleTableContextMenu}
       >
         <div
@@ -629,7 +648,7 @@ export const VirtualTable = (props: {
                         </div>
                       ) : (
                         <span class="relative z-10 block truncate">
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <FlexRender header={header} />
                         </span>
                       )}
                       <div
@@ -708,7 +727,7 @@ export const VirtualTable = (props: {
                                 return String(v);
                               })()}
                             >
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              <FlexRender cell={cell} />
                             </div>
                           </div>
                         );

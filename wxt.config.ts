@@ -13,6 +13,9 @@ export default defineConfig({
   manifest: ({ browser }) => {
     const manifest: Partial<UserManifest> = {
       name: pkg.displayName ?? pkg.name,
+      // `package.json` version is a `{{EXTENSION_VERSION}}` placeholder replaced by
+      // the release workflow before building. Fall back to a valid version locally.
+      version: /^\d/.test(pkg.version) ? pkg.version : "0.0.0",
       default_locale: "en",
       permissions: [
         "storage",
@@ -71,6 +74,22 @@ export default defineConfig({
     return manifest;
   },
   hooks: {
+    // Reverts the TypeScript config to WXT v0.20 defaults.
+    // - https://wxt.dev/guide/resources/upgrading.html#wxttsconfigjson-compiler-option-changes
+    "prepare:tsconfig": (_, { tsconfig }) => {
+      const { compilerOptions } = tsconfig;
+      delete compilerOptions.lib;
+      compilerOptions.module = "ESNext";
+      delete compilerOptions.moduleDetection;
+      delete compilerOptions.allowImportingTsExtensions;
+      delete compilerOptions.verbatimModuleSyntax;
+      compilerOptions.esModuleInterop = true;
+      compilerOptions.forceConsistentCasingInFileNames = true;
+      compilerOptions.resolveJsonModule = true;
+      delete compilerOptions.noFallthroughCasesInSwitch;
+      delete compilerOptions.noUncheckedIndexedAccess;
+      delete compilerOptions.noImplicitOverride;
+    },
     "build:manifestGenerated": (wxt, manifest) => {
       if (wxt.config.mode === "development") {
         manifest.name += " (DEV)";

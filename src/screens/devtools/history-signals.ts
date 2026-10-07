@@ -8,13 +8,11 @@ export const [historyLoadingSignal, setHistoryLoadingSignal] = createSignal(fals
 export const [historyErrorSignal, setHistoryErrorSignal] = createSignal<string | null>(null);
 
 const _memos = createRoot(() => ({
-  historyState: createMemo(
-    (): HistoryState => ({
-      actions: historyActionsSignal(),
-      loading: historyLoadingSignal(),
-      error: historyErrorSignal(),
-    }),
-  ),
+  historyState: createMemo((): HistoryState => ({
+    actions: historyActionsSignal(),
+    loading: historyLoadingSignal(),
+    error: historyErrorSignal(),
+  })),
   byType: createMemo(
     () => (type: HistoryActionType) =>
       historyActionsSignal().filter((action) => action.type === type),

@@ -335,5 +335,5 @@ export const resolveDoActionFunction = (odoo: OdooWindow | undefined) => {
 };
 
 export const serializeErrorForFirefox = (error: unknown): Record<string, unknown> => {
-  return { ...error };
+  return { ...(error as Record<string, unknown>) };
 };
