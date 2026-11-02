@@ -1,3 +1,5 @@
+import { getCookie } from "@/utils/cookie-utils";
+
 type CompanyServiceLike = {
   activeCompanyIds?: number[];
   allowedCompanyIds?: number[];
@@ -50,29 +52,6 @@ const firstCompanyIds = (...values: unknown[]): number[] => {
   return [];
 };
 
-const readCookie = (name: string): string | null => {
-  if (typeof document === "undefined") return null;
-
-  try {
-    const prefix = `${name}=`;
-    const entry = document.cookie
-      .split(";")
-      .map((part) => part.trim())
-      .find((part) => part.startsWith(prefix));
-
-    if (!entry) return null;
-
-    const value = entry.slice(prefix.length);
-    try {
-      return decodeURIComponent(value);
-    } catch {
-      return value;
-    }
-  } catch {
-    return null;
-  }
-};
-
 const getCidsFromUrl = (): string | null => {
   if (typeof window === "undefined") return null;
 
@@ -95,7 +74,7 @@ const getCidsFromUrl = (): string | null => {
 export const resolveActiveCompanyIds = ({
   root,
   cidsFromUrl = getCidsFromUrl(),
-  cidsFromCookie = readCookie("cids"),
+  cidsFromCookie = getCookie("cids"),
   preferCookie = false,
 }: {
   root?: PrintRootLike;

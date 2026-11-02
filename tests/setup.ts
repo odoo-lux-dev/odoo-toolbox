@@ -1,7 +1,14 @@
 import { mock } from "bun:test";
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
-GlobalRegistrator.register();
+GlobalRegistrator.register({
+  url: "http://localhost/",
+  settings: {
+    disableCSSFileLoading: true,
+    disableJavaScriptFileLoading: true,
+    handleDisabledFileLoadingAsSuccess: true,
+  },
+});
 
 const memoryStorage = new Map<string, unknown>();
 

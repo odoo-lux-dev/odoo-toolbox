@@ -1,4 +1,5 @@
 import type { DefaultColorScheme } from "@/types";
+import { getCookie, setCookie } from "@/utils/cookie-utils";
 
 const COOKIE_TTL = 24 * 60 * 60 * 365;
 
@@ -102,27 +103,12 @@ const updateScripts = (targetScheme: "light" | "dark"): boolean => {
  * Sets color scheme using cookies for Odoo v16
  */
 const setCookiesForV16 = (targetScheme: "light" | "dark"): boolean => {
-  const websiteCookies = document.cookie.split("; ");
-  const cookiesMap = websiteCookies.reduce(
-    (acc, cookie) => {
-      const [key, value] = cookie.split("=");
-      acc[key] = value;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  const reload =
+    getCookie("configured_color_scheme") !== targetScheme ||
+    getCookie("color_scheme") !== targetScheme;
 
-  let reload = false;
-
-  if (cookiesMap.configured_color_scheme !== targetScheme) {
-    reload = true;
-    document.cookie = `configured_color_scheme=${targetScheme}; path=/; max-age=${COOKIE_TTL}`;
-  }
-
-  if (cookiesMap["color_scheme"] !== targetScheme) {
-    reload = true;
-    document.cookie = `color_scheme=${targetScheme}; path=/; max-age=${COOKIE_TTL}`;
-  }
+  setCookie("configured_color_scheme", targetScheme, { maxAge: COOKIE_TTL });
+  setCookie("color_scheme", targetScheme, { maxAge: COOKIE_TTL });
 
   return reload;
 };
