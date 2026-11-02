@@ -59,6 +59,7 @@
     "eslint-plugin-better-tailwindcss": "^4.10.0",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
     "sass": "^1.107.1",
     "typescript": "^7.0.2",
     "vite": "^7.3.7",
