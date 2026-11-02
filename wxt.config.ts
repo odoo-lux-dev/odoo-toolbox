@@ -109,14 +109,22 @@ export default defineConfig({
         transformMixedEsModules: true,
       };
     } else {
-      build.minify = "esbuild";
+      build.minify = "oxc";
+      build.rolldownOptions = {
+        output: {
+          minify: {
+            compress: true,
+            mangle: false, // Keep variable names
+          },
+        },
+      };
     }
     return {
       plugins: [tailwindcss(), yaml()],
       build,
-      esbuild: {
-        minifyIdentifiers: false, // Keep variable names
-      },
+      // Tailwind generates a sourcemap in build mode only when this is enabled,
+      // otherwise Rolldown warns about a broken sourcemap during `wxt dev`.
+      ...(mode === "development" ? { css: { devSourcemap: true } } : {}),
     };
   },
 });
