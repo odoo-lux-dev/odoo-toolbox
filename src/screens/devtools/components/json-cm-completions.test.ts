@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, test } from "bun:test";
 
 import {
   CompletionContext,
@@ -11,7 +11,22 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 
 import { fieldCompletions } from "@/screens/devtools/components/json-cm-completions";
+import { initI18n } from "@/services/i18n-service";
 import type { FieldMetadata } from "@/types";
+
+beforeAll(async () => {
+  (globalThis as typeof globalThis & { browser?: unknown }).browser = {
+    runtime: {
+      sendMessage: async () => ({
+        ok: true,
+        messages: { devtools_completions_loading: "Loading fields..." },
+      }),
+    },
+    i18n: { getMessage: () => "" },
+  };
+
+  await initI18n();
+});
 
 const parentMeta: Record<string, FieldMetadata> = {
   line_ids: { string: "Lines", type: "one2many", relation: "account.move.line" },

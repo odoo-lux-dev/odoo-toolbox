@@ -3,10 +3,10 @@ import { settingsService } from "@/services/settings-service";
 /**
  * Shared locale definitions and resolution helpers.
  *
- * Kept separate from `i18n-service`, which statically imports every locale YAML
- * file. Background-only consumers (e.g. the context menu) can import this module
- * to read/resolve the active locale without pulling the translation files into
- * their bundle.
+ * Kept separate from `i18n-service`, which loads translations at runtime.
+ * Background-only consumers (e.g. the context menu) can import this module to
+ * read/resolve the active locale without pulling translation files into their
+ * bundle.
  */
 
 export const SUPPORTED_LOCALES = [

@@ -1,3 +1,4 @@
+import { loadMessages } from "@/entries/background/i18n";
 import { resolveLocale, type SupportedLocale } from "@/services/i18n-locales";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
@@ -30,16 +31,11 @@ const DEFAULT_MESSAGES: ContextMenuMessages = {
 // the user's configured locale without bundling every translation file into the background
 const getContextMenuMessages = async (locale: SupportedLocale): Promise<ContextMenuMessages> => {
   try {
-    const response = await fetch(
-      browser.runtime.getURL(`_locales/${locale}/messages.json` as never),
-      { cache: "no-store" },
-    );
-    if (!response.ok) throw new Error(`Failed to load messages for locale "${locale}"`);
-    const messages = (await response.json()) as Record<string, { message?: string }>;
+    const messages = await loadMessages(locale);
 
     const result: ContextMenuMessages = { ...DEFAULT_MESSAGES };
     for (const key of MESSAGE_KEYS) {
-      const value = messages[key]?.message;
+      const value = messages[key];
       if (value) {
         const target = key.slice("browser_context_menu_".length);
         result[target as keyof ContextMenuMessages] = value;

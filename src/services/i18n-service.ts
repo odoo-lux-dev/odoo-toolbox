@@ -1,15 +1,5 @@
 import { createSignal } from "solid-js";
 
-import arYaml from "@/locales/ar.yml";
-import deYaml from "@/locales/de.yml";
-import enYaml from "@/locales/en.yml";
-import esYaml from "@/locales/es.yml";
-import frYaml from "@/locales/fr.yml";
-import hiYaml from "@/locales/hi.yml";
-import itYaml from "@/locales/it.yml";
-import nlYaml from "@/locales/nl.yml";
-import ptBRYaml from "@/locales/pt_BR.yml";
-import ptPTYaml from "@/locales/pt_PT.yml";
 import {
   AUTO_LOCALE,
   DEFAULT_LOCALE,
@@ -17,29 +7,30 @@ import {
   normalizeLocale,
   resolveLocale,
 } from "@/services/i18n-locales";
+import { I18N_GET_MESSAGES, type I18nGetMessagesResponse } from "@/services/i18n-messages";
+import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 import { injectTranslations } from "@/utils/i18n-page";
 export { AUTO_LOCALE, SUPPORTED_LOCALES, normalizeLocale };
 export type { SupportedLocale } from "@/services/i18n-locales";
 
 interface LocaleConfig {
-  yaml: Record<string, unknown>;
   flag: string;
   label: string;
   rtl?: boolean;
 }
 
 const LOCALES = {
-  en: { yaml: enYaml, flag: "🇬🇧", label: "English" },
-  fr: { yaml: frYaml, flag: "🇫🇷", label: "Français" },
-  es: { yaml: esYaml, flag: "🇪🇸", label: "Español" },
-  nl: { yaml: nlYaml, flag: "🇳🇱", label: "Nederlands" },
-  de: { yaml: deYaml, flag: "🇩🇪", label: "Deutsch" },
-  it: { yaml: itYaml, flag: "🇮🇹", label: "Italiano" },
-  pt_PT: { yaml: ptPTYaml, flag: "🇵🇹", label: "Português (PT)" },
-  pt_BR: { yaml: ptBRYaml, flag: "🇧🇷", label: "Português (BR)" },
-  hi: { yaml: hiYaml, flag: "🇮🇳", label: "हिन्दी" },
-  ar: { yaml: arYaml, flag: "🇸🇦", label: "العربية", rtl: true },
+  en: { flag: "🇬🇧", label: "English" },
+  fr: { flag: "🇫🇷", label: "Français" },
+  es: { flag: "🇪🇸", label: "Español" },
+  nl: { flag: "🇳🇱", label: "Nederlands" },
+  de: { flag: "🇩🇪", label: "Deutsch" },
+  it: { flag: "🇮🇹", label: "Italiano" },
+  pt_PT: { flag: "🇵🇹", label: "Português (PT)" },
+  pt_BR: { flag: "🇧🇷", label: "Português (BR)" },
+  hi: { flag: "🇮🇳", label: "हिन्दी" },
+  ar: { flag: "🇸🇦", label: "العربية", rtl: true },
 } satisfies Record<string, LocaleConfig>;
 
 export const getLocaleConfig = (locale: string): LocaleConfig | undefined =>
@@ -50,30 +41,34 @@ export function getLocaleLabel(locale: string): { flag: string; label: string } 
   return config ? { flag: config.flag, label: config.label } : { flag: "🌐", label: locale };
 }
 
-function flatten(obj: Record<string, unknown>, prefix = ""): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const fullKey = prefix ? `${prefix}_${key}` : key;
-    if (typeof value === "string") {
-      result[fullKey] = value;
-    } else if (typeof value === "object" && value !== null) {
-      Object.assign(result, flatten(value as Record<string, unknown>, fullKey));
-    }
-  }
-  return result;
-}
+const messagesCache = new Map<string, Promise<Record<string, string>>>();
 
-const flatCache: Record<string, Record<string, string>> = {};
-function getFlatMessages(locale: string): Record<string, string> {
-  if (!flatCache[locale]) {
-    const config = getLocaleConfig(locale);
-    flatCache[locale] = config ? flatten(config.yaml) : {};
+const loadMessages = (locale: string): Promise<Record<string, string>> => {
+  if (!messagesCache.has(locale)) {
+    const promise = (async () => {
+      const response = (await browser.runtime.sendMessage({
+        type: I18N_GET_MESSAGES,
+        locale,
+      })) as I18nGetMessagesResponse;
+
+      if (!response?.ok) {
+        throw new Error(response?.error ?? `Failed to load messages for locale "${locale}"`);
+      }
+
+      return response.messages;
+    })().catch((error) => {
+      messagesCache.delete(locale);
+      throw error;
+    });
+
+    messagesCache.set(locale, promise);
   }
-  return flatCache[locale];
-}
+
+  return messagesCache.get(locale)!;
+};
 
 let currentLocale: string = DEFAULT_LOCALE;
-let currentMessages: Record<string, string> = getFlatMessages(DEFAULT_LOCALE);
+let currentMessages: Record<string, string> = {};
 
 const [localeVersion, setLocaleVersion] = createSignal(0);
 export { localeVersion };
@@ -84,7 +79,20 @@ export function getDirection(locale: string): "ltr" | "rtl" {
 
 export async function initI18n(): Promise<{ locale: string; messages: Record<string, string> }> {
   currentLocale = await resolveLocale();
-  currentMessages = getFlatMessages(currentLocale);
+
+  try {
+    currentMessages = await loadMessages(currentLocale);
+  } catch (error) {
+    Logger.error(`Failed to load messages for locale "${currentLocale}"`, error);
+    currentMessages = {};
+    if (currentLocale !== DEFAULT_LOCALE) {
+      try {
+        currentMessages = await loadMessages(DEFAULT_LOCALE);
+      } catch (fallbackError) {
+        Logger.error("Failed to load fallback locale messages", fallbackError);
+      }
+    }
+  }
 
   if (typeof document !== "undefined") {
     const isExtensionPage = location.protocol.includes("extension");
@@ -116,7 +124,10 @@ export function t(key: string, substitutions?: (string | number)[]): string {
   localeVersion();
 
   const underscoredKey = key.replace(/\./g, "_");
-  let message = currentMessages[underscoredKey] ?? key;
+  let message =
+    currentMessages[underscoredKey] ||
+    (typeof browser !== "undefined" ? browser.i18n.getMessage(underscoredKey as never) : "") ||
+    key;
 
   if (substitutions) {
     for (let i = 0; i < substitutions.length; i++) {

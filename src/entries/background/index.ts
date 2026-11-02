@@ -1,5 +1,6 @@
 import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
+import { handleI18nMessage } from "@/entries/background/i18n";
 import { getDebugModeUrl } from "@/page-features/debug-mode";
 import { configurationService } from "@/services/configuration-service";
 import { Logger } from "@/services/logger";
@@ -95,6 +96,9 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (handleI18nMessage(request, sendResponse)) {
+      return true;
+    }
     if (request.tabId && request.scriptId) {
       handleDevToolsMessage(request, sendResponse);
       return true;
