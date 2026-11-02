@@ -1,5 +1,6 @@
 import type { DefaultColorScheme } from "@/types";
 import { getCookie, setCookie } from "@/utils/cookie-utils";
+import { getDefaultColorScheme, getOdooVersion } from "@/utils/utils";
 
 const COOKIE_TTL = 24 * 60 * 60 * 365;
 
@@ -60,46 +61,6 @@ const updateStylesheets = (targetScheme: "light" | "dark"): boolean => {
 };
 
 /**
- * Updates scripts in head (adds or removes "_dark" suffix)
- * Only for v17-v18, v19+ doesn't use _dark for scripts
- */
-const updateScripts = (targetScheme: "light" | "dark"): boolean => {
-  const isDarkMode = targetScheme === "dark";
-  let modified = false;
-
-  const scripts = document.querySelectorAll<HTMLScriptElement>('script[src*="/web/assets/"]');
-  scripts.forEach((script) => {
-    const src = script.getAttribute("src");
-    if (!src) return;
-
-    const hasDark = src.includes(".assets_web_dark.");
-    const hasLight = src.includes(".assets_web.");
-
-    if (isDarkMode && hasLight && !hasDark) {
-      // Switch to dark: add "_dark" before ".min.js"
-      const newSrc = src.replace(/\.assets_web\.min\.js/, ".assets_web_dark.min.js");
-      const newScript = document.createElement("script");
-      newScript.type = "text/javascript";
-      newScript.src = newSrc;
-      newScript.setAttribute("onerror", "__odooAssetError=1");
-      script.parentNode?.replaceChild(newScript, script);
-      modified = true;
-    } else if (!isDarkMode && hasDark) {
-      // Switch to light: remove "_dark"
-      const newSrc = src.replace(/\.assets_web_dark\.min\.js/, ".assets_web.min.js");
-      const newScript = document.createElement("script");
-      newScript.type = "text/javascript";
-      newScript.src = newSrc;
-      newScript.setAttribute("onerror", "__odooAssetError=1");
-      script.parentNode?.replaceChild(newScript, script);
-      modified = true;
-    }
-  });
-
-  return modified;
-};
-
-/**
  * Sets color scheme using cookies for Odoo v16
  */
 const setCookiesForV16 = (targetScheme: "light" | "dark"): boolean => {
@@ -139,13 +100,13 @@ const setDefaultColorScheme = (): { reload: boolean } => {
     return { reload };
   }
 
-  // Odoo 17+: Update stylesheets (common for all versions)
-  updateStylesheets(effectiveScheme);
+  // Odoo 17+: keep the cookie in sync for the server-side bundle, the lazy
+  // bundles and the JS colors
+  setCookie("color_scheme", effectiveScheme, { maxAge: COOKIE_TTL });
 
-  // Odoo 17-18: Also update scripts (v19+ doesn't use _dark for scripts)
-  if (odooVersionNumber < 19.0) {
-    updateScripts(effectiveScheme);
-  }
+  // Only swap stylesheets: re-executing the dark JS bundle breaks the Owl
+  // namespace used by lazily loaded views (cf issue #45)
+  updateStylesheets(effectiveScheme);
 
   return { reload: false };
 };
