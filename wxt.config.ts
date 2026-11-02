@@ -29,7 +29,7 @@ export default defineConfig({
       web_accessible_resources: [
         {
           matches: ["*://*/*"],
-          resources: ["odoo-websites.js"],
+          resources: ["odoo-websites.js", "odoo-technical-list.js"],
         },
       ],
       commands: {

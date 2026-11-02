@@ -25,5 +25,11 @@ export default defineContentScript({
     await injectScript("/odoo-websites.js", {
       keepInDom: true,
     });
+
+    if (settings.showTechnicalList) {
+      await injectScript("/odoo-technical-list.js", {
+        keepInDom: true,
+      });
+    }
   },
 });
