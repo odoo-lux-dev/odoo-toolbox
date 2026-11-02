@@ -94,7 +94,7 @@ async function executeInContentScript(scriptId: string, params?: unknown | null)
    *
    * @returns The user context as a plain object, or an empty object when unavailable.
    */
-  function getOdooContext(): Record<string, unknown> {
+  async function getOdooContext(): Promise<Record<string, unknown>> {
     try {
       const { version, majorVersion } = getOdooInfo();
       const odoo = window.odoo;
@@ -102,11 +102,30 @@ async function executeInContentScript(scriptId: string, params?: unknown | null)
         return {};
       }
 
-      const context =
-        odoo?.__WOWL_DEBUG__?.root?.user?.context ??
-        odoo?.__DEBUG__?.services?.user?.context?.user_context;
+      const root = odoo?.__WOWL_DEBUG__?.root;
+      const userService = root?.env?.services?.user ?? root?.user;
+      const liveContext = userService?.context;
+      if (liveContext && Object.keys(liveContext).length > 0) {
+        return liveContext;
+      }
 
-      return context || {};
+      const legacyContext =
+        odoo?.__DEBUG__?.services?.["@web/session"]?.session?.user_context ??
+        odoo?.__DEBUG__?.services?.user?.context?.user_context;
+      if (legacyContext && Object.keys(legacyContext).length > 0) {
+        return legacyContext;
+      }
+
+      // Odoo 19+: the user singleton is not exposed as a service anymore.
+      const orm = root?.env?.services?.orm;
+      if (orm?.call) {
+        const context = await orm.call("res.users", "context_get", []);
+        if (context && typeof context === "object" && !Array.isArray(context)) {
+          return context as Record<string, unknown>;
+        }
+      }
+
+      return {};
     } catch {
       return {};
     }

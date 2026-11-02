@@ -36,6 +36,17 @@ interface OwlRoot {
       action?: {
         doAction?: (...args: unknown[]) => unknown;
       };
+      user?: {
+        context?: Record<string, unknown>;
+      };
+      orm?: {
+        call?: (
+          model: string,
+          method: string,
+          args?: unknown[],
+          kwargs?: Record<string, unknown>,
+        ) => Promise<unknown>;
+      };
     };
   };
   user?: {
@@ -55,6 +66,11 @@ interface OwlDebugServices {
   };
   "web.web_client"?: {
     do_action?: (...args: unknown[]) => unknown;
+  };
+  "@web/session"?: {
+    session?: {
+      user_context?: Record<string, unknown>;
+    };
   };
   user?: {
     context?: {
@@ -99,18 +115,32 @@ export const getOdooInfoFromWindow = (odoo: OdooWindow | undefined): OdooInfo =>
   };
 };
 
-export const getOdooContextFromWindow = (odoo: OdooWindow | undefined): Record<string, unknown> => {
+export const getOdooContextFromWindow = async (
+  odoo: OdooWindow | undefined,
+): Promise<Record<string, unknown>> => {
   try {
     const { version, majorVersion } = getOdooInfoFromWindow(odoo);
     if (!version || !majorVersion) return {};
 
-    const context = odoo?.__WOWL_DEBUG__?.root ? odoo.__WOWL_DEBUG__.root.user?.context : undefined;
-    const legacyContext = odoo?.__DEBUG__?.services
-      ? odoo.__DEBUG__.services.user?.context?.user_context
-      : undefined;
+    const userService =
+      odoo?.__WOWL_DEBUG__?.root?.env?.services?.user ?? odoo?.__WOWL_DEBUG__?.root?.user;
+    const context = userService?.context;
+    if (context && Object.keys(context).length > 0) return context;
 
-    const result = (context || legacyContext || {}) as Record<string, unknown>;
-    return result;
+    const legacyContext = odoo?.__DEBUG__?.services
+      ? (odoo.__DEBUG__.services["@web/session"]?.session?.user_context ??
+        odoo.__DEBUG__.services.user?.context?.user_context)
+      : undefined;
+    if (legacyContext && Object.keys(legacyContext).length > 0) return legacyContext;
+
+    // Odoo 19+: the user singleton is not exposed anymore, ask the server.
+    const orm = odoo?.__WOWL_DEBUG__?.root?.env?.services?.orm;
+    if (!orm?.call) return {};
+
+    const fetchedContext = await orm.call("res.users", "context_get", []);
+    return fetchedContext && typeof fetchedContext === "object" && !Array.isArray(fetchedContext)
+      ? (fetchedContext as Record<string, unknown>)
+      : {};
   } catch {
     return {};
   }

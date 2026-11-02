@@ -99,32 +99,6 @@ const isOnNewURLPos = () => {
   return odooWindowObject.__WOWL_DEBUG__?.root && "pos" in odooWindowObject.__WOWL_DEBUG__.root;
 };
 
-const retrieveIdFromAvatar = () => {
-  const res: Record<"partnerId" | "userId", number | null> = {
-    partnerId: null,
-    userId: null,
-  };
-  const odooVersion = getOdooVersion();
-  const userAvatar = document.querySelector(".o_user_avatar") as HTMLImageElement | null;
-
-  if (!odooVersion || !userAvatar) return res;
-
-  const userAvatarLink = userAvatar.src;
-
-  if (parseFloat(odooVersion) >= 18.0) {
-    // Link example : */web/image/res.partner/3/avatar_128?unique=1768400056000
-    const partnerId = userAvatarLink.match(/\/res\.partner\/(\d+)/);
-    res.partnerId = partnerId ? parseInt(partnerId[1]) : null;
-  } else {
-    // Link example : */web/image?model=res.users&field=avatar_128&id=2
-    const avatarUrlSearchParams = new URL(userAvatarLink).searchParams;
-    const userId = avatarUrlSearchParams.get("id");
-    res.userId = userId ? parseInt(userId) : null;
-  }
-
-  return res;
-};
-
 export {
   getDefaultDebugMode,
   hasNewOdooURL,
@@ -137,7 +111,6 @@ export {
   getDefaultColorScheme,
   getShowTechnicalList,
   getTechnicalListPosition,
-  retrieveIdFromAvatar,
   getShowLoginButtons,
   getShowOdooShLoginButton,
   getOdooToolboxTheme,

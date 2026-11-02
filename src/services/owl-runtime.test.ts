@@ -146,16 +146,16 @@ describe("retrieveMatchingOwlComponentRecursively", () => {
 });
 
 describe("getOdooContextFromWindow", () => {
-  it("returns empty object when no odoo", () => {
-    expect(getOdooContextFromWindow(undefined)).toEqual({});
+  it("returns empty object when no odoo", async () => {
+    await expect(getOdooContextFromWindow(undefined)).resolves.toEqual({});
   });
 
-  it("returns empty object when version is null", () => {
+  it("returns empty object when version is null", async () => {
     const odoo = { info: {} };
-    expect(getOdooContextFromWindow(odoo as never)).toEqual({});
+    await expect(getOdooContextFromWindow(odoo as never)).resolves.toEqual({});
   });
 
-  it("reads context from __WOWL_DEBUG__", () => {
+  it("reads context from __WOWL_DEBUG__", async () => {
     const odoo = {
       info: { server_version_info: ["17", "0"] },
       __WOWL_DEBUG__: {
@@ -166,11 +166,30 @@ describe("getOdooContextFromWindow", () => {
         },
       },
     };
-    const result = getOdooContextFromWindow(odoo as never);
+    const result = await getOdooContextFromWindow(odoo as never);
     expect(result).toEqual({ lang: "en_US", uid: 2 });
   });
 
-  it("falls back to __DEBUG__ legacy context", () => {
+  it("reads context from the user service when the root does not expose it", async () => {
+    const odoo = {
+      info: { server_version_info: ["18", "0"] },
+      __WOWL_DEBUG__: {
+        root: {
+          env: {
+            services: {
+              user: {
+                context: { lang: "fr_FR", allowed_company_ids: [1] },
+              },
+            },
+          },
+        },
+      },
+    };
+    const result = await getOdooContextFromWindow(odoo as never);
+    expect(result).toEqual({ lang: "fr_FR", allowed_company_ids: [1] });
+  });
+
+  it("falls back to __DEBUG__ legacy context", async () => {
     const odoo = {
       info: { server_version_info: ["14", "0"] },
       __DEBUG__: {
@@ -183,8 +202,44 @@ describe("getOdooContextFromWindow", () => {
         },
       },
     };
-    const result = getOdooContextFromWindow(odoo as never);
+    const result = await getOdooContextFromWindow(odoo as never);
     expect(result).toEqual({ lang: "fr_FR" });
+  });
+
+  it("falls back to the legacy @web/session context", async () => {
+    const odoo = {
+      info: { server_version_info: ["14", "0"] },
+      __DEBUG__: {
+        services: {
+          "@web/session": {
+            session: {
+              user_context: { lang: "nl_NL" },
+            },
+          },
+        },
+      },
+    };
+    const result = await getOdooContextFromWindow(odoo as never);
+    expect(result).toEqual({ lang: "nl_NL" });
+  });
+
+  it("asks the ORM when Odoo no longer exposes the user service", async () => {
+    const odoo = {
+      info: { server_version_info: ["19", "0"] },
+      __WOWL_DEBUG__: {
+        root: {
+          env: {
+            services: {
+              orm: {
+                call: async () => ({ lang: "en_US", uid: 7, allowed_company_ids: [1] }),
+              },
+            },
+          },
+        },
+      },
+    };
+    const result = await getOdooContextFromWindow(odoo as never);
+    expect(result).toEqual({ lang: "en_US", uid: 7, allowed_company_ids: [1] });
   });
 });
 

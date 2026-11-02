@@ -2,6 +2,7 @@ import { OrmReportRecord } from "@/types";
 import { getOdooVersion, getShowPrintOptionsHTML, getShowPrintOptionsPDF } from "@/utils/utils";
 
 import { HTML_ICON_SVG, PDF_ICON_SVG } from "./print-options-icons";
+import { buildReportUrl } from "./print-options-url";
 
 // Odoo >= 20 dropped Font Awesome in favor of Material design icons (`<i class="oi" data-icon="...">`).
 // Fall back on the DOM itself just in case
@@ -15,7 +16,7 @@ const generateTechnicalPrintOptionElement = (
   reportType: "html" | "pdf",
   reportName: string,
   recordId: number,
-  companies: number[],
+  context: Record<string, unknown>,
 ): HTMLSpanElement => {
   const spanElement = document.createElement("span");
   spanElement.classList.add("x-odoo-technical-print-option");
@@ -32,10 +33,7 @@ const generateTechnicalPrintOptionElement = (
   spanElement.appendChild(spanIcon);
   spanElement.addEventListener("click", (event) => {
     event.stopPropagation();
-    window.open(
-      `/report/${reportType}/${reportName}/${recordId}?context={"allowed_company_ids":${JSON.stringify(companies)}}`,
-      "_blank",
-    );
+    window.open(buildReportUrl(reportType, reportName, recordId, context), "_blank");
   });
 
   return spanElement;
@@ -47,7 +45,7 @@ const addPrintOption = (
   showPrintOptionsHTML: boolean,
   showPrintOptionsPDF: boolean,
   currentResId: number,
-  companies: number[],
+  context: Record<string, unknown>,
 ) => {
   ["pdf", "html"].forEach((type) => {
     if ((type === "pdf" && showPrintOptionsPDF) || (type === "html" && showPrintOptionsHTML)) {
@@ -55,7 +53,7 @@ const addPrintOption = (
         type,
         report.report_name,
         currentResId,
-        companies,
+        context,
       );
       container.appendChild(optionElement);
     }
@@ -136,7 +134,7 @@ const addPrintOptionsToNode = (
   showPrintOptionsPDF: boolean,
   currentResId: number,
   isVersion15: boolean,
-  companies: number[],
+  context: Record<string, unknown>,
   hasSinglePrintOption = false,
 ) => {
   forEachReportRow(targetNode, isVersion15, hasSinglePrintOption, (row) => {
@@ -152,7 +150,7 @@ const addPrintOptionsToNode = (
       showPrintOptionsHTML,
       showPrintOptionsPDF,
       currentResId,
-      companies,
+      context,
     );
     applyRowStyling(row, isVersion15, divPrintOptions);
   });
@@ -163,11 +161,11 @@ const appendTechnicalPrintOptions = async (
   printOptions: {
     reports: OrmReportRecord[];
     currentResId: number;
-    companies: number[];
+    context: Record<string, unknown>;
   },
   hasSinglePrintOption = false,
 ): Promise<void> => {
-  const { reports, currentResId, companies } = printOptions;
+  const { reports, currentResId, context } = printOptions;
   const odooVersion = getOdooVersion();
   if (!odooVersion) return;
   const isVersion15 = parseFloat(odooVersion) === 15;
@@ -179,7 +177,7 @@ const appendTechnicalPrintOptions = async (
     getShowPrintOptionsPDF() === "true",
     currentResId,
     isVersion15,
-    companies,
+    context,
     hasSinglePrintOption,
   );
 };

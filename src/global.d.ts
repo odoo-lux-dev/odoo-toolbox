@@ -147,6 +147,12 @@ declare global {
                 context?: Record<string, unknown>;
               };
               orm?: {
+                call?: (
+                  model: string,
+                  method: string,
+                  args?: unknown[],
+                  kwargs?: Record<string, unknown>,
+                ) => Promise<unknown>;
                 env?: {
                   context?: {
                     server_version?: string;

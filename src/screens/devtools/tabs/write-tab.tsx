@@ -9,7 +9,7 @@ import {
   ConfirmationModal,
   useConfirmationModal,
 } from "@/screens/devtools/components/confirmation-modal";
-import { createFieldValidationErrorNotification } from "@/screens/devtools/components/json-autocomplete-utils";
+import { createFieldValidationErrorNotification } from "@/screens/devtools/components/json-autocomplete-notifications";
 import { useJsonEditor, JsonCodeEditor } from "@/screens/devtools/components/json-code-editor";
 import { QueryFormSidebar } from "@/screens/devtools/components/query-form-sidebar";
 import { useQueryIds } from "@/screens/devtools/components/record-hooks";

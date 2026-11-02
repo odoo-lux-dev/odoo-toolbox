@@ -1,7 +1,12 @@
 import { OrmReportRecord, PrintOptionsReturn } from "@/types";
 import { getOdooVersion, isOnSpecificRecordPage } from "@/utils/utils";
 
-import { generatesCompaniesDomain } from "./companies-domain";
+import {
+  buildPrintContext,
+  getUserContext,
+  resolveActiveCompanyIds,
+  type PrintRootLike,
+} from "./print-options-context";
 
 const getPrintOptionsList = async (): Promise<PrintOptionsReturn | undefined> => {
   if (!isOnSpecificRecordPage()) return;
@@ -9,6 +14,7 @@ const getPrintOptionsList = async (): Promise<PrintOptionsReturn | undefined> =>
   if (!odooVersion) return;
   const isLegacy = parseFloat(odooVersion) <= 16;
   const isVersion15 = parseFloat(odooVersion) === 15;
+  const preferCookie = parseFloat(odooVersion) >= 19;
 
   const controller = window.odoo?.__WOWL_DEBUG__?.root?.actionService?.currentController;
   if (!controller) return;
@@ -20,51 +26,48 @@ const getPrintOptionsList = async (): Promise<PrintOptionsReturn | undefined> =>
   const currentResId = isVersion15 ? recordLocalState?.currentId : recordLocalState?.resId;
   if (currentResId === undefined || currentResId === null) return;
 
-  const companiesDomain = generatesCompaniesDomain();
+  const root = window.odoo?.__WOWL_DEBUG__?.root as unknown as PrintRootLike | undefined;
+  const orm = root?.env?.services?.orm;
+
+  const userContext = await getUserContext(root);
+  const activeCompanyIds = resolveActiveCompanyIds({ root, preferCookie });
+
+  const context = buildPrintContext({
+    userContext,
+    activeCompanyIds,
+    currentResId,
+    currentResModel,
+  });
 
   let reports: OrmReportRecord[];
-  let companies: { id: number }[];
 
-  if (isLegacy) {
-    const debugServices = window.odoo?.__DEBUG__?.services;
-    if (!debugServices) return;
+  try {
+    if (isLegacy) {
+      const rpc = window.odoo?.__DEBUG__?.services?.["web.rpc"];
+      if (!rpc) return;
 
-    const session = debugServices["@web/session"]?.session;
-    const lang = session?.user_context?.lang;
+      reports = (await rpc.query({
+        model: "ir.actions.report",
+        method: "search_read",
+        args: [[["model", "=", currentResModel]], ["display_name", "report_name"]],
+        kwargs: {},
+        context,
+      })) as OrmReportRecord[];
+    } else {
+      if (!orm?.searchRead) return;
 
-    const context = { lang: lang ?? "en_US" };
-
-    reports = (await debugServices["web.rpc"]?.query({
-      model: "ir.actions.report",
-      method: "search_read",
-      args: [[["model", "=", currentResModel]], ["display_name", "report_name"]],
-      kwargs: {},
-      context,
-    })) as OrmReportRecord[];
-
-    companies = (await debugServices["web.rpc"]?.query({
-      model: "res.company",
-      method: "search_read",
-      args: [companiesDomain, ["id"]],
-      kwargs: {},
-      context,
-    })) as { id: number }[];
-  } else {
-    const orm = window.odoo?.__WOWL_DEBUG__?.root?.orm;
-    if (!orm) return;
-
-    reports = (await orm.searchRead(
-      "ir.actions.report",
-      [["model", "=", currentResModel]],
-      ["display_name", "report_name"],
-    )) as OrmReportRecord[];
-
-    companies = (await orm.searchRead("res.company", companiesDomain, ["id"])) as { id: number }[];
+      reports = (await orm.searchRead(
+        "ir.actions.report",
+        [["model", "=", currentResModel]],
+        ["display_name", "report_name"],
+        { context },
+      )) as OrmReportRecord[];
+    }
+  } catch {
+    return;
   }
 
-  const companyIds = companies.map((c) => c.id);
-
-  return { reports, currentResId, currentResModel, companies: companyIds };
+  return { reports, currentResId, currentResModel, context };
 };
 
 export { getPrintOptionsList };

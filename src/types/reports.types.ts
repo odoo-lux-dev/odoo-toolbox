@@ -8,5 +8,5 @@ export type PrintOptionsReturn = {
   reports: OrmReportRecord[];
   currentResId: number;
   currentResModel: string;
-  companies: number[];
+  context: Record<string, unknown>;
 };
