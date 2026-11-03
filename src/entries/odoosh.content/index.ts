@@ -5,7 +5,7 @@ import { handleProjectPage } from "@/page-features/odoo-sh/handle-sh-project-pag
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 
-type PageType = "project" | "list";
+type PageType = "project" | "list" | "log-viewer";
 
 let current: {
   type: PageType | null;
@@ -26,10 +26,12 @@ const initShDownloadFullLog = async (): Promise<() => void> => {
 };
 
 export default defineContentScript({
-  matches: ["https://*.odoo.sh/project*"],
+  matches: ["https://*.odoo.sh/project*", "https://*.odoo.sh/paas/*"],
   main() {
-    const getPageType = (): PageType =>
-      window.location.href.startsWith("https://www.odoo.sh/project/") ? "project" : "list";
+    const getPageType = (): PageType => {
+      if (window.location.pathname.startsWith("/paas/")) return "log-viewer";
+      return window.location.href.startsWith("https://www.odoo.sh/project/") ? "project" : "list";
+    };
 
     const initOdooSh = async () => {
       const pageType = getPageType();
@@ -43,7 +45,11 @@ export default defineContentScript({
       const routeId = ++navigationId;
       try {
         const [dispose, downloadLogDispose] = await Promise.all([
-          pageType === "project" ? handleProjectPage() : handleProjectListPageFavorites(),
+          pageType === "project"
+            ? handleProjectPage()
+            : pageType === "list"
+              ? handleProjectListPageFavorites()
+              : Promise.resolve(() => {}),
           initShDownloadFullLog(),
         ]);
 

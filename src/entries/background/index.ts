@@ -109,7 +109,7 @@ export default defineBackground(() => {
   browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
     // Only react to the top-level frame navigation.
     if (details.frameId !== 0) return;
-    if (!details.url?.startsWith("https://www.odoo.sh/project")) return;
+    if (!details.url?.startsWith("https://www.odoo.sh/")) return;
 
     browser.tabs.sendMessage(details.tabId, ROUTE_CHANGED_MESSAGE).catch(() => undefined);
   });
