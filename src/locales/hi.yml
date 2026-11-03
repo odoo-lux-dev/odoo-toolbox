@@ -555,6 +555,8 @@ options:
     download_full_log_desc: Odoo.SH लॉग व्यूअर पेजों पर एक बटन जोड़ता है ताकि बिल्ट-इन व्यूअर (जो एक बार में केवल एक भाग दिखाता है) पर निर्भर रहने के बजाय पूरी रॉ लॉग फ़ाइल डाउनलोड की जा सके।
     odoosh_login_button: Odoo.sh लॉगिन बटन दिखाएं
     odoosh_login_button_desc: लॉगिन पृष्ठ पर "Odoo.sh से लॉगिन करें" बटन जोड़ता है। यह केवल Odoo.sh पर होस्ट किए गए डेटाबेस पर दिखाई देता है और आपके Odoo.sh सत्र से लॉगिन करता है।
+    runbot_auto_login: Runbot त्वरित लॉगिन
+    runbot_auto_login_desc: Runbot कनेक्शन बटनों के बगल में त्वरित लॉगिन नियंत्रण जोड़ता है ताकि build खुल सके और स्वतः admin, demo या portal के रूप में लॉगिन हो सके।
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -827,6 +829,11 @@ page_features:
   odoosh_login:
     login: Odoo.sh से लॉगिन करें
     login_hint: अपने Odoo.sh सत्र से इस डेटाबेस में लॉगिन करें
+
+  runbot_login:
+    choose_user: उपयोगकर्ता चुनें
+    login_failed: स्वतः लॉगिन विफल रहा। कृपया मैन्युअल रूप से लॉगिन करें।
+    login_as_admin_hint: यह build खोलें और स्वतः admin के रूप में लॉगिन करें
 
 services:
   rpc:

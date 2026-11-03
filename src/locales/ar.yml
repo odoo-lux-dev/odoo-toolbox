@@ -553,6 +553,8 @@ options:
     download_full_log_desc: يضيف زراً في صفحات عارض السجلات في Odoo.SH لتنزيل ملف السجل الخام الكامل بدلاً من الاعتماد على العارض المدمج (الذي يعرض جزءاً واحداً فقط في كل مرة).
     odoosh_login_button: إظهار زر تسجيل الدخول عبر Odoo.sh
     odoosh_login_button_desc: يضيف زراً بعنوان "تسجيل الدخول عبر Odoo.sh" في صفحة تسجيل الدخول. يظهر فقط على قواعد البيانات المستضافة على Odoo.sh ويسجّل دخولك عبر جلسة Odoo.sh الخاصة بك.
+    runbot_auto_login: تسجيل دخول سريع إلى Runbot
+    runbot_auto_login_desc: يضيف عناصر تحكم لتسجيل الدخول السريع بجانب أزرار الاتصال في Runbot لفتح البناء وتسجيل الدخول تلقائياً كمسؤول أو demo أو portal.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -825,6 +827,11 @@ page_features:
   odoosh_login:
     login: تسجيل الدخول عبر Odoo.sh
     login_hint: تسجيل الدخول إلى قاعدة البيانات هذه عبر جلسة Odoo.sh الخاصة بك
+
+  runbot_login:
+    choose_user: اختيار المستخدم
+    login_failed: فشل تسجيل الدخول التلقائي. يرجى تسجيل الدخول يدوياً.
+    login_as_admin_hint: افتح هذا البناء وسجّل الدخول تلقائياً كمسؤول
 
 services:
   rpc:

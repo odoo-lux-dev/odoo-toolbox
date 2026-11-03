@@ -8,6 +8,7 @@ import {
   LoginButtonsOption,
   NostalgiaModeOption,
   OdooShLoginButtonOption,
+  RunbotAutoLoginOption,
   ShPageRenameOption,
   TechnicalModelOption,
 } from "@/screens/options/toggle-options";
@@ -19,6 +20,7 @@ export const ExtensionOptions = [
   { component: NostalgiaModeOption, category: "Odoo" },
   { component: TechnicalListOption, category: "Odoo" },
   { component: LoginButtonsOption, category: "Odoo" },
+  { component: RunbotAutoLoginOption, category: "Odoo" },
   { component: DebugModeOption, category: "Odoo" },
   { component: TaskLinkOption, category: "Odoo.SH" },
   { component: ShPageRenameOption, category: "Odoo.SH" },

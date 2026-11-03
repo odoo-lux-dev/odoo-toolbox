@@ -18,6 +18,7 @@ import {
   CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
   CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
+  CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN,
 } from "@/utils/constants";
 
 export const DEBUG_MODE_TYPES = ["disabled", "1", "assets", "assets,tests"] as const;
@@ -120,4 +121,8 @@ export type StoredSettingsV17 = StoredSettingsV16 & {
   [CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON]: boolean;
 };
 
-export type StoredSettings = StoredSettingsV17;
+export type StoredSettingsV18 = StoredSettingsV17 & {
+  [CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN]: boolean;
+};
+
+export type StoredSettings = StoredSettingsV18;

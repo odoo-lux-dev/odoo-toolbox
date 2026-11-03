@@ -555,6 +555,8 @@ options:
     download_full_log_desc: Fügt auf Odoo.SH-Logansichtsseiten eine Schaltfläche hinzu, um die vollständige Roh-Logdatei herunterzuladen, anstatt sich auf die integrierte Anzeige zu verlassen (die jeweils nur einen Abschnitt rendert).
     odoosh_login_button: Odoo.sh-Anmeldebutton anzeigen
     odoosh_login_button_desc: Fügt einen "Mit Odoo.sh anmelden"-Button auf der Anmeldeseite hinzu. Er erscheint nur bei Datenbanken, die auf Odoo.sh gehostet werden, und meldet Sie über Ihre Odoo.sh-Sitzung an.
+    runbot_auto_login: Runbot-Schnellanmeldung
+    runbot_auto_login_desc: Fügt Schnellanmelde-Steuerelemente neben den Runbot-Verbindungsbuttons hinzu, um einen Build zu öffnen und sich automatisch als Admin, Demo oder Portal anzumelden.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -827,6 +829,11 @@ page_features:
   odoosh_login:
     login: Mit Odoo.sh anmelden
     login_hint: Mit Ihrer Odoo.sh-Sitzung bei dieser Datenbank anmelden
+
+  runbot_login:
+    choose_user: Benutzer auswählen
+    login_failed: Die automatische Anmeldung ist fehlgeschlagen. Bitte melden Sie sich manuell an.
+    login_as_admin_hint: Diesen Build öffnen und automatisch als Admin anmelden
 
 services:
   rpc:

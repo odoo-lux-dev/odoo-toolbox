@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   generateDebugModeUrl,
+  getConfiguredDebugModeUrl,
   getDebugModeUrl,
   isDebugPathIgnored,
 } from "@/page-features/debug-mode";
@@ -163,6 +164,23 @@ describe("getDebugModeUrl", () => {
   test("should return a debug rewrite when not ignored", () => {
     const result = getDebugModeUrl(url("https://odoo.com/web?debug=0"), input);
     expect(result).toBe("https://odoo.com/web?debug=1");
+  });
+});
+
+describe("getConfiguredDebugModeUrl", () => {
+  test("uses the debug settings exposed on the page", () => {
+    document.body.dataset.defaultDebugMode = "1";
+    document.body.dataset.ignoredDebugPaths = "[]";
+
+    expect(getConfiguredDebugModeUrl(url("https://odoo.com/web"))).toBe(
+      "https://odoo.com/web?debug=1",
+    );
+
+    document.body.dataset.defaultDebugMode = "disabled";
+    expect(getConfiguredDebugModeUrl(url("https://odoo.com/web"))).toBeNull();
+
+    delete document.body.dataset.defaultDebugMode;
+    delete document.body.dataset.ignoredDebugPaths;
   });
 });
 

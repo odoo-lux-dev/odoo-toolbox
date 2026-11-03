@@ -108,13 +108,16 @@ export const getDebugModeUrl = (
   return generateDebugModeUrl(url, defaultDebugMode);
 };
 
-const setDebugMode = (url: URL): { reload: boolean; url?: string } => {
-  if (typeof window.odoo === "undefined") return { reload: false };
-
-  const targetUrl = getDebugModeUrl(url, {
+export const getConfiguredDebugModeUrl = (url: URL): string | null =>
+  getDebugModeUrl(url, {
     defaultDebugMode: getDefaultDebugMode(),
     ignoredPaths: getIgnoredDebugPaths(),
   });
+
+const setDebugMode = (url: URL): { reload: boolean; url?: string } => {
+  if (typeof window.odoo === "undefined") return { reload: false };
+
+  const targetUrl = getConfiguredDebugModeUrl(url);
   return targetUrl ? { reload: true, url: targetUrl } : { reload: false };
 };
 

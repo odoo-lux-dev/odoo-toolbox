@@ -2,6 +2,7 @@ import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { handleLoginButtons } from "@/page-features/login-buttons";
 import { handleOdooShLoginButton } from "@/page-features/odoosh-login";
+import { handleRunbotAutoLogin } from "@/page-features/runbot-login";
 import {
   handleTechnicalModelName,
   scheduleTechnicalModelNameInModals,
@@ -68,6 +69,11 @@ export default defineUnlistedScript(async () => {
   observeMenuOpening();
   handleLoginButtons();
   handleOdooShLoginButton();
+  const runbotAutoLoginHandled = handleRunbotAutoLogin();
+
+  // Let the Runbot auto-login drive the navigation (form submit, logout, ...).
+  // Debug mode and color scheme will be applied on the next page, after login.
+  if (runbotAutoLoginHandled) return;
 
   const [colorSchemeSettings, debugModeSettings] = await Promise.all([
     setDefaultColorScheme(),

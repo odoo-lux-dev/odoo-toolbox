@@ -555,6 +555,8 @@ options:
     download_full_log_desc: Voegt een knop toe op Odoo.SH-logviewerpagina's om het volledige ruwe logbestand te downloaden in plaats van te vertrouwen op de ingebouwde viewer (die slechts één blok tegelijk toont).
     odoosh_login_button: Odoo.sh-loginknop tonen
     odoosh_login_button_desc: Voegt een "Inloggen met Odoo.sh"-knop toe op de inlogpagina. Deze verschijnt alleen op databases die op Odoo.sh worden gehost en logt u in via uw Odoo.sh-sessie.
+    runbot_auto_login: Snel inloggen op Runbot
+    runbot_auto_login_desc: Voegt snel inloggen-bedieningselementen toe naast de Runbot-verbindingsknoppen om een build te openen en automatisch in te loggen als admin, demo of portal.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -827,6 +829,11 @@ page_features:
   odoosh_login:
     login: Inloggen met Odoo.sh
     login_hint: Log in op deze database met uw Odoo.sh-sessie
+
+  runbot_login:
+    choose_user: Gebruiker kiezen
+    login_failed: Automatisch inloggen mislukt. Log handmatig in.
+    login_as_admin_hint: Open deze build en log automatisch in als admin
 
 services:
   rpc:

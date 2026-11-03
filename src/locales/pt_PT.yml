@@ -555,6 +555,8 @@ options:
     download_full_log_desc: Adiciona um botão nas páginas do visualizador de registos do Odoo.SH para transferir o ficheiro de registo bruto completo em vez de depender do visualizador integrado (que mostra apenas um bloco de cada vez).
     odoosh_login_button: Mostrar botão de início de sessão do Odoo.sh
     odoosh_login_button_desc: Adiciona um botão "Iniciar sessão com Odoo.sh" na página de início de sessão. Só aparece em bases de dados alojadas no Odoo.sh e inicia sessão com a sua sessão do Odoo.sh.
+    runbot_auto_login: Início de sessão rápido no Runbot
+    runbot_auto_login_desc: Adiciona controlos de início de sessão rápido junto aos botões de ligação do Runbot para abrir um build e iniciar sessão automaticamente como admin, demo ou portal.
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -827,6 +829,11 @@ page_features:
   odoosh_login:
     login: Iniciar sessão com Odoo.sh
     login_hint: Iniciar sessão nesta base de dados com a sua sessão do Odoo.sh
+
+  runbot_login:
+    choose_user: Escolher utilizador
+    login_failed: O início de sessão automático falhou. Inicie sessão manualmente.
+    login_as_admin_hint: Abrir este build e iniciar sessão automaticamente como admin
 
 services:
   rpc:

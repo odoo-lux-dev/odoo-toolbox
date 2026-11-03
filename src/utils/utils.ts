@@ -11,6 +11,7 @@ const getTechnicalListPosition = () =>
   document.body.dataset.technicalListPosition as TechnicalListPosition;
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
 const getShowOdooShLoginButton = () => document.body.dataset.showOdooShLoginButton;
+const getRunbotAutoLogin = () => document.body.dataset.runbotAutoLogin;
 const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
 
 const ODOO_SH_SERVER_HEADER = "odoo.sh";
@@ -28,6 +29,13 @@ const LOCAL_HOSTNAME_REGEXES = [
 ];
 
 const RUNBOT_HOSTNAME_REGEX = /\.runbot\d+\.odoo\.com$/;
+const RUNBOT_FRONTEND_HOSTNAME_REGEX = /^(?:www\.)?runbot\d*\.odoo\.com$/;
+const RUNBOT_BUILD_HOSTNAME_REGEX = /^[^.]+\.runbot\d*\.odoo\.com$/;
+
+const isRunbotFrontendHost = (hostname: string): boolean =>
+  RUNBOT_FRONTEND_HOSTNAME_REGEX.test(hostname);
+
+const isRunbotBuildHost = (hostname: string): boolean => RUNBOT_BUILD_HOSTNAME_REGEX.test(hostname);
 
 /**
  * Detects whether the current database is hosted on Odoo.sh.
@@ -113,6 +121,9 @@ export {
   getTechnicalListPosition,
   getShowLoginButtons,
   getShowOdooShLoginButton,
+  getRunbotAutoLogin,
   getOdooToolboxTheme,
   isOdooShHosted,
+  isRunbotBuildHost,
+  isRunbotFrontendHost,
 };

@@ -7,6 +7,7 @@ import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 import { updateService } from "@/services/update-service";
 import { handleToggleDebugCommand } from "@/utils/background-utils";
+import { isRunbotBuildHost } from "@/utils/utils";
 
 // Message sent to the Odoo.SH content script when the SPA changes its URL via the History API,
 const ROUTE_CHANGED_MESSAGE = { type: "odoosh:route-changed" };
@@ -95,7 +96,7 @@ export default defineBackground(() => {
     COMMANDS[command]?.();
   });
 
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     if (handleI18nMessage(request, sendResponse)) {
       return true;
     }
@@ -120,6 +121,14 @@ export default defineBackground(() => {
 
     const defaultDebugMode = await settingsService.getDebugMode();
     if (!defaultDebugMode || defaultDebugMode === "disabled") return;
+
+    // On Runbot builds, the page script applies debug mode after auto-login.
+    if (
+      isRunbotBuildHost(new URL(details.url).hostname) &&
+      (await settingsService.getRunbotAutoLogin())
+    ) {
+      return;
+    }
 
     // Check if we are on Odoo website
     try {
