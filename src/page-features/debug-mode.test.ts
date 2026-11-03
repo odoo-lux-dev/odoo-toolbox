@@ -172,6 +172,12 @@ describe("generateDebugModeUrl", () => {
     expect(result).toBe("https://odoo.com/web?existing=1&debug=assets#frag");
   });
 
+  test("should not mutate the URL it receives", () => {
+    const input = url("https://odoo.com/web?existing=1#frag");
+    generateDebugModeUrl(input, "assets");
+    expect(input.href).toBe("https://odoo.com/web?existing=1#frag");
+  });
+
   test("should disable debug mode with 0", () => {
     const result = generateDebugModeUrl(url("https://odoo.com/web?debug=assets"), "disabled");
     expect(result).toBe("https://odoo.com/web?debug=0");

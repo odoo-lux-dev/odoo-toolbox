@@ -119,7 +119,8 @@ const setDebugMode = (url: URL): { reload: boolean; url?: string } => {
 };
 
 export const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
-  const params = url.searchParams;
+  const target = new URL(url.href);
+  const params = target.searchParams;
 
   if (debugMode === "disabled") {
     params.set("debug", "0");
@@ -133,7 +134,7 @@ export const generateDebugModeUrl = (url: URL, debugMode: DebugModeType) => {
           .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
           .join("&")}`
       : "";
-  return url.origin + url.pathname + search + url.hash;
+  return target.origin + target.pathname + search + target.hash;
 };
 
 export { setDebugMode };
