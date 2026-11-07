@@ -6,272 +6,202 @@ import {
   ViewIcon,
   ZapIcon,
 } from "@hugeicons/core-free-icons";
-import { createSignal, Show } from "solid-js";
+import { createMemo, createResource, createSignal, For, Show } from "solid-js";
 
 import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { Modal } from "@/components/ui/modal";
-import {
-  getModelFieldIds,
-  getRecordData,
-  getServerActionsIds,
-  openViewWithIds,
-} from "@/services/content-script-rpc-service";
-import { getOdooInfoFromWindow } from "@/services/owl-runtime";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
+import { openRecords, readRecord, searchIds } from "@/services/content-script-rpc-service";
+import { Logger } from "@/services/logger";
+import { errorMessage } from "@/utils/error-message";
 import { t } from "@/utils/i18n-page";
 
+import { canOpenViews } from "../page-info";
+import type { ControllerInfo } from "../types";
 import { AccessModal } from "./access-modal";
-import { IrAccessModal } from "./ir-access-modal";
+import { AsyncModal } from "./async-modal";
 import { RecordDataViewer } from "./record-data-viewer";
 import { ViewModal } from "./view-modal";
 
-interface ModelActionsProps {
-  currentModel: string;
-  currentRecordId?: number;
-  actionType?: string;
-  actionId?: number;
-  viewType?: string;
+const actionButtonClass =
+  "h-control-sm gap-1 border-line bg-surface-2 px-2 text-ui font-normal text-ink-2 hover:border-accent hover:bg-accent-soft hover:text-accent";
+
+type ModalKey = "access" | "view" | "data";
+
+interface ModelAction {
+  key: string;
+  icon: IconData;
+  label: () => string;
+  title: () => string;
+  visible?: () => boolean;
+  disabled?: () => boolean;
+  /** Opens one of the modals of the card... */
+  modal?: ModalKey;
+  /** ...or opens records in the web client (the button shows a loading label meanwhile). */
+  run?: () => Promise<void>;
 }
 
-export const ModelActions = (props: ModelActionsProps) => {
-  const currentModel = () => props.currentModel;
-  const currentRecordId = () => props.currentRecordId;
-  const actionType = () => props.actionType;
-  const actionId = () => props.actionId;
-  const viewType = () => props.viewType;
+/** Actions of the record card: open the technical records of the current model. */
+export const ModelActions = (props: { model: string; info: ControllerInfo }) => {
+  const model = () => props.model;
+  const [running, setRunning] = createSignal<string | null>(null);
+  const [openModal, setOpenModal] = createSignal<ModalKey | null>(null);
+  const [actionError, setActionError] = createSignal<string | null>(null);
+  const viewsAvailable = canOpenViews();
 
-  const [loading, setLoading] = createSignal<string | null>(null);
-  const [showDataModal, setShowDataModal] = createSignal(false);
-  const [recordData, setRecordData] = createSignal<Record<string, unknown> | null>(null);
-  const [recordDataError, setRecordDataError] = createSignal<string | null>(null);
-  const [showAccessModal, setShowAccessModal] = createSignal(false);
-  const [showViewModal, setShowViewModal] = createSignal(false);
+  const openModelRecords = async (target: string, domain: unknown[], title: string) =>
+    openRecords(target, { ids: await searchIds(target, domain) }, title);
 
-  const odooInfo = getOdooInfoFromWindow(window.odoo as never);
-  const usesIrAccess = odooInfo.version !== null && odooInfo.version >= 19.4;
+  const actions: ModelAction[] = [
+    {
+      key: "fields",
+      icon: ListViewIcon,
+      label: () => t("technical_list.model_actions.fields"),
+      title: () => t("technical_list.model_actions.view_fields"),
+      run: () =>
+        openModelRecords(
+          "ir.model.fields",
+          [["model", "=", model()]],
+          t("technical_list.model_actions.view_title_fields", [model()]),
+        ),
+    },
+    {
+      key: "view",
+      icon: ViewIcon,
+      label: () => t("technical_list.model_actions.view"),
+      title: () => t("technical_list.model_actions.view_view"),
+      disabled: () => !props.info.viewType,
+      modal: "view",
+    },
+    {
+      key: "access",
+      icon: Shield02Icon,
+      label: () => t("technical_list.model_actions.access"),
+      title: () => t("technical_list.model_actions.view_access_modal"),
+      modal: "access",
+    },
+    {
+      key: "server-actions",
+      icon: DatabaseLightningIcon,
+      label: () => t("technical_list.model_actions.server_actions"),
+      title: () => t("technical_list.model_actions.view_server_actions"),
+      run: () =>
+        openModelRecords(
+          "ir.actions.server",
+          [["model_id.model", "=", model()]],
+          t("technical_list.model_actions.view_title_server", [model()]),
+        ),
+    },
+    {
+      key: "current-action",
+      icon: ZapIcon,
+      label: () => t("technical_list.model_actions.current_action"),
+      title: () =>
+        t("technical_list.model_actions.view_current_action", [
+          props.info.actionType ?? "",
+          props.info.actionId ?? "",
+        ]),
+      visible: () => !!props.info.actionType && !!props.info.actionId,
+      run: () =>
+        openRecords(
+          props.info.actionType!,
+          { ids: [props.info.actionId!] },
+          t("technical_list.model_actions.view_title_action", [
+            props.info.actionType!,
+            props.info.actionId!,
+          ]),
+        ),
+    },
+    {
+      key: "data",
+      icon: DatabaseIcon,
+      label: () => t("technical_list.model_actions.data"),
+      title: () => t("technical_list.model_actions.view_record_data"),
+      visible: () => !!props.info.currentRecordId,
+      modal: "data",
+    },
+  ];
 
-  const doActionFunction =
-    window.odoo?.__WOWL_DEBUG__?.root?.actionService?.doAction ??
-    window.odoo?.__WOWL_DEBUG__?.root?.env?.services?.action?.doAction ??
-    window.odoo?.__DEBUG__?.services?.["web.web_client"]?.do_action;
-
-  if (!doActionFunction || typeof doActionFunction !== "function") {
-    return null;
-  }
-
-  const handleViewFields = async () => {
-    setLoading("fields");
-    try {
-      const fieldIds = await getModelFieldIds(currentModel());
-      await openViewWithIds(
-        "ir.model.fields",
-        fieldIds,
-        t("technical_list.model_actions.view_title_fields", [currentModel()]),
-      );
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleViewAccess = () => {
-    setShowAccessModal(true);
-  };
-
-  const handleViewView = () => {
-    setShowViewModal(true);
-  };
-
-  const handleViewData = async () => {
-    setShowDataModal(true);
-    setLoading("data");
-    setRecordDataError(null);
-    setRecordData(null);
-
-    try {
-      const result = await getRecordData(currentModel(), currentRecordId() as number);
-      if (result.length > 0) {
-        setRecordData(result[0]);
-      } else {
-        setRecordDataError(t("technical_list.model_actions.no_data"));
-      }
-    } catch (error) {
-      setRecordDataError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setShowDataModal(false);
-    setRecordData(null);
-    setRecordDataError(null);
-  };
-
-  const handleViewServerActions = async () => {
-    setLoading("actions");
-    try {
-      const serverActionsIds = await getServerActionsIds(currentModel());
-      await openViewWithIds(
-        "ir.actions.server",
-        serverActionsIds,
-        t("technical_list.model_actions.view_title_server", [currentModel()]),
-      );
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  const handleViewCurrentAction = async () => {
-    if (!actionType() || !actionId()) {
+  const trigger = async (action: ModelAction) => {
+    if (action.modal) {
+      setOpenModal(action.modal);
       return;
     }
-
-    setLoading("current-action");
+    setRunning(action.key);
+    setActionError(null);
     try {
-      await openViewWithIds(
-        actionType() as string,
-        [actionId() as number],
-        t("technical_list.model_actions.view_title_action", [
-          actionType() as string,
-          actionId() as number,
-        ]),
-      );
+      await action.run?.();
     } catch (error) {
-      alert(error);
+      Logger.error(`Model action "${action.key}" failed:`, error);
+      setActionError(errorMessage(error, String(error)));
     } finally {
-      setLoading(null);
+      setRunning(null);
     }
   };
 
+  // Rescans rebuild `props.info`: compare the target by value so the open modal is not refetched.
+  const dataTarget = createMemo(
+    () => openModal() === "data" && { model: model(), id: props.info.currentRecordId! },
+    undefined,
+    { equals: (a, b) => a === b || (!!a && !!b && a.model === b.model && a.id === b.id) },
+  );
+  const [recordData] = createResource(dataTarget, async ({ model, id }) => {
+    const record = await readRecord(model, id);
+    if (!record) throw new Error(t("technical_list.model_actions.no_data"));
+    return record;
+  });
+  const closeModal = () => setOpenModal(null);
+
   return (
-    <div class="flex flex-wrap items-center justify-center gap-1 pt-2">
-      <Button
-        class="gap-2 text-xs"
-        variant="solid"
-        size="sm"
-        onClick={handleViewFields}
-        disabled={loading() !== null}
-        title={t("technical_list.model_actions.view_fields")}
-      >
-        <HugeiconsIcon icon={ListViewIcon} size={16} color="currentColor" strokeWidth={1.6} />
-        {loading() === "fields"
-          ? t("technical_list.model_actions.loading")
-          : t("technical_list.model_actions.fields")}
-      </Button>
-      <Button
-        class="gap-2 text-xs"
-        variant="solid"
-        size="sm"
-        onClick={handleViewView}
-        disabled={loading() !== null || !viewType()}
-        title={t("technical_list.model_actions.view_view")}
-      >
-        <HugeiconsIcon icon={ViewIcon} size={16} color="currentColor" strokeWidth={1.6} />
-        {t("technical_list.model_actions.view")}
-      </Button>
-      <Button
-        class="gap-2 text-xs"
-        variant="solid"
-        size="sm"
-        onClick={handleViewAccess}
-        disabled={loading() !== null}
-        title={t("technical_list.model_actions.view_access_modal")}
-      >
-        <HugeiconsIcon icon={Shield02Icon} size={16} color="currentColor" strokeWidth={1.6} />
-        {t("technical_list.model_actions.access")}
-      </Button>
-      <Button
-        class="gap-2 text-xs"
-        variant="solid"
-        size="sm"
-        onClick={handleViewServerActions}
-        disabled={loading() !== null}
-        title={t("technical_list.model_actions.view_server_actions")}
-      >
-        <HugeiconsIcon
-          icon={DatabaseLightningIcon}
-          size={16}
-          color="currentColor"
-          strokeWidth={1.6}
-        />
-        {loading() === "actions"
-          ? t("technical_list.model_actions.loading")
-          : t("technical_list.model_actions.server_actions")}
-      </Button>
-      <Show when={actionType() && actionId()}>
-        <Button
-          class="gap-2 text-xs"
-          variant="solid"
-          size="sm"
-          onClick={handleViewCurrentAction}
-          disabled={loading() !== null}
-          title={t("technical_list.model_actions.view_current_action", [
-            actionType() as string,
-            actionId() as number,
-          ])}
-        >
-          <HugeiconsIcon icon={ZapIcon} size={16} color="currentColor" strokeWidth={1.6} />
-          {loading() === "current-action"
-            ? t("technical_list.model_actions.loading")
-            : t("technical_list.model_actions.current_action")}
-        </Button>
+    <div class="flex flex-wrap items-center gap-1.5 border-t border-solid border-line bg-surface px-3 py-2">
+      <For each={actions}>
+        {(action) => (
+          <Show when={(action.visible?.() ?? true) && (!action.run || viewsAvailable)}>
+            <Button
+              class={actionButtonClass}
+              variant="outline"
+              size="xs"
+              onClick={() => trigger(action)}
+              disabled={running() !== null || !!action.disabled?.()}
+              title={action.title()}
+            >
+              <HugeiconsIcon icon={action.icon} size={13} strokeWidth={1.6} class="text-accent" />
+              {running() === action.key
+                ? t("technical_list.model_actions.loading")
+                : action.label()}
+            </Button>
+          </Show>
+        )}
+      </For>
+      <Show when={actionError()}>
+        <p class="m-0 w-full text-ui text-error-ink" role="alert">
+          {actionError()}
+        </p>
       </Show>
-      <Show when={currentRecordId()}>
-        <Button
-          class="gap-2 text-xs"
-          variant="solid"
-          size="sm"
-          onClick={handleViewData}
-          disabled={loading() !== null}
-          title={t("technical_list.model_actions.view_record_data")}
-        >
-          <HugeiconsIcon icon={DatabaseIcon} size={16} color="currentColor" strokeWidth={1.6} />
-          {loading() === "data"
-            ? t("technical_list.model_actions.loading")
-            : t("technical_list.model_actions.data")}
-        </Button>
-      </Show>
-      <Modal
-        open={showDataModal()}
-        onClose={handleCloseModal}
+      <AsyncModal
+        open={openModal() === "data"}
+        onClose={closeModal}
         title={t("technical_list.model_actions.record_data_title", [
-          currentModel(),
-          String(currentRecordId()),
+          model(),
+          String(props.info.currentRecordId),
         ])}
         size="xl"
         boxClass="max-w-[800px]"
+        loadingLabel={t("technical_list.record_data.loading")}
+        data={recordData}
       >
-        <RecordDataViewer
-          data={recordData()}
-          loading={loading() === "data"}
-          error={recordDataError()}
-        />
-      </Modal>
-      <Show
-        when={usesIrAccess}
-        fallback={
-          <AccessModal
-            open={showAccessModal()}
-            onClose={() => setShowAccessModal(false)}
-            model={currentModel()}
-          />
-        }
-      >
-        <IrAccessModal
-          open={showAccessModal()}
-          onClose={() => setShowAccessModal(false)}
-          model={currentModel()}
-        />
-      </Show>
+        {(data) => <RecordDataViewer data={data} />}
+      </AsyncModal>
+      <AccessModal
+        open={openModal() === "access"}
+        onClose={closeModal}
+        model={model()}
+        canOpenDetails={viewsAvailable}
+      />
       <ViewModal
-        open={showViewModal()}
-        onClose={() => setShowViewModal(false)}
-        model={currentModel()}
-        viewType={viewType() ?? "form"}
+        open={openModal() === "view"}
+        onClose={closeModal}
+        model={model()}
+        viewType={props.info.viewType ?? ""}
       />
     </div>
   );

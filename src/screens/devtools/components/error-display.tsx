@@ -1,7 +1,8 @@
 import { Show, type JSX } from "solid-js";
 
 import { t } from "@/services/i18n-service";
-import type { OdooRpcError } from "@/services/odoo-error";
+import { isOdooRpcError } from "@/services/odoo-error";
+import type { OdooRpcError } from "@/types";
 
 interface ErrorDisplayProps {
   error: string;
@@ -10,17 +11,17 @@ interface ErrorDisplayProps {
 
 const ErrorSection = (props: { title: string; children: JSX.Element }) => (
   <div class="mb-4 last:mb-0">
-    <h5 class="mb-2 text-xs font-semibold tracking-wide text-error/90 uppercase">{props.title}</h5>
+    <h5 class="mb-2 text-ui font-semibold tracking-wide text-error-ink uppercase">{props.title}</h5>
     {props.children}
   </div>
 );
 
-const CodeBlock = (props: { data: unknown; className?: string }) => (
+/** `trace`: taller block for tracebacks and stack traces. */
+const CodeBlock = (props: { data: unknown; trace?: boolean }) => (
   <pre
-    class={
-      props.className ??
-      "max-h-48 overflow-y-auto rounded-box border border-base-300/60 bg-base-200/50 p-2 text-xs wrap-break-word whitespace-pre-wrap text-base-content/70"
-    }
+    class={`overflow-y-auto rounded-box border bg-surface-inset p-2 wrap-break-word whitespace-pre-wrap text-ink-2 ${
+      props.trace ? "max-h-[40vh] border-error/30 text-ui/relaxed" : "max-h-48 border-line text-ui"
+    }`}
   >
     {typeof props.data === "string" ? props.data : JSON.stringify(props.data, null, 2)}
   </pre>
@@ -28,9 +29,9 @@ const CodeBlock = (props: { data: unknown; className?: string }) => (
 
 const Detail = (props: { label: string; value: unknown }) => (
   <Show when={props.value}>
-    <div class="text-base-content/80">
-      <span class="font-semibold text-base-content">{props.label}:</span>{" "}
-      <span class="text-base-content/70">{String(props.value)}</span>
+    <div class="text-ink-2">
+      <span class="font-semibold text-ink">{props.label}:</span>{" "}
+      <span class="text-ink-2">{String(props.value)}</span>
     </div>
   </Show>
 );
@@ -40,13 +41,13 @@ export const ErrorDisplay = (props: ErrorDisplayProps) => {
     <Show
       when={props.errorDetails && typeof props.errorDetails === "object"}
       fallback={
-        <div class="rounded-box border border-base-300/60 bg-base-200/50 p-2 text-xs text-base-content/70">
+        <div class="rounded-box border border-line bg-surface-inset p-2 text-ui text-ink-2">
           <pre class="wrap-break-word whitespace-pre-wrap">{props.error}</pre>
         </div>
       }
     >
       <Show
-        when={(props.errorDetails as Record<string, unknown>).name === "RPC_ERROR"}
+        when={isOdooRpcError(props.errorDetails)}
         fallback={
           <ErrorDetailsGeneric
             errorDetails={props.errorDetails as Record<string, unknown>}
@@ -65,14 +66,10 @@ const ErrorDetailsRpc = (props: { errorDetails: OdooRpcError }) => {
   return (
     <div class="space-y-4">
       <ErrorSection title={t("devtools.error_display.error_summary")}>
-        <div class="space-y-1 text-xs text-base-content/80">
+        <div class="space-y-1 text-ui text-ink-2">
           <Detail
             label={t("devtools.error_display.type")}
             value={odoo().exceptionName || t("devtools.error_display.unknown")}
-          />
-          <Detail
-            label={t("devtools.error_display.model")}
-            value={odoo().model || t("devtools.error_display.not_available")}
           />
           <Detail label={t("devtools.error_display.message")} value={odoo().message} />
           <Detail label={t("devtools.error_display.code")} value={odoo().code} />
@@ -81,7 +78,7 @@ const ErrorDetailsRpc = (props: { errorDetails: OdooRpcError }) => {
 
       <Show when={odoo().data}>
         <ErrorSection title={t("devtools.error_display.error_data")}>
-          <div class="space-y-2 text-xs text-base-content/80">
+          <div class="space-y-2 text-ui text-ink-2">
             <Show when={odoo().data.message}>
               <div>
                 <strong>{t("devtools.error_display.detailed_message")}</strong>
@@ -100,10 +97,7 @@ const ErrorDetailsRpc = (props: { errorDetails: OdooRpcError }) => {
 
       <Show when={odoo().data?.debug}>
         <ErrorSection title={t("devtools.error_display.debug_traceback")}>
-          <CodeBlock
-            data={odoo().data.debug}
-            className="max-h-[40vh] overflow-y-auto rounded-box border border-error/30 bg-base-200/50 p-2 text-xs/relaxed wrap-break-word whitespace-pre-wrap text-base-content/70"
-          />
+          <CodeBlock data={odoo().data.debug} trace />
         </ErrorSection>
       </Show>
 
@@ -120,7 +114,7 @@ const ErrorDetailsGeneric = (props: { errorDetails: Record<string, unknown>; err
   const errorObj = () => props.errorDetails;
   return (
     <div class="space-y-4">
-      <div class="space-y-1 text-xs text-base-content/80">
+      <div class="space-y-1 text-ui text-ink-2">
         <Detail
           label={t("devtools.error_display.type")}
           value={errorObj().name || t("common.error")}
@@ -129,10 +123,7 @@ const ErrorDetailsGeneric = (props: { errorDetails: Record<string, unknown>; err
       </div>
       <Show when={errorObj().stack}>
         <ErrorSection title={t("devtools.error_display.stack_trace")}>
-          <CodeBlock
-            data={errorObj().stack}
-            className="max-h-[40vh] overflow-y-auto rounded-box border border-error/30 bg-base-200/50 p-2 text-xs/relaxed wrap-break-word whitespace-pre-wrap text-base-content/70"
-          />
+          <CodeBlock data={errorObj().stack} trace />
         </ErrorSection>
       </Show>
       <ErrorSection title={t("devtools.error_display.full_error_object")}>

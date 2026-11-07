@@ -1,169 +1,183 @@
 import {
   ArrowUpRight01Icon,
+  Book02Icon,
   Bug01Icon,
-  GithubIcon,
   Idea01Icon,
   Settings02Icon,
   StarIcon,
-  Book02Icon,
   TranslateIcon,
 } from "@hugeicons/core-free-icons";
-import { createSignal, onCleanup } from "solid-js";
+import { For, Show } from "solid-js";
 
-import { LuxembourgFlag } from "@/components/shared/luxembourg-flag";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { ThemeController } from "@/components/ui/theme-controller";
+import { BrandLogo } from "@/components/shared/brand-logo";
+import { CountPill } from "@/components/ui/chip";
+import { cx } from "@/components/ui/cx";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
+import { useFavorites } from "@/hooks/use-favorites";
 import { BackupControls } from "@/screens/options/backup";
-import { LanguageSwitcher } from "@/screens/options/components/language-switcher";
+import {
+  activeSection,
+  drawerOpen,
+  route,
+  scrollToSection,
+  setDrawerOpen,
+} from "@/screens/options/options-nav";
+import { SETTINGS_SECTIONS } from "@/screens/options/sections";
 import { t } from "@/services/i18n-service";
+import { GITHUB_REPO_URL } from "@/utils/constants";
+
+export const RESOURCES: { href: string; icon: IconData; label: () => string }[] = [
+  {
+    href: "https://odoo-lux-dev.github.io/odoo-toolbox/",
+    icon: Book02Icon,
+    label: () => t("options.sidebar.documentation"),
+  },
+  {
+    href: `${GITHUB_REPO_URL}/issues/new?template=bug_report.yml`,
+    icon: Bug01Icon,
+    label: () => t("options.sidebar.report_bug"),
+  },
+  {
+    href: `${GITHUB_REPO_URL}/issues/new?template=feature_request.yml`,
+    icon: Idea01Icon,
+    label: () => t("options.sidebar.suggest_feature"),
+  },
+  {
+    href: `${GITHUB_REPO_URL}/issues/new?template=translation.yml`,
+    icon: TranslateIcon,
+    label: () => t("options.sidebar.improve_translation"),
+  },
+];
+
+const NavItem = (props: {
+  id: string;
+  href: string;
+  icon: IconData;
+  label: string;
+  active: boolean;
+  count?: number;
+}) => (
+  <a
+    id={props.id}
+    href={props.href}
+    aria-current={props.active ? "page" : undefined}
+    class="ot-nav-item"
+  >
+    <span class="ot-nav-icon size-4.5">
+      <HugeiconsIcon icon={props.icon} size={16} strokeWidth={1.8} />
+    </span>
+    <span class="ot-nav-label">{props.label}</span>
+    <Show when={props.count !== undefined}>
+      <CountPill
+        tone={props.active ? "primary" : "neutral"}
+        class={props.active ? "bg-primary-tint" : undefined}
+      >
+        {props.count}
+      </CountPill>
+    </Show>
+  </a>
+);
 
 export const OptionsSidebar = () => {
-  const [extensionVersion] = createSignal(`v${browser.runtime.getManifest().version}`);
-  const getRoute = () => {
-    const raw = window.location.hash.slice(1).replace(/^\//, "");
-    return raw.split("#")[0] || "home";
-  };
-  const [route, setRoute] = createSignal(getRoute());
-  const handler = () => setRoute(getRoute());
-  window.addEventListener("hashchange", handler);
-  onCleanup(() => window.removeEventListener("hashchange", handler));
+  const extensionVersion = `v${browser.runtime.getManifest().version}`;
+  const { favorites } = useFavorites();
 
   return (
-    <div class="flex min-h-screen w-72 flex-col gap-6 bg-base-100 p-4">
-      <div class="relative flex items-center justify-center">
-        <div class="absolute inset-s-0">
-          <LanguageSwitcher />
-        </div>
-        <h1 class="text-center text-xl font-semibold text-primary dark:text-accent">
-          {t("options.sidebar.title")}
-        </h1>
-        <div class="absolute inset-e-0">
-          <ThemeController iconSize={18} />
-        </div>
-      </div>
-      <div class="flex flex-col gap-2">
-        <details class="collapse-arrow collapse bg-base-100" open={route() === "options"}>
-          <summary class="collapse-title p-0">
-            <a
-              id="global-options"
-              class={`btn w-full justify-start btn-ghost ${route() === "options" ? "btn-active" : ""}`}
-              href="#/options"
-            >
-              <HugeiconsIcon icon={Settings02Icon} size={18} color="#2ebcfa" strokeWidth={2} />
-              {t("options.sidebar.options")}
-            </a>
-          </summary>
-          <div class="collapse-content flex flex-col gap-1 ps-8 pt-1">
-            <a class="btn justify-start btn-ghost btn-sm" href="#/options#odoo-options">
-              {t("options.sidebar.odoo")}
-            </a>
-            <a class="btn justify-start btn-ghost btn-sm" href="#/options#odoosh-options">
-              {t("options.sidebar.odoo_sh")}
-            </a>
+    <aside
+      id="options-sidebar"
+      data-slot="options-sidebar"
+      aria-label={t("options.shell.main_navigation")}
+      class={cx(
+        "flex h-screen w-options-sidebar flex-none flex-col border-e border-line bg-surface px-3 pt-3.5 pb-2.75",
+        "max-lg:fixed max-lg:inset-y-0 max-lg:inset-s-0 max-lg:z-50 max-lg:shadow-pop max-lg:transition-transform max-lg:duration-200 max-lg:ease-theme",
+        drawerOpen() ? "" : "max-lg:-translate-x-full max-lg:rtl:translate-x-full",
+      )}
+    >
+      <a href="#/options" class="flex items-center gap-2.5 px-1.5 pt-0.5 pb-3.5">
+        <BrandLogo size={34} class="ring-1 ring-line" />
+        <span class="flex min-w-0 flex-col leading-tight">
+          <strong class="font-display text-sm font-semibold tracking-tight">
+            {t("options.sidebar.title")}
+          </strong>
+          <span class="mt-0.5 font-mono text-micro tracking-[0.08em] text-ink-3 uppercase rtl:font-sans rtl:tracking-normal">
+            {t("options.shell.tagline")}
+          </span>
+        </span>
+      </a>
+
+      <div class="min-h-0 flex-1 overflow-y-auto pt-0.5 pb-2">
+        <nav class="flex flex-col gap-px">
+          <NavItem
+            id="global-options"
+            href="#/options"
+            icon={Settings02Icon}
+            label={t("options.shell.settings")}
+            active={route() === "options"}
+          />
+          <div class="ms-4.5 mt-px mb-1.25 flex flex-col gap-px border-s border-line ps-2.5">
+            <For each={SETTINGS_SECTIONS}>
+              {(section) => {
+                const active = () => route() === "options" && activeSection() === section.id;
+                return (
+                  <a
+                    href={`#/options#${section.id}`}
+                    aria-current={active() ? "location" : undefined}
+                    class="ot-nav-subitem"
+                    onClick={() => {
+                      if (route() === "options") scrollToSection(section.id);
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    {t(section.label)}
+                  </a>
+                );
+              }}
+            </For>
           </div>
-        </details>
-        <a
-          id="sh-favorites"
-          class={`btn justify-start btn-ghost ${route() === "favorites" ? "btn-active" : ""}`}
-          href="#/favorites"
-        >
-          <HugeiconsIcon icon={StarIcon} size={18} color="#ED8A19" strokeWidth={2} />
-          {t("options.sidebar.sh_favorites")}
-        </a>
+          <NavItem
+            id="sh-favorites"
+            href="#/favorites"
+            icon={StarIcon}
+            label={t("options.shell.favorites")}
+            active={route() === "favorites"}
+            count={favorites().length}
+          />
+        </nav>
       </div>
-      <div class="mt-auto flex flex-col items-center gap-4">
+
+      <div class="flex flex-col gap-2.5 border-t border-line pt-3">
         <BackupControls />
-        <div class="flex w-full flex-col">
-          <a
-            href="https://odoo-lux-dev.github.io/odoo-toolbox/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
-          >
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon icon={Book02Icon} size={16} color="currentColor" strokeWidth={2} />
-              <span>{t("options.sidebar.documentation")}</span>
-            </div>
-            <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                size={14}
-                color="currentColor"
-                strokeWidth={2}
-              />
-            </span>
-          </a>
-          <a
-            href="https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=bug_report.yml"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
-          >
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon icon={Bug01Icon} size={16} color="currentColor" strokeWidth={2} />
-              <span>{t("options.sidebar.report_bug")}</span>
-            </div>
-            <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                size={14}
-                color="currentColor"
-                strokeWidth={2}
-              />
-            </span>
-          </a>
-          <a
-            href="https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=feature_request.yml"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
-          >
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon icon={Idea01Icon} size={16} color="currentColor" strokeWidth={2} />
-              <span>{t("options.sidebar.suggest_feature")}</span>
-            </div>
-            <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                size={14}
-                color="currentColor"
-                strokeWidth={2}
-              />
-            </span>
-          </a>
-          <a
-            href="https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=translation.yml"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex items-center justify-between rounded-sm p-2 text-sm text-base-content/60 hover:bg-base-200 hover:text-base-content"
-          >
-            <div class="flex items-center gap-2">
-              <HugeiconsIcon icon={TranslateIcon} size={16} color="currentColor" strokeWidth={2} />
-              <span>{t("options.sidebar.improve_translation")}</span>
-            </div>
-            <span class="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                size={14}
-                color="currentColor"
-                strokeWidth={2}
-              />
-            </span>
-          </a>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <a
-            href="https://github.com/odoo-lux-dev/odoo-toolbox"
-            target="_blank"
-            rel="noopener noreferrer"
-            title={t("options.sidebar.github")}
-          >
-            <HugeiconsIcon icon={GithubIcon} size={16} color="currentColor" strokeWidth={2} />
-          </a>
-          <span id="extension-version">{extensionVersion()}</span>
-          <LuxembourgFlag />
+        <nav
+          class="flex flex-col gap-px border-t border-line pt-2.5"
+          aria-label={t("options.shell.resources")}
+        >
+          <p class="px-1 pb-1 font-mono text-caption font-medium tracking-[0.13em] text-ink-3 uppercase rtl:font-sans rtl:tracking-normal">
+            {t("options.shell.resources")}
+          </p>
+          <For each={RESOURCES}>
+            {(resource) => (
+              <a href={resource.href} target="_blank" rel="noopener noreferrer" class="ot-nav-link">
+                <span class="ot-nav-link-icon">
+                  <HugeiconsIcon icon={resource.icon} size={13} strokeWidth={1.8} />
+                </span>
+                <span class="flex-1">{resource.label()}</span>
+                <span class="ot-nav-external rtl:-scale-x-100">
+                  <HugeiconsIcon icon={ArrowUpRight01Icon} size={11} strokeWidth={1.8} />
+                </span>
+              </a>
+            )}
+          </For>
+        </nav>
+        <div class="flex items-center justify-center gap-1.75 text-meta text-ink-3">
+          <span id="extension-version" class="font-mono">
+            {extensionVersion}
+          </span>
+          {/* Flag font (flag-emoji.css): Windows has no flag glyphs */}
+          <span class="font-emoji text-sm leading-none" role="img" aria-label="Luxembourg">
+            🇱🇺
+          </span>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };

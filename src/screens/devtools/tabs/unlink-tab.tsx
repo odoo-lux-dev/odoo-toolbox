@@ -1,349 +1,138 @@
-import { Alert02Icon } from "@hugeicons/core-free-icons";
-import { Show } from "solid-js";
+import { ArchiveArrowDownIcon, ArchiveArrowUpIcon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { For } from "solid-js";
 
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import {
-  ConfirmationModal,
-  useConfirmationModal,
-} from "@/screens/devtools/components/confirmation-modal";
+import { Button, type ButtonProps } from "@/components/ui/button";
+import type { ConfirmOptions } from "@/components/ui/confirm-dialog";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
 import { QueryFormSidebar } from "@/screens/devtools/components/query-form-sidebar";
-import { useQueryIds } from "@/screens/devtools/components/record-hooks";
-import { ResultViewer } from "@/screens/devtools/components/result-viewer";
-import { useDevToolsLoading } from "@/screens/devtools/devtools-loading-signals";
 import {
-  databaseSignal,
-  executeQuery,
+  loadTargetRecords,
   queryStore,
-  resetRpcQuery,
-  resetRpcResult,
-  resultStore,
+  railFieldsMetadata,
 } from "@/screens/devtools/devtools-signals";
+import { createMutation, recordAndReload, type MutationTarget } from "@/screens/devtools/mutation";
+import { MutationWorkspace } from "@/screens/devtools/tabs/mutation-workspace";
+import { impactedRecordsCaption } from "@/screens/devtools/tabs/result-captions";
 import { t } from "@/services/i18n-service";
-import { Logger } from "@/services/logger";
 import { odooRpcService } from "@/services/odoo-rpc-service";
-import { parseRpcContext } from "@/utils/context-utils";
-import { addUnlinkToHistory } from "@/utils/history-helpers";
-import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
-import { generateRecordText, parseIds } from "@/utils/tab-utils";
+import type { UnlinkHistoryAction } from "@/types";
+import { showNotification } from "@/utils/notifications";
+
+interface UnlinkOperation {
+  name: UnlinkHistoryAction["parameters"]["operation"];
+  /** Translation prefix of the operation messages. */
+  keys: string;
+  /** Button label keys (under `keys`), idle and while running. */
+  label: { idle: string; running: string };
+  icon: IconData;
+  button: Pick<ButtonProps, "variant" | "color" | "class">;
+  variant: ConfirmOptions["variant"];
+  /** Archiving needs the `active` field on the model. */
+  needsActiveField: boolean;
+  execute: (target: MutationTarget) => Promise<unknown>;
+}
+
+const SECONDARY_BUTTON = { variant: "outline", class: "gap-1.5 border-line bg-surface" } as const;
+
+const OPERATIONS: UnlinkOperation[] = [
+  {
+    name: "archive",
+    keys: "devtools.unlink.archive",
+    label: { idle: "archive_records", running: "archiving" },
+    icon: ArchiveArrowDownIcon,
+    button: SECONDARY_BUTTON,
+    variant: "warning",
+    needsActiveField: true,
+    execute: (target) => odooRpcService.archive(target),
+  },
+  {
+    name: "unarchive",
+    keys: "devtools.unlink.unarchive",
+    label: { idle: "unarchive_records", running: "unarchiving" },
+    icon: ArchiveArrowUpIcon,
+    button: SECONDARY_BUTTON,
+    variant: "success",
+    needsActiveField: true,
+    execute: (target) => odooRpcService.unarchive(target),
+  },
+  {
+    name: "delete",
+    keys: "devtools.unlink.delete",
+    label: { idle: "delete_records", running: "deleting" },
+    icon: Delete02Icon,
+    button: { color: "error", class: "gap-1.5" },
+    variant: "danger",
+    needsActiveField: false,
+    execute: (target) => odooRpcService.unlink(target),
+  },
+];
 
 export const UnlinkTab = () => {
-  const database = databaseSignal;
-  const { actionLoading, setActionLoading } = useDevToolsLoading();
+  const mutation = createMutation({ targetsIds: true });
 
-  const { isOpen, config, openConfirmation, handleConfirm, handleCancel } = useConfirmationModal();
+  const hasActiveField = () => "active" in (railFieldsMetadata() || {});
 
-  const { queryIds, clearIds } = useQueryIds();
-
-  const hasActiveField = Object.keys(queryStore.fieldsMetadata || {}).includes("active");
-
-  const handleExecuteQuery = async () => {
-    await executeQuery(true, { offset: 0 });
-  };
-
-  const handleClearForm = () => {
-    resetRpcQuery();
-    resetRpcResult();
-    clearIds();
-  };
-
-  const handleArchive = async () => {
-    if (!queryStore.model || !queryIds().trim()) {
-      showNotification(t("devtools.unlink.archive.error"), "error", ERROR_NOTIFICATION_TIMEOUT);
-      return;
-    }
-
-    try {
-      const confirmed = await openConfirmation({
-        title: t("devtools.unlink.archive.confirm_title"),
-        message: t("devtools.unlink.archive.confirm_message", [
-          String(
-            queryIds()
-              .split(",")
-              .filter((id) => id.trim()).length,
-          ),
-        ]),
-        variant: "warning",
-      });
-
-      if (!confirmed) return;
-    } catch {
-      return;
-    }
-
-    try {
-      setActionLoading("archive");
-      const ids = parseIds(queryIds());
-      const contextResult = parseRpcContext(queryStore.context || "");
-
-      if (!contextResult.isValid) {
-        throw new Error(
-          t("services.invalid_context", [contextResult.error || t("services.invalid_json")]),
-        );
-      }
-
-      await odooRpcService.archive({
-        model: queryStore.model,
-        ids,
-        context: contextResult.value,
-      });
-
-      showNotification(t("devtools.unlink.archive.success", [String(ids.length)]), "success");
-
-      try {
-        await addUnlinkToHistory(queryStore.model, queryIds(), "archive", ids.length, database());
-      } catch (historyError) {
-        Logger.warn("Failed to add archive to history:", historyError);
-      }
-
-      await executeQuery(true, { offset: queryStore.offset });
-    } catch (error) {
-      let errorMessage = t("devtools.unlink.archive.failed");
-      if (error instanceof Error) {
-        errorMessage = t("devtools.unlink.archive.failed_detail", [error.message]);
-      } else if (typeof error === "string") {
-        errorMessage = t("devtools.unlink.archive.failed_detail", [error]);
-      }
-
-      showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleUnarchive = async () => {
-    if (!queryStore.model || !queryIds().trim()) {
-      showNotification(t("devtools.unlink.unarchive.error"), "error", ERROR_NOTIFICATION_TIMEOUT);
-      return;
-    }
-
-    try {
-      const confirmed = await openConfirmation({
-        title: t("devtools.unlink.unarchive.confirm_title"),
-        message: t("devtools.unlink.unarchive.confirm_message", [
-          String(
-            queryIds()
-              .split(",")
-              .filter((id) => id.trim()).length,
-          ),
-        ]),
-        variant: "success",
-      });
-
-      if (!confirmed) return;
-    } catch {
-      return;
-    }
-
-    try {
-      setActionLoading("unarchive");
-      const ids = parseIds(queryIds());
-      const contextResult = parseRpcContext(queryStore.context || "");
-
-      if (!contextResult.isValid) {
-        throw new Error(
-          t("services.invalid_context", [contextResult.error || t("services.invalid_json")]),
-        );
-      }
-
-      await odooRpcService.unarchive({
-        model: queryStore.model,
-        ids,
-        context: contextResult.value,
-      });
-
-      showNotification(t("devtools.unlink.unarchive.success", [String(ids.length)]), "success");
-
-      try {
-        await addUnlinkToHistory(queryStore.model, queryIds(), "unarchive", ids.length, database());
-      } catch (historyError) {
-        Logger.warn("Failed to add unarchive to history:", historyError);
-      }
-
-      await executeQuery(true, { offset: queryStore.offset });
-    } catch (error) {
-      let errorMessage = t("devtools.unlink.unarchive.failed");
-      if (error instanceof Error) {
-        errorMessage = t("devtools.unlink.unarchive.failed_detail", [error.message]);
-      } else if (typeof error === "string") {
-        errorMessage = t("devtools.unlink.unarchive.failed_detail", [error]);
-      }
-
-      showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleUnlink = async () => {
-    if (!queryStore.model || !queryIds().trim()) {
-      showNotification(t("devtools.unlink.delete.error"), "error", ERROR_NOTIFICATION_TIMEOUT);
-      return;
-    }
-
-    try {
-      const confirmed = await openConfirmation({
-        title: t("devtools.unlink.delete.confirm_title"),
-        message: t("devtools.unlink.delete.confirm_message", [
-          String(
-            queryIds()
-              .split(",")
-              .filter((id) => id.trim()).length,
-          ),
-        ]),
-        variant: "danger",
-      });
-
-      if (!confirmed) return;
-    } catch {
-      return;
-    }
-
-    try {
-      setActionLoading("unlink");
-      const ids = parseIds(queryIds());
-      const contextResult = parseRpcContext(queryStore.context || "");
-
-      if (!contextResult.isValid) {
-        throw new Error(
-          t("services.invalid_context", [contextResult.error || t("services.invalid_json")]),
-        );
-      }
-
-      await odooRpcService.unlink({
-        model: queryStore.model,
-        ids,
-        context: contextResult.value,
-      });
-
-      showNotification(t("devtools.unlink.delete.success", [String(ids.length)]), "success");
-
-      try {
-        await addUnlinkToHistory(queryStore.model, queryIds(), "delete", ids.length, database());
-      } catch (historyError) {
-        Logger.warn("Failed to add delete to history:", historyError);
-      }
-
-      await executeQuery(true, { offset: queryStore.offset });
-    } catch (error) {
-      let errorMessage = t("devtools.unlink.delete.failed");
-      if (error instanceof Error) {
-        errorMessage = t("devtools.unlink.delete.failed_detail", [error.message]);
-      } else if (typeof error === "string") {
-        errorMessage = t("devtools.unlink.delete.failed_detail", [error]);
-      }
-
-      showNotification(errorMessage, "error", ERROR_NOTIFICATION_TIMEOUT);
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  const runOperation = (operation: UnlinkOperation) =>
+    mutation.run({
+      name: operation.name,
+      missingIds: t(`${operation.keys}.error`),
+      confirm: ({ ids }) => ({
+        title: t(`${operation.keys}.confirm_title`),
+        message: t(`${operation.keys}.confirm_message`, [String(ids.length)]),
+        variant: operation.variant,
+      }),
+      execute: operation.execute,
+      onSuccess: async (_result, { model, ids }) => {
+        showNotification(t(`${operation.keys}.success`, [String(ids.length)]), "success");
+        await recordAndReload("unlink", {
+          model,
+          ids: queryStore.ids,
+          operation: operation.name,
+          recordsAffected: ids.length,
+        });
+      },
+      failed: t(`${operation.keys}.failed`),
+      failedDetail: (detail) => t(`${operation.keys}.failed_detail`, [detail]),
+    });
 
   return (
-    <div class="grid h-full min-h-0 grid-cols-1 bg-base-300 lg:grid-cols-[320px_1fr] lg:grid-rows-[minmax(0,1fr)]">
-      <QueryFormSidebar
-        recordIdsLabel={t("devtools.sidebar.record_ids")}
-        recordIdsHelpText={t("devtools.unlink.record_ids_help")}
-        recordIdsRequired={true}
-        primaryActionLabel={t("devtools.unlink.load_records")}
-        computePrimaryActionDisabled={true}
-        onPrimaryAction={handleExecuteQuery}
-        onClear={handleClearForm}
-        isLoading={actionLoading() !== null}
-        showDomainSection
-      />
-
-      <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-tl-xl bg-base-100 px-3">
-        <div class="flex flex-col gap-3 pt-3">
-          <Alert
-            color="warning"
-            icon={
-              <HugeiconsIcon icon={Alert02Icon} size={18} color="currentColor" strokeWidth={1.8} />
-            }
-            title={t("devtools.unlink.warning")}
-            variant="outline"
-          >
-            <p class="text-sm">{t("devtools.unlink.warning_desc")}</p>
-          </Alert>
-
-          <div class="flex flex-col gap-2">
-            <div class="flex gap-2">
+    <MutationWorkspace
+      rail={
+        <QueryFormSidebar
+          title={t("devtools.nav.unlink")}
+          method="unlink"
+          methodTone="error"
+          recordIds={{ help: t("devtools.unlink.record_ids_help"), required: true }}
+          primaryAction={{ label: t("devtools.unlink.load_records"), run: loadTargetRecords }}
+          isLoading={mutation.isRunning()}
+          showDomainSection
+        />
+      }
+      title={t("devtools.nav.unlink")}
+      warningTitle={t("devtools.unlink.warning")}
+      warningText={t("devtools.unlink.warning_desc")}
+      caption={impactedRecordsCaption}
+    >
+      <div class="flex flex-wrap items-center gap-2">
+        <For each={OPERATIONS}>
+          {(operation) => {
+            const running = () => mutation.running() === operation.name;
+            return (
               <Button
-                color="primary"
-                class="flex-1"
-                variant="outline"
-                loading={actionLoading() === "archive"}
-                onClick={handleArchive}
-                disabled={
-                  !queryStore.model ||
-                  !queryIds().trim() ||
-                  actionLoading() !== null ||
-                  !hasActiveField
-                }
+                {...operation.button}
+                loading={running()}
+                onClick={() => runOperation(operation)}
+                disabled={!mutation.canRun() || (operation.needsActiveField && !hasActiveField())}
               >
-                {actionLoading() === "archive"
-                  ? t("devtools.unlink.archive.archiving")
-                  : t("devtools.unlink.archive.archive_records")}
+                <HugeiconsIcon icon={operation.icon} size={16} strokeWidth={1.6} />
+                {t(
+                  `${operation.keys}.${running() ? operation.label.running : operation.label.idle}`,
+                )}
               </Button>
-              <Button
-                color="secondary"
-                class="flex-1"
-                variant="outline"
-                loading={actionLoading() === "unarchive"}
-                onClick={handleUnarchive}
-                disabled={
-                  !queryStore.model ||
-                  !queryIds().trim() ||
-                  actionLoading() !== null ||
-                  !hasActiveField
-                }
-              >
-                {actionLoading() === "unarchive"
-                  ? t("devtools.unlink.unarchive.unarchiving")
-                  : t("devtools.unlink.unarchive.unarchive_records")}
-              </Button>
-            </div>
-            <Button
-              color="error"
-              variant="outline"
-              block
-              loading={actionLoading() === "unlink"}
-              onClick={handleUnlink}
-              disabled={!queryStore.model || !queryIds().trim() || actionLoading() !== null}
-            >
-              {actionLoading() === "unlink"
-                ? t("devtools.unlink.delete.deleting")
-                : t("devtools.unlink.delete.delete_records")}
-            </Button>
-          </div>
-        </div>
-
-        <div class="min-h-0 flex-1">
-          <ResultViewer
-            hideCopyButton
-            hideDownloadButton
-            hideSwitchViewButton
-            hideFieldNumber
-            hideRecordPagingData
-            customText={
-              <Show when={(resultStore.data?.length ?? 0) > 0}>
-                <div class="me-auto py-2">
-                  <h4 class="text-sm font-semibold">
-                    {generateRecordText(queryStore.model, resultStore.data!.length)}
-                  </h4>
-                </div>
-              </Show>
-            }
-          />
-        </div>
+            );
+          }}
+        </For>
       </div>
-      <ConfirmationModal
-        isOpen={isOpen()}
-        config={config()}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    </div>
+    </MutationWorkspace>
   );
 };

@@ -1,4 +1,5 @@
 import {
+  AlertCircleIcon,
   Cancel01Icon,
   FilterIcon,
   InformationCircleIcon,
@@ -8,547 +9,426 @@ import {
   Select02Icon,
   ZoomInAreaIcon,
 } from "@hugeicons/core-free-icons";
-import { For, Show, createMemo, splitProps, type JSX } from "solid-js";
+import { For, Index, Match, Show, Switch, type JSX } from "solid-js";
 
-import { IconButton } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cx } from "@/components/ui/cx";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
-import { ButtonItem } from "@/screens/technical-list/components/button-item";
-import { DatabaseInfoComponent } from "@/screens/technical-list/components/database-info";
-import { FieldItem } from "@/screens/technical-list/components/field-item";
-import { useTechnicalSidebar } from "@/screens/technical-list/components/hooks";
-import { RecordInfo } from "@/screens/technical-list/components/record-info";
-import { EmptyState, ErrorState, LoadingState } from "@/screens/technical-list/components/states";
-import { WebsiteInfo } from "@/screens/technical-list/components/website-info";
-import { useTechnicalListFilters } from "@/screens/technical-list/technical-list-signals";
+import { StateMessage } from "@/components/ui/status";
 import { getDir, t } from "@/utils/i18n-page";
-import { getTechnicalListPosition } from "@/utils/utils";
 
-interface FieldFiltersProps {
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
-  showOnlyRequired: boolean;
-  onRequiredChange: (show: boolean) => void;
-  showOnlyReadonly: boolean;
-  onReadonlyChange: (show: boolean) => void;
-  showOnlyFields: boolean;
-  onFieldsChange: (show: boolean) => void;
-  showOnlyButtons: boolean;
-  onButtonsChange: (show: boolean) => void;
-}
+import { PANEL_ATTRIBUTE, useSidebar } from "../sidebar-store";
+import { ButtonItem } from "./button-item";
+import { DatabaseInfoSection } from "./database-info";
+import { FieldDetailsModal } from "./field-details-modal";
+import { FieldItem } from "./field-item";
+import { RecordInfoSection } from "./record-info";
+import { WebsiteInfoSection } from "./website-info";
 
-const FieldFilters = (props: FieldFiltersProps) => {
-  const [local] = splitProps(props, [
-    "searchTerm",
-    "onSearchChange",
-    "showOnlyRequired",
-    "onRequiredChange",
-    "showOnlyReadonly",
-    "onReadonlyChange",
-    "showOnlyFields",
-    "onFieldsChange",
-    "showOnlyButtons",
-    "onButtonsChange",
-  ]);
+export const TECHNICAL_PANEL_ID = "x-odoo-technical-list-panel";
+const PANEL_TITLE_ID = "x-odoo-technical-list-title";
+
+const iconProps = { strokeWidth: 1.6 } as const;
+
+const ErrorState = (props: { message: string; onRetry: () => void }) => (
+  <StateMessage
+    tone="error"
+    icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} {...iconProps} />}
+    title={t("technical_list.states.error_title")}
+    description={props.message}
+    action={
+      <Button color="primary" size="sm" class="text-xs" onClick={() => props.onRetry()}>
+        {t("technical_list.states.retry")}
+      </Button>
+    }
+  />
+);
+
+const FieldFilters = () => {
+  const sidebar = useSidebar();
+  const filters = sidebar.filters;
+  const checks = () => [
+    {
+      label: t("technical_list.side_panel.required_only"),
+      checked: filters().onlyRequired,
+      onChange: (checked: boolean) => sidebar.setFilter("onlyRequired", checked),
+    },
+    {
+      label: t("technical_list.side_panel.readonly_only"),
+      checked: filters().onlyReadonly,
+      onChange: (checked: boolean) => sidebar.setFilter("onlyReadonly", checked),
+    },
+    {
+      label: t("technical_list.side_panel.fields_only"),
+      checked: filters().kind === "fields",
+      onChange: (checked: boolean) => sidebar.setFilter("kind", checked ? "fields" : "all"),
+    },
+    {
+      label: t("technical_list.side_panel.buttons_only"),
+      checked: filters().kind === "buttons",
+      onChange: (checked: boolean) => sidebar.setFilter("kind", checked ? "buttons" : "all"),
+    },
+  ];
+  const visibleCount = () => sidebar.filtered().fields.length + sidebar.filtered().buttons.length;
 
   return (
-    <div class="border-b border-solid border-base-200 px-6 py-4">
-      <div>
-        <Input
-          type="text"
-          size="sm"
-          placeholder={t("technical_list.side_panel.search_placeholder")}
-          value={local.searchTerm}
-          onInput={(event) => local.onSearchChange((event.target as HTMLInputElement).value)}
-          fullWidth
-          class="input-bordered text-xs"
-          suffix={
-            <HugeiconsIcon
-              icon={Search01Icon}
-              size={16}
-              color="currentColor"
-              strokeWidth={1.6}
-              class="text-base-content/50"
+    <div class="ot-card bg-surface-2 px-3 py-2.5">
+      <Input
+        type="search"
+        size="sm"
+        placeholder={t("technical_list.side_panel.search_placeholder")}
+        aria-label={t("technical_list.side_panel.search_placeholder")}
+        value={filters().searchTerm}
+        onInput={(event) =>
+          sidebar.setFilter("searchTerm", (event.target as HTMLInputElement).value)
+        }
+        fullWidth
+        class="h-control text-xs"
+        affixStyle="plain"
+        prefix={<HugeiconsIcon icon={Search01Icon} size={14} {...iconProps} />}
+      />
+      <div class="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-1.5">
+        <Index each={checks()}>
+          {(check) => (
+            <Checkbox
+              checked={check().checked}
+              onCheckedChange={check().onChange}
+              label={<span class="text-xs text-ink-2">{check().label}</span>}
             />
-          }
-        />
+          )}
+        </Index>
       </div>
-      <div class="mt-4 grid grid-cols-1 gap-3 text-sm text-base-content/80 sm:grid-cols-2">
-        <div class="space-y-2">
-          <div>
-            <Checkbox
-              checked={local.showOnlyRequired}
-              onCheckedChange={local.onRequiredChange}
-              label={t("technical_list.side_panel.required_only")}
-              size="xs"
-            />
-          </div>
-          <div>
-            <Checkbox
-              checked={local.showOnlyReadonly}
-              onCheckedChange={local.onReadonlyChange}
-              label={t("technical_list.side_panel.readonly_only")}
-              size="xs"
-            />
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div>
-            <Checkbox
-              checked={local.showOnlyFields}
-              onCheckedChange={local.onFieldsChange}
-              label={t("technical_list.side_panel.fields_only")}
-              size="xs"
-            />
-          </div>
-          <div>
-            <Checkbox
-              checked={local.showOnlyButtons}
-              onCheckedChange={local.onButtonsChange}
-              label={t("technical_list.side_panel.buttons_only")}
-              size="xs"
-            />
-          </div>
-        </div>
+      <div class="mt-2.5 flex items-center justify-between gap-2 border-t border-solid border-line pt-2">
+        {/* Always rendered: announces the result of the search and filters */}
+        <span class="font-mono text-ui text-ink-3" aria-live="polite" aria-atomic="true">
+          {t("technical_list.side_panel.visible_count", [visibleCount(), sidebar.elementCount()])}
+        </span>
+        <Button variant="link" size="xs" class="h-auto px-0 text-xs" onClick={sidebar.resetFilters}>
+          {t("technical_list.side_panel.reset_filters")}
+        </Button>
       </div>
     </div>
   );
 };
 
 const SidePanelHeader = () => {
-  const { isWebsite, isSelectionMode, hasFields, toggleSelectionMode, handleClose } =
-    useTechnicalSidebar();
+  const sidebar = useSidebar();
+  const canSelect = () => !sidebar.isWebsite() && !!sidebar.viewInfo()?.technicalFields.length;
 
   return (
-    <div class="flex items-center justify-between border-b border-solid border-base-200 px-6 py-4">
-      <h3 class="text-lg font-semibold text-base-content">
-        {t("technical_list.side_panel.title")}
-      </h3>
-      <div class="flex items-center gap-2">
-        <Show when={!isWebsite() && hasFields()}>
+    <header class="flex flex-none items-start justify-between gap-2.5 border-b border-solid border-line ps-4.5 pe-4 pt-3.5 pb-3">
+      <div class="min-w-0">
+        <span class="block font-mono text-small tracking-widest text-ink-3 uppercase">
+          {t("technical_list.side_panel.title")}
+        </span>
+        <h2
+          id={PANEL_TITLE_ID}
+          class="m-0 mt-0.5 font-display text-lg/tight font-semibold tracking-tight text-ink"
+        >
+          {t("technical_list.floating_button.title")}
+        </h2>
+      </div>
+      <div class="flex flex-none items-center gap-1">
+        <Show when={canSelect()}>
           <IconButton
             label={
-              isSelectionMode()
+              sidebar.isSelectionMode()
                 ? t("technical_list.side_panel.exit_selection")
                 : t("technical_list.side_panel.select_element")
             }
-            variant="ghost"
+            variant={sidebar.isSelectionMode() ? "soft" : "ghost"}
+            color={sidebar.isSelectionMode() ? "accent" : undefined}
             size="sm"
-            active={isSelectionMode()}
-            onClick={toggleSelectionMode}
-            icon={
-              <HugeiconsIcon icon={Select02Icon} size={16} color="currentColor" strokeWidth={1.6} />
-            }
-            class={isSelectionMode() ? "text-accent-content btn-accent" : undefined}
+            circle={false}
+            square
+            aria-pressed={sidebar.isSelectionMode()}
+            onClick={sidebar.toggleSelectionMode}
+            class={sidebar.isSelectionMode() ? undefined : "text-ink-3"}
+            icon={<HugeiconsIcon icon={Select02Icon} size={16} {...iconProps} />}
           />
         </Show>
         <IconButton
           label={t("technical_list.side_panel.close")}
           variant="ghost"
           size="sm"
-          onClick={handleClose}
-          icon={
-            <HugeiconsIcon icon={Cancel01Icon} size={16} color="currentColor" strokeWidth={1} />
-          }
+          circle={false}
+          square
+          class="text-ink-3"
+          onClick={sidebar.closePanel}
+          icon={<HugeiconsIcon icon={Cancel01Icon} size={16} {...iconProps} />}
         />
       </div>
+    </header>
+  );
+};
+
+const SummaryHint = (props: { children: JSX.Element }) => (
+  <span class="inline-flex items-center gap-1 rounded-sm border border-solid border-line bg-surface px-1.5 py-0.5 text-ui text-ink-3">
+    <HugeiconsIcon icon={InformationCircleIcon} size={12} {...iconProps} class="text-accent" />
+    {props.children}
+  </span>
+);
+
+const SidePanelSummary = (props: { totalFields: number; totalButtons: number }) => {
+  const sidebar = useSidebar();
+  return (
+    <div class="flex flex-none flex-wrap items-center gap-x-2 gap-y-1.5 border-b border-solid border-line bg-surface-2 px-4.5 py-2">
+      <Show
+        when={sidebar.isWebsite()}
+        fallback={
+          <>
+            <span class="text-title font-medium text-ink">
+              {props.totalFields} {t("technical_list.side_panel.fields_found")}
+              <Show when={props.totalButtons > 0}>
+                {" · "}
+                {props.totalButtons} {t("technical_list.side_panel.buttons_found")}
+              </Show>{" "}
+              {t("technical_list.side_panel.found")}
+            </span>
+            <SummaryHint>{t("technical_list.side_panel.hover_hint")}</SummaryHint>
+          </>
+        }
+      >
+        <span class="text-title font-medium text-ink">
+          {t("technical_list.side_panel.website_info")}
+        </span>
+        <SummaryHint>{t("technical_list.side_panel.click_to_copy")}</SummaryHint>
+      </Show>
     </div>
   );
 };
 
-const SidePanelSummary = () => {
-  const { viewInfo, isSelectionMode, isWebsite } = useTechnicalSidebar();
-
-  return (
-    <Show when={viewInfo()}>
-      {(vi) => (
-        <Show when={!isSelectionMode()}>
-          <div class="border-b border-solid border-base-200 px-6 py-3 text-sm text-base-content/70">
-            <Show
-              when={isWebsite()}
-              fallback={
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="font-medium text-base-content">
-                    {vi().totalFields} {t("technical_list.side_panel.fields_found")}
-                    <Show when={vi().totalButtons > 0}>
-                      {" "}
-                      - {vi().totalButtons} {t("technical_list.side_panel.buttons_found")}
-                    </Show>{" "}
-                    {t("technical_list.side_panel.found")}
-                  </span>
-                  <span class="inline-flex items-center gap-1 rounded-md bg-base-200/60 px-2 py-1 text-xs text-base-content/70">
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      size={12}
-                      color="currentColor"
-                      strokeWidth={1.6}
-                    />
-                    {t("technical_list.side_panel.hover_hint")}
-                  </span>
-                </div>
-              }
-            >
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="font-medium text-base-content">
-                  {t("technical_list.side_panel.website_info")}
-                </span>
-                <span class="inline-flex items-center gap-1 rounded-md bg-base-200/60 px-2 py-1 text-xs text-base-content/70">
-                  <HugeiconsIcon
-                    icon={InformationCircleIcon}
-                    size={12}
-                    color="currentColor"
-                    strokeWidth={1.6}
-                  />
-                  {t("technical_list.side_panel.click_to_copy")}
-                </span>
-              </div>
-            </Show>
-          </div>
-        </Show>
-      )}
-    </Show>
-  );
-};
+const ListSection = (props: {
+  icon: JSX.Element;
+  title: string;
+  count: number;
+  children: JSX.Element;
+}) => (
+  <section>
+    <div class="mb-2 flex min-h-6.5 items-center gap-1.5 text-ink-3">
+      {props.icon}
+      <h3 class="m-0 font-mono text-ui font-medium tracking-widest text-ink-2 uppercase">
+        {props.title}
+      </h3>
+      <span class="ms-auto rounded-full border border-solid border-line bg-surface-2 px-1.5 font-mono text-small text-ink-3">
+        {props.count}
+      </span>
+    </div>
+    <div class="flex flex-col gap-2">{props.children}</div>
+  </section>
+);
 
 const PanelContent = () => {
-  const {
-    viewInfo,
-    highlightField,
-    highlightButton,
-    clearFieldHighlight,
-    clearButtonHighlight,
-    isWebsite,
-    hasFields,
-    hasButtons,
-    dbInfo,
-  } = useTechnicalSidebar();
-
-  const {
-    searchTerm,
-    showOnlyRequired,
-    showOnlyReadonly,
-    showOnlyFields,
-    showOnlyButtons,
-    setSearchTerm,
-    setShowOnlyRequired,
-    setShowOnlyReadonly,
-    setShowOnlyFields,
-    setShowOnlyButtons,
-  } = useTechnicalListFilters();
-
-  const filteredFields = createMemo(() => {
-    const info = viewInfo();
-    if (!info) return [];
-    const term = searchTerm().toLowerCase();
-    const onlyRequired = showOnlyRequired();
-    const onlyReadonly = showOnlyReadonly();
-    const onlyButtons = showOnlyButtons();
-    return info.technicalFields.filter((field) => {
-      const matchesSearch =
-        field.name.toLowerCase().includes(term) || field.label?.toLowerCase().includes(term);
-      const matchesRequired = !onlyRequired || field.canBeRequired;
-      const matchesReadonly = !onlyReadonly || field.canBeReadonly;
-      const matchesType = !onlyButtons;
-      return matchesSearch && matchesRequired && matchesReadonly && matchesType;
-    });
-  });
-
-  const filteredButtons = createMemo(() => {
-    const info = viewInfo();
-    if (!info) return [];
-    const term = searchTerm().toLowerCase();
-    const onlyFields = showOnlyFields();
-    return info.technicalButtons.filter((button) => {
-      const matchesSearch =
-        button.name.toLowerCase().includes(term) || button.label?.toLowerCase().includes(term);
-      const matchesType = !onlyFields;
-      return matchesSearch && matchesType;
-    });
-  });
-
-  const FieldsSection: JSX.Element = (
-    <div class="space-y-3 border-b border-solid border-base-200 px-6 py-4">
-      <div class="flex items-center gap-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">
-        <HugeiconsIcon icon={InputShortTextIcon} size={16} color="currentColor" strokeWidth={1.6} />
-        {t("technical_list.side_panel.fields_list")} ({filteredFields().length})
-      </div>
-      <div class="space-y-3">
-        <For each={filteredFields()}>
-          {(field) => (
-            <FieldItem
-              field={field}
-              onHighlight={highlightField}
-              onClearHighlight={clearFieldHighlight}
-            />
-          )}
-        </For>
-      </div>
-    </div>
-  );
-
-  const ButtonsSection: JSX.Element = (
-    <div class="space-y-3 px-6 py-4">
-      <div class="flex items-center gap-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">
-        <HugeiconsIcon
-          icon={MouseLeftClick06Icon}
-          size={16}
-          color="currentColor"
-          strokeWidth={1.6}
-        />
-        {t("technical_list.side_panel.buttons_list")} ({filteredButtons().length})
-      </div>
-      <div class="space-y-3">
-        <For each={filteredButtons()}>
-          {(button) => (
-            <ButtonItem
-              button={button}
-              onHighlight={highlightButton}
-              onClearHighlight={clearButtonHighlight}
-            />
-          )}
-        </For>
-      </div>
-    </div>
-  );
+  const sidebar = useSidebar();
+  const fields = () => sidebar.filtered().fields;
+  const buttons = () => sidebar.filtered().buttons;
 
   return (
-    <Show when={viewInfo()}>
-      {(info) => (
-        <>
-          <Show when={dbInfo()}>
-            {(db) => (
-              <Show when={!isWebsite()}>
-                <DatabaseInfoComponent dbInfo={db()} />
-              </Show>
-            )}
-          </Show>
+    <>
+      <Show when={!sidebar.isWebsite() && sidebar.dbInfo()}>
+        {(db) => <DatabaseInfoSection dbInfo={db()} />}
+      </Show>
 
-          <Show
-            when={info().websiteInfo}
-            fallback={
-              <Show when={info().currentModel}>
-                <RecordInfo />
-              </Show>
-            }
-          >
-            {(websiteInfo) => <WebsiteInfo websiteInfo={websiteInfo()} />}
+      <Show
+        when={sidebar.viewInfo()?.websiteInfo}
+        fallback={
+          <Show when={sidebar.viewInfo()?.currentModel}>
+            {(model) => <RecordInfoSection model={model()} info={sidebar.viewInfo()!} />}
           </Show>
+        }
+      >
+        {(websiteInfo) => <WebsiteInfoSection websiteInfo={websiteInfo()} />}
+      </Show>
 
-          <Show when={hasFields() || hasButtons()}>
-            <FieldFilters
-              searchTerm={searchTerm()}
-              onSearchChange={setSearchTerm}
-              showOnlyRequired={showOnlyRequired()}
-              onRequiredChange={setShowOnlyRequired}
-              showOnlyReadonly={showOnlyReadonly()}
-              onReadonlyChange={setShowOnlyReadonly}
-              showOnlyFields={showOnlyFields()}
-              onFieldsChange={setShowOnlyFields}
-              showOnlyButtons={showOnlyButtons()}
-              onButtonsChange={setShowOnlyButtons}
+      <Switch>
+        <Match when={sidebar.elementCount() === 0}>
+          <Show when={!sidebar.isWebsite()}>
+            <StateMessage
+              icon={<HugeiconsIcon icon={InformationCircleIcon} size={20} {...iconProps} />}
+              title={t("technical_list.side_panel.no_fields")}
+              description={t("technical_list.states.empty_hint")}
             />
           </Show>
-
-          <Show when={filteredFields().length > 0}>{FieldsSection}</Show>
-          <Show when={filteredButtons().length > 0}>{ButtonsSection}</Show>
-
-          <Show when={filteredFields().length === 0 && filteredButtons().length === 0}>
-            <Show when={hasFields() || hasButtons()}>
-              <div class="p-6">
-                <EmptyState
-                  icon={
-                    <HugeiconsIcon
-                      icon={FilterIcon}
-                      size={32}
-                      color="currentColor"
-                      strokeWidth={1.6}
-                    />
-                  }
-                  message={t("technical_list.side_panel.no_match")}
-                />
-              </div>
-            </Show>
-            <Show when={!hasFields() && !hasButtons() && !isWebsite()}>
-              <div class="p-6">
-                <EmptyState
-                  icon={
-                    <HugeiconsIcon
-                      icon={InformationCircleIcon}
-                      size={32}
-                      color="currentColor"
-                      strokeWidth={1.6}
-                    />
-                  }
-                  message={t("technical_list.side_panel.no_fields")}
-                />
-              </div>
-            </Show>
+        </Match>
+        <Match when={true}>
+          <FieldFilters />
+          <Show when={fields().length > 0}>
+            <ListSection
+              icon={<HugeiconsIcon icon={InputShortTextIcon} size={14} {...iconProps} />}
+              title={t("technical_list.side_panel.fields_list")}
+              count={fields().length}
+            >
+              <For each={fields()}>{(field) => <FieldItem field={field} />}</For>
+            </ListSection>
           </Show>
-        </>
-      )}
+          <Show when={buttons().length > 0}>
+            <ListSection
+              icon={<HugeiconsIcon icon={MouseLeftClick06Icon} size={14} {...iconProps} />}
+              title={t("technical_list.side_panel.buttons_list")}
+              count={buttons().length}
+            >
+              <For each={buttons()}>{(button) => <ButtonItem button={button} />}</For>
+            </ListSection>
+          </Show>
+          <Show when={fields().length + buttons().length === 0}>
+            <StateMessage
+              icon={<HugeiconsIcon icon={FilterIcon} size={20} {...iconProps} />}
+              title={t("technical_list.side_panel.no_match")}
+              action={
+                <Button size="sm" class="text-xs" onClick={sidebar.resetFilters}>
+                  {t("technical_list.side_panel.reset_filters")}
+                </Button>
+              }
+            />
+          </Show>
+        </Match>
+      </Switch>
+    </>
+  );
+};
+
+const SelectionHeading = (props: { title: string }) => (
+  <div class="mb-2.5 flex items-center gap-2 border-b border-solid border-line pb-2.5">
+    <HugeiconsIcon icon={ZoomInAreaIcon} size={18} {...iconProps} class="text-accent" />
+    <h3 class="m-0 font-display text-sm font-semibold tracking-tight text-ink">{props.title}</h3>
+  </div>
+);
+
+const SelectionContent = () => {
+  const sidebar = useSidebar();
+
+  return (
+    <Show
+      when={sidebar.picked()}
+      keyed
+      fallback={
+        <div class="rounded-box border border-dashed border-line-strong px-3.5 py-5 text-center">
+          <HugeiconsIcon
+            icon={Select02Icon}
+            size={20}
+            {...iconProps}
+            class="mx-auto mb-2 text-accent"
+          />
+          <p class="m-0 text-xs text-ink-3">
+            {t("technical_list.side_panel.click_element_detail")}
+          </p>
+        </div>
+      }
+    >
+      {(value) =>
+        "field" in value ? (
+          <div>
+            <SelectionHeading title={t("technical_list.side_panel.selected_field")} />
+            <FieldItem field={value.field} selected />
+          </div>
+        ) : (
+          <div>
+            <SelectionHeading title={t("technical_list.side_panel.selected_button")} />
+            <ButtonItem button={value.button} selected />
+          </div>
+        )
+      }
     </Show>
   );
 };
 
-const SelectedFieldContent = () => {
-  const { selectedFieldInfo, highlightField, clearFieldHighlight } = useTechnicalSidebar();
+const statusDotClass = {
+  success: "bg-success",
+  warning: "bg-warning",
+  error: "bg-error",
+} as const;
+
+const SidePanelFooter = () => {
+  const sidebar = useSidebar();
+  const version = () => {
+    const value = sidebar.dbInfo()?.version;
+    return value ? `Odoo ${value}` : "";
+  };
+
+  const status = (): { tone: keyof typeof statusDotClass; label: string } => {
+    if (sidebar.error()) return { tone: "error", label: t("technical_list.states.error_title") };
+    if (sidebar.isWebsite()) {
+      return { tone: "success", label: t("technical_list.website_info.title") };
+    }
+    if (sidebar.elementCount() === 0) {
+      return { tone: "warning", label: t("technical_list.states.no_elements") };
+    }
+    return {
+      tone: "success",
+      label: t("technical_list.states.element_count", [sidebar.elementCount()]),
+    };
+  };
 
   return (
-    <Show
-      when={selectedFieldInfo()}
-      fallback={
-        <div class="p-6">
-          <EmptyState
-            icon={
-              <HugeiconsIcon icon={Select02Icon} size={32} color="currentColor" strokeWidth={1.6} />
-            }
-            message={t("technical_list.side_panel.click_field_detail")}
-          />
-        </div>
-      }
-    >
-      {(field) => (
-        <div class="px-6 py-4">
-          <div class="mb-1 flex items-center gap-2 px-3 py-2 text-sm font-semibold text-base-content">
-            <HugeiconsIcon
-              icon={ZoomInAreaIcon}
-              size={24}
-              color="var(--color-accent)"
-              strokeWidth={1.6}
-            />
-            <span>{t("technical_list.side_panel.selected_field")}</span>
-          </div>
-          <FieldItem
-            field={field()}
-            onHighlight={highlightField}
-            onClearHighlight={clearFieldHighlight}
-          />
-        </div>
-      )}
-    </Show>
-  );
-};
-
-const SelectedButtonContent = () => {
-  const { selectedButtonInfo, highlightButton, clearButtonHighlight } = useTechnicalSidebar();
-
-  return (
-    <Show
-      when={selectedButtonInfo()}
-      fallback={
-        <div class="p-6">
-          <EmptyState
-            icon={
-              <HugeiconsIcon icon={Select02Icon} size={32} color="currentColor" strokeWidth={1.6} />
-            }
-            message={t("technical_list.side_panel.click_button_detail")}
-          />
-        </div>
-      }
-    >
-      {(button) => (
-        <div class="px-6 py-4">
-          <div class="mb-1 flex items-center gap-2 px-3 py-2 text-sm font-semibold text-base-content">
-            <HugeiconsIcon
-              icon={ZoomInAreaIcon}
-              size={24}
-              color="var(--color-accent)"
-              strokeWidth={1.6}
-            />
-            <span>{t("technical_list.side_panel.selected_button")}</span>
-          </div>
-          <ButtonItem
-            button={button()}
-            onHighlight={highlightButton}
-            onClearHighlight={clearButtonHighlight}
-          />
-        </div>
-      )}
-    </Show>
+    <footer class="flex flex-none items-center justify-between gap-2.5 border-t border-solid border-line bg-surface-2 px-4 py-2 text-ui text-ink-3">
+      <span class="min-w-0 truncate font-mono">{version()}</span>
+      <span class="inline-flex flex-none items-center gap-1.5 font-mono" aria-live="polite">
+        <span class={cx("size-1.5 rounded-full", statusDotClass[status().tone])} />
+        {status().label}
+      </span>
+    </footer>
   );
 };
 
 export const SidePanel = () => {
-  const {
-    isExpanded,
-    loading,
-    error,
-    clearAllHighlights,
-    isSelectionMode,
-    selectedFieldInfo,
-    selectedButtonInfo,
-    viewInfo,
-  } = useTechnicalSidebar();
-  const position = getTechnicalListPosition();
+  const sidebar = useSidebar();
 
   return (
-    <div
-      data-technical-list-panel="true"
+    <aside
+      id={TECHNICAL_PANEL_ID}
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby={PANEL_TITLE_ID}
+      aria-hidden={!sidebar.isExpanded()}
+      inert={!sidebar.isExpanded()}
+      {...{ [PANEL_ATTRIBUTE]: "true" }}
       dir={getDir()}
-      onMouseLeave={clearAllHighlights}
-      class={[
-        "fixed",
-        "top-0",
-        position === "left" ? "left-0" : "right-0",
-        "z-1000",
-        "h-screen",
-        "w-[400px]",
-        "max-md:w-full",
-        "bg-base-300",
-        position === "left" ? "border-r" : "border-l",
-        "border-base-200",
-        "transition-transform",
-        "duration-300",
-        "ease-in-out",
-        "flex",
-        "flex-col",
-        "overflow-hidden",
-      ].join(" ")}
+      onMouseLeave={sidebar.clearHighlight}
+      class={cx(
+        "fixed top-0 z-1000 flex h-screen w-[400px] flex-col overflow-hidden bg-surface text-ink max-md:w-full",
+        // Physical side: the panel position is a user setting, independent of the text direction.
+        sidebar.position === "left" ? "left-0 border-r" : "right-0 border-l",
+        "border-solid border-line shadow-overlay max-md:border-0 max-md:shadow-none",
+        // Hidden once slid out (visibility switches at the end of the closing transition).
+        "transition-[transform,visibility] duration-300 ease-theme",
+        sidebar.isExpanded() ? "visible" : "invisible",
+      )}
       style={{
-        transform: isExpanded()
+        transform: sidebar.isExpanded()
           ? "translateX(0)"
-          : position === "left"
-            ? "translateX(-100%)"
-            : "translateX(100%)",
-        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          : sidebar.position === "left"
+            ? "translateX(-102%)"
+            : "translateX(102%)",
       }}
     >
       <SidePanelHeader />
-      <SidePanelSummary />
+      <Show when={!sidebar.isSelectionMode() && !sidebar.error() && sidebar.viewInfo()}>
+        {(info) => (
+          <SidePanelSummary
+            totalFields={info().technicalFields.length}
+            totalButtons={info().technicalButtons.length}
+          />
+        )}
+      </Show>
 
-      <div class="flex-1 overflow-y-auto">
-        <Show when={loading()}>
-          <LoadingState />
-        </Show>
-        <Show when={error()}>{(err) => <ErrorState message={err()} />}</Show>
-
-        <Show when={isSelectionMode() && !loading() && !error()}>
-          <Show when={selectedFieldInfo()}>
-            <SelectedFieldContent />
-          </Show>
-          <Show when={selectedButtonInfo()}>
-            <SelectedButtonContent />
-          </Show>
-          <Show when={!selectedFieldInfo() && !selectedButtonInfo()}>
-            <EmptyState
-              icon={
-                <HugeiconsIcon
-                  icon={Select02Icon}
-                  size={32}
-                  color="currentColor"
-                  strokeWidth={1.6}
-                />
-              }
-              message={t("technical_list.side_panel.click_element_detail")}
-            />
-          </Show>
-        </Show>
-
-        <Show when={!isSelectionMode() && viewInfo() && !loading() && !error()}>
-          <PanelContent />
-        </Show>
+      <div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pt-3.5 pb-4.5 *:shrink-0">
+        <Switch>
+          <Match when={sidebar.error()}>
+            {(error) => <ErrorState message={error()} onRetry={sidebar.refresh} />}
+          </Match>
+          <Match when={sidebar.isSelectionMode()}>
+            <SelectionContent />
+          </Match>
+          <Match when={sidebar.viewInfo()}>
+            <PanelContent />
+          </Match>
+        </Switch>
       </div>
-    </div>
+
+      <SidePanelFooter />
+      <FieldDetailsModal />
+    </aside>
   );
 };

@@ -1,70 +1,48 @@
-import {
-  Bug01Icon,
-  Tag01Icon,
-  DatabaseIcon,
-  LanguageSkillIcon,
-  Settings02Icon,
-} from "@hugeicons/core-free-icons";
+import { DatabaseIcon } from "@hugeicons/core-free-icons";
 
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { DatabaseInfo } from "@/types";
 import { t } from "@/utils/i18n-page";
 
-import { InfoItem } from "./info-item";
+import type { DatabaseInfo, DebugMode } from "../types";
 import { InfoSection } from "./info-section";
 
-interface DatabaseInfoComponentProps {
-  dbInfo: DatabaseInfo;
-}
+const DEBUG_MODE_LABELS: Record<DebugMode, () => string> = {
+  disabled: () => t("technical_list.debug_mode.disabled"),
+  enabled: () => t("technical_list.debug_mode.enabled"),
+  assets: () => t("technical_list.debug_mode.assets"),
+  tests: () => t("technical_list.debug_mode.tests"),
+};
 
-export const DatabaseInfoComponent = (props: DatabaseInfoComponentProps) => {
+export const DatabaseInfoSection = (props: { dbInfo: DatabaseInfo }) => {
+  const unknown = () => t("technical_list.debug_mode.unknown");
   return (
     <InfoSection
-      icon={<HugeiconsIcon icon={DatabaseIcon} size={16} color="currentColor" strokeWidth={1.6} />}
+      icon={DatabaseIcon}
       title={t("technical_list.database_info.title")}
-    >
-      <InfoItem
-        icon={<HugeiconsIcon icon={Tag01Icon} size={14} color="currentColor" strokeWidth={1.6} />}
-        label={t("technical_list.database_info.version")}
-        value={props.dbInfo.version}
-        copyable={true}
-      />
-      <InfoItem
-        icon={
-          <HugeiconsIcon icon={DatabaseIcon} size={14} color="currentColor" strokeWidth={1.6} />
-        }
-        label={t("technical_list.database_info.database")}
-        value={props.dbInfo.database}
-        copyable={true}
-      />
-      <InfoItem
-        icon={
-          <HugeiconsIcon icon={Settings02Icon} size={14} color="currentColor" strokeWidth={1.6} />
-        }
-        label={t("technical_list.database_info.server_info")}
-        value={props.dbInfo.serverInfo}
-        copyable={true}
-      />
-      <InfoItem
-        icon={
-          <HugeiconsIcon
-            icon={LanguageSkillIcon}
-            size={14}
-            color="currentColor"
-            strokeWidth={1.6}
-          />
-        }
-        label={t("technical_list.database_info.language")}
-        value={props.dbInfo.language}
-        copyable={true}
-      />
-      <InfoItem
-        icon={<HugeiconsIcon icon={Bug01Icon} size={14} color="currentColor" strokeWidth={1.6} />}
-        label={t("technical_list.database_info.debug_mode")}
-        value={props.dbInfo.debugMode}
-        valueClass={`${props.dbInfo.debugMode === "Disabled" ? "text-error" : "text-success"} font-semibold`}
-        copyable={false}
-      />
-    </InfoSection>
+      collapseId="database"
+      rows={[
+        {
+          label: t("technical_list.database_info.version"),
+          value: props.dbInfo.version ?? unknown(),
+        },
+        {
+          label: t("technical_list.database_info.database"),
+          value: props.dbInfo.database ?? unknown(),
+        },
+        {
+          label: t("technical_list.database_info.server_info"),
+          value: props.dbInfo.serverInfo ?? unknown(),
+        },
+        {
+          label: t("technical_list.database_info.language"),
+          value: props.dbInfo.language ?? unknown(),
+        },
+        {
+          label: t("technical_list.database_info.debug_mode"),
+          value: DEBUG_MODE_LABELS[props.dbInfo.debugMode](),
+          copyable: false,
+          valueClass: `${props.dbInfo.debugMode === "disabled" ? "text-error-ink" : "text-success-ink"} font-medium`,
+        },
+      ]}
+    />
   );
 };

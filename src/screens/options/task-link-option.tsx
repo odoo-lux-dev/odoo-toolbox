@@ -1,186 +1,139 @@
-import { FloppyDiskIcon, InformationCircleIcon } from "@hugeicons/core-free-icons";
-import { createSignal, createMemo, createEffect, Show } from "solid-js";
+import { FloppyDiskIcon, Link01Icon } from "@hugeicons/core-free-icons";
+import { createSignal, For, Show } from "solid-js";
 
-import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
-import { OptionItem } from "@/screens/options/components/option-item";
-import { useSettingValue } from "@/screens/options/options-signals";
+import { Note } from "@/components/ui/status";
+import { useSettings } from "@/hooks/use-settings";
+import { OptionCard, type SettingCard } from "@/screens/options/components/option-card";
 import { t } from "@/services/i18n-service";
 import { settingsService } from "@/services/settings-service";
-import {
-  CHROME_STORAGE_SETTINGS_TASK_URL,
-  CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
-  URL_CHECK_REGEX,
-} from "@/utils/constants";
+import { isUrlOrEmpty } from "@/utils/constants";
 import { isValidRegex } from "@/utils/regex";
 
-export const TaskLinkOption = () => {
-  const [taskUrl, setTaskUrl] = createSignal("");
-  const [regexPattern, setRegexPattern] = createSignal("");
-  const [initialTaskUrl, setInitialTaskUrl] = createSignal("");
-  const [initialRegexPattern, setInitialRegexPattern] = createSignal("");
+/** Errors stay hidden while the value is too short to be finished. */
+const MIN_LENGTH_FOR_ERROR = 11;
 
-  const urlHasError = createMemo(() => {
-    const value = taskUrl();
-    return !URL_CHECK_REGEX.test(value) && value !== "" && value.length > 10;
-  });
+/**
+ * Text field editing a string setting: the typed value is a draft until saved
+ * (Save button or Enter), and can only be saved when valid.
+ */
+const SettingTextField = (props: {
+  setting: "taskUrl" | "taskUrlRegex";
+  id: string;
+  label: string;
+  placeholder: string;
+  errorMessage: string;
+  isValid: (value: string) => boolean;
+}) => {
+  const settings = useSettings();
+  const [draft, setDraft] = createSignal<string>();
+  const value = () => draft() ?? settings()[props.setting];
+  const canSave = () =>
+    draft() !== undefined && draft() !== settings()[props.setting] && props.isValid(value());
+  const hasError = () => value().length >= MIN_LENGTH_FOR_ERROR && !props.isValid(value());
 
-  const regexHasError = createMemo(() => {
-    const value = regexPattern();
-    return !isValidRegex(value) && value.length > 10;
-  });
-
-  const showUrlSaveButton = createMemo(() => {
-    const value = taskUrl();
-    const hasChanged = value !== initialTaskUrl();
-    const isValidUrl = URL_CHECK_REGEX.test(value) || value === "";
-    return hasChanged && isValidUrl;
-  });
-
-  const showRegexSaveButton = createMemo(() => {
-    const value = regexPattern();
-    const hasChanged = value !== initialRegexPattern();
-    const isValid = isValidRegex(value);
-    return hasChanged && isValid;
-  });
-
-  const taskUrlSetting = useSettingValue(CHROME_STORAGE_SETTINGS_TASK_URL);
-  const regexSetting = useSettingValue(CHROME_STORAGE_SETTINGS_TASK_URL_REGEX);
-
-  createEffect(() => {
-    const savedTaskUrl = taskUrlSetting() || "";
-    setTaskUrl(savedTaskUrl);
-    setInitialTaskUrl(savedTaskUrl);
-  });
-
-  createEffect(() => {
-    const savedRegexPattern = regexSetting() || "";
-    setRegexPattern(savedRegexPattern);
-    setInitialRegexPattern(savedRegexPattern);
-  });
-
-  const handleTaskUrlChange = (e: Event) => {
-    const value = (e.target as HTMLInputElement).value;
-    setTaskUrl(value);
-  };
-
-  const handleRegexChange = (e: Event) => {
-    const value = (e.target as HTMLInputElement).value;
-    setRegexPattern(value);
-  };
-
-  const handleUrlSave = async (e: Event) => {
-    e.preventDefault();
-
-    if (!URL_CHECK_REGEX.test(taskUrl()) && taskUrl() !== "") {
-      return;
-    }
-
-    await settingsService.setGlobalTaskUrl(taskUrl());
-    setInitialTaskUrl(taskUrl());
-  };
-
-  const handleRegexSave = async (e: Event) => {
-    e.preventDefault();
-
-    if (!isValidRegex(regexPattern())) {
-      return;
-    }
-
-    await settingsService.setTaskRegex(regexPattern());
-    setInitialRegexPattern(regexPattern());
+  const save = async (event: Event) => {
+    event.preventDefault();
+    if (!canSave()) return;
+    await settingsService.set(props.setting, value());
+    setDraft(undefined);
   };
 
   return (
-    <OptionItem
-      id="task-link"
-      title={t("options.settings.task_link_title")}
-      tooltipContent={t("options.settings.task_link_desc")}
-    >
-      <div class="flex flex-col gap-6">
-        <Alert
-          color="info"
-          icon={
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              size={20}
-              color="currentColor"
-              strokeWidth={2}
-            />
-          }
-          class="text-sm"
-          variant="dash"
+    <div class="flex min-w-0 flex-col gap-1.5">
+      <label class="text-label font-semibold text-ink-2" for={props.id}>
+        {props.label}
+      </label>
+      <div class="flex gap-1.5">
+        <Input
+          id={props.id}
+          class="min-w-0 flex-1 font-mono text-xs"
+          color={hasError() ? "error" : undefined}
+          type="text"
+          spellcheck={false}
+          placeholder={props.placeholder}
+          value={value()}
+          onInput={(event) => setDraft(event.currentTarget.value)}
+          onKeyDown={(event) => event.key === "Enter" && save(event)}
+        />
+        <Button
+          size="sm"
+          variant="ghost"
+          class={`h-auto flex-none border-line ${canSave() ? "" : "invisible"}`}
+          onClick={save}
         >
-          <ul>
-            <li>{t("options.settings.task_link_placeholder_hint")}</li>
-            <li>{t("options.settings.task_link_default")}</li>
-            <li>{t("options.settings.task_link_per_favorite")}</li>
-          </ul>
-        </Alert>
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium" for="task-link-option">
-            {t("options.settings.task_link_label")}
-          </label>
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Input
-              id="task-link-option"
-              class={urlHasError() ? "input-error" : ""}
-              type="text"
-              fullWidth
-              placeholder={t("options.favorites.task_link_placeholder")}
-              value={taskUrl()}
-              onInput={handleTaskUrlChange}
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              class={showUrlSaveButton() ? "" : "invisible"}
-              onClick={handleUrlSave}
-            >
-              <HugeiconsIcon icon={FloppyDiskIcon} size={18} color="currentColor" strokeWidth={2} />{" "}
-              {t("common.save")}
-            </Button>
-          </div>
-          <Show when={urlHasError()}>
-            <Alert color="error" variant="soft" class="text-sm">
-              {t("options.favorites.link_incorrect")}
-            </Alert>
-          </Show>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium" for="task-link-option-regex">
-            {t("options.settings.branch_regex")}
-          </label>
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Input
-              id="task-link-option-regex"
-              class={regexHasError() ? "input-error" : ""}
-              type="text"
-              fullWidth
-              placeholder={t("options.settings.regex_placeholder")}
-              value={regexPattern()}
-              onInput={handleRegexChange}
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              class={showRegexSaveButton() ? "" : "invisible"}
-              onClick={handleRegexSave}
-            >
-              <HugeiconsIcon icon={FloppyDiskIcon} size={18} color="currentColor" strokeWidth={2} />{" "}
-              {t("common.save")}
-            </Button>
-          </div>
-          <Show when={regexHasError()}>
-            <Alert color="error" variant="soft" class="text-sm">
-              {t("options.settings.regex_incorrect")}
-            </Alert>
-          </Show>
-        </div>
+          <HugeiconsIcon icon={FloppyDiskIcon} size={14} strokeWidth={1.8} />
+          {t("common.save")}
+        </Button>
       </div>
-    </OptionItem>
+      <Show when={hasError()}>
+        <p class="text-note text-error-ink" role="alert">
+          {props.errorMessage}
+        </p>
+      </Show>
+    </div>
   );
+};
+
+const TASK_ID_PLACEHOLDER = "{{task_id}}";
+
+/** Hint sentence with the `{{task_id}}` placeholder highlighted. */
+const TaskIdHint = () => {
+  const parts = () => t("options.settings.task_link_hint").split(TASK_ID_PLACEHOLDER);
+  return (
+    <For each={parts()}>
+      {(part, index) => (
+        <>
+          {part}
+          <Show when={index() < parts().length - 1}>
+            <code class="border-0 bg-transparent p-0 font-mono text-meta text-accent">
+              {TASK_ID_PLACEHOLDER}
+            </code>
+          </Show>
+        </>
+      )}
+    </For>
+  );
+};
+
+const TaskLinkCard = () => (
+  <OptionCard
+    card={TaskLinkOption}
+    wide
+    icon={Link01Icon}
+    tone="accent"
+    description={t("options.settings.task_link_desc")}
+    info={t("options.settings.task_link_default")}
+    keywords="task link branch url regex tracker"
+  >
+    <Note tone="info">
+      <TaskIdHint />
+    </Note>
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <SettingTextField
+        setting="taskUrl"
+        id="task-link-option"
+        label={t("options.settings.task_link_label")}
+        placeholder={t("options.favorites.task_link_placeholder")}
+        errorMessage={t("options.favorites.link_incorrect")}
+        isValid={isUrlOrEmpty}
+      />
+      <SettingTextField
+        setting="taskUrlRegex"
+        id="task-link-option-regex"
+        label={t("options.settings.branch_regex")}
+        placeholder={t("options.settings.regex_placeholder")}
+        errorMessage={t("options.settings.regex_incorrect")}
+        isValid={isValidRegex}
+      />
+    </div>
+  </OptionCard>
+);
+
+export const TaskLinkOption: SettingCard = {
+  id: "task-link",
+  title: "options.settings.task_link_title",
+  Component: TaskLinkCard,
 };

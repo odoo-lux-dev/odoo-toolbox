@@ -1,9 +1,8 @@
-import { For, Show, splitProps, type JSX } from "solid-js";
+import { createSignal, For, Show, type JSX } from "solid-js";
 
-import { useFieldMetadataRenderer } from "@/screens/devtools/components/field-hooks";
-import { usePortalTooltip } from "@/screens/devtools/components/ui-hooks";
+import { Popover } from "@/components/ui/popover";
 import { t } from "@/services/i18n-service";
-import { FieldMetadata } from "@/types";
+import type { FieldMetadata } from "@/types";
 
 interface FieldMetadataTooltipProps {
   fieldMetadata: FieldMetadata | null;
@@ -12,20 +11,20 @@ interface FieldMetadataTooltipProps {
   className?: string;
 }
 
-const renderValue = (value: unknown, keyPrefix = ""): JSX.Element => {
+const renderValue = (value: unknown): JSX.Element => {
   if (typeof value === "string") {
-    return <span class="font-mono text-xs text-success">"{value}"</span>;
+    return <span class="font-mono text-ui text-success">"{value}"</span>;
   }
 
   if (Array.isArray(value)) {
     return (
-      <span class="font-mono text-xs text-base-content/70">
+      <span class="font-mono text-ui text-base-content/70">
         [
         <For each={value}>
           {(item, index) => (
             <span>
               <Show when={index() > 0}>{", "}</Show>
-              {renderValue(item, `${keyPrefix}-${index()}`)}
+              {renderValue(item)}
             </span>
           )}
         </For>
@@ -35,29 +34,29 @@ const renderValue = (value: unknown, keyPrefix = ""): JSX.Element => {
   }
 
   if (typeof value === "boolean") {
-    return <span class="font-mono text-xs text-warning">{value.toString()}</span>;
+    return <span class="font-mono text-ui text-warning">{value.toString()}</span>;
   }
 
   if (typeof value === "number") {
-    return <span class="font-mono text-xs text-primary">{value.toString()}</span>;
+    return <span class="font-mono text-ui text-accent">{value.toString()}</span>;
   }
 
   if (value === null || value === undefined) {
-    return <span class="font-mono text-xs text-base-content/60">null</span>;
+    return <span class="font-mono text-ui text-base-content/60">null</span>;
   }
 
   if (typeof value === "object") {
     const entries = Object.entries(value);
     return (
-      <span class="font-mono text-xs text-base-content/70">
+      <span class="font-mono text-ui text-base-content/70">
         {"{"}
         <For each={entries}>
           {([objKey, objValue], index) => (
             <span>
               <Show when={index() > 0}>{", "}</Show>
-              <span class="font-mono text-xs text-success">"{objKey}"</span>
+              <span class="font-mono text-ui text-success">"{objKey}"</span>
               {": "}
-              {renderValue(objValue, `${keyPrefix}-obj-${index()}-val`)}
+              {renderValue(objValue)}
             </span>
           )}
         </For>
@@ -69,89 +68,61 @@ const renderValue = (value: unknown, keyPrefix = ""): JSX.Element => {
   return <span>{String(value)}</span>;
 };
 
-const getMetadataValueClasses = (classes?: string) => {
-  const base = "text-xs font-mono";
-  if (!classes) {
-    return `${base} text-base-content`;
-  }
-  if (classes.includes("cell-boolean")) {
-    return `${base} text-warning`;
-  }
-  if (classes.includes("cell-number")) {
-    return `${base} text-accent`;
-  }
-  if (classes.includes("cell-string")) {
-    return `${base} text-success`;
-  }
-  if (classes.includes("cell-object")) {
-    return `${base} text-base-content`;
-  }
-  return `${base} text-base-content`;
+const prettyKey = (key: string) =>
+  key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+/** Displayed metadata: `help` first, then every other non-empty attribute except `name`. */
+const metadataEntries = (metadata: FieldMetadata): [string, unknown][] => {
+  const isShown = ([key, value]: [string, unknown]) =>
+    key !== "name" && value !== null && value !== undefined && value !== "";
+  const entries = Object.entries(metadata).filter(isShown);
+  return [
+    ...entries.filter(([key]) => key === "help"),
+    ...entries.filter(([key]) => key !== "help"),
+  ].map(([key, value]) => [prettyKey(key), value]);
 };
 
 export const FieldMetadataTooltip = (props: FieldMetadataTooltipProps) => {
-  const [local] = splitProps(props, ["fieldMetadata", "fieldName", "children", "className"]);
-  const { isVisible, position, anchorRef, tooltipRef, showTooltip, hideTooltip } =
-    usePortalTooltip();
-  const { prepareMetadataItems } = useFieldMetadataRenderer();
-
-  const metadataItems = () =>
-    local.fieldMetadata ? prepareMetadataItems(local.fieldMetadata) : [];
+  const [anchor, setAnchor] = createSignal<HTMLDivElement>();
+  const [isVisible, setIsVisible] = createSignal(false);
+  const entries = () => (props.fieldMetadata ? metadataEntries(props.fieldMetadata) : []);
 
   return (
     <div
-      ref={anchorRef}
-      class={`inline-block cursor-help ${local.className ?? ""}`}
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
+      ref={setAnchor}
+      class={`inline-block cursor-help ${props.className ?? ""}`}
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
     >
-      <div class="underline decoration-base-content/40 decoration-dotted underline-offset-2 hover:decoration-primary">
-        {local.children}
+      <div class="underline decoration-ink-4 decoration-dotted underline-offset-2 hover:decoration-primary">
+        {props.children}
       </div>
 
-      <Show when={isVisible()}>
-        <Portal>
-          <div
-            ref={tooltipRef}
-            class="pointer-events-none fixed z-9999"
-            style={{
-              top: `${position().top}px`,
-              left: `${position().left}px`,
-            }}
-          >
-            <Show
-              when={local.fieldMetadata}
-              fallback={
-                <div class="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
-                  <div class="font-medium text-base-content/70">
-                    {t("devtools.field_metadata.unavailable")}
-                  </div>
-                </div>
-              }
-            >
-              <div class="rounded-box border border-base-300/60 bg-base-100 px-3 py-2 text-xs text-base-content shadow-md">
-                <div class="mb-2 text-xs font-semibold tracking-wide text-primary uppercase">
-                  {t("devtools.field_metadata.field_label", [local.fieldName])}
-                </div>
-                <div>
-                  <For each={metadataItems()}>
-                    {(item, index) => (
-                      <div class="flex flex-wrap items-start gap-x-1">
-                        <span class="font-medium text-base-content/70">{item.key}:</span>
-                        <span class={getMetadataValueClasses(item.classes)}>
-                          <Show when={item.isComplexType} fallback={item.formattedValue}>
-                            {renderValue(item.value, `item-${index()}`)}
-                          </Show>
-                        </span>
-                      </div>
-                    )}
-                  </For>
-                </div>
-              </div>
-            </Show>
+      <Popover
+        open={isVisible()}
+        anchor={anchor()}
+        onClose={() => setIsVisible(false)}
+        class="pointer-events-none z-9999 rounded-box px-3 py-2 text-ui text-ink"
+      >
+        <Show
+          when={props.fieldMetadata}
+          fallback={
+            <div class="font-medium text-ink-3">{t("devtools.field_metadata.unavailable")}</div>
+          }
+        >
+          <div class="mb-2 text-ui font-semibold tracking-wide text-primary uppercase">
+            {t("devtools.field_metadata.field_label", [props.fieldName])}
           </div>
-        </Portal>
-      </Show>
+          <For each={entries()}>
+            {([key, value]) => (
+              <div class="flex flex-wrap items-start gap-x-1">
+                <span class="font-medium text-ink-3">{key}:</span>
+                {renderValue(value)}
+              </div>
+            )}
+          </For>
+        </Show>
+      </Popover>
     </div>
   );
 };

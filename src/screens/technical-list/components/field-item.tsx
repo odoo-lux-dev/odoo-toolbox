@@ -1,280 +1,194 @@
-import { ArrowUpRight01Icon, EyeIcon, InformationCircleIcon } from "@hugeicons/core-free-icons";
-import { createSignal, For, Show, splitProps } from "solid-js";
+import { ArrowUpRight01Icon, EyeIcon, ViewOffSlashIcon } from "@hugeicons/core-free-icons";
+import { createSignal, Show } from "solid-js";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { useTechnicalSidebar } from "@/screens/technical-list/components/hooks";
-import { EnhancedTechnicalFieldInfo } from "@/types";
+import { CopyableText } from "@/components/ui/copyable-text";
 import { isDynamicCondition } from "@/utils/field-utils";
 import { t } from "@/utils/i18n-page";
 
+import { useSidebar } from "../sidebar-store";
+import type { FieldInfo } from "../types";
 import { FieldBadge } from "./field-badge";
-import { FieldDetailsModal } from "./field-details-modal";
+import {
+  CardAction,
+  CardActions,
+  ConditionalHint,
+  DebugInfoList,
+  InvisibleBadge,
+  TechnicalBadge,
+  TechnicalCard,
+  type TechnicalBadgeTone,
+} from "./technical-card";
 
-interface FieldItemProps {
-  field: EnhancedTechnicalFieldInfo;
-  onHighlight: (fieldName: string) => void;
-  onClearHighlight: (fieldName: string) => void;
-}
-
-const getTypeBadgeColor = (type?: string) => {
-  const normalized = type?.toLowerCase() ?? "unknown";
-
-  if (["char", "text"].includes(normalized)) return "success";
-  if (["integer", "float", "monetary"].includes(normalized)) return "info";
-  if (["boolean"].includes(normalized)) return "secondary";
-  if (["date", "datetime"].includes(normalized)) return "error";
-  if (["selection"].includes(normalized)) return "warning";
-  if (["many2one", "m2o"].includes(normalized)) return "accent";
-  if (["one2many", "o2m"].includes(normalized)) return "primary";
-  if (["many2many", "m2m"].includes(normalized)) return;
-  if (["binary"].includes(normalized)) return;
-
-  return;
+const TYPE_TONES: Record<string, TechnicalBadgeTone> = {
+  char: "success",
+  text: "success",
+  html: "success",
+  integer: "info",
+  float: "info",
+  monetary: "info",
+  date: "error",
+  datetime: "error",
+  selection: "warning",
+  m2o: "accent",
+  o2m: "accent",
+  m2m: "accent",
 };
 
-export const FieldItem = (props: FieldItemProps) => {
-  const [local] = splitProps(props, ["field", "onHighlight", "onClearHighlight"]);
-  const { copyToClipboard } = useCopyToClipboard();
-  const { viewInfo } = useTechnicalSidebar();
+export const FieldItem = (props: { field: FieldInfo; selected?: boolean }) => {
+  const sidebar = useSidebar();
   const [showValue, setShowValue] = createSignal(false);
-  const [showDetailsModal, setShowDetailsModal] = createSignal(false);
-
-  const handleCopyFieldName = async (fieldName: string, event: MouseEvent) => {
-    const target = event.currentTarget as HTMLElement;
-    await copyToClipboard(fieldName, target);
-  };
-
-  const typeLabel = () => local.field.type || "unknown";
-  const typeColor = () => getTypeBadgeColor(local.field.type);
+  const debugInfo = () => props.field.debugInfo;
   const hasBadge = () =>
-    local.field.debugInfo?.required ||
-    local.field.debugInfo?.readonly ||
-    local.field.debugInfo?.invisible ||
-    local.field.debugInfo?.compute ||
-    local.field.debugInfo?.related ||
-    local.field.debugInfo?.store;
+    props.field.canBeRequired ||
+    props.field.canBeReadonly ||
+    debugInfo()?.invisible ||
+    debugInfo()?.compute ||
+    debugInfo()?.related ||
+    debugInfo()?.store;
+
+  const openDetails = () =>
+    sidebar.openFieldDetails({
+      model: debugInfo()?.resModel ?? sidebar.viewInfo()?.currentModel ?? "",
+      fieldName: props.field.name,
+    });
 
   return (
-    <div
-      class="rounded-xl border border-solid border-base-200 bg-base-100 p-3 shadow-sm hover:border-primary hover:shadow-md"
-      onMouseEnter={() => local.onHighlight(local.field.name)}
-      onMouseLeave={() => local.onClearHighlight(local.field.name)}
-    >
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex min-w-0 flex-1 items-center gap-2">
-          <span
-            class="max-w-50 cursor-pointer truncate rounded-md bg-base-200 px-2 py-1 font-mono text-xs transition-colors hover:bg-primary hover:text-primary-content"
-            onClick={(event) => handleCopyFieldName(local.field.name, event)}
-            title={t("technical_list.field_item.copy_hint")}
-          >
-            {local.field.name}
-          </span>
-        </div>
-        <Badge
-          size="sm"
-          color={typeColor()}
-          variant="outline"
-          class="max-w-[45%] overflow-hidden tracking-wide uppercase"
-          title={typeLabel()}
+    <TechnicalCard target={{ kind: "field", name: props.field.name }} selected={props.selected}>
+      <div class="flex items-start justify-between gap-2">
+        <CopyableText
+          value={props.field.name}
+          title={t("technical_list.field_item.copy_hint")}
+          class="text-xs"
+        />
+        <TechnicalBadge
+          tone={TYPE_TONES[props.field.type.toLowerCase()] ?? "neutral"}
+          title={props.field.type}
+          class="max-w-[45%] shrink-0"
         >
-          <span class="block truncate">{typeLabel()}</span>
-        </Badge>
+          {props.field.type}
+        </TechnicalBadge>
       </div>
 
-      <Show when={local.field.label}>
-        <div class="mt-2 text-xs text-base-content/70">{local.field.label}</div>
+      <Show when={props.field.label}>
+        <p class="m-0 mt-1.5 text-xs text-ink-2">{props.field.label}</p>
       </Show>
 
       <Show when={hasBadge()}>
-        <div class="mt-3 flex flex-wrap gap-2">
+        <div class="mt-2 flex flex-wrap gap-1">
           <FieldBadge
-            debugValue={local.field.debugInfo?.required}
-            cssValue={local.field.isRequired}
-            hasDebugInfo={!!local.field.debugInfo}
-            badgeType="required"
+            kind="required"
+            possible={props.field.canBeRequired}
+            modifier={debugInfo()?.required}
           />
-
           <FieldBadge
-            debugValue={local.field.debugInfo?.readonly}
-            cssValue={local.field.isReadonly}
-            hasDebugInfo={!!local.field.debugInfo}
-            badgeType="readonly"
+            kind="readonly"
+            possible={props.field.canBeReadonly}
+            modifier={debugInfo()?.readonly}
           />
-
-          <Show when={local.field.debugInfo?.invisible}>
-            <Badge
-              size="sm"
-              variant="outline"
-              class="tracking-wide uppercase"
-              title={
-                isDynamicCondition(local.field.debugInfo?.invisible)
-                  ? t("technical_list.field_item.invisible_when", [
-                      local.field.debugInfo?.invisible,
-                    ])
-                  : t("technical_list.field_item.invisible")
-              }
-            >
-              {isDynamicCondition(local.field.debugInfo?.invisible)
-                ? t("technical_list.field_item.invisible_conditional")
-                : t("technical_list.field_item.invisible")}
-            </Badge>
+          <InvisibleBadge value={debugInfo()?.invisible} />
+          <Show when={debugInfo()?.compute}>
+            <TechnicalBadge tone="accent">{t("technical_list.field_item.compute")}</TechnicalBadge>
           </Show>
-
-          <Show when={local.field.debugInfo?.compute}>
-            <Badge size="sm" variant="outline" color="secondary" class="tracking-wide uppercase">
-              {t("technical_list.field_item.compute")}
-            </Badge>
+          <Show when={debugInfo()?.related}>
+            <TechnicalBadge tone="info">{t("technical_list.field_item.related")}</TechnicalBadge>
           </Show>
-
-          <Show when={local.field.debugInfo?.related}>
-            <Badge size="sm" variant="outline" color="success" class="tracking-wide uppercase">
-              {t("technical_list.field_item.related")}
-            </Badge>
-          </Show>
-
-          <Show when={local.field.debugInfo?.store}>
-            <Badge size="sm" variant="outline" color="info" class="tracking-wide uppercase">
-              {t("technical_list.field_item.store")}
-            </Badge>
+          <Show when={debugInfo()?.store}>
+            <TechnicalBadge tone="info">{t("technical_list.field_item.store")}</TechnicalBadge>
           </Show>
         </div>
       </Show>
 
       <Show
         when={
-          isDynamicCondition(local.field.debugInfo?.required) ||
-          isDynamicCondition(local.field.debugInfo?.readonly) ||
-          isDynamicCondition(local.field.debugInfo?.invisible)
+          isDynamicCondition(debugInfo()?.required) ||
+          isDynamicCondition(debugInfo()?.readonly) ||
+          isDynamicCondition(debugInfo()?.invisible)
         }
       >
-        <div class="mt-3 flex items-center gap-2 rounded-md bg-base-200/70 px-2 py-1 text-[11px] text-base-content/70">
-          <HugeiconsIcon
-            icon={InformationCircleIcon}
-            size={12}
-            color="currentColor"
-            strokeWidth={1.6}
-          />
-          <span>{t("technical_list.field_item.conditional_hint")}</span>
-        </div>
+        <ConditionalHint>{t("technical_list.field_item.conditional_hint")}</ConditionalHint>
       </Show>
 
-      <Show when={local.field.debugInfo}>
-        <div class="mt-3 space-y-2 border-t border-solid border-base-300 pt-3 text-xs">
-          <For
-            each={[
+      <Show when={debugInfo()}>
+        {(info) => (
+          <DebugInfoList
+            items={[
               {
                 key: "resModel",
                 label: t("technical_list.field_item.model"),
-                value: local.field.debugInfo?.resModel,
+                value: info().resModel,
               },
-              {
-                key: "widget",
-                label: t("technical_list.field_item.widget"),
-                value: local.field.debugInfo?.widget,
-              },
+              { key: "widget", label: t("technical_list.field_item.widget"), value: info().widget },
               {
                 key: "relation",
                 label: t("technical_list.field_item.relation"),
-                value: local.field.debugInfo?.relation,
+                value: info().relation,
               },
               {
                 key: "domain",
                 label: t("technical_list.field_item.domain"),
-                value: local.field.debugInfo?.domain,
+                value: info().domain,
                 serialize: true,
               },
               {
                 key: "context",
                 label: t("technical_list.field_item.context"),
-                value: local.field.debugInfo?.context,
+                value: info().context,
                 serialize: true,
               },
               {
                 key: "selection",
                 label: t("technical_list.field_item.selection"),
-                value: local.field.debugInfo?.selection,
+                value: info().selection,
                 serialize: true,
               },
               {
                 key: "required",
                 label: t("technical_list.field_item.required_condition"),
-                value: local.field.debugInfo?.required,
-                condition: () => isDynamicCondition(local.field.debugInfo?.required),
+                value: info().required,
+                condition: () => isDynamicCondition(info().required),
               },
               {
                 key: "readonly",
                 label: t("technical_list.field_item.readonly_condition"),
-                value: local.field.debugInfo?.readonly,
-                condition: () => isDynamicCondition(local.field.debugInfo?.readonly),
+                value: info().readonly,
+                condition: () => isDynamicCondition(info().readonly),
               },
               {
                 key: "invisible",
                 label: t("technical_list.field_item.invisible_condition"),
-                value: local.field.debugInfo?.invisible,
-                condition: () => isDynamicCondition(local.field.debugInfo?.invisible),
+                value: info().invisible,
+                condition: () => isDynamicCondition(info().invisible),
               },
-            ].filter((item) => (item.condition ? item.condition() : item.value))}
-          >
-            {(item) => (
-              <div class="flex items-start justify-between gap-4">
-                <span class="font-medium text-nowrap text-base-content/60">{item.label}</span>
-                <code class="max-h-[60px] max-w-[220px] overflow-y-auto text-end font-mono wrap-break-word text-base-content/80">
-                  {item.serialize ? JSON.stringify(item.value) : String(item.value)}
-                </code>
-              </div>
-            )}
-          </For>
-        </div>
+            ]}
+          />
+        )}
       </Show>
 
-      <div class="mt-3 flex items-center gap-2">
-        <Show when={local.field.value}>
-          <Button
-            variant="ghost"
-            size="xs"
-            class="gap-2 text-xs"
-            onClick={(event) => {
-              event.stopPropagation();
-              setShowValue(!showValue());
-            }}
-            type="button"
-          >
-            <HugeiconsIcon icon={EyeIcon} size={14} color="currentColor" strokeWidth={1.6} />
-            {showValue()
-              ? t("technical_list.field_item.hide_value")
-              : t("technical_list.field_item.show_value")}
-          </Button>
-        </Show>
-        <Button
-          variant="ghost"
-          size="xs"
-          class="ms-auto gap-2 text-xs"
-          onClick={() => setShowDetailsModal(true)}
-          type="button"
-        >
-          <HugeiconsIcon
-            icon={ArrowUpRight01Icon}
-            size={14}
-            color="currentColor"
-            strokeWidth={1.6}
+      <CardActions>
+        <Show when={props.field.value}>
+          <CardAction
+            icon={showValue() ? ViewOffSlashIcon : EyeIcon}
+            label={
+              showValue()
+                ? t("technical_list.field_item.hide_value")
+                : t("technical_list.field_item.show_value")
+            }
+            pressed={showValue()}
+            onClick={() => setShowValue(!showValue())}
           />
-          {t("technical_list.field_details.more_details")}
-        </Button>
-      </div>
-      <Show when={showValue() && local.field.value}>
-        <code class="mt-2 max-h-28 overflow-auto rounded-md border border-base-200 bg-base-200/60 p-2 font-mono text-xs text-base-content/80">
-          {local.field.value}
-        </code>
+        </Show>
+        <CardAction
+          icon={ArrowUpRight01Icon}
+          label={t("technical_list.field_details.more_details")}
+          onClick={openDetails}
+        />
+      </CardActions>
+
+      <Show when={showValue() && props.field.value}>
+        <div class="mt-2 max-h-28 overflow-auto rounded-sm border border-solid border-line bg-surface-2 px-2 py-1.5 font-mono text-ui wrap-break-word whitespace-pre-wrap text-ink-2">
+          {props.field.value}
+        </div>
       </Show>
-      <FieldDetailsModal
-        open={showDetailsModal()}
-        onClose={() => setShowDetailsModal(false)}
-        model={local.field.debugInfo?.resModel ?? viewInfo()?.currentModel ?? ""}
-        fieldName={local.field.name}
-      />
-    </div>
+    </TechnicalCard>
   );
 };

@@ -1,278 +1,238 @@
-import { Search01Icon, Settings02Icon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, CheckmarkCircle02Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { debounce } from "@solid-primitives/scheduled";
-import {
-  columnFilteringFeature,
-  columnResizingFeature,
-  columnSizingFeature,
-  columnVisibilityFeature,
-  createFilteredRowModel,
-  createTable,
-  filterFn_includesString,
-  FlexRender,
-  globalFilteringFeature,
-  tableFeatures,
-  type ColumnDef,
-  type ColumnVisibilityState,
-} from "@tanstack/solid-table";
-import {
-  Virtualizer,
-  observeElementRect,
-  observeElementOffset,
-  elementScroll,
-} from "@tanstack/virtual-core";
-import {
-  createMemo,
-  createSignal,
-  For,
-  Show,
-  onCleanup,
-  createEffect,
-  splitProps,
-  onMount,
-} from "solid-js";
-import { Portal } from "solid-js/web";
+import { createTable, type ColumnDef, type ColumnVisibilityState } from "@tanstack/solid-table";
+import { createMemo, createSignal, createUniqueId, Match, Show, Switch } from "solid-js";
 
-import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { Input } from "@/components/ui/input";
+import {
+  ColumnPicker,
+  ToggleRow,
+  type PickerItem,
+} from "@/screens/devtools/components/column-picker";
+import { WorkspaceToolbar } from "@/screens/devtools/components/devtools-ui";
 import {
   getValueClasses,
   ValueRenderer,
 } from "@/screens/devtools/components/field-rendering-helpers";
-import { queryStore } from "@/screens/devtools/devtools-signals";
+import { fieldType } from "@/screens/devtools/components/field-types";
+import { isMany2oneValue } from "@/screens/devtools/components/record-utils";
+import {
+  tableFeaturesConfig,
+  VirtualGrid,
+  type CellTarget,
+} from "@/screens/devtools/components/virtual-table-grid";
+import {
+  PIVOT_FIELD_KEY,
+  PIVOT_TOTAL_KEY,
+  pivotColumnKeys,
+  pivotRecordIndex,
+  pivotRows,
+  sumField,
+  type TableRow,
+} from "@/screens/devtools/components/virtual-table-pivot";
 import { getDirection, getLocale, localeVersion, t } from "@/services/i18n-service";
+import type { FieldMetadata } from "@/types";
 
-const ROW_HEIGHT = 32;
-const HEADER_HEIGHT = 32;
 const COLUMN_WIDTH = 150;
 const PIVOT_FIELD_COL_WIDTH = 200;
-const PIVOT_FIELD_KEY = "__pf__";
-const PIVOT_REC_PREFIX = "__pr_";
-const PIVOT_TOTAL_KEY = "__pt__";
 
-const NUMERIC_FIELD_TYPES = new Set(["float", "integer", "monetary"]);
+type Column = ColumnDef<typeof tableFeaturesConfig, TableRow>;
 
-type TableRow = Record<string, unknown>;
+/** Dense table cell: plain values, relation chips and boolean icons. */
+const TableCellValue = (props: { value: unknown; fieldName: string; fieldType?: string }) => (
+  <Switch fallback={<ValueRenderer value={props.value} />}>
+    <Match when={props.fieldType === "boolean" && typeof props.value === "boolean"}>
+      <span class={props.value ? "text-success" : "text-ink-4"}>
+        <HugeiconsIcon
+          icon={props.value ? CheckmarkCircle02Icon : Cancel01Icon}
+          size={14}
+          strokeWidth={1.6}
+          aria-label={String(props.value)}
+        />
+      </span>
+    </Match>
+    <Match when={props.value === false || props.value === null || props.value === undefined}>
+      <span class="font-mono text-caption text-ink-4">{String(props.value ?? "null")}</span>
+    </Match>
+    <Match when={props.fieldName === "id" && typeof props.value === "number"}>
+      <span class="font-mono text-caption text-ink-3">{String(props.value)}</span>
+    </Match>
+    <Match when={isMany2oneValue(props.value) && props.value}>
+      {(value) => (
+        <Chip title={`#${value()[0]}`}>
+          <span class="truncate font-sans">{value()[1]}</span>
+        </Chip>
+      )}
+    </Match>
+    <Match when={props.fieldName === "display_name" || props.fieldName === "name"}>
+      <span class="font-semibold text-ink">{String(props.value)}</span>
+    </Match>
+    <Match when={typeof props.value === "string"}>
+      <span
+        class={
+          props.fieldType === "date" || props.fieldType === "datetime"
+            ? "font-mono text-caption text-ink-3"
+            : "text-ink-2"
+        }
+      >
+        {props.value as string}
+      </span>
+    </Match>
+    <Match when={typeof props.value === "number"}>
+      <span class="font-mono text-ink-2 tabular-nums">{String(props.value)}</span>
+    </Match>
+  </Switch>
+);
 
-const features = tableFeatures({
-  columnFilteringFeature,
-  columnVisibilityFeature,
-  columnSizingFeature,
-  columnResizingFeature,
-  globalFilteringFeature,
-  filteredRowModel: createFilteredRowModel(),
-  filterFns: { includesString: filterFn_includesString },
-});
+const PivotCorner = (props: { width: number; height: number }) => (
+  <div class="relative size-full select-none">
+    <svg
+      class="pointer-events-none absolute inset-0"
+      width={props.width}
+      height={props.height}
+      aria-hidden="true"
+    >
+      <line
+        x1={1}
+        y1={1}
+        x2={props.width - 2}
+        y2={props.height - 1}
+        stroke-width={1}
+        class="stroke-line-strong"
+      />
+    </svg>
+    <span class="absolute inset-y-0 inset-s-2 flex items-center font-mono text-caption font-medium text-ink-3 uppercase">
+      {t("devtools.virtual_table.fields_header")}
+    </span>
+    <span class="absolute inset-y-0 inset-e-2 flex items-center font-mono text-caption font-medium text-ink-3 uppercase">
+      {t("devtools.virtual_table.ids_header")}
+    </span>
+  </div>
+);
 
-const [globalFilter, setGlobalFilter] = createSignal("");
-const [columnVisibility, setColumnVisibility] = createSignal<ColumnVisibilityState>({});
-const [pivotRowVisibility, setPivotRowVisibility] = createSignal<Record<string, boolean>>({});
-const [showPivotTotal, setShowPivotTotal] = createSignal(true);
+const PivotTotal = (props: { value: unknown }) => (
+  <Show
+    when={props.value !== null && props.value !== undefined}
+    fallback={
+      <span class="block truncate font-mono text-ui text-ink-4 italic">
+        {t("devtools.virtual_table.no_value")}
+      </span>
+    }
+  >
+    <span class="block truncate font-mono text-ui font-semibold">
+      <ValueRenderer value={props.value} />
+    </span>
+  </Show>
+);
 
-interface VirtualItem {
-  index: number;
-  start: number;
-  size: number;
-  key: string | number;
-}
+const rowLabel = (record: TableRow) => {
+  const value = record.display_name ?? record.name ?? record.id;
+  return Array.isArray(value) ? String(value[1] ?? value[0]) : String(value ?? "");
+};
 
 export const VirtualTable = (props: {
-  data: Record<string, unknown>[];
+  data: TableRow[];
   allKeys: string[];
+  fieldsMetadata?: Record<string, FieldMetadata>;
+  /** Columns shown first, in this order (all columns when empty). */
+  selectedFields?: string[];
   handleTableContextMenu?: (e: MouseEvent) => void;
   pivoted?: boolean;
 }) => {
-  const [local] = splitProps(props, ["data", "allKeys", "handleTableContextMenu", "pivoted"]);
-  const [scrollEl, setScrollEl] = createSignal<HTMLDivElement | null>(null);
-  const [showColumnToggle, setShowColumnToggle] = createSignal(false);
-  const [columnSearch, setColumnSearch] = createSignal("");
-  const [visibleRowItems, setVisibleRowItems] = createSignal<VirtualItem[]>([]);
-  const [visibleColItems, setVisibleColItems] = createSignal<VirtualItem[]>([]);
-  const [rowTotal, setRowTotal] = createSignal(0);
-  const [dropdownPos, setDropdownPos] = createSignal<Record<string, string>>({});
-
-  const debounceSetGlobalFilter = debounce((value: string) => setGlobalFilter(value), 300);
-
-  let toggleRef: HTMLDivElement | null = null;
-  let dropdownRef: HTMLDivElement | null = null;
-
-  const handleClickOutside = (e: MouseEvent) => {
-    const target = e.target as Node;
-    if (
-      toggleRef &&
-      !toggleRef.contains(target) &&
-      (!dropdownRef || !dropdownRef.contains(target))
-    ) {
-      setShowColumnToggle(false);
-    }
-  };
-
-  onMount(() => {
-    document.addEventListener("click", handleClickOutside);
-    onCleanup(() => document.removeEventListener("click", handleClickOutside));
-  });
+  const [globalFilter, setGlobalFilter] = createSignal("");
+  const [columnVisibility, setColumnVisibility] = createSignal<ColumnVisibilityState>({});
+  const [hiddenPivotFields, setHiddenPivotFields] = createSignal<ReadonlySet<string>>(new Set());
+  const [showPivotTotal, setShowPivotTotal] = createSignal(true);
+  const setFilterDebounced = debounce(setGlobalFilter, 300);
+  const filterId = createUniqueId();
 
   const isRtl = createMemo(() => {
     localeVersion();
     return getDirection(getLocale()) === "rtl";
   });
 
-  createEffect(() => {
-    if (showColumnToggle() && toggleRef) {
-      const rect = toggleRef.getBoundingClientRect();
-      if (isRtl()) {
-        setDropdownPos({
-          top: `${rect.bottom + 4}px`,
-          left: `${rect.left}px`,
-          right: "auto",
-        });
-      } else {
-        setDropdownPos({
-          top: `${rect.bottom + 4}px`,
-          right: `${window.innerWidth - rect.right}px`,
-          left: "auto",
-        });
-      }
-    }
-  });
+  const fieldTypeOf = (field: string) => props.fieldsMetadata?.[field]?.type;
 
+  /** Selected fields first (in their order), `id` always leading. */
   const orderedKeys = createMemo(() => {
-    let keys: string[] = [];
-    const sf = queryStore.selectedFields;
-    if (sf && sf.length > 0) {
-      keys = sf.filter((f) => local.allKeys.includes(f));
-    } else {
-      keys = [...local.allKeys];
-    }
-    if (local.allKeys.includes("id")) {
-      keys = keys.filter((k) => k !== "id");
-      keys.unshift("id");
-    }
-    return keys;
+    const selected = props.selectedFields ?? [];
+    const keys =
+      selected.length > 0 ? selected.filter((f) => props.allKeys.includes(f)) : props.allKeys;
+    return props.allKeys.includes("id") ? ["id", ...keys.filter((k) => k !== "id")] : keys;
   });
 
-  const pivotDisplayKeys = createMemo(() => {
-    if (!local.pivoted) return orderedKeys();
-    return orderedKeys().filter((k) => k !== "id");
-  });
+  const pivotFields = createMemo(() => orderedKeys().filter((k) => k !== "id"));
+  const isNumericField = (field: string) => fieldType(fieldTypeOf(field)).numeric === true;
+  const hasNumericPivotField = createMemo(() => pivotFields().some(isNumericField));
+  const showTotalColumn = () => hasNumericPivotField() && showPivotTotal();
 
-  const filteredPivotDisplayKeys = createMemo(() => {
-    const search = columnSearch().toLowerCase().trim();
-    if (!search) return pivotDisplayKeys();
-    return pivotDisplayKeys().filter((k) => k.toLowerCase().includes(search));
-  });
+  const pivotedData = createMemo(() =>
+    pivotRows(
+      props.data,
+      pivotFields().filter((field) => !hiddenPivotFields().has(field)),
+      showTotalColumn()
+        ? (field) => (isNumericField(field) ? sumField(props.data, field) : null)
+        : null,
+    ),
+  );
 
-  const isNumericPivotField = (fieldKey: string): boolean =>
-    NUMERIC_FIELD_TYPES.has(queryStore.fieldsMetadata?.[fieldKey]?.type ?? "");
-
-  const computePivotTotal = (fieldKey: string): number | null => {
-    if (!isNumericPivotField(fieldKey)) return null;
-    let sum = 0;
-    for (const record of local.data) {
-      const value = record[fieldKey];
-      if (typeof value === "number") sum += value;
-    }
-    return sum;
-  };
-
-  const hasNumericPivotField = createMemo(() => pivotDisplayKeys().some(isNumericPivotField));
-
-  const showTotalColumn = createMemo(() => hasNumericPivotField() && showPivotTotal());
-
-  const pivotedData = createMemo(() => {
-    if (!local.pivoted) return null;
-    const vis = pivotRowVisibility();
-    return pivotDisplayKeys()
-      .filter((fieldKey) => vis[fieldKey] !== false)
-      .map((fieldKey) => {
-        const row: Record<string, unknown> = {
-          [PIVOT_FIELD_KEY]: fieldKey,
-        };
-        for (let i = 0; i < local.data.length; i++) {
-          row[`${PIVOT_REC_PREFIX}${i}__`] = local.data[i][fieldKey];
+  const pivotColumns = createMemo((): Column[] =>
+    pivotColumnKeys(props.data.length, showTotalColumn()).map((key) => ({
+      id: key,
+      accessorKey: key,
+      size: key === PIVOT_FIELD_KEY ? PIVOT_FIELD_COL_WIDTH : COLUMN_WIDTH,
+      minSize: 30,
+      maxSize: 1000,
+      cell: (info) => {
+        if (key === PIVOT_FIELD_KEY) {
+          return (
+            <span class="block truncate font-mono text-ui text-ink-2">
+              {String(info.getValue())}
+            </span>
+          );
         }
-        if (showTotalColumn()) row[PIVOT_TOTAL_KEY] = computePivotTotal(fieldKey);
-        return row;
-      });
-  });
+        if (key === PIVOT_TOTAL_KEY) return <PivotTotal value={info.getValue()} />;
+        return <ValueRenderer value={info.getValue()} />;
+      },
+      header: () => {
+        if (key === PIVOT_FIELD_KEY) return "";
+        if (key === PIVOT_TOTAL_KEY) return t("devtools.virtual_table.total");
+        const recordIndex = pivotRecordIndex(key) ?? 0;
+        const id = props.data[recordIndex]?.id;
+        return id != null ? String(id) : String(recordIndex + 1);
+      },
+    })),
+  );
 
-  const displayData = createMemo(() => (local.pivoted ? (pivotedData() ?? []) : local.data));
-
-  const pivotColumnKeys = createMemo<string[] | null>(() => {
-    if (!local.pivoted) return null;
-    return [
-      PIVOT_FIELD_KEY,
-      ...local.data.map((_, i) => `${PIVOT_REC_PREFIX}${i}__`),
-      ...(showTotalColumn() ? [PIVOT_TOTAL_KEY] : []),
-    ];
-  });
-
-  const tableCols = createMemo<ColumnDef<typeof features, TableRow>[]>(() => {
-    if (local.pivoted) {
-      return (pivotColumnKeys() ?? []).map((key) => ({
-        id: key,
-        accessorKey: key,
-        size: key === PIVOT_FIELD_KEY ? PIVOT_FIELD_COL_WIDTH : COLUMN_WIDTH,
-        minSize: 30,
-        maxSize: 1000,
-        cell: (info) => {
-          if (key === PIVOT_FIELD_KEY) {
-            return (
-              <span class="block truncate font-mono text-xs text-base-content/80">
-                {String(info.getValue())}
-              </span>
-            );
-          }
-          if (key === PIVOT_TOTAL_KEY) {
-            const totalValue = info.getValue();
-            if (totalValue === null || totalValue === undefined) {
-              return (
-                <span class="block truncate font-mono text-xs text-base-content/40 italic">
-                  {t("devtools.virtual_table.no_value")}
-                </span>
-              );
-            }
-            return (
-              <span class="block truncate font-mono text-xs font-semibold">
-                <ValueRenderer value={totalValue} />
-              </span>
-            );
-          }
-          return <ValueRenderer value={info.getValue()} />;
-        },
-        header: () => {
-          if (key === PIVOT_FIELD_KEY) return "";
-          if (key === PIVOT_TOTAL_KEY) return t("devtools.virtual_table.total");
-          const recIdx = Number(key.replace(PIVOT_REC_PREFIX, "").replace("__", ""));
-          const record = local.data[recIdx];
-          const id = record?.id;
-          return id != null ? String(id) : String(recIdx + 1);
-        },
-      }));
-    }
-    return orderedKeys().map((key) => ({
+  const recordColumns = createMemo((): Column[] =>
+    orderedKeys().map((key) => ({
       id: key,
       accessorKey: key,
       size: COLUMN_WIDTH,
       minSize: 30,
       maxSize: 1000,
-      cell: (info) => <ValueRenderer value={info.getValue()} />,
+      cell: (info) => (
+        <TableCellValue value={info.getValue()} fieldName={key} fieldType={fieldTypeOf(key)} />
+      ),
       header: () => key,
-    }));
-  });
+    })),
+  );
 
   const table = createTable({
-    features,
+    features: tableFeaturesConfig,
     get data() {
-      return displayData();
+      return props.pivoted ? pivotedData() : props.data;
     },
     get columns() {
-      return tableCols();
+      return props.pivoted ? pivotColumns() : recordColumns();
     },
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     state: {
       get globalFilter() {
-        return local.pivoted ? "" : globalFilter();
+        return props.pivoted ? "" : globalFilter();
       },
       get columnVisibility() {
         return columnVisibility();
@@ -283,463 +243,114 @@ export const VirtualTable = (props: {
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  const filteredColumns = createMemo(() => {
-    const search = columnSearch().toLowerCase().trim();
-    const allColumns = table.getAllLeafColumns();
-    if (!search) return allColumns;
-    return allColumns.filter((col) => col.id.toLowerCase().includes(search));
-  });
-
-  const hasHiddenColumns = createMemo(() => {
-    if (local.pivoted) {
-      return pivotDisplayKeys().some((k) => pivotRowVisibility()[k] === false);
-    }
-    return table.getAllLeafColumns().some((col) => !col.getIsVisible());
-  });
-
-  const rows = createMemo(() => table.getRowModel().rows);
-  const visibleHeaders = createMemo(
-    () => table.getHeaderGroups()[0]?.headers.filter((h) => h.column.getIsVisible()) ?? [],
-  );
-  const headerSizes = createMemo(() => visibleHeaders().map((h) => h.getSize()));
-  const fullWidth = createMemo(() => headerSizes().reduce((s, w) => s + w, 0));
-
-  const flush = () => {
-    setVisibleRowItems(rowVirtualizer.getVirtualItems() as VirtualItem[]);
-    setRowTotal(rowVirtualizer.getTotalSize());
-    setVisibleColItems(columnVirtualizer.getVirtualItems() as VirtualItem[]);
+  const cellTarget = (rowIndex: number, columnId: string): CellTarget | null => {
+    if (!props.pivoted) return { field: columnId, recordIndex: rowIndex };
+    const recordIndex = pivotRecordIndex(columnId);
+    const field = pivotedData()[rowIndex]?.[PIVOT_FIELD_KEY];
+    return recordIndex === undefined || typeof field !== "string" ? null : { field, recordIndex };
   };
 
-  const rowVirtualizer = new Virtualizer<HTMLDivElement, HTMLDivElement>({
-    count: 0,
-    getScrollElement: () => scrollEl(),
-    estimateSize: () => ROW_HEIGHT,
-    overscan: 4,
-    observeElementRect,
-    observeElementOffset,
-    scrollToFn: elementScroll,
-    onChange: () => scheduleFlush(),
-  });
-
-  const columnVirtualizer = new Virtualizer<HTMLDivElement, HTMLDivElement>({
-    count: 0,
-    horizontal: true,
-    isRtl: isRtl(),
-    getScrollElement: () => scrollEl(),
-    estimateSize: (i) => headerSizes()[i] ?? COLUMN_WIDTH,
-    overscan: 3,
-    observeElementRect,
-    observeElementOffset,
-    scrollToFn: elementScroll,
-    getItemKey: (i) => visibleHeaders()[i]?.id ?? i,
-    onChange: () => scheduleFlush(),
-  });
-
-  let rafId: number | null = null;
-  let flushing = false;
-  const scheduleFlush = () => {
-    if (rafId !== null) return;
-    rafId = requestAnimationFrame(() => {
-      rafId = null;
-      flushing = true;
-      flush();
-      flushing = false;
-    });
+  const cellClass = (columnId: string, value: unknown) => {
+    if (!props.pivoted) return "text-ui text-ink-2";
+    return columnId === PIVOT_FIELD_KEY
+      ? `${getValueClasses(value)} border-e bg-surface-2`
+      : getValueClasses(value);
   };
 
-  onMount(() => {
-    rowVirtualizer.setOptions({
-      ...rowVirtualizer.options,
-      count: rows().length,
-      getScrollElement: () => scrollEl(),
-    });
-    columnVirtualizer.setOptions({
-      ...columnVirtualizer.options,
-      count: visibleHeaders().length,
-      getScrollElement: () => scrollEl(),
-    });
-    rowVirtualizer._didMount();
-    rowVirtualizer._willUpdate();
-    columnVirtualizer._didMount();
-    columnVirtualizer._willUpdate();
-    flush();
-    onCleanup(() => {
-      if (rafId !== null) cancelAnimationFrame(rafId);
-    });
-  });
+  const pickerItems = (): PickerItem[] =>
+    props.pivoted
+      ? pivotFields().map((field) => ({
+          id: field,
+          visible: !hiddenPivotFields().has(field),
+          setVisible: (visible) =>
+            setHiddenPivotFields((hidden) => {
+              const next = new Set(hidden);
+              if (visible) next.delete(field);
+              else next.add(field);
+              return next;
+            }),
+        }))
+      : table.getAllLeafColumns().map((column) => ({
+          id: column.id,
+          visible: column.getIsVisible(),
+          setVisible: (visible) => column.toggleVisibility(visible),
+        }));
 
-  createEffect(() => {
-    if (flushing) return;
-    rowVirtualizer.setOptions({
-      ...rowVirtualizer.options,
-      count: rows().length,
-      getScrollElement: () => scrollEl(),
-    });
-    columnVirtualizer.setOptions({
-      ...columnVirtualizer.options,
-      count: visibleHeaders().length,
-      isRtl: isRtl(),
-      getScrollElement: () => scrollEl(),
-    });
-    scheduleFlush();
-  });
-
-  const isPivotFieldCol = (key: string) => local.pivoted && key === PIVOT_FIELD_KEY;
-
-  const getPivotActualField = (rowIdx: number): string | undefined => {
-    if (!local.pivoted) return undefined;
-    return String(pivotedData()?.[rowIdx]?.[PIVOT_FIELD_KEY] ?? "");
+  const toggleAll = (visible: boolean) => {
+    if (props.pivoted) setHiddenPivotFields(new Set(visible ? [] : pivotFields()));
+    else table.toggleAllColumnsVisible(visible);
   };
 
-  const getPivotRecordIndex = (colKey: string): number | undefined => {
-    if (!local.pivoted || colKey === PIVOT_FIELD_KEY || colKey === PIVOT_TOTAL_KEY) {
-      return undefined;
-    }
-    return Number(colKey.replace(PIVOT_REC_PREFIX, "").replace("__", ""));
-  };
-
-  const totalContentWidth = () => fullWidth();
+  const filteredRowCount = () => table.getRowModel().rows.length;
 
   return (
     <div class="flex h-full min-h-0 flex-col">
-      <div class="flex shrink-0 items-center gap-2 border-b border-base-300 bg-base-100 px-4 py-2">
-        <Show when={!local.pivoted}>
-          <div class="relative flex-1">
-            <HugeiconsIcon
-              icon={Search01Icon}
-              size={14}
-              color="currentColor"
-              strokeWidth={1.5}
-              class="absolute inset-s-2 top-1/2 -translate-y-1/2 text-base-content/40"
-            />
-            <input
-              type="text"
-              placeholder={t("devtools.virtual_table.search_columns")}
-              value={globalFilter()}
-              onInput={(e) => debounceSetGlobalFilter(e.currentTarget.value)}
-              class="input-bordered input w-full max-w-md input-sm"
-            />
-          </div>
-        </Show>
-        <Show when={local.pivoted}>
-          <div class="flex-1" />
-        </Show>
-        <div
-          class="relative shrink-0"
-          ref={(el) => {
-            toggleRef = el;
-          }}
-        >
-          <Show when={globalFilter() && !local.pivoted}>
-            <span class="shrink-0 text-xs text-base-content/60">
-              {rows().length} / {displayData().length} {t("devtools.virtual_table.rows")}
+      <WorkspaceToolbar>
+        <Show when={!props.pivoted} fallback={<div class="ms-auto" />}>
+          <Show when={globalFilter()}>
+            <span class="shrink-0 font-mono text-caption text-ink-3">
+              {filteredRowCount()} / {props.data.length} {t("devtools.virtual_table.rows")}
             </span>
           </Show>
-          <div class="relative">
-            <Button
-              variant="ghost"
+          <div class="ms-auto flex items-center gap-2">
+            {/* Read by screen readers; a theme may show it (`.ot-field-label`) */}
+            <label for={filterId} class="ot-field-label">
+              {t("common.search")}
+            </label>
+            <Input
+              id={filterId}
+              type="search"
               size="sm"
-              onClick={() => setShowColumnToggle(!showColumnToggle())}
-              title={
-                local.pivoted
-                  ? t("devtools.virtual_table.toggle_rows")
-                  : t("devtools.virtual_table.toggle_columns")
-              }
-            >
-              <HugeiconsIcon
-                icon={Settings02Icon}
-                size={14}
-                color="currentColor"
-                strokeWidth={1.5}
-              />
-            </Button>
-            <Show when={hasHiddenColumns()}>
-              <span class="absolute top-1 right-1 size-1.5 rounded-full bg-warning" />
-            </Show>
+              affixStyle="plain"
+              class="h-control-sm w-56 max-w-full gap-1.5 border-line bg-surface-2 px-2"
+              prefix={<HugeiconsIcon icon={Search01Icon} size={13} strokeWidth={1.6} />}
+              placeholder={t("devtools.virtual_table.search_columns")}
+              value={globalFilter()}
+              onInput={(e) => setFilterDebounced(e.currentTarget.value)}
+              autocomplete="off"
+              spellcheck={false}
+            />
           </div>
-          <Show when={showColumnToggle()}>
-            <Portal>
-              <div
-                ref={(el) => {
-                  dropdownRef = el;
-                }}
-                class="fixed z-50 flex max-h-80 w-48 flex-col overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-lg"
-                style={dropdownPos()}
+        </Show>
+        <ColumnPicker
+          label={
+            props.pivoted
+              ? t("devtools.virtual_table.toggle_rows")
+              : t("devtools.virtual_table.toggle_columns")
+          }
+          items={pickerItems()}
+          onToggleAll={toggleAll}
+          header={
+            <Show when={props.pivoted && hasNumericPivotField()}>
+              <ToggleRow
+                checked={showPivotTotal()}
+                onChange={setShowPivotTotal}
+                class="p-1 font-medium"
               >
-                <div class="border-b border-base-300 p-2">
-                  <div class="relative">
-                    <input
-                      type="text"
-                      class="input w-full pl-7 input-xs"
-                      placeholder={t("devtools.field_rendering.search_fields")}
-                      value={columnSearch()}
-                      onInput={(e) => setColumnSearch(e.currentTarget.value)}
-                    />
-                    <span class="absolute top-1/2 left-2 -translate-y-1/2 text-base-content/40">
-                      <HugeiconsIcon
-                        icon={Search01Icon}
-                        size={12}
-                        color="currentColor"
-                        strokeWidth={1.5}
-                      />
-                    </span>
-                  </div>
-                </div>
-                <div class="overflow-auto p-2">
-                  <Show
-                    when={!local.pivoted}
-                    fallback={
-                      <>
-                        <Show when={hasNumericPivotField()}>
-                          <label class="flex items-center gap-2 p-1 text-xs font-medium">
-                            <input
-                              type="checkbox"
-                              class="checkbox checkbox-xs"
-                              checked={showPivotTotal()}
-                              onChange={(e) => setShowPivotTotal(e.currentTarget.checked)}
-                            />
-                            {t("devtools.virtual_table.show_totals")}
-                          </label>
-                          <div class="divider my-1 text-[10px] font-medium tracking-wider text-base-content/50 uppercase">
-                            {t("devtools.virtual_table.fields_header")}
-                          </div>
-                        </Show>
-                        <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
-                          <input
-                            type="checkbox"
-                            class="checkbox checkbox-xs"
-                            checked={pivotDisplayKeys().every(
-                              (k) => pivotRowVisibility()[k] !== false,
-                            )}
-                            onChange={(e) => {
-                              if (e.currentTarget.checked) {
-                                setPivotRowVisibility({});
-                              } else {
-                                const hidden: Record<string, boolean> = {};
-                                for (const k of pivotDisplayKeys()) hidden[k] = false;
-                                setPivotRowVisibility(hidden);
-                              }
-                            }}
-                          />
-                          {t("devtools.virtual_table.toggle_all")}
-                        </label>
-                        <For each={filteredPivotDisplayKeys()}>
-                          {(fieldKey) => (
-                            <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
-                              <input
-                                type="checkbox"
-                                class="checkbox checkbox-xs"
-                                checked={pivotRowVisibility()[fieldKey] !== false}
-                                onChange={(e) => {
-                                  setPivotRowVisibility((prev) => ({
-                                    ...prev,
-                                    [fieldKey]: e.currentTarget.checked,
-                                  }));
-                                }}
-                              />
-                              <span class="truncate font-mono">{fieldKey}</span>
-                            </label>
-                          )}
-                        </For>
-                      </>
-                    }
-                  >
-                    <label class="mb-1 flex items-center gap-2 border-b border-base-300 p-1 text-xs font-medium">
-                      <input
-                        type="checkbox"
-                        class="checkbox checkbox-xs"
-                        checked={table.getIsAllColumnsVisible()}
-                        onChange={table.getToggleAllColumnsVisibilityHandler()}
-                      />
-                      {t("devtools.virtual_table.toggle_all")}
-                    </label>
-                    <For each={filteredColumns()}>
-                      {(column) => (
-                        <label class="flex items-center gap-2 rounded-sm px-1 py-0.5 text-xs hover:bg-base-200">
-                          <input
-                            type="checkbox"
-                            class="checkbox checkbox-xs"
-                            checked={column.getIsVisible()}
-                            onChange={column.getToggleVisibilityHandler()}
-                          />
-                          <span class="truncate font-mono">{column.id}</span>
-                        </label>
-                      )}
-                    </For>
-                  </Show>
-                </div>
+                {t("devtools.virtual_table.show_totals")}
+              </ToggleRow>
+              <div class="divider my-1 text-small font-medium tracking-wider text-base-content/50 uppercase">
+                {t("devtools.virtual_table.fields_header")}
               </div>
-            </Portal>
-          </Show>
-        </div>
-      </div>
+            </Show>
+          }
+        />
+      </WorkspaceToolbar>
 
-      <div
-        ref={setScrollEl}
-        class="relative w-full flex-1 overflow-auto text-xs"
-        role="table"
-        dir={isRtl() ? "rtl" : "ltr"}
-        classList={{
-          "select-none": Boolean(table.atoms.columnResizing.get().isResizingColumn),
-        }}
-        onContextMenu={local.handleTableContextMenu}
-      >
-        <div
-          class="relative"
-          style={{
-            width: `${totalContentWidth()}px`,
-            height: `${rowTotal() + HEADER_HEIGHT}px`,
-          }}
-        >
-          <div
-            class="sticky top-0 z-10 bg-base-200"
-            role="row"
-            style={{ height: `${HEADER_HEIGHT}px` }}
-          >
-            <div
-              class="relative"
-              style={{
-                width: `${totalContentWidth()}px`,
-                height: `${HEADER_HEIGHT}px`,
-              }}
-            >
-              <For each={visibleColItems()}>
-                {(vCol) => {
-                  const header = visibleHeaders()[vCol.index];
-                  if (!header) return null;
-                  const isFieldCol = isPivotFieldCol(header.id);
-                  return (
-                    <div
-                      role="columnheader"
-                      class={`absolute border-b border-base-300 text-start font-medium ${
-                        isFieldCol
-                          ? "overflow-hidden border-r bg-base-200 p-0"
-                          : "bg-base-200 px-3 py-2 text-base-content"
-                      }`}
-                      style={{
-                        "inset-inline-start": `${header.getStart()}px`,
-                        width: `${header.getSize()}px`,
-                        height: `${HEADER_HEIGHT}px`,
-                      }}
-                    >
-                      {isFieldCol ? (
-                        <div class="relative size-full select-none">
-                          <svg
-                            class="pointer-events-none absolute inset-0"
-                            width={header.getSize()}
-                            height={HEADER_HEIGHT}
-                            aria-hidden="true"
-                          >
-                            <line
-                              x1={1}
-                              y1={1}
-                              x2={header.getSize() - 2}
-                              y2={HEADER_HEIGHT - 1}
-                              stroke-width={1}
-                              class="stroke-base-content/25"
-                            />
-                          </svg>
-                          <span class="absolute inset-y-0 inset-s-2 flex items-center text-[10px] font-medium text-base-content/55">
-                            {t("devtools.virtual_table.fields_header")}
-                          </span>
-                          <span class="absolute inset-y-0 inset-e-2 flex items-center text-[10px] font-medium text-base-content/55">
-                            {t("devtools.virtual_table.ids_header")}
-                          </span>
-                        </div>
-                      ) : (
-                        <span class="relative z-10 block truncate">
-                          <FlexRender header={header} />
-                        </span>
-                      )}
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        class="absolute inset-e-0 top-0 z-20 h-full w-px cursor-col-resize touch-none bg-base-300"
-                        classList={{
-                          "bg-primary/60": header.column.getIsResizing(),
-                        }}
-                      />
-                    </div>
-                  );
-                }}
-              </For>
-            </div>
-          </div>
-
-          <div class="relative" style={{ height: `${rowTotal()}px` }}>
-            <For each={visibleRowItems()}>
-              {(vRow) => {
-                const row = rows()[vRow.index];
-                if (!row) return null;
-                const pivotActualField = getPivotActualField(vRow.index);
-                return (
-                  <div
-                    data-index={vRow.index}
-                    role="row"
-                    aria-rowindex={vRow.index + 2}
-                    class={`absolute inset-x-0 hover:bg-base-200/60 ${vRow.index % 2 === 0 ? "bg-base-200/40" : "bg-base-100"}`}
-                    style={{
-                      top: `${vRow.start}px`,
-                      height: `${ROW_HEIGHT}px`,
-                    }}
-                  >
-                    <For each={visibleColItems()}>
-                      {(vCol) => {
-                        const cell = row.getVisibleCells()[vCol.index];
-                        if (!cell) return null;
-                        const valueClasses = () => getValueClasses(cell.getValue());
-                        const isFieldCell = isPivotFieldCol(cell.column.id);
-                        const pivotRecIdx = getPivotRecordIndex(cell.column.id);
-
-                        const dataField = local.pivoted
-                          ? isFieldCell
-                            ? PIVOT_FIELD_KEY
-                            : (pivotActualField ?? cell.column.id)
-                          : cell.column.id;
-                        const dataRowIndex = local.pivoted
-                          ? isFieldCell
-                            ? vRow.index
-                            : (pivotRecIdx ?? vRow.index)
-                          : vRow.index;
-
-                        return (
-                          <div
-                            role="cell"
-                            class={`${valueClasses()} absolute flex items-start border-b border-base-300 px-3 py-2 ${
-                              isFieldCell ? "border-r bg-base-200/60" : ""
-                            }`}
-                            data-field={dataField}
-                            data-row-index={dataRowIndex}
-                            style={{
-                              "inset-inline-start": `${cell.column.getStart()}px`,
-                              width: `${cell.column.getSize()}px`,
-                              "min-width": `${cell.column.getSize()}px`,
-                              height: "100%",
-                            }}
-                          >
-                            <div
-                              class="w-full min-w-0 truncate"
-                              data-autofit-content
-                              title={(() => {
-                                const v = cell.getValue();
-                                if (v === null || v === undefined) return "";
-                                if (typeof v === "object") return JSON.stringify(v);
-                                return String(v);
-                              })()}
-                            >
-                              <FlexRender cell={cell} />
-                            </div>
-                          </div>
-                        );
-                      }}
-                    </For>
-                  </div>
-                );
-              }}
-            </For>
-          </div>
-        </div>
-      </div>
+      <VirtualGrid
+        table={table}
+        rtl={isRtl()}
+        label={t("devtools.result_viewer.records")}
+        cellTarget={cellTarget}
+        cellClass={cellClass}
+        rowLabel={rowLabel}
+        renderHeader={(columnId, width, height) =>
+          props.pivoted && columnId === PIVOT_FIELD_KEY ? (
+            <PivotCorner width={width} height={height} />
+          ) : undefined
+        }
+        onContextMenu={props.handleTableContextMenu}
+      />
     </div>
   );
 };

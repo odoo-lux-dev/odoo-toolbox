@@ -1,24 +1,39 @@
-import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import {
+  Alert02Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
 import { Show } from "solid-js";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { SkeletonRows, StateMessage } from "@/components/ui/status";
 import { ErrorDisplay } from "@/screens/devtools/components/error-display";
-import { usePagination } from "@/screens/devtools/components/record-hooks";
+import { usePagination } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
 
-export const EmptyQueryState = () => (
-  <div class="flex min-h-[200px] items-center justify-center text-base-content/60">
-    <div class="text-center text-sm italic">{t("devtools.result_states.empty")}</div>
-  </div>
+/** Search-icon state message of the result area (`compact` in the embedded result card). */
+const SearchStateMessage = (props: { compact?: boolean; title?: string; description?: string }) => (
+  <StateMessage
+    fill
+    class={props.compact ? "min-h-24 py-4" : undefined}
+    icon={
+      props.compact ? undefined : <HugeiconsIcon icon={Search01Icon} size={20} strokeWidth={1.6} />
+    }
+    title={props.title}
+    description={props.description}
+  />
 );
 
+export const EmptyQueryState = (props: { compact?: boolean }) => (
+  <SearchStateMessage compact={props.compact} description={t("devtools.result_states.empty")} />
+);
+
+/** Skeleton only: the result viewer announces the loading state in its live region. */
 export const LoadingState = () => (
-  <div class="flex h-full min-h-[200px] items-center justify-center p-4">
-    <div class="flex flex-col items-center gap-3 text-base-content/70">
-      <span class="loading loading-md loading-spinner" />
-      <span>{t("devtools.result_states.executing")}</span>
-    </div>
+  <div class="min-h-0 flex-1 overflow-hidden" aria-busy="true">
+    <SkeletonRows />
   </div>
 );
 
@@ -28,18 +43,23 @@ interface ErrorStateProps {
 }
 
 export const ErrorState = (props: ErrorStateProps) => (
-  <div class="flex h-full min-h-0 items-stretch py-3">
-    <div class="size-full min-h-0 overflow-auto rounded-box border border-error/30 bg-error/10 p-4 text-sm text-base-content">
-      <h4 class="mb-3 text-sm font-semibold text-error">{t("devtools.result_states.error")}</h4>
-      <ErrorDisplay error={props.error} errorDetails={props.errorDetails} />
-    </div>
+  <div class="flex min-h-0 flex-1 flex-col overflow-auto">
+    <StateMessage
+      fill
+      tone="error"
+      class="min-h-0 justify-start pt-10"
+      icon={<HugeiconsIcon icon={Alert02Icon} size={20} strokeWidth={1.6} />}
+      title={t("devtools.result_states.error")}
+    >
+      <div class="mt-1 w-full text-start text-sm text-ink">
+        <ErrorDisplay error={props.error} errorDetails={props.errorDetails} />
+      </div>
+    </StateMessage>
   </div>
 );
 
-export const NoResultsState = () => (
-  <div class="flex min-h-[200px] items-center justify-center px-4 py-8 text-base-content/70">
-    <div class="text-center text-sm italic">{t("devtools.result_states.no_records")}</div>
-  </div>
+export const NoResultsState = (props: { compact?: boolean }) => (
+  <SearchStateMessage compact={props.compact} title={t("devtools.result_states.no_records")} />
 );
 
 interface PaginationControlsProps {
@@ -59,14 +79,9 @@ export const PaginationControls = (props: PaginationControlsProps) => {
             onClick={pagination.goToPreviousPage}
             disabled={pagination.currentPage() === 1 || props.loading}
           >
-            <HugeiconsIcon
-              icon={ArrowLeft01Icon}
-              size={16}
-              color="currentColor"
-              strokeWidth={1.6}
-            />
+            <HugeiconsIcon icon={ArrowLeft01Icon} size={16} strokeWidth={1.6} />
           </Button>
-          <span class="btn pointer-events-none join-item btn-ghost font-normal tabular-nums btn-xs">
+          <span class="btn pointer-events-none join-item btn-ghost font-mono text-caption font-normal text-ink-3 tabular-nums btn-xs">
             {t("devtools.result_states.page_of", [
               String(pagination.currentPage()),
               String(pagination.totalPages()),
@@ -78,12 +93,7 @@ export const PaginationControls = (props: PaginationControlsProps) => {
             onClick={pagination.goToNextPage}
             disabled={pagination.currentPage() === pagination.totalPages() || props.loading}
           >
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              size={16}
-              color="currentColor"
-              strokeWidth={1.6}
-            />
+            <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={1.6} />
           </Button>
         </div>
       </div>
@@ -91,18 +101,39 @@ export const PaginationControls = (props: PaginationControlsProps) => {
   );
 };
 
-export const PaginationInfo = () => {
+/**
+ * Result summary of the toolbar: records (count, or range when paged) and, when
+ * `fieldCount` is given, the number of fields on the same line, e.g.
+ * "43 record(s) · 280 field(s) found" or "1-80 / 430 record(s) · 280 field(s)".
+ */
+export const PaginationInfo = (props: { fieldCount?: number; showRecords?: boolean }) => {
   const pagination = usePagination();
+  const showRecords = () => props.showRecords ?? true;
+  const fields = () =>
+    props.fieldCount === undefined
+      ? undefined
+      : `${props.fieldCount} ${t("devtools.result_viewer.fields_count")}`;
+
+  const text = () => {
+    const fieldsText = fields();
+    if (!showRecords()) return fieldsText ?? "";
+    if (pagination.totalPages() > 1 && pagination.startRecord() && pagination.endRecord()) {
+      const range = t("devtools.result_states.records_range", [
+        String(pagination.startRecord()),
+        String(pagination.endRecord()),
+        String(pagination.totalCount() || 0),
+      ]);
+      return fieldsText ? `${range} · ${fieldsText}` : range;
+    }
+    const count = String(pagination.data()?.length || 0);
+    return props.fieldCount === undefined
+      ? t("devtools.result_states.records_found", [count])
+      : t("devtools.result_states.records_fields_found", [count, String(props.fieldCount)]);
+  };
 
   return (
-    <span class="text-xs text-base-content/70 tabular-nums">
-      {pagination.totalPages() > 1 && pagination.startRecord() && pagination.endRecord()
-        ? t("devtools.result_states.records_range", [
-            String(pagination.startRecord()),
-            String(pagination.endRecord()),
-            String(pagination.totalCount() || 0),
-          ])
-        : t("devtools.result_states.records_found", [String(pagination.data()?.length || 0)])}
-    </span>
+    <Show when={text()}>
+      <span class="font-mono text-caption text-ink-3 tabular-nums">{text()}</span>
+    </Show>
   );
 };

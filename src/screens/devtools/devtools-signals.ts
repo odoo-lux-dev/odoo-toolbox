@@ -1,29 +1,33 @@
-import { createEffect, createSignal, createRoot } from "solid-js";
-import { createStore, reconcile } from "solid-js/store";
+import { createMemo, createResource, createRoot } from "solid-js";
+import { createStore, reconcile, unwrap } from "solid-js/store";
 
+import { queryFromPage } from "@/screens/devtools/current-page";
+import { fieldsOrEmpty, type FieldsMetadata } from "@/screens/devtools/fields-metadata";
+import { recordHistory } from "@/screens/devtools/history-recorder";
+import { t } from "@/services/i18n-service";
 import { Logger } from "@/services/logger";
 import { isOdooError } from "@/services/odoo-error";
 import { odooRpcService } from "@/services/odoo-rpc-service";
-import type { FieldMetadata, ModelsState, RpcQueryState, RpcResultState } from "@/types";
+import type { ModelsState, RpcQueryState, RpcResultState } from "@/types";
 import { parseRpcContext } from "@/utils/context-utils";
-import { addSearchToHistory } from "@/utils/history-helpers";
+import { errorMessage } from "@/utils/error-message";
+import { showNotification } from "@/utils/notifications";
 import { calculateQueryValidity, parseDomain } from "@/utils/query-validation";
-import { parseIds } from "@/utils/tab-utils";
+import { formatIds, parseIds } from "@/utils/record-ids";
 
-const initialQueryState: RpcQueryState = {
-  model: "",
-  selectedFields: [],
+/** Paging and projection of a fresh query. */
+const queryDefaults = () => ({
+  selectedFields: [] as string[],
   domain: "",
   ids: "",
   limit: 80,
   offset: 0,
   orderBy: "",
-  context: "",
-  fieldsMetadata: undefined,
-  isQueryValid: false,
-};
+});
 
-const initialResultState: RpcResultState = {
+const initialQueryState = (): RpcQueryState => ({ model: "", ...queryDefaults(), context: "" });
+
+const initialResultState = (): RpcResultState => ({
   data: null,
   loading: false,
   error: null,
@@ -34,94 +38,73 @@ const initialResultState: RpcResultState = {
   model: null,
   fieldsMetadata: undefined,
   excludedFields: [],
-};
+});
 
-const initialModelsState: ModelsState = {
+export const [queryStore, setQueryStore] = createStore<RpcQueryState>(initialQueryState());
+export const [resultStore, setResultStore] = createStore<RpcResultState>(initialResultState());
+export const [modelsStore, setModelsStore] = createStore<ModelsState>({
   models: [],
   loading: false,
   error: null,
-  lastLoaded: null,
-};
-
-export const [queryStore, setQueryStore] = createStore<RpcQueryState>({
-  ...initialQueryState,
 });
 
-export const [resultStore, setResultStore] = createStore<RpcResultState>({
-  ...initialResultState,
-});
+export const isQueryValid = () => calculateQueryValidity(queryStore);
 
-export const [modelsStore, setModelsStore] = createStore<ModelsState>({
-  ...initialModelsState,
-});
+export const setRpcQuery = (updates: Partial<RpcQueryState>) => setQueryStore(updates);
+export const resetRpcQuery = () => setQueryStore(reconcile(initialQueryState()));
+export const resetRpcResult = () => setResultStore(reconcile(initialResultState()));
 
-export const [databaseSignal, setDatabaseSignal] = createSignal<string | undefined>(undefined);
-
-export const [writeValuesSignal, setWriteValuesSignal] = createSignal("");
-export const [createValuesSignal, setCreateValuesSignal] = createSignal("");
-export const [callMethodNameSignal, setCallMethodNameSignal] = createSignal("");
-
-export const [isSupportedSignal, setIsSupportedSignal] = createSignal<boolean | null>(null);
-export const [odooVersionSignal, setOdooVersionSignal] = createSignal<string | null>(null);
-export const [hasHostPermission, setHasHostPermission] = createSignal<boolean | null>(null);
-
-export const [xmlIdMapSignal, setXmlIdMapSignal] = createSignal<Record<number, string | false>>({});
-
-export const isQueryValid = () =>
-  calculateQueryValidity({
-    model: queryStore.model,
-    domain: queryStore.domain,
-    ids: queryStore.ids,
-    limit: queryStore.limit,
-    offset: queryStore.offset,
-    orderBy: queryStore.orderBy,
-    context: queryStore.context,
-  });
-
-export const setRpcQuery = (updates: Partial<RpcQueryState>) => {
-  const entries = Object.entries(updates) as [keyof RpcQueryState, unknown][];
-  for (const [key, value] of entries) {
-    if (value !== undefined) {
-      setQueryStore(key, value as RpcQueryState[keyof RpcQueryState]);
-    }
+/** Context of the query rail as an RPC context; throws on invalid JSON. */
+export const parseQueryContext = (): Record<string, unknown> | undefined => {
+  const result = parseRpcContext(queryStore.context || "");
+  if (!result.isValid) {
+    throw new Error(t("services.invalid_context", [result.error || t("services.invalid_json")]));
   }
+  return result.value;
 };
 
-export const resetRpcQuery = () => {
-  setQueryStore(reconcile({ ...initialQueryState }));
+const [railFields] = createRoot(() =>
+  createResource(() => queryStore.model || false, fieldsOrEmpty),
+);
+
+/** Fields of the rail model, once loaded. */
+export const railFieldsMetadata = (): FieldsMetadata | undefined =>
+  queryStore.model ? railFields() : undefined;
+
+/** Adds the `xml_id` pseudo field to `records`. */
+export const withXmlIds = async (
+  model: string,
+  records: Record<string, unknown>[],
+): Promise<Record<string, unknown>[]> => {
+  const ids = records.map((record) => record.id as number).filter((id) => id != null);
+  if (ids.length === 0) return records;
+  const xmlIds = await odooRpcService.getXmlIds(model, ids);
+  return records.map((record) => ({ ...record, xml_id: xmlIds[record.id as number] ?? false }));
 };
 
-export const setRpcResult = (updates: Partial<RpcResultState>) => {
-  const entries = Object.entries(updates) as [keyof RpcResultState, unknown][];
-  for (const [key, value] of entries) {
-    if (value !== undefined) {
-      setResultStore(key, value as RpcResultState[keyof RpcResultState]);
-    }
-  }
+const errorDetailsOf = (err: unknown): unknown => {
+  if (isOdooError(err)) return err.odooError;
+  if (err instanceof Error) return { name: err.name, message: err.message, stack: err.stack };
+  return null;
 };
 
-export const resetRpcResult = () => {
-  setResultStore(reconcile({ ...initialResultState }));
-};
+let latestQuery = 0;
 
-export const setWriteValues = (values: string) => setWriteValuesSignal(values);
-export const setCreateValues = (values: string) => setCreateValuesSignal(values);
-export const setCallMethodName = (name: string) => setCallMethodNameSignal(name);
-export const clearTabValues = () => {
-  setWriteValuesSignal("");
-  setCreateValuesSignal("");
-  setCallMethodNameSignal("");
-};
+/**
+ * Runs the query of the rail (after applying `overrides`): reads the ids when some are
+ * given, searches the domain otherwise. A new query is added to the history.
+ */
+export const executeQuery = async (isNewQuery = true, overrides?: Partial<RpcQueryState>) => {
+  if (overrides) setRpcQuery(overrides);
+  const query: RpcQueryState = {
+    ...unwrap(queryStore),
+    selectedFields: [...queryStore.selectedFields],
+  };
+  const { model } = query;
+  if (!model) return;
 
-export const executeQuery = async (isNewQuery = true, queryOverrides?: Partial<RpcQueryState>) => {
-  const currentQuery = queryStore;
-  const queryToUse = { ...currentQuery, ...queryOverrides };
-
-  if (!queryToUse.model) return;
-
-  if (queryOverrides) setRpcQuery(queryOverrides);
-
-  setRpcResult({
+  const request = ++latestQuery;
+  setResultStore({
     loading: true,
     error: null,
     isNewQuery,
@@ -129,212 +112,169 @@ export const executeQuery = async (isNewQuery = true, queryOverrides?: Partial<R
   });
 
   try {
-    const {
-      model,
-      domain: domainString,
-      selectedFields,
-      ids: idsInput,
-      limit,
-      offset,
-      orderBy,
-      context: contextString,
-    } = queryToUse;
+    const context = parseQueryContext();
+    const ids = parseIds(query.ids || "");
+    const fields = query.selectedFields.length > 0 ? query.selectedFields : undefined;
+    const fieldsMetadata = await fieldsOrEmpty(model);
 
-    const domain = parseDomain(domainString || "");
-    const ids = parseIds(idsInput || "");
-    const contextResult = parseRpcContext(contextString || "");
-
-    if (!contextResult.isValid) {
-      throw new Error(`Invalid context format: ${contextResult.error || "Invalid JSON"}`);
-    }
-
-    if (ids.length > 0) {
-      const result = await odooRpcService.read(
-        model,
-        ids,
-        selectedFields.length > 0 ? selectedFields : [],
-        contextResult.value,
-        queryStore.fieldsMetadata,
-      );
-      const resultArray = Array.isArray(result) ? result : [result];
-
-      const excludedFields = await odooRpcService.getExcludedFieldsForQuery(
-        model,
-        selectedFields.length > 0 ? selectedFields : [],
-        queryStore.fieldsMetadata,
-      );
-
-      setRpcResult({
-        data: resultArray,
-        loading: false,
-        error: null,
-        totalCount: resultArray.length,
-        lastQuery: queryToUse,
-        isNewQuery: false,
-        model,
-        fieldsMetadata: queryStore.fieldsMetadata,
-        excludedFields,
-      });
-
-      if (isNewQuery) {
-        try {
-          await addSearchToHistory(queryToUse, resultArray.length, databaseSignal());
-        } catch (historyError) {
-          Logger.warn("Failed to add search to history:", historyError);
-        }
-      }
-      return;
-    }
-
-    const totalRecords = await odooRpcService.searchCount(model, domain, contextResult.value);
-
-    const queryParams = {
-      model,
-      domain,
-      fields: selectedFields.length > 0 ? selectedFields : undefined,
-      limit,
-      offset,
-      order: orderBy,
-      context: contextResult.value,
-      fieldsMetadata: queryStore.fieldsMetadata,
-    };
-
-    const result = await odooRpcService.searchRead(queryParams);
-    const resultArray = Array.isArray(result) ? result : [result];
-
+    const [records, totalCount] =
+      ids.length > 0
+        ? await odooRpcService
+            .read(model, ids, fields, context, fieldsMetadata)
+            .then((result) => [result, result.length] as const)
+        : await Promise.all([
+            odooRpcService.searchRead({
+              model,
+              domain: parseDomain(query.domain || ""),
+              fields,
+              limit: query.limit,
+              offset: query.offset,
+              order: query.orderBy,
+              context,
+              fieldsMetadata,
+            }),
+            odooRpcService.searchCount(model, parseDomain(query.domain || ""), context),
+          ]);
     const excludedFields = await odooRpcService.getExcludedFieldsForQuery(
       model,
-      selectedFields.length > 0 ? selectedFields : undefined,
-      queryStore.fieldsMetadata,
+      fields,
+      fieldsMetadata,
     );
+    if (request !== latestQuery) return;
 
-    setRpcResult({
-      data: resultArray,
+    setResultStore({
+      data: records,
       loading: false,
       error: null,
-      errorDetails: null,
-      totalCount: totalRecords,
-      lastQuery: queryToUse,
+      errorDetails: undefined,
+      totalCount,
+      lastQuery: query,
       isNewQuery: false,
       model,
-      fieldsMetadata: queryStore.fieldsMetadata,
+      fieldsMetadata,
       excludedFields,
     });
 
+    withXmlIds(model, records)
+      .then((enriched) => {
+        if (request === latestQuery) setResultStore("data", enriched);
+      })
+      .catch((error) => Logger.warn("Failed to load xml ids:", error));
+
     if (isNewQuery) {
-      try {
-        await addSearchToHistory(queryToUse, resultArray.length, databaseSignal());
-      } catch (historyError) {
-        Logger.warn("Failed to add search to history:", historyError);
-      }
+      await recordHistory("search", {
+        model,
+        domain: query.domain,
+        selectedFields: query.selectedFields,
+        ids: query.ids,
+        limit: query.limit,
+        offset: query.offset,
+        orderBy: query.orderBy,
+        resultCount: records.length,
+      });
     }
   } catch (err) {
-    const errorMessage =
-      err instanceof Error ? err.message : "An error occurred while executing the query";
-
-    let errorDetails: unknown = null;
-    if (isOdooError(err)) {
-      errorDetails = err.odooError;
-    } else if (err instanceof Error) {
-      errorDetails = {
-        name: err.name,
-        message: err.message,
-        stack: err.stack,
-      };
-    }
-
-    setRpcResult({
+    if (request !== latestQuery) return;
+    setResultStore({
       data: null,
       loading: false,
-      error: errorMessage,
-      errorDetails,
+      error: errorMessage(err, "An error occurred while executing the query"),
+      errorDetails: errorDetailsOf(err),
       totalCount: null,
-      lastQuery: queryToUse,
+      lastQuery: query,
       isNewQuery: false,
-      model: queryToUse.model,
+      model,
     });
+  }
+};
+
+/** Targets the records already shown when no record ids are set, so a mutation acts on them. */
+export const prefillTargetIds = () => {
+  const data = resultStore.data;
+  if (data && data.length > 0 && !queryStore.ids.trim()) {
+    setRpcQuery({ ids: formatIds(data) });
+  }
+};
+
+/** Loads the records a mutation tab acts on (`prefillTargetIds` then targets them). */
+export const loadTargetRecords = () => executeQuery(true, { offset: 0 });
+
+export const focusRecord = (model: string, recordId: number | number[]) =>
+  executeQuery(true, { ...queryDefaults(), model, ids: String(recordId), domain: "[]" });
+
+/**
+ * Points the rail at the page shown in the inspected tab (model, ids, domain), keeping the
+ * user's limit and order, and runs the query when it is valid. Automatic calls (`notify`
+ * false) only fill an empty panel: once results are shown (or loading) they are kept, and
+ * the user refreshes them with "Get Current". They also leave the rail untouched when the
+ * page gives no valid query.
+ */
+export const applyCurrentPage = async (notify: boolean) => {
+  if (!notify && (resultStore.data !== null || resultStore.loading)) return;
+  const notifier = notify ? showNotification : undefined;
+  let updates: Partial<RpcQueryState> | null;
+  try {
+    updates = queryFromPage(await odooRpcService.getCurrentPageInfo(), notifier);
+  } catch {
+    notifier?.(t("services.current_page.failed"), "error");
+    return;
+  }
+  if (!updates) return;
+  // The user may have run a query while the page info was loading.
+  if (!notify && (resultStore.data !== null || resultStore.loading)) return;
+  const query: Partial<RpcQueryState> = {
+    ...updates,
+    offset: 0,
+    ...(updates.model !== queryStore.model && { selectedFields: [] }),
+  };
+  if (calculateQueryValidity({ ...unwrap(queryStore), ...query })) {
+    await executeQuery(true, query);
+  } else if (notify) {
+    setRpcQuery(query);
   }
 };
 
 export const loadModels = async (forceReload = false) => {
-  if (modelsStore.models.length > 0 && !forceReload) return;
-  if (modelsStore.loading && !forceReload) return;
+  if (!forceReload && (modelsStore.models.length > 0 || modelsStore.loading)) return;
 
   setModelsStore({ loading: true, error: null });
-
   try {
     const models = await odooRpcService.getAvailableModels();
-    setModelsStore({
-      models,
-      loading: false,
-      error: null,
-      lastLoaded: Date.now(),
-    });
+    setModelsStore({ models, loading: false, error: null });
   } catch (error) {
     setModelsStore({
       loading: false,
-      error: error instanceof Error ? error.message : "Failed to load models",
+      error: errorMessage(error, "Failed to load models"),
     });
   }
 };
 
-export const loadFieldsMetadata = async (model: string) => {
-  if (!model) {
-    setQueryStore("fieldsMetadata", undefined);
-    return;
-  }
+export const usePagination = () => {
+  const effectiveLimit = createMemo(() => resultStore.lastQuery?.limit ?? queryStore.limit);
+  const effectiveOffset = createMemo(() => resultStore.lastQuery?.offset ?? queryStore.offset);
 
-  try {
-    const fieldsMetadata = (await odooRpcService.getFieldsInfo(model)) as Record<
-      string,
-      FieldMetadata
-    >;
-    setQueryStore("fieldsMetadata", fieldsMetadata);
-  } catch (error) {
-    Logger.error("Failed to load fields metadata for model", model, error);
-    setQueryStore("fieldsMetadata", {});
-  }
-};
+  const currentPage = createMemo(() => Math.floor(effectiveOffset() / effectiveLimit()) + 1);
+  const totalPages = createMemo(() => {
+    const total = resultStore.totalCount;
+    return total ? Math.ceil(total / effectiveLimit()) : 1;
+  });
+  const startRecord = createMemo(() => effectiveOffset() + 1);
+  const endRecord = createMemo(() =>
+    Math.min(effectiveOffset() + (resultStore.data?.length || 0), resultStore.totalCount || 0),
+  );
 
-export const focusRecord = async (model: string, recordId: number | number[]) => {
-  const focusQuery: Partial<RpcQueryState> = {
-    model,
-    ids: String(recordId),
-    selectedFields: [],
-    domain: "[]",
-    offset: 0,
-    limit: 80,
-    orderBy: "",
+  const goToPage = (page: number) =>
+    executeQuery(false, { ids: "", offset: (page - 1) * effectiveLimit() });
+
+  return {
+    totalCount: () => resultStore.totalCount,
+    data: () => resultStore.data,
+    currentPage,
+    totalPages,
+    startRecord,
+    endRecord,
+    goToPage,
+    goToPreviousPage: () => currentPage() > 1 && goToPage(currentPage() - 1),
+    goToNextPage: () => currentPage() < totalPages() && goToPage(currentPage() + 1),
   };
-  setRpcQuery(focusQuery);
-  await executeQuery(true, focusQuery);
 };
-
-createRoot(() => {
-  createEffect(() => {
-    const currentModel = queryStore.model;
-    if (currentModel) {
-      loadFieldsMetadata(currentModel).catch((error) => {
-        Logger.warn("Effect: Failed to load fields metadata for model:", currentModel, error);
-      });
-    }
-  });
-
-  createEffect(() => {
-    const currentData = resultStore.data;
-    const model = resultStore.model;
-    if (!currentData || currentData.length === 0 || !model) {
-      setXmlIdMapSignal({});
-      return;
-    }
-    const ids = currentData.map((r) => r.id as number).filter((id) => id != null);
-    if (ids.length === 0) {
-      setXmlIdMapSignal({});
-      return;
-    }
-    odooRpcService
-      .getXmlIds(model, ids)
-      .then(setXmlIdMapSignal)
-      .catch(() => setXmlIdMapSignal({}));
-  });
-});
