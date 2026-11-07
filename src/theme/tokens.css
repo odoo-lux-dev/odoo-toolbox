@@ -1,0 +1,140 @@
+/**
+ * Theme contract.
+ *
+ * Every UI theme must define the `--ot-*` custom properties below (for both its
+ * light and dark variants), on top of the DaisyUI colors (`--color-primary`,
+ * `--color-base-100`, ...). Components only consume these tokens, through the
+ * Tailwind utilities declared here (`bg-canvas`, `text-ink-3`, `border-line`,
+ * `bg-primary-soft`, `font-display`, `shadow-card`, ...) or DaisyUI classes,
+ * so switching the UI theme never requires touching a component.
+ */
+@theme inline {
+  /* Surfaces */
+  --color-canvas: var(--ot-canvas);
+  --color-canvas-soft: var(--ot-canvas-soft);
+  --color-surface: var(--ot-surface);
+  --color-surface-2: var(--ot-surface-2);
+  --color-surface-3: var(--ot-surface-3);
+  --color-surface-inset: var(--ot-surface-inset);
+
+  /* Hairlines */
+  --color-line: var(--ot-line);
+  --color-line-strong: var(--ot-line-strong);
+  --color-line-soft: var(--ot-line-soft);
+
+  /* Text */
+  --color-ink: var(--ot-ink);
+  --color-ink-2: var(--ot-ink-2);
+  --color-ink-3: var(--ot-ink-3);
+  --color-ink-4: var(--ot-ink-4);
+
+  /* Brand (DaisyUI primary) and accent shades */
+  --color-primary-strong: var(--ot-primary-strong);
+  --color-primary-soft: var(--ot-primary-soft);
+  --color-primary-tint: var(--ot-primary-tint);
+  --color-accent-strong: var(--ot-accent-strong);
+  --color-accent-soft: var(--ot-accent-soft);
+  --color-accent-tint: var(--ot-accent-tint);
+
+  /* Semantic soft backgrounds */
+  --color-warning-soft: var(--ot-warning-soft);
+  --color-warning-ink: var(--ot-warning-ink);
+  --color-error-soft: var(--ot-error-soft);
+  --color-error-ink: var(--ot-error-ink);
+  --color-success-soft: var(--ot-success-soft);
+  --color-success-ink: var(--ot-success-ink);
+  --color-info-soft: var(--ot-info-soft);
+  --color-info-ink: var(--ot-info-ink);
+
+  /* Backdrop behind dialogs and drawers */
+  --color-scrim: var(--ot-scrim);
+
+  /* Brand bar (popup header, options top bar) */
+  --color-topbar: var(--ot-topbar);
+  --color-topbar-content: var(--ot-topbar-content);
+  --color-topbar-muted: var(--ot-topbar-muted);
+  --color-topbar-line: var(--ot-topbar-line);
+
+  /* Typography */
+  --font-sans: var(--ot-font-ui);
+  --font-display: var(--ot-font-display);
+  --font-mono: var(--ot-font-mono);
+
+  /*
+   * Type scale (smallest to largest). Use these instead of arbitrary sizes so a
+   * theme can change the whole typography (Tailwind's own text-xs/sm/lg... read
+   * --text-* variables too, so a theme may also override them in its scope).
+   */
+  --text-micro: var(--ot-text-micro);
+  --text-caption: var(--ot-text-caption);
+  --text-meta: var(--ot-text-meta);
+  --text-small: var(--ot-text-small);
+  --text-note: var(--ot-text-note);
+  --text-ui: var(--ot-text-ui);
+  --text-label: var(--ot-text-label);
+  --text-body: var(--ot-text-body);
+  --text-title: var(--ot-text-title);
+  --text-title--line-height: var(--ot-leading-title);
+  --text-heading: var(--ot-text-heading);
+  --text-heading--line-height: var(--ot-leading-heading);
+  --text-headline: var(--ot-text-headline);
+  --text-headline--line-height: var(--ot-leading-display);
+  --text-display-sm: var(--ot-text-display-sm);
+  --text-display-sm--line-height: var(--ot-leading-display);
+  --text-display: var(--ot-text-display);
+  --text-display--line-height: var(--ot-leading-display);
+
+  /* Hairline width: Tailwind's `border`, `border-t`... and the primitives */
+  --default-border-width: var(--ot-border-w);
+
+  /* Radii beyond DaisyUI's field/box/selector */
+  --radius-tight: var(--ot-radius-tight);
+  --radius-panel: var(--ot-radius-panel);
+
+  /* Elevation */
+  --shadow-raised: var(--ot-shadow-raised);
+  --shadow-card: var(--ot-shadow-card);
+  --shadow-overlay: var(--ot-shadow-overlay);
+  --shadow-pop: var(--ot-shadow-pop);
+
+  /* Motion */
+  --ease-theme: var(--ot-ease);
+
+  /*
+   * Density: hit areas, control and row heights, surface widths.
+   * Spacing keys work with every sizing utility (h-row, min-h-target, size-target...).
+   */
+  --spacing-target: var(--ot-target);
+  --spacing-target-sm: var(--ot-target-sm);
+  --spacing-control: var(--ot-control-h);
+  --spacing-control-sm: var(--ot-control-sm-h);
+  /* Main search fields of a page (popup projects, options search) */
+  --spacing-search: var(--ot-search-h);
+  --spacing-row: var(--ot-row-h);
+  --spacing-tab: var(--ot-tab-h);
+  --spacing-chip: var(--ot-chip-h);
+  --spacing-pill: var(--ot-pill-h);
+  --width-popup: var(--ot-popup-w);
+  --width-options-sidebar: var(--ot-options-sidebar-w);
+  --width-query-rail: var(--ot-query-rail-w);
+}
+
+/*
+ * Tokens read by CSS only (base.css, theme tweaks), listed here so the contract
+ * test requires them in every theme:
+ * var(--ot-switch-h) switch height, var(--ot-focus-width) / var(--ot-focus-offset)
+ * keyboard focus outline, var(--ot-focus-ring) field focus halo,
+ * var(--ot-table-row-h) / var(--ot-table-head-h) DevTools table rows and header (read
+ * by the virtualized table in JavaScript: plain px values, no calc()).
+ *
+ * Avatar palette (decorative, never semantic: no success/error hue), one soft
+ * background and one ink per tone, read by `.ot-avatar` (primitives.css):
+ * var(--ot-avatar-1-soft) var(--ot-avatar-1-ink)
+ * var(--ot-avatar-2-soft) var(--ot-avatar-2-ink)
+ * var(--ot-avatar-3-soft) var(--ot-avatar-3-ink)
+ * var(--ot-avatar-4-soft) var(--ot-avatar-4-ink)
+ * var(--ot-avatar-5-soft) var(--ot-avatar-5-ink)
+ * var(--ot-avatar-6-soft) var(--ot-avatar-6-ink)
+ * var(--ot-avatar-7-soft) var(--ot-avatar-7-ink)
+ * var(--ot-avatar-8-soft) var(--ot-avatar-8-ink)
+ */

@@ -22,6 +22,11 @@ interface InputProps extends Omit<
   fullWidth?: boolean;
   prefix?: JSX.Element;
   suffix?: JSX.Element;
+  /**
+   * `label` (default): DaisyUI label with a separator border.
+   * `plain`: muted adornment without separator (search icon, shortcut hint...).
+   */
+  affixStyle?: "label" | "plain";
   ref?: (el: HTMLInputElement) => void;
 }
 
@@ -56,6 +61,7 @@ export const Input = (props: InputProps) => {
     "fullWidth",
     "prefix",
     "suffix",
+    "affixStyle",
     "class",
     "type",
     "ref",
@@ -71,6 +77,9 @@ export const Input = (props: InputProps) => {
     return c.join(" ");
   };
 
+  const affixClass = () =>
+    local.affixStyle === "plain" ? "inline-flex shrink-0 items-center text-ink-3" : "label";
+
   return (
     <Show
       when={local.prefix || local.suffix}
@@ -78,11 +87,11 @@ export const Input = (props: InputProps) => {
     >
       <label class={inputClass()}>
         <Show when={local.prefix}>
-          <span class="label">{local.prefix}</span>
+          <span class={affixClass()}>{local.prefix}</span>
         </Show>
         <input ref={local.ref} type={type()} {...rest} />
         <Show when={local.suffix}>
-          <span class="label">{local.suffix}</span>
+          <span class={affixClass()}>{local.suffix}</span>
         </Show>
       </label>
     </Show>

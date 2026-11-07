@@ -1,18 +1,15 @@
-import { splitProps, type JSX } from "solid-js";
+import { onMount, splitProps, type JSX } from "solid-js";
 
 import { cx } from "@/components/ui/cx";
 
-type TabsVariant = "boxed" | "bordered" | "lifted";
-type TabsPlacement = "top" | "bottom";
-type TabsSize = "xs" | "sm" | "md" | "lg" | "xl";
-
 export interface TabsProps extends JSX.HTMLAttributes<HTMLDivElement> {
-  variant?: TabsVariant;
-  placement?: TabsPlacement;
-  size?: TabsSize;
   children: JSX.Element;
 }
 
+/**
+ * Tab list and tab (`.ot-tabs`, `.ot-tab`, src/theme/primitives.css). The look
+ * of the selected tab is driven by `aria-selected`, its height by the list.
+ */
 export interface TabProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
   active?: boolean;
   disabled?: boolean;
@@ -20,38 +17,55 @@ export interface TabProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElemen
   children: JSX.Element;
 }
 
-const variantClassMap: Record<TabsVariant, string> = {
-  boxed: "tabs-box",
-  bordered: "tabs-border",
-  lifted: "tabs-lift",
-};
+const enabledTabs = (list: HTMLElement) =>
+  [...list.querySelectorAll<HTMLElement>('[role="tab"]')].filter(
+    (tab) =>
+      tab.closest('[role="tablist"]') === list && tab.getAttribute("aria-disabled") !== "true",
+  );
 
-const placementClassMap: Record<TabsPlacement, string> = {
-  top: "tabs-top",
-  bottom: "tabs-bottom",
-};
-
-const sizeClassMap: Record<TabsSize, string> = {
-  xs: "tabs-xs",
-  sm: "tabs-sm",
-  md: "tabs-md",
-  lg: "tabs-lg",
-  xl: "tabs-xl",
+/**
+ * Keyboard support of the WAI-ARIA tabs pattern: one tab stop for the whole
+ * list (the selected tab), ←/→ (mirrored in RTL), Home and End move to a tab
+ * and activate it.
+ */
+const handleTabListKeyDown = (event: KeyboardEvent) => {
+  const list = event.currentTarget as HTMLElement;
+  const tabs = enabledTabs(list);
+  const current = tabs.indexOf(event.target as HTMLElement);
+  if (current === -1 || tabs.length === 0) return;
+  const rtl = getComputedStyle(list).direction === "rtl";
+  const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[event.key];
+  let next: number;
+  if (step !== undefined) next = (current + step + tabs.length) % tabs.length;
+  else if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = tabs.length - 1;
+  else return;
+  event.preventDefault();
+  tabs[next]?.focus();
+  tabs[next]?.click();
 };
 
 export const Tabs = (props: TabsProps) => {
-  const [local, rest] = splitProps(props, ["variant", "placement", "size", "class", "children"]);
-  const classes = () =>
-    cx(
-      "tabs",
-      local.variant ? variantClassMap[local.variant] : undefined,
-      local.placement ? placementClassMap[local.placement] : undefined,
-      local.size ? sizeClassMap[local.size] : undefined,
-      local.class,
-    );
+  const [local, rest] = splitProps(props, ["class", "children", "onKeyDown"]);
+  let listRef: HTMLDivElement | undefined;
+
+  // Without a selected tab, keep the list reachable with Tab.
+  onMount(() => {
+    if (!listRef || listRef.querySelector('[role="tab"][tabindex="0"]')) return;
+    enabledTabs(listRef)[0]?.setAttribute("tabindex", "0");
+  });
 
   return (
-    <div role="tablist" class={classes()} {...rest}>
+    <div
+      ref={(el) => (listRef = el)}
+      role="tablist"
+      class={cx("ot-tabs", local.class)}
+      onKeyDown={(event) => {
+        handleTabListKeyDown(event);
+        if (typeof local.onKeyDown === "function") local.onKeyDown(event);
+      }}
+      {...rest}
+    >
       {local.children}
     </div>
   );
@@ -60,20 +74,14 @@ export const Tabs = (props: TabsProps) => {
 export const Tab = (props: TabProps) => {
   const [local, rest] = splitProps(props, ["active", "disabled", "class", "children", "type"]);
   const type = () => local.type ?? "button";
-  const classes = () =>
-    cx(
-      "tab",
-      local.active ? "tab-active" : undefined,
-      local.disabled ? "tab-disabled" : undefined,
-      local.class,
-    );
 
   return (
     <button
       role="tab"
       type={type()}
-      class={classes()}
-      aria-selected={local.active || undefined}
+      class={cx("ot-tab", local.class)}
+      aria-selected={local.active ? "true" : "false"}
+      tabIndex={local.active ? 0 : -1}
       aria-disabled={local.disabled || undefined}
       disabled={local.disabled}
       {...rest}

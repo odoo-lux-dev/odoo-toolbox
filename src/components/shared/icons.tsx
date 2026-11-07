@@ -14,7 +14,7 @@ export const DebugModeOnIcon = (props: DebugModeOnIconProps) => {
   return (
     <Show
       when={isNostalgia()}
-      fallback={<HugeiconsIcon icon={Bug02Icon} size={16} color="currentColor" strokeWidth={2} />}
+      fallback={<HugeiconsIcon icon={Bug02Icon} size={16} strokeWidth={2} />}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 32 32" height="18" width="18">
         <path
@@ -323,9 +323,7 @@ export const DebugModeTestsAssetsIcon = (props: DebugModeTestsAssetsIconProps) =
   return (
     <Show
       when={isNostalgia()}
-      fallback={
-        <HugeiconsIcon icon={TestTube01Icon} size={16} color="currentColor" strokeWidth={2} />
-      }
+      fallback={<HugeiconsIcon icon={TestTube01Icon} size={16} strokeWidth={2} />}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

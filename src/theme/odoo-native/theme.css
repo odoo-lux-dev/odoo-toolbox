@@ -1,0 +1,454 @@
+/**
+ * UI theme "odoo-native" — mockups/01-odoo-native (v0.2).
+ *
+ * Official Odoo palette (primary #714B67, secondary #017E84) on warm "paper"
+ * surfaces in light, warm plum-grey in dark. Inter Tight for titles, Inter for
+ * the interface, JetBrains Mono for technical metadata. Font files are declared
+ * in ./fonts.css (extension pages only).
+ */
+
+/* ------------------------------------------------------------
+   DaisyUI colors and sizes
+   ------------------------------------------------------------ */
+@plugin "daisyui/theme" {
+  name: "odoo-native-light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #ffffff;
+  --color-base-200: #f8f5f7;
+  --color-base-300: #f2ebef;
+  --color-base-content: #211b1f;
+  --color-primary: #714b67;
+  --color-primary-content: #ffffff;
+  --color-secondary: #017e84;
+  --color-secondary-content: #ffffff;
+  --color-accent: #017e84;
+  --color-accent-content: #ffffff;
+  --color-neutral: #5f525a;
+  --color-neutral-content: #ffffff;
+  --color-info: #2f6d90;
+  --color-info-content: #ffffff;
+  --color-success: #2f7d4e;
+  --color-success-content: #ffffff;
+  --color-warning: #9a620d;
+  --color-warning-content: #ffffff;
+  --color-error: #b23b35;
+  --color-error-content: #ffffff;
+  --radius-selector: 999px;
+  --radius-field: 7px;
+  --radius-box: 10px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "odoo-native-dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: #211a20;
+  --color-base-200: #1b151b;
+  --color-base-300: #302630;
+  --color-base-content: #f6eff4;
+  --color-primary: #c08fb4;
+  --color-primary-content: #241720;
+  --color-secondary: #4fc9c5;
+  --color-secondary-content: #0d2322;
+  --color-accent: #4fc9c5;
+  --color-accent-content: #0d2322;
+  --color-neutral: #c6b7c1;
+  --color-neutral-content: #211a20;
+  --color-info: #8fc2de;
+  --color-info-content: #10202a;
+  --color-success: #79c897;
+  --color-success-content: #10241a;
+  --color-warning: #e0a84a;
+  --color-warning-content: #2a1d08;
+  --color-error: #ef8b83;
+  --color-error-content: #2a1514;
+  --radius-selector: 999px;
+  --radius-field: 7px;
+  --radius-box: 10px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ------------------------------------------------------------
+   Contract tokens (see src/theme/tokens.css)
+   ------------------------------------------------------------ */
+[data-ui-theme="odoo-native"] {
+  --ot-font-display:
+    "Inter Tight Variable", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --ot-font-ui:
+    "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Devanagari",
+    "Noto Sans Arabic", sans-serif;
+  --ot-font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ot-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Type scale (mockup 01 sizes), scaled by the large text preference (base.css) */
+  --ot-text-micro: calc(8px * var(--ot-text-scale));
+  --ot-text-caption: calc(8.5px * var(--ot-text-scale));
+  --ot-text-meta: calc(9.5px * var(--ot-text-scale));
+  --ot-text-small: calc(10px * var(--ot-text-scale));
+  --ot-text-note: calc(10.5px * var(--ot-text-scale));
+  --ot-text-ui: calc(11px * var(--ot-text-scale));
+  --ot-text-label: calc(11.5px * var(--ot-text-scale));
+  --ot-text-body: calc(12.5px * var(--ot-text-scale));
+  --ot-text-title: calc(13.5px * var(--ot-text-scale));
+  --ot-text-heading: calc(15px * var(--ot-text-scale));
+  --ot-text-headline: calc(18px * var(--ot-text-scale));
+  --ot-text-display-sm: calc(27px * var(--ot-text-scale));
+  --ot-text-display: calc(32px * var(--ot-text-scale));
+  --ot-leading-title: 1.25;
+  --ot-leading-heading: 1.2;
+  --ot-leading-display: 1.15;
+
+  --ot-border-w: 1px;
+  --ot-radius-tight: 5px;
+  --ot-radius-panel: 14px;
+
+  /* Density */
+  --ot-target: 32px;
+  --ot-target-sm: 28px;
+  --ot-control-h: 34px;
+  --ot-control-sm-h: 28px;
+  --ot-search-h: 34px;
+  --ot-row-h: 51px;
+  --ot-table-row-h: 32px;
+  --ot-table-head-h: 32px;
+  --ot-tab-h: 42px;
+  --ot-chip-h: 20px;
+  --ot-pill-h: 18px;
+  --ot-switch-h: 22px;
+  --ot-popup-w: 372px;
+  --ot-options-sidebar-w: 268px;
+  --ot-query-rail-w: 300px;
+  --ot-focus-width: 2px;
+  --ot-focus-offset: 2px;
+}
+
+[data-ui-theme="odoo-native"][data-color-scheme="light"],
+[data-ui-theme="odoo-native"] [data-color-scheme="light"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #f3eaf0;
+  --ot-avatar-1-ink: #714b67;
+  --ot-avatar-2-soft: #e4f2f2;
+  --ot-avatar-2-ink: #01686d;
+  --ot-avatar-3-soft: #fbf1dd;
+  --ot-avatar-3-ink: #9a620d;
+  --ot-avatar-4-soft: #e8f1f6;
+  --ot-avatar-4-ink: #2f6d90;
+  --ot-avatar-5-soft: #e7f2ea;
+  --ot-avatar-5-ink: #276b42;
+  --ot-avatar-6-soft: #fbebe4;
+  --ot-avatar-6-ink: #a14a2a;
+  --ot-avatar-7-soft: #eeeafb;
+  --ot-avatar-7-ink: #5a479f;
+  --ot-avatar-8-soft: #e9edf1;
+  --ot-avatar-8-ink: #4a5a6a;
+
+  --ot-canvas: #f4f0f2;
+  --ot-canvas-soft: #f8f5f7;
+  --ot-surface: #ffffff;
+  --ot-surface-2: #fbf8fa;
+  --ot-surface-3: #f2ebef;
+  --ot-surface-inset: #f7f2f5;
+
+  --ot-line: #e7dee3;
+  --ot-line-strong: #d6c8d1;
+  --ot-line-soft: #efe8ec;
+
+  --ot-ink: #211b1f;
+  --ot-ink-2: #5f525a;
+  --ot-ink-3: #7b6c74;
+  --ot-ink-4: #8a7b84;
+
+  --ot-primary-strong: #5a3a52;
+  --ot-primary-soft: #f3eaf0;
+  --ot-primary-tint: #e8dae3;
+  --ot-accent-strong: #01686d;
+  --ot-accent-soft: #e4f2f2;
+  --ot-accent-tint: #cfe9e9;
+
+  --ot-warning-soft: #fbf1dd;
+  --ot-warning-ink: #9a620d;
+  --ot-error-soft: #fbeae8;
+  --ot-error-ink: #b23b35;
+  --ot-success-soft: #e7f2ea;
+  --ot-success-ink: #2f7d4e;
+  --ot-info-soft: #e8f1f6;
+  --ot-info-ink: #2f6d90;
+
+  --ot-scrim: rgba(33, 27, 31, 0.32);
+
+  --ot-topbar: #714b67;
+  --ot-topbar-content: #ffffff;
+  --ot-topbar-muted: rgba(255, 255, 255, 0.72);
+  --ot-topbar-line: rgba(255, 255, 255, 0.14);
+
+  --ot-focus-ring: 0 0 0 3px rgba(1, 126, 132, 0.2);
+  --ot-shadow-raised: 0 1px 2px rgba(46, 28, 40, 0.05);
+  --ot-shadow-card: 0 10px 30px -18px rgba(46, 28, 40, 0.32), 0 2px 8px -4px rgba(46, 28, 40, 0.07);
+  --ot-shadow-overlay:
+    0 24px 64px -26px rgba(46, 28, 40, 0.42), 0 6px 16px -10px rgba(46, 28, 40, 0.12);
+  --ot-shadow-pop: 0 28px 70px -22px rgba(46, 28, 40, 0.48);
+}
+
+[data-ui-theme="odoo-native"][data-color-scheme="dark"],
+[data-ui-theme="odoo-native"] [data-color-scheme="dark"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #34232f;
+  --ot-avatar-1-ink: #d4a9c8;
+  --ot-avatar-2-soft: #153332;
+  --ot-avatar-2-ink: #7adbd6;
+  --ot-avatar-3-soft: #3a2c18;
+  --ot-avatar-3-ink: #e0a84a;
+  --ot-avatar-4-soft: #1d2c37;
+  --ot-avatar-4-ink: #8fc2de;
+  --ot-avatar-5-soft: #1c3225;
+  --ot-avatar-5-ink: #79c897;
+  --ot-avatar-6-soft: #3a231b;
+  --ot-avatar-6-ink: #eba184;
+  --ot-avatar-7-soft: #262140;
+  --ot-avatar-7-ink: #bdb0f5;
+  --ot-avatar-8-soft: #232a31;
+  --ot-avatar-8-ink: #b4c2cf;
+
+  --ot-canvas: #171217;
+  --ot-canvas-soft: #1b151b;
+  --ot-surface: #211a20;
+  --ot-surface-2: #271f26;
+  --ot-surface-3: #302630;
+  --ot-surface-inset: #1b151a;
+
+  --ot-line: #3a2e37;
+  --ot-line-strong: #4c3b46;
+  --ot-line-soft: #2d232b;
+
+  --ot-ink: #f6eff4;
+  --ot-ink-2: #c6b7c1;
+  --ot-ink-3: #95858f;
+  --ot-ink-4: #8f7f88;
+
+  --ot-primary-strong: #d4a9c8;
+  --ot-primary-soft: #34232f;
+  --ot-primary-tint: #432c3b;
+  --ot-accent-strong: #7adbd6;
+  --ot-accent-soft: #153332;
+  --ot-accent-tint: #1d4442;
+
+  --ot-warning-soft: #3a2c18;
+  --ot-warning-ink: #e0a84a;
+  --ot-error-soft: #3a1f1e;
+  --ot-error-ink: #ef8b83;
+  --ot-success-soft: #1c3225;
+  --ot-success-ink: #79c897;
+  --ot-info-soft: #1d2c37;
+  --ot-info-ink: #8fc2de;
+
+  --ot-scrim: rgba(8, 5, 8, 0.6);
+
+  --ot-topbar: #241a22;
+  --ot-topbar-content: #f6eff4;
+  --ot-topbar-muted: #c3b0bc;
+  --ot-topbar-line: #3a2b34;
+
+  --ot-focus-ring: 0 0 0 3px rgba(79, 201, 197, 0.22);
+  --ot-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ot-shadow-card: 0 12px 32px -18px rgba(0, 0, 0, 0.7), 0 2px 8px -4px rgba(0, 0, 0, 0.35);
+  --ot-shadow-overlay: 0 28px 70px -28px rgba(0, 0, 0, 0.8), 0 8px 20px -12px rgba(0, 0, 0, 0.5);
+  --ot-shadow-pop: 0 30px 80px -22px rgba(0, 0, 0, 0.85);
+}
+
+/* Color-safe palette tints (the shared hues are in base.css). */
+[data-ui-theme="odoo-native"][data-cvd="on"][data-color-scheme="light"],
+[data-ui-theme="odoo-native"][data-cvd="on"] [data-color-scheme="light"] {
+  --ot-success-soft: #e5f1f8;
+  --ot-error-soft: #fcebe2;
+  --ot-info-soft: #eeeafb;
+}
+
+[data-ui-theme="odoo-native"][data-cvd="on"][data-color-scheme="dark"],
+[data-ui-theme="odoo-native"][data-cvd="on"] [data-color-scheme="dark"] {
+  --ot-success-soft: #162936;
+  --ot-error-soft: #3a2116;
+  --ot-info-soft: #241f3d;
+}
+
+/* ------------------------------------------------------------
+   Component tweaks
+   Placed in a DaisyUI sub-layer declared after DaisyUI's own, so they win over
+   DaisyUI components but still lose to Tailwind utilities used in components.
+   ------------------------------------------------------------ */
+@layer utilities {
+  @layer daisyui.ui-theme {
+    [data-ui-theme="odoo-native"] {
+      & .btn {
+        --fontsize: var(--ot-text-body);
+        --btn-p: 13px;
+        letter-spacing: -0.005em;
+        transition:
+          background-color 160ms var(--ot-ease),
+          border-color 160ms var(--ot-ease),
+          color 160ms var(--ot-ease),
+          box-shadow 160ms var(--ot-ease);
+      }
+
+      & .btn-sm {
+        --fontsize: var(--ot-text-label);
+        --btn-p: 10px;
+      }
+
+      & .btn-xs {
+        --fontsize: var(--ot-text-ui);
+      }
+
+      & .btn-primary:not(.btn-soft, .btn-outline, .btn-ghost, .btn-link) {
+        box-shadow: var(--ot-shadow-raised);
+      }
+
+      & .btn-primary:not(.btn-soft, .btn-outline, .btn-ghost, .btn-link):hover {
+        --btn-bg: var(--ot-primary-strong);
+        --btn-border: var(--ot-primary-strong);
+      }
+
+      & .btn-ghost:not(.btn-active):hover {
+        --btn-bg: var(--ot-surface-3);
+        --btn-border: transparent;
+        color: var(--ot-ink);
+      }
+
+      & .btn-soft.btn-primary {
+        --btn-bg: var(--ot-primary-soft);
+        --btn-fg: var(--color-primary);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-primary:hover {
+        --btn-bg: var(--ot-primary-tint);
+      }
+
+      & .btn-soft.btn-accent {
+        --btn-bg: var(--ot-accent-soft);
+        --btn-fg: var(--ot-accent-strong);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-accent:hover {
+        --btn-bg: var(--ot-accent-tint);
+      }
+
+      & .btn-link {
+        --btn-fg: var(--color-accent);
+      }
+
+      /* Fields: hairline border, teal focus halo */
+      & :is(.input, .select, .textarea) {
+        --input-color: var(--ot-line-strong);
+        background-color: var(--ot-surface);
+        transition:
+          border-color 160ms var(--ot-ease),
+          box-shadow 160ms var(--ot-ease);
+      }
+
+      & :is(.input, .select, .textarea):focus,
+      & :is(.input, .select, .textarea):focus-within {
+        --input-color: var(--color-accent);
+        outline: none;
+        box-shadow: var(--ot-focus-ring);
+      }
+
+      /* Switch: brand when on */
+      /* One switch size (38x22), except the explicit compact one */
+      & .toggle:not(.toggle-xs) {
+        --size: var(--ot-switch-h);
+      }
+
+      & .toggle {
+        --input-color: var(--ot-line-strong);
+        background-color: var(--ot-surface-3);
+      }
+
+      & .toggle:checked,
+      & .toggle:has(> input:checked) {
+        --input-color: var(--color-primary);
+        background-color: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+
+      & .toggle:focus-visible {
+        outline: none;
+        box-shadow: var(--ot-focus-ring);
+      }
+
+      & .checkbox {
+        border-radius: 4px;
+      }
+
+      & :is(.checkbox, .radio):checked {
+        --input-color: var(--color-primary);
+      }
+
+      /* Badges: small mono pills */
+      & .badge {
+        font-family: var(--ot-font-mono);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+
+      /* DaisyUI soft badges use --badge-color for the text: only tint bg/border */
+      & .badge-soft.badge-primary {
+        color: var(--ot-primary-strong);
+        background-color: var(--ot-primary-soft);
+        border-color: color-mix(in oklab, var(--color-primary) 16%, transparent);
+      }
+
+      & .kbd {
+        --size: 18px;
+        background-color: var(--ot-surface);
+        border-color: var(--ot-line);
+        border-bottom-color: var(--ot-line-strong);
+        color: var(--ot-ink-3);
+        font-family: var(--ot-font-mono);
+        font-size: var(--ot-text-meta);
+        border-radius: 4px;
+      }
+
+      /* Cards and modals: flat, hairline */
+      & .card-border {
+        border-color: var(--ot-line);
+        background-color: var(--ot-surface);
+      }
+
+      & .modal-box {
+        border: 1px solid var(--ot-line);
+        background-color: var(--ot-surface);
+        box-shadow: var(--ot-shadow-pop);
+        border-radius: 14px;
+      }
+
+      & .tooltip {
+        --tt-bg: var(--ot-ink);
+        color: var(--ot-surface);
+      }
+
+      & :is(h1, h2, h3, .card-title) {
+        font-family: var(--ot-font-display);
+        letter-spacing: -0.02em;
+      }
+
+      & ::selection {
+        background: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+    }
+  }
+}

@@ -1,0 +1,525 @@
+/**
+ * UI theme "console" — mockups/03-console-design (v0.3).
+ *
+ * A developer workbench: the chrome recedes, the data stays. Official Odoo palette
+ * (primary #714B67, secondary #017E84 darkened to #01696E for small mono text) on warm
+ * graphite & paper neutrals in light, warm "terminal graphite" in dark. IBM Plex Sans for
+ * the interface, IBM Plex Mono for the structure (slugs, counters, field names, hints).
+ * Dense (28px controls, 27px table rows), 1px hairlines, 2–8px radii, no shadow except on
+ * floating surfaces. The plum is a 2px rail and the active marker, not a slab.
+ * Font files are declared in ./fonts.css (extension pages only).
+ *
+ * Palette and contrast ratios: mockups/03-console-design/brand-spec.md (branch design/mockups).
+ */
+
+/* ------------------------------------------------------------
+   DaisyUI colors and sizes
+   ------------------------------------------------------------ */
+@plugin "daisyui/theme" {
+  name: "console-light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #fbfbf9;
+  --color-base-200: #f6f5f2;
+  --color-base-300: #eceae5;
+  --color-base-content: #1c1b19;
+  --color-primary: #714b67;
+  --color-primary-content: #ffffff;
+  --color-secondary: #01696e;
+  --color-secondary-content: #ffffff;
+  --color-accent: #01696e;
+  --color-accent-content: #ffffff;
+  --color-neutral: #56524b;
+  --color-neutral-content: #ffffff;
+  --color-info: #2e6b8f;
+  --color-info-content: #ffffff;
+  --color-success: #2c7a4b;
+  --color-success-content: #ffffff;
+  --color-warning: #8a5a0e;
+  --color-warning-content: #ffffff;
+  --color-error: #ac3530;
+  --color-error-content: #ffffff;
+  --radius-selector: 999px;
+  --radius-field: 3px;
+  --radius-box: 4px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "console-dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: #18181b;
+  --color-base-200: #161618;
+  --color-base-300: #242428;
+  --color-base-content: #edece8;
+  --color-primary: #c79bbe;
+  --color-primary-content: #1e141b;
+  --color-secondary: #4fc7c4;
+  --color-secondary-content: #0c2120;
+  --color-accent: #4fc7c4;
+  --color-accent-content: #0c2120;
+  --color-neutral: #b7b3ac;
+  --color-neutral-content: #18181b;
+  --color-info: #8dbfdb;
+  --color-info-content: #10202a;
+  --color-success: #74c391;
+  --color-success-content: #10241a;
+  --color-warning: #dda84f;
+  --color-warning-content: #2a1d08;
+  --color-error: #ef8b83;
+  --color-error-content: #2a1514;
+  --radius-selector: 999px;
+  --radius-field: 3px;
+  --radius-box: 4px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ------------------------------------------------------------
+   Contract tokens (see src/theme/tokens.css)
+   ------------------------------------------------------------ */
+[data-ui-theme="console"] {
+  --ot-font-display:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Devanagari",
+    "Noto Sans Arabic", sans-serif;
+  --ot-font-ui:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Devanagari",
+    "Noto Sans Arabic", sans-serif;
+  --ot-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ot-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /*
+   * Console scale (mockup 03): 12.5px body, 11.5px controls, 8–9px mono metadata.
+   * Scaled by the large text preference.
+   */
+  --ot-text-micro: calc(7.5px * var(--ot-text-scale));
+  --ot-text-caption: calc(8px * var(--ot-text-scale));
+  --ot-text-meta: calc(9px * var(--ot-text-scale));
+  --ot-text-small: calc(9.5px * var(--ot-text-scale));
+  --ot-text-note: calc(10px * var(--ot-text-scale));
+  --ot-text-ui: calc(10.5px * var(--ot-text-scale));
+  --ot-text-label: calc(11.5px * var(--ot-text-scale));
+  --ot-text-body: calc(12.5px * var(--ot-text-scale));
+  --ot-text-title: calc(13px * var(--ot-text-scale));
+  --ot-text-heading: calc(14px * var(--ot-text-scale));
+  --ot-text-headline: calc(17px * var(--ot-text-scale));
+  --ot-text-display-sm: calc(24px * var(--ot-text-scale));
+  --ot-text-display: calc(28px * var(--ot-text-scale));
+  --ot-leading-title: 1.25;
+  --ot-leading-heading: 1.2;
+  --ot-leading-display: 1.1;
+
+  /* Tailwind's text-xs / text-sm used by components: console density */
+  --ot-tw-text-xs: 11px;
+  --ot-tw-text-sm: 12.5px;
+
+  --ot-border-w: 1px;
+  --ot-radius-tight: 2px;
+  --ot-radius-panel: 6px;
+
+  /* Density (9/10): 28px controls, 26px icon buttons, 27px table rows */
+  --ot-target: 26px;
+  --ot-target-sm: 22px;
+  --ot-control-h: 28px;
+  --ot-control-sm-h: 23px;
+  --ot-search-h: 28px;
+  --ot-row-h: 39px;
+  --ot-table-row-h: 27px;
+  --ot-table-head-h: 24px;
+  --ot-tab-h: 34px;
+  --ot-chip-h: 18px;
+  --ot-pill-h: 16px;
+  --ot-switch-h: 16px;
+  --ot-popup-w: 372px;
+  --ot-options-sidebar-w: 232px;
+  --ot-query-rail-w: 288px;
+  --ot-focus-width: 1.5px;
+  --ot-focus-offset: 1px;
+}
+
+[data-ui-theme="console"][data-color-scheme="light"],
+[data-ui-theme="console"] [data-color-scheme="light"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #f1e8ee;
+  --ot-avatar-1-ink: #714b67;
+  --ot-avatar-2-soft: #e2f0ef;
+  --ot-avatar-2-ink: #01696e;
+  --ot-avatar-3-soft: #f8eeda;
+  --ot-avatar-3-ink: #8a5a0e;
+  --ot-avatar-4-soft: #e7eff4;
+  --ot-avatar-4-ink: #2e6b8f;
+  --ot-avatar-5-soft: #e5f1e9;
+  --ot-avatar-5-ink: #276b42;
+  --ot-avatar-6-soft: #f8e9e2;
+  --ot-avatar-6-ink: #9c4626;
+  --ot-avatar-7-soft: #edeaf7;
+  --ot-avatar-7-ink: #574796;
+  --ot-avatar-8-soft: #e9ebee;
+  --ot-avatar-8-ink: #4a5563;
+
+  --ot-canvas: #f2f1ee;
+  --ot-canvas-soft: #f7f6f3;
+  --ot-surface: #fbfbf9;
+  --ot-surface-2: #f6f5f2;
+  --ot-surface-3: #eceae5;
+  --ot-surface-inset: #efede8;
+
+  --ot-line: #dfdcd5;
+  --ot-line-strong: #c9c5bc;
+  --ot-line-soft: #eae7e1;
+
+  --ot-ink: #1c1b19;
+  --ot-ink-2: #56524b;
+  --ot-ink-3: #726d64;
+  --ot-ink-4: #99938a;
+
+  --ot-primary-strong: #5a3a52;
+  --ot-primary-soft: #f1e8ee;
+  --ot-primary-tint: #e6d7e1;
+  --ot-accent-strong: #01575b;
+  --ot-accent-soft: #e2f0ef;
+  --ot-accent-tint: #cbe6e4;
+
+  --ot-warning-soft: #f8eeda;
+  --ot-warning-ink: #8a5a0e;
+  --ot-error-soft: #f9e8e6;
+  --ot-error-ink: #ac3530;
+  --ot-success-soft: #e5f1e9;
+  --ot-success-ink: #2c7a4b;
+  --ot-info-soft: #e7eff4;
+  --ot-info-ink: #2e6b8f;
+
+  --ot-scrim: rgba(28, 27, 25, 0.32);
+
+  /* Neutral command strip: the brand is a 2px rail (see the popup header tweak) */
+  --ot-topbar: #fbfbf9;
+  --ot-topbar-content: #1c1b19;
+  --ot-topbar-muted: #726d64;
+  --ot-topbar-line: #dfdcd5;
+
+  --ot-focus-ring: 0 0 0 2px rgba(1, 105, 110, 0.24);
+  /* No elevation on cards: hairlines and backgrounds separate surfaces */
+  --ot-shadow-raised: 0 1px 0 rgba(28, 27, 25, 0.04);
+  --ot-shadow-card: 0 0 #0000;
+  --ot-shadow-overlay: 0 18px 48px -30px rgba(28, 27, 25, 0.35);
+  --ot-shadow-pop: 0 22px 60px -34px rgba(28, 27, 25, 0.4);
+}
+
+[data-ui-theme="console"][data-color-scheme="dark"],
+[data-ui-theme="console"] [data-color-scheme="dark"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #2b2029;
+  --ot-avatar-1-ink: #c79bbe;
+  --ot-avatar-2-soft: #14302f;
+  --ot-avatar-2-ink: #4fc7c4;
+  --ot-avatar-3-soft: #302616;
+  --ot-avatar-3-ink: #dda84f;
+  --ot-avatar-4-soft: #1a2933;
+  --ot-avatar-4-ink: #8dbfdb;
+  --ot-avatar-5-soft: #192c21;
+  --ot-avatar-5-ink: #74c391;
+  --ot-avatar-6-soft: #33211b;
+  --ot-avatar-6-ink: #e89d80;
+  --ot-avatar-7-soft: #232036;
+  --ot-avatar-7-ink: #b8acf0;
+  --ot-avatar-8-soft: #22252a;
+  --ot-avatar-8-ink: #b0bac6;
+
+  --ot-canvas: #121214;
+  --ot-canvas-soft: #161618;
+  --ot-surface: #18181b;
+  --ot-surface-2: #1d1d21;
+  --ot-surface-3: #242428;
+  --ot-surface-inset: #151518;
+
+  --ot-line: #2b2b30;
+  --ot-line-strong: #3c3c43;
+  --ot-line-soft: #242427;
+
+  --ot-ink: #edece8;
+  --ot-ink-2: #b7b3ac;
+  --ot-ink-3: #8b877f;
+  --ot-ink-4: #6f6b64;
+
+  --ot-primary-strong: #d8b2d0;
+  --ot-primary-soft: #2b2029;
+  --ot-primary-tint: #3a2b37;
+  --ot-accent-strong: #7bdad6;
+  --ot-accent-soft: #14302f;
+  --ot-accent-tint: #1c403e;
+
+  --ot-warning-soft: #302616;
+  --ot-warning-ink: #dda84f;
+  --ot-error-soft: #351d1c;
+  --ot-error-ink: #ef8b83;
+  --ot-success-soft: #192c21;
+  --ot-success-ink: #74c391;
+  --ot-info-soft: #1a2933;
+  --ot-info-ink: #8dbfdb;
+
+  --ot-scrim: rgba(0, 0, 0, 0.6);
+
+  --ot-topbar: #18181b;
+  --ot-topbar-content: #edece8;
+  --ot-topbar-muted: #8b877f;
+  --ot-topbar-line: #2b2b30;
+
+  --ot-focus-ring: 0 0 0 2px rgba(79, 199, 196, 0.28);
+  --ot-shadow-raised: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --ot-shadow-card: 0 0 #0000;
+  --ot-shadow-overlay: 0 22px 56px -32px rgba(0, 0, 0, 0.9);
+  --ot-shadow-pop: 0 26px 70px -36px rgba(0, 0, 0, 0.95);
+}
+
+/* Color-safe palette tints (the shared hues are in base.css). */
+[data-ui-theme="console"][data-cvd="on"][data-color-scheme="light"],
+[data-ui-theme="console"][data-cvd="on"] [data-color-scheme="light"] {
+  --ot-success-soft: #e5f0f6;
+  --ot-error-soft: #f9ebe2;
+  --ot-info-soft: #edeaf7;
+}
+
+[data-ui-theme="console"][data-cvd="on"][data-color-scheme="dark"],
+[data-ui-theme="console"][data-cvd="on"] [data-color-scheme="dark"] {
+  --ot-success-soft: #172833;
+  --ot-error-soft: #352117;
+  --ot-info-soft: #232036;
+}
+
+/* ------------------------------------------------------------
+   Component tweaks
+   Placed in a DaisyUI sub-layer declared after DaisyUI's own, so they win over
+   DaisyUI components but still lose to Tailwind utilities used in components.
+   ------------------------------------------------------------ */
+@layer utilities {
+  @layer daisyui.ui-theme {
+    [data-ui-theme="console"] {
+      & .btn {
+        --fontsize: var(--ot-text-label);
+        --btn-p: 9px;
+        font-weight: 500;
+        letter-spacing: 0;
+        transition:
+          background-color 120ms var(--ot-ease),
+          border-color 120ms var(--ot-ease),
+          color 120ms var(--ot-ease);
+      }
+
+      & .btn-sm {
+        --fontsize: var(--ot-text-ui);
+        --btn-p: 7px;
+      }
+
+      & .btn-xs {
+        --fontsize: var(--ot-text-note);
+        --btn-p: 6px;
+      }
+
+      & .btn-primary:not(.btn-soft, .btn-outline, .btn-ghost, .btn-link) {
+        font-weight: 600;
+      }
+
+      & .btn-primary:not(.btn-soft, .btn-outline, .btn-ghost, .btn-link):hover {
+        --btn-bg: var(--ot-primary-strong);
+        --btn-border: var(--ot-primary-strong);
+      }
+
+      & .btn-ghost:not(.btn-active):hover {
+        --btn-bg: var(--ot-surface-3);
+        --btn-border: transparent;
+        color: var(--ot-ink);
+      }
+
+      & .btn-soft.btn-primary {
+        --btn-bg: var(--ot-primary-soft);
+        --btn-fg: var(--color-primary);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-primary:hover {
+        --btn-bg: var(--ot-primary-tint);
+      }
+
+      & .btn-soft.btn-accent {
+        --btn-bg: var(--ot-accent-soft);
+        --btn-fg: var(--ot-accent-strong);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-accent:hover {
+        --btn-bg: var(--ot-accent-tint);
+      }
+
+      & .btn-link {
+        --btn-fg: var(--color-accent);
+      }
+
+      /* Fields: hairline border, teal focus border + 2px halo */
+      & :is(.input, .select, .textarea) {
+        --input-color: var(--ot-line);
+        background-color: var(--ot-surface);
+        transition:
+          border-color 120ms var(--ot-ease),
+          box-shadow 120ms var(--ot-ease);
+      }
+
+      & :is(.input, .select, .textarea):hover {
+        --input-color: var(--ot-line-strong);
+      }
+
+      & :is(.input, .select, .textarea):focus,
+      & :is(.input, .select, .textarea):focus-within {
+        --input-color: var(--color-accent);
+        outline: none;
+        box-shadow: var(--ot-focus-ring);
+      }
+
+      & :is(.input, .select, .textarea)::placeholder {
+        color: var(--ot-ink-3);
+      }
+
+      /* Switch: 30x16 track, brand when on */
+      & .toggle:not(.toggle-xs) {
+        --size: var(--ot-switch-h);
+      }
+
+      & .toggle {
+        --input-color: var(--ot-line-strong);
+        background-color: var(--ot-surface-3);
+      }
+
+      & .toggle:checked,
+      & .toggle:has(> input:checked) {
+        --input-color: var(--color-primary);
+        background-color: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+
+      & .toggle:focus-visible {
+        outline: none;
+        box-shadow: var(--ot-focus-ring);
+      }
+
+      & .checkbox {
+        border-radius: 2px;
+      }
+
+      & :is(.checkbox, .radio):checked {
+        --input-color: var(--color-primary);
+      }
+
+      /* Badges: square mono tags */
+      & .badge {
+        border-radius: 2px;
+        font-family: var(--ot-font-mono);
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      & .badge-soft.badge-primary {
+        color: var(--color-primary);
+        background-color: var(--ot-primary-soft);
+        border-color: color-mix(in oklab, var(--color-primary) 20%, transparent);
+      }
+
+      & .kbd {
+        --size: 16px;
+        background-color: var(--ot-surface);
+        border-color: var(--ot-line);
+        border-bottom-color: var(--ot-line-strong);
+        color: var(--ot-ink-3);
+        font-family: var(--ot-font-mono);
+        font-size: var(--ot-text-caption);
+        border-radius: 2px;
+      }
+
+      /* Cards flat, modals are the only elevated boxes */
+      & .card-border {
+        border-color: var(--ot-line);
+        background-color: var(--ot-surface);
+      }
+
+      & .modal-box {
+        border: 1px solid var(--ot-line);
+        background-color: var(--ot-surface);
+        box-shadow: var(--ot-shadow-pop);
+        border-radius: 8px;
+      }
+
+      & .tooltip {
+        --tt-bg: var(--ot-ink);
+        color: var(--ot-surface);
+      }
+
+      & :is(h1, h2, h3, .card-title) {
+        font-family: var(--ot-font-display);
+        letter-spacing: -0.015em;
+      }
+
+      & :is(code, kbd, samp) {
+        font-variant-ligatures: none;
+      }
+
+      & ::selection {
+        background: var(--ot-primary-tint);
+        color: var(--ot-ink);
+      }
+
+      /* Navigation: current item = surface-3 + 2px plum rail */
+      & .ot-nav-item {
+        border-radius: var(--ot-radius-tight);
+        font-size: var(--ot-text-label);
+      }
+
+      & .ot-nav-item:hover {
+        background-color: var(--ot-surface-2);
+      }
+
+      & .ot-nav-item[aria-current] {
+        background-color: var(--ot-surface-3);
+        color: var(--ot-ink);
+        box-shadow: inset 2px 0 0 var(--color-primary);
+      }
+
+      & .ot-nav-subitem {
+        font-size: var(--ot-text-note);
+      }
+
+      /* Tabs: mono labels */
+      & .ot-tab {
+        padding-inline: calc(var(--spacing) * 2.25);
+        font-family: var(--ot-font-mono);
+        font-size: var(--ot-text-small);
+        font-weight: 400;
+        letter-spacing: 0.01em;
+      }
+
+      /* Count pills and chips: square mono tags */
+      & .ot-pill {
+        border-radius: 2px;
+      }
+    }
+
+    /* Popup header: neutral strip, the brand is a 2px top rail */
+    [data-ui-theme="console"] [data-slot="popup-header"] {
+      box-shadow: inset 0 2px 0 var(--color-primary);
+    }
+
+    /* Active nav item rail on the inline-start side in RTL locales too */
+    [data-ui-theme="console"][dir="rtl"] .ot-nav-item[aria-current],
+    [data-ui-theme="console"] [dir="rtl"] .ot-nav-item[aria-current] {
+      box-shadow: inset -2px 0 0 var(--color-primary);
+    }
+  }
+}

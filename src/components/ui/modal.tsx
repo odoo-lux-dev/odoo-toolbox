@@ -1,37 +1,38 @@
-import { createEffect, createSignal, splitProps, Show, type JSX } from "solid-js";
-
-let modalIdCounter = 0;
-const useId = () => `solid-modal-${++modalIdCounter}`;
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { createEffect, createSignal, createUniqueId, Show, type JSX } from "solid-js";
 
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { IconTile, type IconTileTone } from "@/components/ui/icon-tile";
+// Shared by every context, including the technical list in the Odoo page: use the
+// page-world translations, never the extension i18n service (it loads wxt/storage).
+import { t } from "@/utils/i18n-page";
 
-export type DaisyModalPlacement = "top" | "middle" | "bottom" | "start" | "end";
-export type DaisyModalSize = "sm" | "md" | "lg" | "xl" | "full";
+/** Focused element, looking inside shadow roots (technical list). */
+const deepActiveElement = (): HTMLElement | null => {
+  let active = document.activeElement;
+  while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+  return active instanceof HTMLElement ? active : null;
+};
 
-interface DaisyModalProps {
+export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
+export type ModalIconTone = IconTileTone;
+
+interface ModalProps {
   open: boolean;
   onClose?: () => void;
   title?: JSX.Element;
+  /** Icon shown in a tinted tile above the title. */
+  icon?: JSX.Element;
+  iconTone?: ModalIconTone;
   description?: JSX.Element;
   children?: JSX.Element;
   footer?: JSX.Element;
-  placement?: DaisyModalPlacement;
-  size?: DaisyModalSize;
+  size?: ModalSize;
   class?: string;
   boxClass?: string;
-  showCloseButton?: boolean;
 }
 
-const placementClassMap: Record<DaisyModalPlacement, string> = {
-  top: "modal-top",
-  middle: "modal-middle",
-  bottom: "modal-bottom",
-  start: "modal-start",
-  end: "modal-end",
-};
-
-const sizeClassMap: Record<DaisyModalSize, string> = {
+const sizeClassMap: Record<ModalSize, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
@@ -39,75 +40,76 @@ const sizeClassMap: Record<DaisyModalSize, string> = {
   full: "max-w-full",
 };
 
-export const Modal = (props: DaisyModalProps) => {
-  const [local] = splitProps(props, [
-    "open",
-    "onClose",
-    "title",
-    "description",
-    "children",
-    "footer",
-    "placement",
-    "size",
-    "class",
-    "boxClass",
-    "showCloseButton",
-  ]);
+export const Modal = (props: ModalProps) => {
   const [dialogRef, setDialogRef] = createSignal<HTMLDialogElement>();
-  const titleId = useId();
-  const descriptionId = useId();
-  const placement = () => local.placement ?? "middle";
-  const size = () => local.size ?? "md";
-  const showCloseButton = () => local.showCloseButton ?? true;
+  const titleId = createUniqueId();
+  const descriptionId = createUniqueId();
+
+  // `showModal()` makes the rest of the page inert (focus stays in the dialog);
+  // the trigger is remembered so focus goes back to it on close.
+  let returnFocus: HTMLElement | null = null;
 
   createEffect(() => {
     const dialog = dialogRef();
     if (!dialog) return;
-    if (local.open && !dialog.open) dialog.showModal();
-    if (!local.open && dialog.open) dialog.close();
+    if (props.open && !dialog.open) {
+      returnFocus = deepActiveElement();
+      dialog.showModal();
+    }
+    if (!props.open && dialog.open) dialog.close();
   });
 
-  const handleClose = () => local.onClose?.();
+  const handleClose = () => {
+    const trigger = returnFocus;
+    returnFocus = null;
+    if (trigger?.isConnected) queueMicrotask(() => trigger.focus());
+    props.onClose?.();
+  };
 
   return (
     <dialog
       ref={setDialogRef}
-      class={`modal ${placementClassMap[placement()]} ${local.class ?? ""}`}
-      aria-labelledby={local.title ? titleId : undefined}
-      aria-describedby={local.description ? descriptionId : undefined}
+      class={`modal modal-middle ${props.class ?? ""}`}
+      aria-labelledby={props.title ? titleId : undefined}
+      aria-describedby={props.description ? descriptionId : undefined}
       onClose={handleClose}
-      onCancel={handleClose}
     >
-      <div class={`modal-box ${sizeClassMap[size()]} ${local.boxClass ?? ""}`}>
-        <Show when={showCloseButton()}>
-          <form method="dialog">
-            <button
-              class="btn absolute inset-e-2 top-2 btn-circle btn-ghost btn-sm"
-              aria-label="Close"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} size={16} color="currentColor" strokeWidth={2} />
-            </button>
-          </form>
+      <div class={`modal-box ${sizeClassMap[props.size ?? "md"]} ${props.boxClass ?? ""}`}>
+        <form method="dialog">
+          <button
+            class="btn absolute inset-e-2 top-2 btn-circle btn-ghost btn-sm"
+            aria-label={t("common.close")}
+          >
+            <HugeiconsIcon icon={Cancel01Icon} size={16} strokeWidth={2} />
+          </button>
+        </form>
+        <Show when={props.icon}>
+          <IconTile size="lg" tone={props.iconTone ?? "primary"} class="mb-3">
+            {props.icon}
+          </IconTile>
         </Show>
-        <Show when={local.title}>
+        <Show when={props.title}>
           <h3 id={titleId} class="text-lg font-bold">
-            {local.title}
+            {props.title}
           </h3>
         </Show>
-        <Show when={local.description}>
+        <Show when={props.description}>
           <p id={descriptionId} class="py-2 text-sm opacity-80">
-            {local.description}
+            {props.description}
           </p>
         </Show>
-        <Show when={local.children}>
-          <div>{local.children}</div>
+        <Show when={props.children}>
+          <div>{props.children}</div>
         </Show>
-        <Show when={local.footer}>
-          <div class="modal-action">{local.footer}</div>
+        <Show when={props.footer}>
+          <div class="modal-action">{props.footer}</div>
         </Show>
       </div>
+      {/* Pointer only: keyboard users close with Esc or the close button */}
       <form method="dialog" class="modal-backdrop">
-        <button aria-label="Close">close</button>
+        <button tabIndex={-1} aria-hidden="true">
+          {t("common.close")}
+        </button>
       </form>
     </dialog>
   );
