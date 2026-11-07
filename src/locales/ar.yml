@@ -1,23 +1,22 @@
 common:
   loading: جارٍ التحميل...
   cancel: إلغاء
+  confirm: تأكيد
   delete: حذف
   save: حفظ
   edit: تعديل
   remove: إزالة
   retry: إعادة المحاولة
   clear: مسح
-  refresh: تحديث
   close: إغلاق
+  skip_to_content: "الانتقال إلى المحتوى الرئيسي"
   use: استخدام
   error: خطأ
   unknown: غير معروف
   unknown_error: خطأ غير معروف
-  no_data: لا توجد بيانات متاحة
   copied: تم النسخ!
   copied_to_clipboard: تم النسخ إلى الحافظة!
   failed_to_copy: فشل النسخ إلى الحافظة
-  fields: الحقول
   copy: نسخ
   download: تنزيل
   search: بحث
@@ -28,6 +27,13 @@ common:
   favorite_projects: المشاريع المفضلة
 
 devtools:
+  layout:
+    copy_database: "انقر لنسخ اسم قاعدة البيانات"
+    toggle_query_rail: "إظهار/إخفاء منشئ الاستعلام"
+    connected: "متصل"
+    database: "قاعدة البيانات"
+  json_editor:
+    valid: "JSON صالح"
   completions:
     loading: "جارٍ تحميل الحقول..."
     command_create_info: "ينشئ سجلات جديدة ويربطها."
@@ -46,9 +52,7 @@ devtools:
     history: السجل
   record_text:
     singular_impacted: "سيتم التأثير على سجل{model} هذا"
-    singular_action: "سيتم {action} سجل{model} هذا"
     plural_impacted: "سيتم التأثير على هذه السجلات {count}{model}"
-    plural_action: "سيتم {action} هذه السجلات {count}{model}"
     method_call_singular: "سيتم تطبيق الدالة {method} على سجل{model} هذا"
     method_call_plural: "سيتم تطبيق الدالة {method} على هذه السجلات {count}{model}"
   context_menu:
@@ -74,6 +78,8 @@ devtools:
     on_odoo_instance: أنت على مثيل Odoo
     inside_backend: أنت داخل واجهة Odoo الخلفية (وليس على الموقع الإلكتروني)
   sidebar:
+    query_builder: "منشئ الاستعلام"
+    optional: "اختياري"
     model: النموذج
     model_fetch_error: تعذّر جلب النماذج. يرجى إدخال اسم النموذج يدويًا.
     model_placeholder: اكتب للبحث عن نموذج...
@@ -82,7 +88,7 @@ devtools:
     fields: الحقول
     fields_placeholder: جميع الحقول
     domain: النطاق
-    domain_help: شروط التصفية بصيغة نطاق Odoo.
+    domain_help: "شروط التصفية بصيغة نطاق Odoo، بصياغة JSON أو Python."
     domain_placeholder: '["field", "=", "value"]'
     limit: الحد
     limit_placeholder: "80"
@@ -118,10 +124,7 @@ devtools:
     load_records: تحميل السجلات
     confirm_title: تنفيذ عملية الكتابة
     confirm_message: هل أنت متأكد من أنك تريد تحديث $1 سجل/سجلات؟ سيقوم هذا الإجراء بتعديل السجلات المحددة بشكل دائم.
-    error_model: النموذج مطلوب لعملية الكتابة
     error_ids: معرّفات السجلات مطلوبة لعملية الكتابة
-    error_data: بيانات الكتابة مطلوبة
-    error_json: "فشل التحقق من JSON: $1"
     success: تم تحديث $1 سجل/سجلات بنجاح في $2
     warning_false: اكتملت عملية الكتابة لكنها أعادت false
     failed: فشلت عملية الكتابة
@@ -134,7 +137,6 @@ devtools:
     title: بيانات السجل (صيغة JSON)
     warning: "تحذير: تعديل قاعدة البيانات"
     warning_desc: إنشاء سجل سيضيف بيانات جديدة بشكل دائم إلى قاعدة بيانات Odoo لديك. يرجى التحقق من إدخالك قبل المتابعة.
-    format_json: تنسيق JSON
     placeholder: |
       أدخل بيانات السجل الجديد بصيغة JSON، مثلاً:
       {
@@ -148,9 +150,6 @@ devtools:
     confirm_message: هل أنت متأكد من أنك تريد إنشاء سجل جديد في $1؟ سيضيف هذا الإجراء بيانات بشكل دائم إلى قاعدة البيانات.
     will_create: سيتم إنشاء
     record_created: سجل جديد
-    error_model: يرجى اختيار نموذج أولاً
-    error_data: يرجى تقديم بيانات للإنشاء
-    error_json: صيغة JSON غير صالحة
     success: "تم إنشاء السجل بنجاح في $1 (المعرّف: $2)"
     warning_no_id: اكتملت عملية الإنشاء لكن لم يُرجع أي معرّف
     failed: فشل إنشاء السجل
@@ -166,8 +165,6 @@ devtools:
     load_records: تحميل السجلات
     confirm_title: استدعاء الدالة
     confirm_message: هل أنت متأكد من أنك تريد استدعاء الدالة "$1" على $2 سجل/سجلات؟ قد يقوم هذا الإجراء بتعديل البيانات.
-    error_model: النموذج مطلوب لاستدعاء الدالة
-    error_method: اسم الدالة مطلوب
     error_ids: معرّفات السجلات مطلوبة لاستدعاء الدالة
     success: تم استدعاء الدالة "$1" بنجاح على $2 سجل/سجلات في $3
     failed: فشل استدعاء الدالة
@@ -220,17 +217,13 @@ devtools:
     restore: استعادة
     restore_hint: سيؤدي هذا إلى الانتقال إلى علامة التبويب $1 واستعادة المعاملات.
     restore_success: تمت استعادة $1 إجراء لـ $2
-    restore_failed: "فشل استعادة الإجراء: $1"
     collapse: طي
     expand: توسيع
     database_title: "قاعدة البيانات: $1"
-    unpin: إلغاء التثبيت
-    pin: تثبيت
     pin_hint: تثبيت هذا الإجراء
     unpin_hint: إلغاء تثبيت هذا الإجراء
     edit_label: تعديل التسمية
     label_placeholder: اسم التسمية...
-    saving: جارٍ الحفظ...
     removing: جارٍ الإزالة...
     remove_from_history: إزالة من السجل
     remove_confirm_title: إزالة من السجل؟
@@ -276,8 +269,6 @@ devtools:
     no_domains_hint: انقر على "إضافة نطاق" لإنشاء واحد.
     edit_title: تعديل النطاق
     add_title: إضافة نطاق جديد
-    update: تحديث
-    add: إضافة
     name: الاسم
     name_placeholder: مثلاً، السجلات النشطة
     domain_placeholder: 'مثلاً، [["active", "=", true]]'
@@ -285,20 +276,16 @@ devtools:
     edit_hint: تعديل النطاق
     delete_hint: حذف النطاق
   result_viewer:
-    loading_records: جارٍ تحميل السجلات...
+    records: "السجلات"
+    context_menu_hint: "انقر بزر الماوس الأيمن على خلية لإجراءات الحقل"
     fields_count: حقل/حقول
     open_in_odoo: فتح السجل/السجلات في Odoo
     open_in_popup: فتح السجل/السجلات في نافذة منبثقة
     copy_json: نسخ كـ JSON
     download_json: تنزيل كـ JSON
     list_view: عرض القائمة
-    exit_pivot: الخروج من العرض المحوري
     pivot_view: العرض المحوري
-    pivot: تحوير
-    table: جدول
     table_view: عرض الجدول
-    list: قائمة
-    calendar: التقويم
     calendar_view: عرض التقويم
   calendar:
     previous_month: الشهر السابق
@@ -311,6 +298,8 @@ devtools:
     today: اليوم
     more: المزيد
     record_details: تفاصيل السجل
+    date_field: حقل التاريخ
+    date_field_tooltip: اختر حقل التاريخ أو التاريخ والوقت لتجميع السجلات في التقويم
     mon: إثن
     tue: ثلا
     wed: أرب
@@ -337,8 +326,6 @@ devtools:
     prev_hint: النتيجة السابقة (Ctrl+Shift+G)
     next_hint: النتيجة التالية (Ctrl+G)
     close_hint: إغلاق البحث (Esc)
-    keys: المفاتيح
-    values: القيم
   result_states:
     empty: 'قم بتهيئة استعلامك وانقر على "تنفيذ" لعرض النتائج'
     executing: جارٍ تنفيذ الاستعلام...
@@ -347,23 +334,16 @@ devtools:
     page_of: الصفحة $1 من $2
     records_range: "$1-$2 / $3 سجل/سجلات"
     records_found: تم العثور على $1 سجل/سجلات
+    records_fields_found: "تم العثور على $1 سجل/سجلات · $2 حقل/حقول"
   field_rendering:
-    no_ids: لم يتم العثور على معرّفات صالحة
-    no_model: تعذّر تحديد النموذج المرتبط
     loading_relational: جارٍ تحميل البيانات العلائقية...
     error_prefix: "خطأ: "
     no_related: لم يتم العثور على بيانات مرتبطة
-    no_id: لا يوجد معرّف
     record_n: السجل $1
     excluded_fields: "الحقول المستبعدة من $1: $2"
     focus_record: التركيز على هذا السجل
     open_in_odoo: فتح السجل في Odoo
     open_in_popup: فتح السجل في نافذة منبثقة
-    invalid_relational: حقل علائقي غير صالح
-    switch_table: التبديل إلى عرض الجدول
-    switch_list: التبديل إلى عرض القائمة
-    open_relational_odoo: فتح الحقل العلائقي في Odoo
-    open_relational_popup: فتح الحقل العلائقي في نافذة منبثقة
     toggle_fields: إظهار/إخفاء الحقول
     toggle_all: تبديل الكل
     all_hidden: جميع الحقول مخفية
@@ -375,6 +355,8 @@ devtools:
     unavailable: البيانات الوصفية للحقل غير متاحة. إذا كان هذا حقلاً جديدًا، يرجى إعادة تشغيل أدوات التطوير أو تعديل النموذج لفرض التحديث.
     field_label: "الحقل: $1"
   selects:
+    show_all_chips: "عرض كل القيم ($1)"
+    show_less_chips: "عرض قيم أقل"
     select_option: اختر خيارًا...
     loading: جارٍ التحميل...
     search_fields: ابحث في الحقول...
@@ -382,6 +364,7 @@ devtools:
     order_by_placeholder: اختر الحقول للترتيب حسبها...
     asc: (تصاعدي)
     desc: (تنازلي)
+    clear_all: "إزالة الكل"
     refresh_list: تحديث القائمة
     refreshing: جارٍ تحديث القائمة
     refresh_error: "خطأ: $1. يمكنك المحاولة مرة أخرى أو إدخال قيمتك يدويًا."
@@ -391,6 +374,8 @@ devtools:
     middle_click_remove: انقر بالزر الأوسط للإزالة
     remove_aria: إزالة $1
   virtual_table:
+    row_selected: "تم تحديد الصف $1: $2"
+    row_unselected: "تم إلغاء تحديد الصف $1"
     search_columns: ابحث في كل الأعمدة...
     rows: صفوف
     toggle_rows: تبديل الصفوف
@@ -412,10 +397,8 @@ devtools:
     add_required_plural: إضافة الحقول المطلوبة
     auto_add_required: "✨ إضافة الحقل المطلوب تلقائيًا"
     auto_add_required_plural: "✨ إضافة الحقول المطلوبة تلقائيًا"
-    insert_template: إدراج قالب مع الحقول المطلوبة
     no_data_to_format: لا توجد بيانات JSON لتنسيقها
     cannot_format_invalid: لا يمكن تنسيق JSON غير صالح
-    failed_auto_search: فشل في تنفيذ البحث التلقائي
   error_display:
     error_summary: ملخص الخطأ
     error_data: بيانات الخطأ
@@ -426,19 +409,70 @@ devtools:
     stack_trace: تتبع المكدس
     full_error_object: كائن الخطأ الكامل
     type: النوع
-    model: النموذج
     message: الرسالة
     code: الرمز
     unknown: غير معروف
-    not_available: غير متاح
-
 options:
+  shell:
+    tagline: "رفيق Odoo"
+    settings: "الإعدادات"
+    favorites: "المفضلة"
+    projects: "المشاريع"
+    resources: "الموارد"
+    main_navigation: "التنقل الرئيسي"
+    open_navigation: "فتح التنقل"
+    breadcrumb: "مسار التنقل"
+    theme: "السمة"
+    theme_light: "السمة الفاتحة"
+    theme_dark: "السمة الداكنة"
+    theme_system: "سمة النظام"
+    language_auto_short: "تلقائي"
+    more_info: "مزيد من المعلومات"
+    backup_title: "الإعدادات المحفوظة"
+    backup_desc: "صدّر إعداداتك أو استعدها"
+  search:
+    settings_placeholder: "ابحث في الإعدادات…"
+    favorites_placeholder: "ابحث في المفضلة…"
+    no_settings_title: "لا يوجد إعداد مطابق"
+    no_settings_desc: "لا شيء يطابق «$1». جرّب كلمة أخرى."
+    no_favorites_title: "لا توجد مفضلة مطابقة"
+    no_favorites_desc: "لا شيء يطابق «$1». جرّب اسم مشروع آخر."
+    clear: "مسح البحث"
+  page:
+    settings_eyebrow: "تفضيلات الإضافة"
+    settings_title: "الإعدادات"
+    settings_desc: "اضبط سلوك Odoo Toolbox. تُحفظ المفاتيح فورًا، وتُحفظ الحقول النصية عند الضغط على حفظ."
+    favorites_eyebrow: "مساحة Odoo.sh"
+    favorites_title: "المفضلة"
+    favorites_desc: "ميّز المشاريع بنجمة على Odoo.sh، ثم أعد ترتيبها وسمّها واربطها برابط مهمة هنا."
+    favorites_count_one: "مشروع واحد"
+    favorites_count_other: "$1 مشاريع"
+    open_odoo_sh: "فتح Odoo.sh"
+  sections:
+    appearance_desc: "سمة صفحات الإضافة وإمكانية الوصول إليها"
+    odoo_desc: "أدوات مساعدة للواجهة الخلفية وأدوات للمطورين."
+    odoosh_desc: "روابط الفروع وإمكانية الوصول وأدوات السجلات."
+    interface_title: "تفاصيل الواجهة"
+    interface_desc: "خيارات عرض اختيارية لا تغيّر طريقة عمل Odoo."
+    odoosh_enhancements_title: "تحسينات Odoo.sh"
+    odoosh_enhancements_desc: "أدوات صغيرة لصفحات الفروع والحالات والسجلات."
+  choices:
+    color_none_hint: "يقرر Odoo"
+    color_system_hint: "حسب النظام"
+    always_hint: "دائمًا"
+    debug_disabled_hint: "يدوي"
+  favorites_list:
+    reorder: "إعادة ترتيب $1 (اسحب أو استخدم الأسهم)"
+    toolbar_hint: "اسحب الصفوف لإعادة ترتيبها. أعد التسمية أو اربط أو احذف مشروعًا من إجراءات الصف."
+    auto_saved: "حفظ تلقائي"
+    task_link_set: "رابط المهمة"
+    task_link_none: "لا يوجد رابط مهمة"
+    footnote: "تتم مشاركة المفضلة مع النافذة المنبثقة للإضافة. يُحفظ ترتيب المشاريع مع إعداداتك."
   sidebar:
+    appearance: "المظهر"
     title: Odoo Toolbox
-    options: الخيارات
     odoo: Odoo
     odoo_sh: Odoo.SH
-    sh_favorites: مفضلة SH
     documentation: الوثائق
     report_bug: الإبلاغ عن خطأ
     suggest_feature: اقتراح ميزة
@@ -462,7 +496,6 @@ options:
     export: تصدير
     restore: استعادة
     error_export: "حدث خطأ أثناء التصدير: $1"
-    failed_read: فشل قراءة محتوى الملف
     invalid_config: "ملف تهيئة غير صالح - $1"
     success: تم استيراد التهيئة بنجاح
     error_import: "حدث خطأ أثناء معالجة الملف: $1"
@@ -484,6 +517,24 @@ options:
     delete_title: حذف المسار المتجاهل؟
     delete_desc: "هل أنت متأكد أنك تريد حذف « $1 »؟"
   settings:
+    ui_theme: "سمة الإضافة"
+    ui_theme_desc: "الهوية المرئية للنافذة المنبثقة والخيارات ولوحة DevTools والشريط الجانبي التقني."
+    theme_odoo_native: "Odoo الأصلية"
+    theme_odoo_native_desc: "مدمجة وقريبة من واجهة Odoo."
+    theme_access: "Access"
+    theme_access_desc: "وضوح عالٍ: نص أكبر، وأهداف بحجم 44 بكسل، وتباين AAA."
+    theme_console: "Console"
+    theme_console_desc: "منضدة عمل كثيفة للمطورين: بيانات وصفية بخط أحادي المسافة، وأسطح مسطحة، وعناصر تحكم بحجم 28 بكسل."
+    theme_toybox: "Toybox"
+    theme_toybox_desc: "دافئ وملموس: ألوان باستيل مستديرة، وأزرار سميكة قابلة للضغط، وارتداد خفيف."
+    accessibility: "إمكانية الوصول"
+    accessibility_desc: "تفضيلات تتوافق مع أي سمة"
+    large_text: "نص كبير"
+    large_text_desc: "يكبّر جميع نصوص صفحات الإضافة بنحو 12٪."
+    reduce_motion: "تقليل الحركة"
+    reduce_motion_desc: "يعطّل الرسوم المتحركة والانتقالات حتى لو سمح بها النظام."
+    color_safe: "لوحة ألوان مناسبة لعمى الألوان"
+    color_safe_desc: "ألوان حالة يمكن تمييزها مع ضعف رؤية الألوان. نفس إعداد وضع عمى الألوان في Odoo.sh."
     language: اللغة
     language_auto: تلقائي (المتصفح)
     language_desc: اختر لغة الإضافة
@@ -542,9 +593,8 @@ options:
     works_both: "يعمل على كل من الواجهة الخلفية وصفحات الموقع"
     task_link_title: رابط المهمة في صفحة فرع SH
     task_link_desc: حدد URL لإعادة التوجيه إليه عند النقر على أيقونة رابط المهمة في صفحة فرع SH. اتركه فارغًا لتعطيل الميزة.
-    task_link_placeholder_hint: "استخدم العنصر النائب {{task_id}} لاستبداله بمعرّف المهمة"
+    task_link_hint: "استخدم {{task_id}} في عنوان URL. يمكن لكل مفضلة تجاوز هذا الإعداد الافتراضي من صفحة المفضلة."
     task_link_default: "افتراضيًا، يتم تفعيله بالنمط التالي: VERSION-TASKID-OPTIONAL_DESCRIPTION (مثلاً 17.0-12345 ، 15.0-6789-fixes)"
-    task_link_per_favorite: يمكنك إعداد URL محدد لكل مفضلة من صفحة "مفضلة SH"
     task_link_label: رابط المهمة
     branch_regex: تعبير نمطي لاسم الفرع
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
@@ -562,9 +612,16 @@ browser_context_menu:
   path: تجاهل وضع التصحيح على هذا المسار (جميع النطاقات)
   domain_path: تجاهل وضع التصحيح على هذا المسار (هذا النطاق)
 popup:
-  header_your: مشاريع
+  search_label: "البحث في المشاريع"
+  tagline: "رفيق Odoo"
+  open_sh: "فتح مشاريع Odoo.sh"
+  title: "مشاريعك"
+  search_placeholder: "ابحث عن مشروع…"
+  no_match: "لا توجد نتائج"
+  no_match_hint: "جرّب اسم مشروع آخر."
+  results_count_one: "مشروع واحد"
+  results_count_other: "$1 مشاريع"
   header_sh: Odoo.SH
-  header_projects: الخاصة بك
   footer:
     light_theme: التبديل إلى السمة الفاتحة
     dark_theme: التبديل إلى السمة الداكنة
@@ -605,8 +662,6 @@ technical_list:
     buttons_list: قائمة الأزرار
     no_match: لا توجد عناصر تطابق عوامل التصفية
     no_fields: لا توجد حقول أو أزرار تقنية في هذا العرض
-    click_field_detail: انقر على حقل في الصفحة لعرض تفاصيله
-    click_button_detail: انقر على زر في الصفحة لعرض تفاصيله
     click_element_detail: انقر على عنصر في الصفحة لعرض تفاصيله
     selected_field: الحقل المحدد
     selected_button: الزر المحدد
@@ -616,6 +671,8 @@ technical_list:
     fields_found: حقول
     buttons_found: أزرار
     found: تم العثور على
+    reset_filters: إعادة تعيين عوامل التصفية
+    visible_count: "$1 / $2 ظاهرة"
   field_item:
     copy_hint: انقر لنسخ اسم الحقل
     invisible_when: "غير مرئي عندما: $1"
@@ -670,9 +727,6 @@ technical_list:
   button_item:
     copy_hint: انقر لنسخ اسم الزر
     string: النص
-    invisible: غير مرئي
-    invisible_conditional: غير مرئي*
-    invisible_when: "غير مرئي عندما: $1"
     invisible_condition: شرط عدم الظهور
     context: السياق
     confirm: تأكيد
@@ -682,8 +736,6 @@ technical_list:
     conditional_hint: "* يشير إلى سلوك مشروط بناءً على حالة الزر"
   model_actions:
     view_fields: عرض حقول النموذج (ir.model.fields)
-    view_access: عرض حقوق الوصول للنموذج (ir.model.access)
-    view_rules: عرض قواعد السجلات (ir.rule)
     view_server_actions: عرض إجراءات الخادم (ir.actions.server)
     view_current_action: "فتح الإجراء الحالي ($1، المعرّف: $2)"
     view_record_data: عرض بيانات السجل الحالي
@@ -710,7 +762,6 @@ technical_list:
     access_modal_title: "الوصول - $1"
     more_details: المزيد من التفاصيل
     group: مجموعة
-    rule: قاعدة
     groups: المجموعات
     domain: النطاق
     create: إنشاء
@@ -739,7 +790,6 @@ technical_list:
     inherited_views: العروض الموروثة
     no_inherited: لا توجد عروض موروثة
     priority: الأولوية
-    module: الوحدة
     xml_id: معرف XML
     key: المفتاح
     view_arch: عرض XML
@@ -773,10 +823,13 @@ technical_list:
     view_xml_id: XML ID للعرض
     view_id: معرّف العرض
   states:
-    scanning: جارٍ فحص الحقول التقنية...
+    error_title: تعذّرت قراءة هذا العرض
+    retry: إعادة المحاولة
+    empty_hint: افتح عرض نموذج أو قائمة أو كانبان، ثم أعد فتح اللوحة.
+    no_elements: لا توجد عناصر تقنية
+    element_count: "$1 عناصر"
   record_data:
     loading: جارٍ تحميل بيانات السجل...
-    please_wait: يرجى الانتظار لحظة.
     copy_json: نسخ JSON إلى الحافظة
   info_item:
     click_to_copy: انقر للنسخ
@@ -792,7 +845,6 @@ technical_list:
   errors:
     odoo_not_found: لم يتم العثور على كائن Odoo
     failed_view: فشل تحميل معلومات العرض
-    failed_db: فشل تحميل معلومات قاعدة البيانات
   highlight:
     selected: "✓ محدد"
 
@@ -853,20 +905,10 @@ services:
   errors:
     devtools_unavailable: واجهة برمجة تطبيقات DevTools غير متاحة
     invalid_odoo_error: صيغة استجابة خطأ Odoo غير صالحة
-    action_unavailable: خدمة الإجراءات غير متاحة
   quick_domains:
     active_records: السجلات النشطة
     all_records: كل السجلات
-    exists: 'النطاق السريع بالمعرّف "$1" موجود مسبقًا'
     not_found: 'النطاق السريع بالمعرّف "$1" غير موجود'
-  config:
-    settings_object: يجب أن تكون الإعدادات كائنًا
-    favorites_array: يجب أن تكون المفضلة مصفوفة
-    invalid_favorite: "مفضلة غير صالحة في الفهرس $1: يجب أن تكون كائنًا"
-    missing_favorite_fields: "مفضلة غير صالحة في الفهرس $1: حقول مطلوبة مفقودة"
-    domains_array: يجب أن تكون النطاقات السريعة مصفوفة
-    invalid_domain: "نطاق سريع غير صالح في الفهرس $1: يجب أن يكون كائنًا"
-    missing_domain_fields: "نطاق سريع غير صالح في الفهرس $1: حقول مطلوبة مفقودة"
   current_page:
     no_record: لم يتم العثور على سجل في الصفحة الحالية
     found_records: "تم العثور على $1 سجل/سجلات (عرض $2)"
@@ -879,12 +921,6 @@ services:
     invalid_domain_format: "صيغة نطاق غير صالحة: $1"
     unable_to_parse_domain: تعذّر تحليل النطاق
     invalid_domain_format_expected: صيغة نطاق غير صالحة. متوقع مصفوفة JSON أو صيغة قائمة Python.
-    model_required: النموذج مطلوب
-    invalid_model_format: صيغة نموذج غير صالحة
-    invalid_domain_format_simple: صيغة نطاق غير صالحة
-    invalid_ids_format: "صيغة معرّفات غير صالحة (المتوقع: أرقام مفصولة بفواصل)"
-    invalid_limit: "حد غير صالح (يجب أن يكون بين 1 و 10000)"
-    invalid_offset: "إزاحة غير صالحة (يجب أن تكون 0 أو أكبر)"
     json_arrays_not_allowed: المصفوفات غير مسموح بها. يرجى تقديم كائن JSON بأزواج مفتاح-قيمة.
     json_primitives_not_allowed: القيم البدائية غير مسموح بها. يرجى تقديم كائن JSON بأزواج مفتاح-قيمة.
     json_objects_only: 'يُسمح فقط بكائنات JSON. يرجى تقديم البيانات كـ {"field": "value"}.'
@@ -892,6 +928,44 @@ services:
     invalid_field: "حقل/حقول غير صالحة: $1. يرجى استخدام اقتراحات الإكمال التلقائي أو التحقق من حقول النموذج."
     missing_required_field: "حقل/حقول مطلوبة مفقودة: $1. يجب تقديم هذه الحقول عند إنشاء سجل."
     context_must_be_object: يجب أن يكون السياق كائن JSON.
-  no_valid_ids: لم يتم العثور على معرّفات صالحة
   invalid_context: "صيغة سياق غير صالحة: $1"
   invalid_json: JSON غير صالح
+
+commands:
+  ui_theme: "استخدام سمة $1"
+  current: "الحالية"
+  text_size_large: "استخدام نص كبير"
+  text_size_standard: "استخدام حجم النص القياسي"
+  motion_reduced: "تقليل الحركة"
+  motion_system: "اتباع إعداد الحركة في النظام"
+  color_safe_on: "استخدام لوحة الألوان المناسبة لعمى الألوان"
+  color_safe_off: "استخدام لوحة الألوان الافتراضية"
+  trigger: "الأوامر"
+  placeholder: "ابحث عن أمر…"
+  move: "تنقّل"
+  run: "تنفيذ"
+  close: "إغلاق"
+  count: "$1 أوامر"
+  no_match: "لا يوجد أمر يطابق «$1»"
+  empty: "لا توجد أوامر متاحة هنا"
+  scope_popup: "النافذة المنبثقة"
+  scope_options: "الخيارات"
+  scope_devtools: "DevTools"
+  boundary_popup: "لوحة DevTools سياق منفصل في المتصفح: افتحها من أدوات المطوّر."
+  boundary_options: "تُفتح النافذة المنبثقة من أيقونة الإضافة ولوحة DevTools من أدوات المطوّر: لا يمكن فتح أيٍّ منهما من هذه الصفحة."
+  boundary_devtools: "النافذة المنبثقة سياق منفصل: افتحها من أيقونة الإضافة في شريط الأدوات."
+  group_favorites: "المفضلة"
+  group_tools: "الأدوات"
+  group_navigation: "التنقل"
+  group_settings: "الإعدادات"
+  group_appearance: "المظهر"
+  group_language: "اللغة"
+  group_configuration: "الإعدادات العامة"
+  group_links: "الروابط"
+  group_query: "الاستعلام"
+  group_focus: "التركيز"
+  export_config: "تصدير الإعدادات"
+  import_config: "استيراد الإعدادات"
+  run_primary: "تنفيذ الإجراء الرئيسي"
+  focus_field: "الانتقال إلى الحقل $1"
+  system_theme: "اتباع سمة النظام"
