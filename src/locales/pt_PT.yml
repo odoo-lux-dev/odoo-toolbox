@@ -1,23 +1,22 @@
 common:
   loading: A carregar...
   cancel: Cancelar
+  confirm: Confirmar
   delete: Eliminar
   save: Guardar
   edit: Editar
   remove: Remover
   retry: Tentar novamente
   clear: Limpar
-  refresh: Atualizar
   close: Fechar
+  skip_to_content: "Saltar para o conteúdo principal"
   use: Usar
   error: Erro
   unknown: Desconhecido
   unknown_error: Erro desconhecido
-  no_data: Sem dados disponíveis
   copied: Copiado!
   copied_to_clipboard: Copiado para a área de transferência!
   failed_to_copy: Falha ao copiar para a área de transferência
-  fields: Campos
   copy: Copiar
   download: Descarregar
   search: Pesquisar
@@ -28,6 +27,13 @@ common:
   favorite_projects: Projetos favoritos
 
 devtools:
+  layout:
+    copy_database: "Clique para copiar o nome da base de dados"
+    toggle_query_rail: "Mostrar/ocultar o construtor de consultas"
+    connected: "Ligado"
+    database: "BD"
+  json_editor:
+    valid: "JSON válido"
   completions:
     loading: "A carregar campos..."
     command_create_info: "Cria novos registos e associa-os."
@@ -46,9 +52,7 @@ devtools:
     history: Histórico
   record_text:
     singular_impacted: "Este registo de{model} será afetado"
-    singular_action: "Este registo de{model} será {action}"
     plural_impacted: "Estes {count} registos de{model} serão afetados"
-    plural_action: "Estes {count} registos de{model} serão {action}"
     method_call_singular: "O método {method} será aplicado a este registo de{model}"
     method_call_plural: "O método {method} será aplicado a estes {count} registos de{model}"
   context_menu:
@@ -74,6 +78,8 @@ devtools:
     on_odoo_instance: Está numa instância do Odoo
     inside_backend: Está dentro do backend do Odoo (e não no website)
   sidebar:
+    query_builder: "Construtor de consultas"
+    optional: "opcional"
     model: Modelo
     model_fetch_error: Não foi possível obter os modelos. Por favor, introduza o nome do modelo manualmente.
     model_placeholder: Escreva para pesquisar um modelo...
@@ -82,7 +88,7 @@ devtools:
     fields: Campos
     fields_placeholder: Todos os campos
     domain: Domínio
-    domain_help: Condições de filtro no formato de domínio do Odoo.
+    domain_help: "Condições de filtro no formato de domínio do Odoo, com sintaxe JSON ou Python."
     domain_placeholder: '["campo", "=", "valor"]'
     limit: Limite
     limit_placeholder: "80"
@@ -118,10 +124,7 @@ devtools:
     load_records: Carregar Registos
     confirm_title: Executar Operação de Escrita
     confirm_message: Tem a certeza de que pretende atualizar $1 registo(s)? Esta ação modificará os registos selecionados permanentemente.
-    error_model: O modelo é obrigatório para a operação de escrita
     error_ids: Os IDs de registos são obrigatórios para a operação de escrita
-    error_data: Os dados de escrita são obrigatórios
-    error_json: "Falha na validação JSON: $1"
     success: $1 registo(s) atualizado(s) com sucesso em $2
     warning_false: A operação de escrita foi concluída mas devolveu false
     failed: A operação de escrita falhou
@@ -134,7 +137,6 @@ devtools:
     title: Dados do Registo (Formato JSON)
     warning: "Aviso: Modificação da Base de Dados"
     warning_desc: Criar um registo adicionará permanentemente novos dados à sua base de dados Odoo. Por favor, verifique a sua introdução antes de continuar.
-    format_json: Formatar JSON
     placeholder: |
       Introduza os dados para o novo registo em formato JSON, ex.:
       {
@@ -148,9 +150,6 @@ devtools:
     confirm_message: Tem a certeza de que pretende criar um novo registo em $1? Esta ação adicionará permanentemente dados à base de dados.
     will_create: Um novo
     record_created: registo será criado
-    error_model: Por favor, selecione primeiro um modelo
-    error_data: Por favor, forneça dados para criar
-    error_json: Formato JSON inválido
     success: "Registo criado com sucesso em $1 (ID: $2)"
     warning_no_id: A operação de criação foi concluída mas não devolveu nenhum ID
     failed: Falha ao criar registo
@@ -166,8 +165,6 @@ devtools:
     load_records: Carregar Registos
     confirm_title: Chamar Método
     confirm_message: Tem a certeza de que pretende chamar o método "$1" em $2 registo(s)? Esta ação pode modificar os dados.
-    error_model: O modelo é obrigatório para a chamada de método
-    error_method: O nome do método é obrigatório
     error_ids: Os IDs de registos são obrigatórios para a chamada de método
     success: Método "$1" chamado com sucesso em $2 registo(s) em $3
     failed: A chamada de método falhou
@@ -220,17 +217,13 @@ devtools:
     restore: Restaurar
     restore_hint: Isto navegará para o separador $1 e restaurará os parâmetros.
     restore_success: Restaurada a ação $1 para $2
-    restore_failed: "Falha ao restaurar a ação: $1"
     collapse: Fechar
     expand: Expandir
     database_title: "Base de dados: $1"
-    unpin: Desafixar
-    pin: Fixar
     pin_hint: Fixar esta ação
     unpin_hint: Desafixar esta ação
     edit_label: Editar rótulo
     label_placeholder: Nome do rótulo...
-    saving: A guardar...
     removing: A remover...
     remove_from_history: Remover do Histórico
     remove_confirm_title: Remover do histórico?
@@ -276,8 +269,6 @@ devtools:
     no_domains_hint: Clique em "Adicionar Domínio" para criar um.
     edit_title: Editar Domínio
     add_title: Adicionar Novo Domínio
-    update: Atualizar
-    add: Adicionar
     name: Nome
     name_placeholder: ex., Registos Ativos
     domain_placeholder: 'ex., [["active", "=", true]]'
@@ -285,20 +276,16 @@ devtools:
     edit_hint: Editar domínio
     delete_hint: Eliminar domínio
   result_viewer:
-    loading_records: A carregar registos...
+    records: "Registos"
+    context_menu_hint: "Clique com o botão direito numa célula para ações do campo"
     fields_count: campo(s)
     open_in_odoo: Abrir registo(s) no Odoo
     open_in_popup: Abrir registo(s) num popup
     copy_json: Copiar como JSON
     download_json: Descarregar como JSON
     list_view: Vista de lista
-    exit_pivot: Sair da vista pivô
     pivot_view: Vista pivô
-    pivot: Pivotar
-    table: Tabela
     table_view: Vista tabela
-    list: Lista
-    calendar: Calendário
     calendar_view: Vista calendário
   calendar:
     previous_month: Mês anterior
@@ -339,8 +326,6 @@ devtools:
     prev_hint: Resultado anterior (Ctrl+Shift+G)
     next_hint: Resultado seguinte (Ctrl+G)
     close_hint: Fechar pesquisa (Esc)
-    keys: chaves
-    values: valores
   result_states:
     empty: 'Configure a sua consulta e clique em "Executar" para ver resultados'
     executing: A executar consulta...
@@ -349,23 +334,16 @@ devtools:
     page_of: Página $1 de $2
     records_range: "$1-$2 / $3 registo(s)"
     records_found: $1 registo(s) encontrado(s)
+    records_fields_found: "$1 registo(s) · $2 campo(s) encontrado(s)"
   field_rendering:
-    no_ids: Nenhum IDs válido encontrado
-    no_model: Não é possível determinar o modelo relacionado
     loading_relational: A carregar dados relacionais...
     error_prefix: "Erro: "
     no_related: Nenhum dado relacionado encontrado
-    no_id: Sem ID
     record_n: Registo $1
     excluded_fields: "Campos excluídos de $1: $2"
     focus_record: Focar neste registo
     open_in_odoo: Abrir registo no Odoo
     open_in_popup: Abrir registo num popup
-    invalid_relational: Campo relacional inválido
-    switch_table: Mudar para vista de tabela
-    switch_list: Mudar para vista de lista
-    open_relational_odoo: Abrir campo relacional no Odoo
-    open_relational_popup: Abrir campo relacional num popup
     toggle_fields: Mostrar/ocultar campos
     toggle_all: Alternar tudo
     all_hidden: Todos os campos estão ocultos
@@ -377,6 +355,8 @@ devtools:
     unavailable: Metadados do campo não disponíveis. Se for um campo novo, reinicie as devtools ou modifique o modelo para forçar uma atualização.
     field_label: "Campo: $1"
   selects:
+    show_all_chips: "Mostrar os $1 valores"
+    show_less_chips: "Mostrar menos valores"
     select_option: Selecione uma opção...
     loading: A carregar...
     search_fields: Pesquisar campos...
@@ -384,6 +364,7 @@ devtools:
     order_by_placeholder: Selecione campos para ordenar por...
     asc: (ASC)
     desc: (DESC)
+    clear_all: "Remover tudo"
     refresh_list: Atualizar lista
     refreshing: A atualizar lista
     refresh_error: "Erro: $1. Pode tentar novamente ou introduzir o valor manualmente."
@@ -393,6 +374,8 @@ devtools:
     middle_click_remove: Clique com o botão do meio para remover
     remove_aria: Remover $1
   virtual_table:
+    row_selected: "Linha $1 selecionada: $2"
+    row_unselected: "Linha $1 desmarcada"
     search_columns: Pesquisar todas as colunas...
     rows: linhas
     toggle_rows: Alternar linhas
@@ -414,10 +397,8 @@ devtools:
     add_required_plural: Adicionar Campos Obrigatórios
     auto_add_required: "✨ Adicionar automaticamente campo obrigatório"
     auto_add_required_plural: "✨ Adicionar automaticamente campos obrigatórios"
-    insert_template: Inserir modelo com campos obrigatórios
     no_data_to_format: Sem dados JSON para formatar
     cannot_format_invalid: Não é possível formatar JSON inválido
-    failed_auto_search: Falha ao executar pesquisa automática
   error_display:
     error_summary: Resumo do Erro
     error_data: Dados do Erro
@@ -428,19 +409,70 @@ devtools:
     stack_trace: Rastreamento de Pilha
     full_error_object: Objeto de Erro Completo
     type: Tipo
-    model: Modelo
     message: Mensagem
     code: Código
     unknown: Desconhecido
-    not_available: N/D
-
 options:
+  shell:
+    tagline: "Companheiro do Odoo"
+    settings: "Definições"
+    favorites: "Favoritos"
+    projects: "Projetos"
+    resources: "Recursos"
+    main_navigation: "Navegação principal"
+    open_navigation: "Abrir navegação"
+    breadcrumb: "Trilho de navegação"
+    theme: "Tema"
+    theme_light: "Tema claro"
+    theme_dark: "Tema escuro"
+    theme_system: "Tema do sistema"
+    language_auto_short: "Auto"
+    more_info: "Mais informações"
+    backup_title: "Configuração"
+    backup_desc: "Exporte ou restaure a sua configuração"
+  search:
+    settings_placeholder: "Pesquisar definições…"
+    favorites_placeholder: "Pesquisar favoritos…"
+    no_settings_title: "Nenhuma definição encontrada"
+    no_settings_desc: "Nada corresponde a “$1”. Experimente outra palavra."
+    no_favorites_title: "Nenhum favorito encontrado"
+    no_favorites_desc: "Nada corresponde a “$1”. Experimente outro nome de projeto."
+    clear: "Limpar pesquisa"
+  page:
+    settings_eyebrow: "Preferências da extensão"
+    settings_title: "Definições"
+    settings_desc: "Ajuste o comportamento do Odoo Toolbox. Os interruptores guardam de imediato; os campos de texto são guardados explicitamente."
+    favorites_eyebrow: "Espaço Odoo.sh"
+    favorites_title: "Favoritos"
+    favorites_desc: "Marque projetos com estrela no Odoo.sh e depois reordene, mude o nome e associe uma ligação de tarefa aqui."
+    favorites_count_one: "1 projeto"
+    favorites_count_other: "$1 projetos"
+    open_odoo_sh: "Abrir Odoo.sh"
+  sections:
+    appearance_desc: "Tema e acessibilidade das páginas da extensão"
+    odoo_desc: "Ajudas para o backend e ferramentas de desenvolvimento."
+    odoosh_desc: "Ligações de branch, acessibilidade e ferramentas de logs."
+    interface_title: "Detalhes da interface"
+    interface_desc: "Opções de apresentação que não alteram o funcionamento do Odoo."
+    odoosh_enhancements_title: "Melhorias do Odoo.sh"
+    odoosh_enhancements_desc: "Pequenas ajudas para páginas de branch, estados e logs."
+  choices:
+    color_none_hint: "O Odoo decide"
+    color_system_hint: "Segue o sistema"
+    always_hint: "Sempre"
+    debug_disabled_hint: "Manual"
+  favorites_list:
+    reorder: "Reordenar $1 (arraste ou use as setas)"
+    toolbar_hint: "Arraste as linhas para reordenar. Mude o nome, associe ou remova um projeto nas ações da linha."
+    auto_saved: "Guardado automaticamente"
+    task_link_set: "Ligação de tarefa"
+    task_link_none: "Sem ligação de tarefa"
+    footnote: "Os favoritos são partilhados com o popup da extensão. A ordem dos projetos é guardada com a sua configuração."
   sidebar:
+    appearance: "Aspeto"
     title: Odoo Toolbox
-    options: Opções
     odoo: Odoo
     odoo_sh: Odoo.SH
-    sh_favorites: Favoritos SH
     documentation: Documentação
     report_bug: Reportar um erro
     suggest_feature: Sugerir uma funcionalidade
@@ -464,7 +496,6 @@ options:
     export: Exportar
     restore: Restaurar
     error_export: "Ocorreu um erro durante a exportação: $1"
-    failed_read: Falha ao ler o conteúdo do ficheiro
     invalid_config: "Ficheiro de configuração inválido - $1"
     success: Configuração importada com sucesso
     error_import: "Ocorreu um erro durante o processamento do ficheiro: $1"
@@ -486,6 +517,24 @@ options:
     delete_title: Eliminar caminho ignorado?
     delete_desc: "Tem a certeza de que pretende eliminar « $1 »?"
   settings:
+    ui_theme: "Tema da extensão"
+    ui_theme_desc: "Identidade visual do popup, das opções, do painel DevTools e da barra lateral técnica."
+    theme_odoo_native: "Odoo nativo"
+    theme_odoo_native_desc: "Compacto, próximo da interface do Odoo."
+    theme_access: "Access"
+    theme_access_desc: "Alta legibilidade: texto maior, alvos de 44 px, contraste AAA."
+    theme_console: "Console"
+    theme_console_desc: "Bancada de programador densa: metadados em mono, superfícies planas, controlos de 28 px."
+    theme_toybox: "Toybox"
+    theme_toybox_desc: "Acolhedor e tátil: tons pastel arredondados, botões grossos que afundam, um ligeiro ressalto."
+    accessibility: "Acessibilidade"
+    accessibility_desc: "Preferências combináveis com qualquer tema"
+    large_text: "Texto grande"
+    large_text_desc: "Aumenta todos os textos das páginas da extensão em cerca de 12%."
+    reduce_motion: "Reduzir movimento"
+    reduce_motion_desc: "Desativa animações e transições, mesmo que o sistema as permita."
+    color_safe: "Paleta para daltónicos"
+    color_safe_desc: "Cores de estado distinguíveis com daltonismo. Mesma definição do modo daltónico do Odoo.sh."
     language: Idioma
     language_auto: Automático (navegador)
     language_desc: Escolher o idioma da extensão
@@ -544,9 +593,8 @@ options:
     works_both: "Funciona tanto no backend como nas páginas do website"
     task_link_title: Ligação de tarefa na página de ramo SH
     task_link_desc: Especifique um URL para o qual redirecionar ao clicar no ícone de ligação de tarefa na página de ramo SH. Deixe vazio para desativar a funcionalidade.
-    task_link_placeholder_hint: "Use o marcador {{task_id}} para o substituir pelo ID da tarefa"
+    task_link_hint: "Utilize {{task_id}} no URL. Cada favorito pode substituir esta predefinição a partir da página Favoritos."
     task_link_default: "Por padrão, é acionado com o seguinte padrão: VERSION-TASKID-OPTIONAL_DESCRIPTION (ex. 17.0-12345 , 15.0-6789-fixes)"
-    task_link_per_favorite: Pode configurar um URL específico por favorito a partir da página "Favoritos SH"
     task_link_label: Ligação de tarefa
     branch_regex: Regex do nome do ramo
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
@@ -564,9 +612,16 @@ browser_context_menu:
   path: Ignorar o modo debug neste caminho (todos os domínios)
   domain_path: Ignorar o modo debug neste caminho (este domínio)
 popup:
-  header_your: Os seus
+  search_label: "Pesquisar projetos"
+  tagline: "Companheiro do Odoo"
+  open_sh: "Abrir os projetos Odoo.sh"
+  title: "Os seus projetos"
+  search_placeholder: "Procurar um projeto…"
+  no_match: "Sem resultados"
+  no_match_hint: "Experimente outro nome de projeto."
+  results_count_one: "1 projeto"
+  results_count_other: "$1 projetos"
   header_sh: Odoo.SH
-  header_projects: projetos
   footer:
     light_theme: Mudar para tema claro
     dark_theme: Mudar para tema escuro
@@ -607,8 +662,6 @@ technical_list:
     buttons_list: Lista de botões
     no_match: Nenhum elemento corresponde aos seus filtros
     no_fields: Nenhum campo ou botão técnico encontrado nesta vista
-    click_field_detail: Clique num campo na página para ver os seus detalhes
-    click_button_detail: Clique num botão na página para ver os seus detalhes
     click_element_detail: Clique num elemento na página para ver os seus detalhes
     selected_field: Campo Selecionado
     selected_button: Botão Selecionado
@@ -618,6 +671,8 @@ technical_list:
     fields_found: campos
     buttons_found: botões
     found: encontrados
+    reset_filters: Repor filtros
+    visible_count: "$1 / $2 visíveis"
   field_item:
     copy_hint: Clique para copiar o nome do campo
     invisible_when: "Invisível quando: $1"
@@ -672,9 +727,6 @@ technical_list:
   button_item:
     copy_hint: Clique para copiar o nome do botão
     string: Cadeia
-    invisible: Invisível
-    invisible_conditional: Invisível*
-    invisible_when: "Invisível quando: $1"
     invisible_condition: Condição de Invisível
     context: Contexto
     confirm: Confirmar
@@ -684,8 +736,6 @@ technical_list:
     conditional_hint: "* indica comportamento condicional baseado no estado do botão"
   model_actions:
     view_fields: Ver campos do modelo (ir.model.fields)
-    view_access: Ver direitos de acesso do modelo (ir.model.access)
-    view_rules: Ver regras de registo (ir.rule)
     view_server_actions: Ver ações de servidor (ir.actions.server)
     view_current_action: "Abrir ação atual ($1, ID: $2)"
     view_record_data: Ver dados do registo atual
@@ -712,7 +762,6 @@ technical_list:
     access_modal_title: "Acesso - $1"
     more_details: Mais detalhes
     group: Grupo
-    rule: Regra
     groups: Grupos
     domain: Domínio
     create: Criar
@@ -741,7 +790,6 @@ technical_list:
     inherited_views: Vistas herdadas
     no_inherited: Nenhuma vista herdada
     priority: Prioridade
-    module: Módulo
     xml_id: ID XML
     key: Chave
     view_arch: Ver XML
@@ -775,10 +823,13 @@ technical_list:
     view_xml_id: ID XML da Vista
     view_id: ID da Vista
   states:
-    scanning: A procurar campos técnicos...
+    error_title: Não foi possível ler esta vista
+    retry: Tentar novamente
+    empty_hint: Abra uma vista de formulário, lista ou kanban e volte a abrir o painel.
+    no_elements: Nenhum elemento técnico
+    element_count: "$1 elementos"
   record_data:
     loading: A carregar dados do registo...
-    please_wait: Por favor, aguarde um momento.
     copy_json: Copiar JSON para a área de transferência
   info_item:
     click_to_copy: Clique para copiar
@@ -794,7 +845,6 @@ technical_list:
   errors:
     odoo_not_found: Objeto Odoo não encontrado
     failed_view: Falha ao carregar informação da vista
-    failed_db: Falha ao carregar informação da base de dados
   highlight:
     selected: "✓ Selecionado"
 
@@ -855,20 +905,10 @@ services:
   errors:
     devtools_unavailable: API das DevTools não disponível
     invalid_odoo_error: Formato de resposta de erro do Odoo inválido
-    action_unavailable: Serviço de ação não disponível
   quick_domains:
     active_records: Registos ativos
     all_records: Todos os registos
-    exists: 'O domínio rápido com ID "$1" já existe'
     not_found: 'Domínio rápido com ID "$1" não encontrado'
-  config:
-    settings_object: As definições têm de ser um objeto
-    favorites_array: Os favoritos têm de ser um array
-    invalid_favorite: "Favorito inválido no índice $1: tem de ser um objeto"
-    missing_favorite_fields: "Favorito inválido no índice $1: faltam campos obrigatórios"
-    domains_array: Domínios rápidos têm de ser um array
-    invalid_domain: "Domínio rápido inválido no índice $1: tem de ser um objeto"
-    missing_domain_fields: "Domínio rápido inválido no índice $1: faltam campos obrigatórios"
   current_page:
     no_record: Nenhum registo encontrado na página atual
     found_records: "Encontrados $1 registo(s) (vista $2)"
@@ -881,12 +921,6 @@ services:
     invalid_domain_format: "Formato de domínio inválido: $1"
     unable_to_parse_domain: Não foi possível analisar o domínio
     invalid_domain_format_expected: Formato de domínio inválido. Esperado array JSON ou formato de lista Python.
-    model_required: O modelo é obrigatório
-    invalid_model_format: Formato de modelo inválido
-    invalid_domain_format_simple: Formato de domínio inválido
-    invalid_ids_format: "Formato de IDs inválido (esperado: números separados por vírgulas)"
-    invalid_limit: "Limite inválido (deve estar entre 1 e 10000)"
-    invalid_offset: "Deslocamento inválido (deve ser 0 ou superior)"
     json_arrays_not_allowed: Arrays não são permitidos. Por favor, forneça um objeto JSON com pares chave-valor.
     json_primitives_not_allowed: Valores primitivos não são permitidos. Por favor, forneça um objeto JSON com pares chave-valor.
     json_objects_only: 'Apenas objetos JSON são permitidos. Por favor, forneça dados como {"campo": "valor"}.'
@@ -894,6 +928,44 @@ services:
     invalid_field: "Campo(s) inválido(s): $1. Por favor, use as sugestões de autocompletar ou verifique os campos do modelo."
     missing_required_field: "Campo(s) obrigatório(s) em falta: $1. Estes campos têm de ser fornecidos ao criar um registo."
     context_must_be_object: O contexto tem de ser um objeto JSON.
-  no_valid_ids: Nenhum IDs válido encontrado
   invalid_context: "Formato de contexto inválido: $1"
   invalid_json: JSON inválido
+
+commands:
+  ui_theme: "Usar o tema $1"
+  current: "atual"
+  text_size_large: "Usar texto grande"
+  text_size_standard: "Usar o tamanho de texto padrão"
+  motion_reduced: "Reduzir movimento"
+  motion_system: "Seguir a definição de movimento do sistema"
+  color_safe_on: "Usar a paleta para daltónicos"
+  color_safe_off: "Usar a paleta predefinida"
+  trigger: "Comandos"
+  placeholder: "Procurar um comando…"
+  move: "mover"
+  run: "executar"
+  close: "fechar"
+  count: "$1 comandos"
+  no_match: "Nenhum comando corresponde a «$1»"
+  empty: "Nenhum comando disponível aqui"
+  scope_popup: "Popup"
+  scope_options: "Opções"
+  scope_devtools: "DevTools"
+  boundary_popup: "O painel DevTools é um contexto separado do navegador: abra-o a partir das ferramentas de programador."
+  boundary_options: "O popup abre a partir do ícone da extensão e o painel DevTools a partir das ferramentas de programador: nenhum pode ser aberto a partir desta página."
+  boundary_devtools: "O popup é um contexto separado: abra-o a partir do ícone da extensão na barra de ferramentas."
+  group_favorites: "Favoritos"
+  group_tools: "Ferramentas"
+  group_navigation: "Navegação"
+  group_settings: "Definições"
+  group_appearance: "Aparência"
+  group_language: "Idioma"
+  group_configuration: "Configuração"
+  group_links: "Ligações"
+  group_query: "Consulta"
+  group_focus: "Foco"
+  export_config: "Exportar configuração"
+  import_config: "Importar configuração"
+  run_primary: "Executar a ação principal"
+  focus_field: "Ir para o campo $1"
+  system_theme: "Seguir o tema do sistema"

@@ -1,23 +1,22 @@
 common:
   loading: लोड हो रहा है...
   cancel: रद्द करें
+  confirm: पुष्टि करें
   delete: हटाएं
   save: सेव करें
   edit: संपादित करें
   remove: हटाएं
   retry: पुनः प्रयास करें
   clear: साफ़ करें
-  refresh: रिफ्रेश करें
   close: बंद करें
+  skip_to_content: "मुख्य सामग्री पर जाएँ"
   use: उपयोग करें
   error: त्रुटि
   unknown: अज्ञात
   unknown_error: अज्ञात त्रुटि
-  no_data: कोई डेटा उपलब्ध नहीं
   copied: कॉपी हो गया!
   copied_to_clipboard: क्लिपबोर्ड पर कॉपी हो गया!
   failed_to_copy: क्लिपबोर्ड पर कॉपी करने में विफल
-  fields: Fields
   copy: कॉपी करें
   download: डाउनलोड करें
   search: खोजें
@@ -28,6 +27,13 @@ common:
   favorite_projects: पसंदीदा प्रोजेक्ट्स
 
 devtools:
+  layout:
+    copy_database: "डेटाबेस का नाम कॉपी करने के लिए क्लिक करें"
+    toggle_query_rail: "क्वेरी बिल्डर दिखाएँ/छिपाएँ"
+    connected: "कनेक्टेड"
+    database: "DB"
+  json_editor:
+    valid: "मान्य JSON"
   completions:
     loading: "फ़ील्ड लोड हो रहे हैं..."
     command_create_info: "नए रिकॉर्ड बनाता है और उन्हें जोड़ता है।"
@@ -46,9 +52,7 @@ devtools:
     history: History
   record_text:
     singular_impacted: "यह{model} रिकॉर्ड प्रभावित होगा"
-    singular_action: "यह{model} रिकॉर्ड {action} होगा"
     plural_impacted: "ये {count}{model} रिकॉर्ड प्रभावित होंगे"
-    plural_action: "ये {count}{model} रिकॉर्ड {action} होंगे"
     method_call_singular: "Method {method} इस{model} रिकॉर्ड पर लागू होगी"
     method_call_plural: "Method {method} इन {count}{model} रिकॉर्ड्स पर लागू होगी"
   context_menu:
@@ -74,6 +78,8 @@ devtools:
     on_odoo_instance: आप एक Odoo इंस्टेंस पर हैं
     inside_backend: आप Odoo के backend के अंदर हैं (website पर नहीं)
   sidebar:
+    query_builder: "क्वेरी बिल्डर"
+    optional: "वैकल्पिक"
     model: Model
     model_fetch_error: Models लाए नहीं जा सके। कृपया अपना model नाम मैन्युअली दर्ज करें।
     model_placeholder: Model खोजने के लिए टाइप करें...
@@ -82,7 +88,7 @@ devtools:
     fields: Fields
     fields_placeholder: सभी Fields
     domain: Domain
-    domain_help: Odoo domain प्रारूप में फ़िल्टर शर्तें।
+    domain_help: "Odoo domain प्रारूप में फ़िल्टर शर्तें, JSON या Python सिंटैक्स में।"
     domain_placeholder: '["field", "=", "value"]'
     limit: सीमा
     limit_placeholder: "80"
@@ -118,10 +124,7 @@ devtools:
     load_records: रिकॉर्ड्स लोड करें
     confirm_title: Write ऑपरेशन निष्पादित करें
     confirm_message: क्या आप वाकई $1 रिकॉर्ड(s) अपडेट करना चाहते हैं? यह क्रिया चयनित रिकॉर्ड्स को स्थायी रूप से संशोधित करेगी।
-    error_model: Write ऑपरेशन के लिए Model आवश्यक है
     error_ids: Write ऑपरेशन के लिए रिकॉर्ड IDs आवश्यक हैं
-    error_data: Write डेटा आवश्यक है
-    error_json: "JSON सत्यापन विफल: $1"
     success: $2 में $1 रिकॉर्ड(s) सफलतापूर्वक अपडेट किए गए
     warning_false: Write ऑपरेशन पूर्ण हुआ लेकिन false लौटाया
     failed: Write ऑपरेशन विफल
@@ -134,7 +137,6 @@ devtools:
     title: रिकॉर्ड डेटा (JSON प्रारूप)
     warning: "चेतावनी: डेटाबेस संशोधन"
     warning_desc: रिकॉर्ड बनाने से आपके Odoo डेटाबेस में नया डेटा स्थायी रूप से जुड़ जाएगा। कृपया आगे बढ़ने से पहले अपना इनपुट सत्यापित करें।
-    format_json: JSON फ़ॉर्मेट करें
     placeholder: |
       JSON प्रारूप में नए रिकॉर्ड के लिए डेटा दर्ज करें, उदाहरण के लिए:
       {
@@ -148,9 +150,6 @@ devtools:
     confirm_message: क्या आप वाकई $1 में नया रिकॉर्ड बनाना चाहते हैं? यह क्रिया डेटाबेस में स्थायी रूप से डेटा जोड़ेगी।
     will_create: एक नया
     record_created: रिकॉर्ड बनाया जाएगा
-    error_model: कृपया पहले एक model चुनें
-    error_data: बनाने के लिए डेटा प्रदान करें
-    error_json: अमान्य JSON प्रारूप
     success: "$1 में रिकॉर्ड सफलतापूर्वक बनाया गया (ID: $2)"
     warning_no_id: Create ऑपरेशन पूर्ण हुआ लेकिन कोई ID नहीं लौटाया गया
     failed: रिकॉर्ड बनाने में विफल
@@ -166,8 +165,6 @@ devtools:
     load_records: रिकॉर्ड्स लोड करें
     confirm_title: Method कॉल करें
     confirm_message: क्या आप वाकई $2 रिकॉर्ड(s) पर method "$1" कॉल करना चाहते हैं? यह क्रिया डेटा को संशोधित कर सकती है।
-    error_model: Method कॉल के लिए Model आवश्यक है
-    error_method: Method नाम आवश्यक है
     error_ids: Method कॉल के लिए रिकॉर्ड IDs आवश्यक हैं
     success: $3 में $2 रिकॉर्ड(s) पर method "$1" सफलतापूर्वक कॉल किया गया
     failed: Method कॉल विफल
@@ -220,17 +217,13 @@ devtools:
     restore: पुनर्स्थापित करें
     restore_hint: यह $1 tab पर नेविगेट करेगा और parameters पुनर्स्थापित करेगा।
     restore_success: $2 के लिए $1 action पुनर्स्थापित किया गया
-    restore_failed: "Action पुनर्स्थापित करने में विफल: $1"
     collapse: संक्षिप्त करें
     expand: विस्तृत करें
     database_title: "डेटाबेस: $1"
-    unpin: Unpin करें
-    pin: Pin करें
     pin_hint: इस action को pin करें
     unpin_hint: इस action को unpin करें
     edit_label: लेबल संपादित करें
     label_placeholder: लेबल नाम...
-    saving: सेव हो रहा है...
     removing: हटाया जा रहा है...
     remove_from_history: History से हटाएं
     remove_confirm_title: History से हटाएं?
@@ -276,8 +269,6 @@ devtools:
     no_domains_hint: एक बनाने के लिए "Domain जोड़ें" पर क्लिक करें।
     edit_title: Domain संपादित करें
     add_title: नया Domain जोड़ें
-    update: अपडेट करें
-    add: जोड़ें
     name: नाम
     name_placeholder: उदाहरण, Active Records
     domain_placeholder: 'उदाहरण, [["active", "=", true]]'
@@ -285,20 +276,16 @@ devtools:
     edit_hint: Domain संपादित करें
     delete_hint: Domain हटाएं
   result_viewer:
-    loading_records: रिकॉर्ड्स लोड हो रहे हैं...
+    records: "रिकॉर्ड"
+    context_menu_hint: "फ़ील्ड क्रियाओं के लिए किसी सेल पर राइट-क्लिक करें"
     fields_count: field(s)
     open_in_odoo: रिकॉर्ड(s) Odoo में खोलें
     open_in_popup: रिकॉर्ड(s) popup में खोलें
     copy_json: JSON के रूप में कॉपी करें
     download_json: JSON के रूप में डाउनलोड करें
     list_view: List view
-    exit_pivot: Pivot view से बाहर निकलें
     pivot_view: Pivot दृश्य
-    pivot: Pivot
-    table: Table
     table_view: Table दृश्य
-    list: List
-    calendar: कैलेंडर
     calendar_view: कैलेंडर दृश्य
   calendar:
     previous_month: पिछला महीना
@@ -339,8 +326,6 @@ devtools:
     prev_hint: पिछला परिणाम (Ctrl+Shift+G)
     next_hint: अगला परिणाम (Ctrl+G)
     close_hint: खोज बंद करें (Esc)
-    keys: keys
-    values: values
   result_states:
     empty: 'परिणाम देखने के लिए अपनी क्वेरी कॉन्फ़िगर करें और "निष्पादित करें" पर क्लिक करें'
     executing: क्वेरी निष्पादित हो रही है...
@@ -349,23 +334,16 @@ devtools:
     page_of: पेज $1 of $2
     records_range: "$1-$2 / $3 रिकॉर्ड(s)"
     records_found: $1 रिकॉर्ड(s) मिले
+    records_fields_found: "$1 रिकॉर्ड(s) · $2 field(s) मिले"
   field_rendering:
-    no_ids: कोई वैध IDs नहीं मिले
-    no_model: संबंधित model निर्धारित नहीं किया जा सकता
     loading_relational: Relational डेटा लोड हो रहा है...
     error_prefix: "त्रुटि: "
     no_related: कोई संबंधित डेटा नहीं मिला
-    no_id: कोई ID नहीं
     record_n: रिकॉर्ड $1
     excluded_fields: "$1 से बाहर रखे गए fields: $2"
     focus_record: इस रिकॉर्ड पर फोकस करें
     open_in_odoo: रिकॉर्ड Odoo में खोलें
     open_in_popup: रिकॉर्ड popup में खोलें
-    invalid_relational: अमान्य relational field
-    switch_table: Table view पर स्विच करें
-    switch_list: List view पर स्विच करें
-    open_relational_odoo: Relational field Odoo में खोलें
-    open_relational_popup: Relational field popup में खोलें
     toggle_fields: फ़ील्ड दृश्यता टॉगल करें
     toggle_all: सभी टॉगल करें
     all_hidden: सभी फ़ील्ड छिपे हुए हैं
@@ -377,6 +355,8 @@ devtools:
     unavailable: Field मेटाडेटा उपलब्ध नहीं है। यदि यह एक नया field है, तो कृपया devtools पुनः आरंभ करें या रिफ्रेश के लिए model संशोधित करें।
     field_label: "Field: $1"
   selects:
+    show_all_chips: "सभी $1 मान दिखाएँ"
+    show_less_chips: "कम मान दिखाएँ"
     select_option: एक विकल्प चुनें...
     loading: लोड हो रहा है...
     search_fields: Fields खोजें...
@@ -384,6 +364,7 @@ devtools:
     order_by_placeholder: क्रमबद्ध करने के लिए fields चुनें...
     asc: (ASC)
     desc: (DESC)
+    clear_all: "सभी हटाएँ"
     refresh_list: सूची रिफ्रेश करें
     refreshing: सूची रिफ्रेश हो रही है
     refresh_error: "त्रुटि: $1। आप पुनः प्रयास कर सकते हैं या अपना मान मैन्युअली दर्ज कर सकते हैं।"
@@ -393,6 +374,8 @@ devtools:
     middle_click_remove: हटाने के लिए middle-click करें
     remove_aria: $1 हटाएं
   virtual_table:
+    row_selected: "पंक्ति $1 चुनी गई: $2"
+    row_unselected: "पंक्ति $1 का चयन हटाया गया"
     search_columns: सभी columns खोजें...
     rows: rows
     toggle_rows: Rows टॉगल करें
@@ -414,10 +397,8 @@ devtools:
     add_required_plural: आवश्यक Fields जोड़ें
     auto_add_required: "✨ स्वचालित रूप से आवश्यक field जोड़ें"
     auto_add_required_plural: "✨ स्वचालित रूप से आवश्यक fields जोड़ें"
-    insert_template: आवश्यक fields के साथ template डालें
     no_data_to_format: फ़ॉर्मेट करने के लिए कोई JSON डेटा नहीं
     cannot_format_invalid: अमान्य JSON को फ़ॉर्मेट नहीं किया जा सकता
-    failed_auto_search: स्वचालित खोज निष्पादित करने में विफल
   error_display:
     error_summary: त्रुटि सारांश
     error_data: त्रुटि डेटा
@@ -428,19 +409,70 @@ devtools:
     stack_trace: Stack Trace
     full_error_object: पूर्ण त्रुटि Object
     type: प्रकार
-    model: Model
     message: संदेश
     code: Code
     unknown: अज्ञात
-    not_available: N/A
-
 options:
+  shell:
+    tagline: "Odoo साथी"
+    settings: "सेटिंग्स"
+    favorites: "पसंदीदा"
+    projects: "प्रोजेक्ट"
+    resources: "संसाधन"
+    main_navigation: "मुख्य नेविगेशन"
+    open_navigation: "नेविगेशन खोलें"
+    breadcrumb: "ब्रेडक्रंब"
+    theme: "थीम"
+    theme_light: "लाइट थीम"
+    theme_dark: "डार्क थीम"
+    theme_system: "सिस्टम थीम"
+    language_auto_short: "ऑटो"
+    more_info: "अधिक जानकारी"
+    backup_title: "कॉन्फ़िगरेशन"
+    backup_desc: "अपना सेटअप निर्यात या पुनर्स्थापित करें"
+  search:
+    settings_placeholder: "सेटिंग्स खोजें…"
+    favorites_placeholder: "पसंदीदा खोजें…"
+    no_settings_title: "कोई सेटिंग मेल नहीं खाती"
+    no_settings_desc: "“$1” से कुछ भी मेल नहीं खाता। कोई दूसरा शब्द आज़माएँ।"
+    no_favorites_title: "कोई पसंदीदा मेल नहीं खाता"
+    no_favorites_desc: "“$1” से कुछ भी मेल नहीं खाता। कोई दूसरा प्रोजेक्ट नाम आज़माएँ।"
+    clear: "खोज साफ़ करें"
+  page:
+    settings_eyebrow: "एक्सटेंशन प्राथमिकताएँ"
+    settings_title: "सेटिंग्स"
+    settings_desc: "तय करें कि Odoo Toolbox कैसे काम करे। टॉगल तुरंत सहेजे जाते हैं; टेक्स्ट फ़ील्ड स्पष्ट रूप से सहेजे जाते हैं।"
+    favorites_eyebrow: "Odoo.sh कार्यक्षेत्र"
+    favorites_title: "पसंदीदा"
+    favorites_desc: "Odoo.sh पर प्रोजेक्ट को स्टार करें, फिर यहाँ उनका क्रम बदलें, नाम बदलें और टास्क लिंक जोड़ें।"
+    favorites_count_one: "1 प्रोजेक्ट"
+    favorites_count_other: "$1 प्रोजेक्ट"
+    open_odoo_sh: "Odoo.sh खोलें"
+  sections:
+    appearance_desc: "एक्सटेंशन पेजों की थीम और सुलभता"
+    odoo_desc: "बैकएंड सहायक और डेवलपर टूल।"
+    odoosh_desc: "ब्रांच लिंक, सुलभता और लॉग टूल।"
+    interface_title: "इंटरफ़ेस विवरण"
+    interface_desc: "वैकल्पिक प्रदर्शन विकल्प जो Odoo के काम करने का तरीका नहीं बदलते।"
+    odoosh_enhancements_title: "Odoo.sh सुधार"
+    odoosh_enhancements_desc: "ब्रांच पेज, स्टेटस और लॉग के लिए छोटे सहायक।"
+  choices:
+    color_none_hint: "Odoo तय करे"
+    color_system_hint: "सिस्टम के अनुसार"
+    always_hint: "हमेशा"
+    debug_disabled_hint: "मैन्युअल"
+  favorites_list:
+    reorder: "$1 का क्रम बदलें (खींचें या तीर कुंजियाँ)"
+    toolbar_hint: "क्रम बदलने के लिए पंक्तियाँ खींचें। पंक्ति की क्रियाओं से प्रोजेक्ट का नाम बदलें, लिंक करें या हटाएँ।"
+    auto_saved: "स्वतः सहेजा गया"
+    task_link_set: "टास्क लिंक"
+    task_link_none: "कोई टास्क लिंक नहीं"
+    footnote: "पसंदीदा एक्सटेंशन पॉपअप के साथ साझा किए जाते हैं। प्रोजेक्ट का क्रम आपके कॉन्फ़िगरेशन के साथ सहेजा जाता है।"
   sidebar:
+    appearance: "रूप-रंग"
     title: Odoo Toolbox
-    options: विकल्प
     odoo: Odoo
     odoo_sh: Odoo.SH
-    sh_favorites: SH Favorites
     documentation: दस्तावेज़ीकरण
     report_bug: Bug रिपोर्ट करें
     suggest_feature: सुविधा सुझाएं
@@ -464,7 +496,6 @@ options:
     export: Export करें
     restore: Restore करें
     error_export: "Export के दौरान एक त्रुटि हुई: $1"
-    failed_read: फ़ाइल सामग्री पढ़ने में विफल
     invalid_config: "अमान्य कॉन्फ़िगरेशन फ़ाइल - $1"
     success: कॉन्फ़िगरेशन सफलतापूर्वक imported
     error_import: "फ़ाइल प्रोसेसिंग में त्रुटि: $1"
@@ -486,6 +517,24 @@ options:
     delete_title: अनदेखा पथ हटाएँ?
     delete_desc: "क्या आप वाकई « $1 » हटाना चाहते हैं?"
   settings:
+    ui_theme: "एक्सटेंशन थीम"
+    ui_theme_desc: "पॉपअप, विकल्प, DevTools पैनल और तकनीकी साइडबार की दृश्य पहचान।"
+    theme_odoo_native: "Odoo नेटिव"
+    theme_odoo_native_desc: "कॉम्पैक्ट, Odoo इंटरफ़ेस के करीब।"
+    theme_access: "Access"
+    theme_access_desc: "उच्च पठनीयता: बड़ा टेक्स्ट, 44px लक्ष्य, AAA कंट्रास्ट।"
+    theme_console: "Console"
+    theme_console_desc: "सघन डेवलपर वर्कबेंच: मोनो मेटाडेटा, सपाट सतहें, 28px नियंत्रण।"
+    theme_toybox: "Toybox"
+    theme_toybox_desc: "गर्म और स्पर्शनीय: गोल पेस्टल रंग, मोटे दबने वाले बटन, हल्का उछाल।"
+    accessibility: "सुलभता"
+    accessibility_desc: "किसी भी थीम के साथ जुड़ने वाली प्राथमिकताएँ"
+    large_text: "बड़ा टेक्स्ट"
+    large_text_desc: "एक्सटेंशन पेजों के सभी टेक्स्ट को लगभग 12% बड़ा करता है।"
+    reduce_motion: "गति कम करें"
+    reduce_motion_desc: "एनिमेशन और ट्रांज़िशन बंद करता है, भले ही सिस्टम उनकी अनुमति दे।"
+    color_safe: "रंग-अंधता अनुकूल पैलेट"
+    color_safe_desc: "रंग दृष्टि दोष में भी पहचाने जा सकने वाले स्थिति रंग। Odoo.sh के कलर ब्लाइंड मोड जैसी ही सेटिंग।"
     language: भाषा
     language_auto: स्वचालित (ब्राउज़र)
     language_desc: एक्सटेंशन भाषा चुनें
@@ -544,9 +593,8 @@ options:
     works_both: "backend और website दोनों पेजों पर काम करता है"
     task_link_title: SH branch पेज पर task link
     task_link_desc: SH branch पेज पर task link आइकन पर क्लिक करते समय redirect करने के लिए URL निर्दिष्ट करें। सुविधा को अक्षम करने के लिए खाली छोड़ें।
-    task_link_placeholder_hint: "{{task_id}} placeholder का उपयोग करके इसे task ID से बदलें"
+    task_link_hint: "URL में {{task_id}} का उपयोग करें। हर पसंदीदा, पसंदीदा पेज से इस डिफ़ॉल्ट को बदल सकता है।"
     task_link_default: "डिफ़ॉल्ट रूप से, यह निम्न पैटर्न के साथ ट्रिगर होता है: VERSION-TASKID-OPTIONAL_DESCRIPTION (उदाहरण 17.0-12345, 15.0-6789-fixes)"
-    task_link_per_favorite: आप "SH Favorites" पेज से प्रति पसंदीदा एक विशिष्ट URL सेट कर सकते हैं
     task_link_label: Task link
     branch_regex: Branch नाम regex
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
@@ -564,9 +612,16 @@ browser_context_menu:
   path: इस पथ पर डिबग मोड अनदेखा करें (सभी डोमेन)
   domain_path: इस पथ पर डिबग मोड अनदेखा करें (यह डोमेन)
 popup:
-  header_your: आपके
+  search_label: "प्रोजेक्ट खोजें"
+  tagline: "Odoo साथी"
+  open_sh: "Odoo.sh प्रोजेक्ट खोलें"
+  title: "आपके प्रोजेक्ट"
+  search_placeholder: "प्रोजेक्ट खोजें…"
+  no_match: "कोई मेल नहीं"
+  no_match_hint: "कोई दूसरा प्रोजेक्ट नाम आज़माएँ।"
+  results_count_one: "1 प्रोजेक्ट"
+  results_count_other: "$1 प्रोजेक्ट"
   header_sh: Odoo.SH
-  header_projects: प्रोजेक्ट्स
   footer:
     light_theme: हल्की theme पर स्विच करें
     dark_theme: गहरी theme पर स्विच करें
@@ -607,8 +662,6 @@ technical_list:
     buttons_list: Buttons सूची
     no_match: आपके filters से कोई elements मेल नहीं खाते
     no_fields: इस view में कोई तकनीकी fields या buttons नहीं मिले
-    click_field_detail: विवरण देखने के लिए पेज पर एक field पर क्लिक करें
-    click_button_detail: विवरण देखने के लिए पेज पर एक button पर क्लिक करें
     click_element_detail: विवरण देखने के लिए पेज पर एक element पर क्लिक करें
     selected_field: चयनित Field
     selected_button: चयनित Button
@@ -618,6 +671,8 @@ technical_list:
     fields_found: fields
     buttons_found: buttons
     found: मिले
+    reset_filters: फ़िल्टर रीसेट करें
+    visible_count: "$1 / $2 दिखाई दे रहे हैं"
   field_item:
     copy_hint: Field नाम कॉपी करने के लिए क्लिक करें
     invisible_when: "जब यह अदृश्य हो: $1"
@@ -672,9 +727,6 @@ technical_list:
   button_item:
     copy_hint: Button नाम कॉपी करने के लिए क्लिक करें
     string: String
-    invisible: अदृश्य
-    invisible_conditional: अदृश्य*
-    invisible_when: "जब यह अदृश्य हो: $1"
     invisible_condition: अदृश्य शर्त
     context: Context
     confirm: पुष्टि करें
@@ -684,8 +736,6 @@ technical_list:
     conditional_hint: "* button state के आधार पर सशर्त व्यवहार दर्शाता है"
   model_actions:
     view_fields: Model fields देखें (ir.model.fields)
-    view_access: Model access rights देखें (ir.model.access)
-    view_rules: Record rules देखें (ir.rule)
     view_server_actions: Server actions देखें (ir.actions.server)
     view_current_action: "वर्तमान action खोलें ($1, ID: $2)"
     view_record_data: वर्तमान रिकॉर्ड डेटा देखें
@@ -712,7 +762,6 @@ technical_list:
     access_modal_title: "Access - $1"
     more_details: अधिक विवरण
     group: Group
-    rule: Rule
     groups: Groups
     domain: Domain
     create: Create
@@ -741,7 +790,6 @@ technical_list:
     inherited_views: Inherited Views
     no_inherited: कोई inherited views नहीं
     priority: Priority
-    module: Module
     xml_id: XML ID
     key: Key
     view_arch: XML देखें
@@ -775,10 +823,13 @@ technical_list:
     view_xml_id: View XML ID
     view_id: View ID
   states:
-    scanning: तकनीकी fields स्कैन हो रहे हैं...
+    error_title: यह view पढ़ा नहीं जा सका
+    retry: फिर से कोशिश करें
+    empty_hint: कोई form, list या kanban view खोलें, फिर panel दोबारा खोलें।
+    no_elements: कोई technical element नहीं
+    element_count: "$1 तत्व"
   record_data:
     loading: रिकॉर्ड डेटा लोड हो रहा है...
-    please_wait: कृपया एक क्षण प्रतीक्षा करें।
     copy_json: clipboard पर JSON कॉपी करें
   info_item:
     click_to_copy: कॉपी करने के लिए क्लिक करें
@@ -794,7 +845,6 @@ technical_list:
   errors:
     odoo_not_found: Odoo object नहीं मिला
     failed_view: View जानकारी लोड करने में विफल
-    failed_db: डेटाबेस जानकारी लोड करने में विफल
   highlight:
     selected: "✓ चयनित"
 
@@ -855,20 +905,10 @@ services:
   errors:
     devtools_unavailable: DevTools API उपलब्ध नहीं
     invalid_odoo_error: अमान्य Odoo त्रुटि प्रतिक्रिया प्रारूप
-    action_unavailable: Action service उपलब्ध नहीं
   quick_domains:
     active_records: सक्रिय रिकॉर्ड्स
     all_records: सभी रिकॉर्ड्स
-    exists: 'ID "$1" वाला quick domain पहले से मौजूद है'
     not_found: 'ID "$1" वाला quick domain नहीं मिला'
-  config:
-    settings_object: सेटिंग्स एक object होनी चाहिए
-    favorites_array: Favorites एक array होने चाहिए
-    invalid_favorite: "index $1 पर अमान्य favorite: object होना चाहिए"
-    missing_favorite_fields: "index $1 पर अमान्य favorite: आवश्यक fields अनुपस्थित"
-    domains_array: Quick domains एक array होने चाहिए
-    invalid_domain: "index $1 पर अमान्य quick domain: object होना चाहिए"
-    missing_domain_fields: "index $1 पर अमान्य quick domain: आवश्यक fields अनुपस्थित"
   current_page:
     no_record: वर्तमान पेज पर कोई रिकॉर्ड नहीं मिला
     found_records: "$1 रिकॉर्ड(s) मिले ($2 view)"
@@ -881,12 +921,6 @@ services:
     invalid_domain_format: "अमान्य domain प्रारूप: $1"
     unable_to_parse_domain: Domain पार्स करने में असमर्थ
     invalid_domain_format_expected: अमान्य domain प्रारूप। JSON array या Python list प्रारूप अपेक्षित।
-    model_required: Model आवश्यक है
-    invalid_model_format: अमान्य model प्रारूप
-    invalid_domain_format_simple: अमान्य domain प्रारूप
-    invalid_ids_format: "अमान्य IDs प्रारूप (अपेक्षित: कॉमा-सेपरेटेड संख्याएं)"
-    invalid_limit: "अमान्य सीमा (1 और 10000 के बीच होनी चाहिए)"
-    invalid_offset: "अमान्य offset (0 या अधिक होना चाहिए)"
     json_arrays_not_allowed: Arrays की अनुमति नहीं है। कृपया key-value pairs के साथ एक JSON object प्रदान करें।
     json_primitives_not_allowed: Primitive मानों की अनुमति नहीं है। कृपया key-value pairs के साथ एक JSON object प्रदान करें।
     json_objects_only: 'केवल JSON objects की अनुमति है। कृपया डेटा {"field": "value"} के रूप में प्रदान करें।'
@@ -894,6 +928,44 @@ services:
     invalid_field: "अमान्य field(s): $1। कृपया autocomplete सुझावों का उपयोग करें या model fields की जांच करें।"
     missing_required_field: "अनुपस्थित आवश्यक field(s): $1। रिकॉर्ड बनाते समय इन fields को प्रदान किया जाना चाहिए।"
     context_must_be_object: Context एक JSON object होना चाहिए।
-  no_valid_ids: कोई वैध IDs नहीं मिले
   invalid_context: "अमान्य context प्रारूप: $1"
   invalid_json: अमान्य JSON
+
+commands:
+  ui_theme: "$1 थीम का उपयोग करें"
+  current: "वर्तमान"
+  text_size_large: "बड़े टेक्स्ट का उपयोग करें"
+  text_size_standard: "मानक टेक्स्ट आकार का उपयोग करें"
+  motion_reduced: "गति कम करें"
+  motion_system: "सिस्टम की गति सेटिंग का पालन करें"
+  color_safe_on: "रंग-अंधता अनुकूल पैलेट का उपयोग करें"
+  color_safe_off: "डिफ़ॉल्ट पैलेट का उपयोग करें"
+  trigger: "कमांड"
+  placeholder: "कमांड खोजें…"
+  move: "चलें"
+  run: "चलाएँ"
+  close: "बंद करें"
+  count: "$1 कमांड"
+  no_match: "“$1” से कोई कमांड मेल नहीं खाता"
+  empty: "यहाँ कोई कमांड उपलब्ध नहीं है"
+  scope_popup: "पॉपअप"
+  scope_options: "विकल्प"
+  scope_devtools: "DevTools"
+  boundary_popup: "DevTools पैनल ब्राउज़र का अलग संदर्भ है: इसे ब्राउज़र के डेवलपर टूल से खोलें।"
+  boundary_options: "पॉपअप एक्सटेंशन आइकन से और DevTools पैनल डेवलपर टूल से खुलता है: इस पेज से इनमें से कोई भी नहीं खोला जा सकता।"
+  boundary_devtools: "पॉपअप एक अलग संदर्भ है: इसे टूलबार में एक्सटेंशन आइकन से खोलें।"
+  group_favorites: "पसंदीदा"
+  group_tools: "टूल"
+  group_navigation: "नेविगेशन"
+  group_settings: "सेटिंग्स"
+  group_appearance: "रूप"
+  group_language: "भाषा"
+  group_configuration: "कॉन्फ़िगरेशन"
+  group_links: "लिंक"
+  group_query: "क्वेरी"
+  group_focus: "फ़ोकस"
+  export_config: "कॉन्फ़िगरेशन निर्यात करें"
+  import_config: "कॉन्फ़िगरेशन आयात करें"
+  run_primary: "मुख्य कार्रवाई चलाएँ"
+  focus_field: "$1 फ़ील्ड पर जाएँ"
+  system_theme: "सिस्टम थीम का पालन करें"

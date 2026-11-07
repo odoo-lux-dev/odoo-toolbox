@@ -1,23 +1,22 @@
 common:
   loading: Loading...
   cancel: Cancel
+  confirm: Confirm
   delete: Delete
   save: Save
   edit: Edit
   remove: Remove
   retry: Retry
   clear: Clear
-  refresh: Refresh
   close: Close
+  skip_to_content: "Skip to main content"
   use: Use
   error: Error
   unknown: Unknown
   unknown_error: Unknown error
-  no_data: No data available
   copied: Copied!
   copied_to_clipboard: Copied to clipboard!
   failed_to_copy: Failed to copy to clipboard
-  fields: Fields
   copy: Copy
   download: Download
   search: Search
@@ -28,6 +27,13 @@ common:
   favorite_projects: Favorite projects
 
 devtools:
+  layout:
+    copy_database: "Click to copy the database name"
+    toggle_query_rail: "Toggle query builder"
+    connected: "Connected"
+    database: "DB"
+  json_editor:
+    valid: "Valid JSON"
   completions:
     loading: "Loading fields..."
     command_create_info: "Create new records and link them."
@@ -46,9 +52,7 @@ devtools:
     history: History
   record_text:
     singular_impacted: "This{model} record will be impacted"
-    singular_action: "This{model} record will be {action}"
     plural_impacted: "These {count}{model} records will be impacted"
-    plural_action: "These {count}{model} records will be {action}"
     method_call_singular: "The method {method} will be applied to this{model} record"
     method_call_plural: "The method {method} will be applied to these {count}{model} records"
   context_menu:
@@ -74,6 +78,8 @@ devtools:
     on_odoo_instance: You're on an Odoo instance
     inside_backend: You're inside the Odoo's backend (and not on the website)
   sidebar:
+    query_builder: "Query builder"
+    optional: "optional"
     model: Model
     model_fetch_error: Models couldn't be fetched. Please enter your model name manually.
     model_placeholder: Type to search for a model...
@@ -82,7 +88,7 @@ devtools:
     fields: Fields
     fields_placeholder: All fields
     domain: Domain
-    domain_help: Filter conditions in Odoo domain format.
+    domain_help: "Filter conditions in Odoo domain format, JSON or Python syntax."
     domain_placeholder: '["field", "=", "value"]'
     limit: Limit
     limit_placeholder: "80"
@@ -118,10 +124,7 @@ devtools:
     load_records: Load Records
     confirm_title: Execute Write Operation
     confirm_message: Are you sure you want to update $1 record(s)? This action will modify the selected records permanently.
-    error_model: Model is required for write operation
     error_ids: Record IDs are required for write operation
-    error_data: Write data is required
-    error_json: "JSON validation failed: $1"
     success: Successfully updated $1 record(s) in $2
     warning_false: Write operation completed but returned false
     failed: Write operation failed
@@ -134,7 +137,6 @@ devtools:
     title: Record Data (JSON Format)
     warning: "Warning: Database Modification"
     warning_desc: Creating a record will permanently add new data to your Odoo database. Please verify your input before proceeding.
-    format_json: Format JSON
     placeholder: |
       Enter the data for the new record in JSON format, e.g.:
       {
@@ -148,9 +150,6 @@ devtools:
     confirm_message: Are you sure you want to create a new record in $1? This action will permanently add data to the database.
     will_create: A new
     record_created: record will be created
-    error_model: Please select a model first
-    error_data: Please provide data to create
-    error_json: Invalid JSON format
     success: "Successfully created record in $1 (ID: $2)"
     warning_no_id: Create operation completed but no ID returned
     failed: Failed to create record
@@ -166,8 +165,6 @@ devtools:
     load_records: Load Records
     confirm_title: Call Method
     confirm_message: Are you sure you want to call method "$1" on $2 record(s)? This action may modify the data.
-    error_model: Model is required for method call
-    error_method: Method name is required
     error_ids: Record IDs are required for method call
     success: Successfully called method "$1" on $2 record(s) in $3
     failed: Method call failed
@@ -220,17 +217,13 @@ devtools:
     restore: Restore
     restore_hint: This will navigate to the $1 tab and restore the parameters.
     restore_success: Restored $1 action for $2
-    restore_failed: "Failed to restore action: $1"
     collapse: Collapse
     expand: Expand
     database_title: "Database: $1"
-    unpin: Unpin
-    pin: Pin
     pin_hint: Pin this action
     unpin_hint: Unpin this action
     edit_label: Edit label
     label_placeholder: Label name...
-    saving: Saving...
     removing: Removing...
     remove_from_history: Remove from History
     remove_confirm_title: Remove from history?
@@ -276,8 +269,6 @@ devtools:
     no_domains_hint: Click "Add Domain" to create one.
     edit_title: Edit Domain
     add_title: Add New Domain
-    update: Update
-    add: Add
     name: Name
     name_placeholder: e.g., Active Records
     domain_placeholder: 'e.g., [["active", "=", true]]'
@@ -285,20 +276,16 @@ devtools:
     edit_hint: Edit domain
     delete_hint: Delete domain
   result_viewer:
-    loading_records: Loading records...
+    records: "Records"
+    context_menu_hint: "Right-click a cell for field actions"
     fields_count: field(s)
     open_in_odoo: Open record(s) in Odoo
     open_in_popup: Open record(s) in popup
     copy_json: Copy as JSON
     download_json: Download as JSON
     list_view: List view
-    exit_pivot: Exit pivot view
     pivot_view: Pivot view
-    pivot: Pivot
-    table: Table
     table_view: Table view
-    list: List
-    calendar: Calendar
     calendar_view: Calendar view
   calendar:
     previous_month: Previous month
@@ -339,8 +326,6 @@ devtools:
     prev_hint: Previous result (Ctrl+Shift+G)
     next_hint: Next result (Ctrl+G)
     close_hint: Close search (Esc)
-    keys: keys
-    values: values
   result_states:
     empty: 'Configure your query and click "Execute" to see results'
     executing: Executing query...
@@ -349,23 +334,16 @@ devtools:
     page_of: Page $1 of $2
     records_range: "$1-$2 / $3 record(s)"
     records_found: $1 record(s) found
+    records_fields_found: "$1 record(s) · $2 field(s) found"
   field_rendering:
-    no_ids: No valid IDs found
-    no_model: Cannot determine related model
     loading_relational: Loading relational data...
     error_prefix: "Error: "
     no_related: No related data found
-    no_id: No ID
     record_n: Record $1
     excluded_fields: "Excluded fields from $1: $2"
     focus_record: Focus on this record
     open_in_odoo: Open record in Odoo
     open_in_popup: Open record in popup
-    invalid_relational: Invalid relational field
-    switch_table: Switch to table view
-    switch_list: Switch to list view
-    open_relational_odoo: Open relational field in Odoo
-    open_relational_popup: Open relational field in popup
     toggle_fields: Toggle field visibility
     toggle_all: Toggle all
     all_hidden: All fields are hidden
@@ -377,6 +355,8 @@ devtools:
     unavailable: Field metadata is not available. If this is a new field, please restart devtools or modify the model to force a refresh.
     field_label: "Field: $1"
   selects:
+    show_all_chips: "Show all $1 values"
+    show_less_chips: "Show fewer values"
     select_option: Select an option...
     loading: Loading...
     search_fields: Search fields...
@@ -384,6 +364,7 @@ devtools:
     order_by_placeholder: Select fields to order by...
     asc: (ASC)
     desc: (DESC)
+    clear_all: "Remove all"
     refresh_list: Refresh list
     refreshing: Refreshing list
     refresh_error: "Error: $1. You can try again or enter your value manually."
@@ -393,6 +374,8 @@ devtools:
     middle_click_remove: Middle-click to remove
     remove_aria: Remove $1
   virtual_table:
+    row_selected: "Row $1 selected: $2"
+    row_unselected: "Row $1 unselected"
     search_columns: Search all columns...
     rows: rows
     toggle_rows: Toggle rows
@@ -414,10 +397,8 @@ devtools:
     add_required_plural: Add Required Fields
     auto_add_required: "✨ Automatically add required field"
     auto_add_required_plural: "✨ Automatically add required fields"
-    insert_template: Insert template with required fields
     no_data_to_format: No JSON data to format
     cannot_format_invalid: Cannot format invalid JSON
-    failed_auto_search: Failed to execute automatic search
   error_display:
     error_summary: Error Summary
     error_data: Error Data
@@ -428,19 +409,70 @@ devtools:
     stack_trace: Stack Trace
     full_error_object: Full Error Object
     type: Type
-    model: Model
     message: Message
     code: Code
     unknown: Unknown
-    not_available: N/A
-
 options:
+  shell:
+    tagline: "Odoo companion"
+    settings: "Settings"
+    favorites: "Favorites"
+    projects: "Projects"
+    resources: "Resources"
+    main_navigation: "Main navigation"
+    open_navigation: "Open navigation"
+    breadcrumb: "Breadcrumb"
+    theme: "Theme"
+    theme_light: "Light theme"
+    theme_dark: "Dark theme"
+    theme_system: "System theme"
+    language_auto_short: "Auto"
+    more_info: "More information"
+    backup_title: "Configuration"
+    backup_desc: "Export or restore your setup"
+  search:
+    settings_placeholder: "Search settings…"
+    favorites_placeholder: "Search favorites…"
+    no_settings_title: "No setting matches"
+    no_settings_desc: "Nothing matches “$1”. Try a different word."
+    no_favorites_title: "No favorite matches"
+    no_favorites_desc: "Nothing matches “$1”. Try another project name."
+    clear: "Clear search"
+  page:
+    settings_eyebrow: "Extension preferences"
+    settings_title: "Settings"
+    settings_desc: "Tune how Odoo Toolbox behaves. Toggles save instantly; text fields save explicitly."
+    favorites_eyebrow: "Odoo.sh workspace"
+    favorites_title: "Favorites"
+    favorites_desc: "Star projects on Odoo.sh, then reorder, rename and attach a task link here."
+    favorites_count_one: "1 project"
+    favorites_count_other: "$1 projects"
+    open_odoo_sh: "Open Odoo.sh"
+  sections:
+    appearance_desc: "Theme and accessibility of the extension pages"
+    odoo_desc: "Backend helpers and developer tools."
+    odoosh_desc: "Branch links, accessibility and log tools."
+    interface_title: "Interface details"
+    interface_desc: "Optional display choices that do not change how Odoo works."
+    odoosh_enhancements_title: "Odoo.sh enhancements"
+    odoosh_enhancements_desc: "Small helpers for branch pages, statuses and logs."
+  choices:
+    color_none_hint: "Odoo decides"
+    color_system_hint: "Follow OS"
+    always_hint: "Always"
+    debug_disabled_hint: "Manual"
+  favorites_list:
+    reorder: "Reorder $1 (drag, or use the arrow keys)"
+    toolbar_hint: "Drag rows to reorder. Rename, link or remove a project from its row actions."
+    auto_saved: "Auto-saved"
+    task_link_set: "Task link"
+    task_link_none: "No task link"
+    footnote: "Favorites are shared with the extension popup. Project order is stored with your configuration."
   sidebar:
+    appearance: "Appearance"
     title: Odoo Toolbox
-    options: Options
     odoo: Odoo
     odoo_sh: Odoo.SH
-    sh_favorites: SH Favorites
     documentation: Documentation
     report_bug: Report a bug
     suggest_feature: Suggest a feature
@@ -464,7 +496,6 @@ options:
     export: Export
     restore: Restore
     error_export: "An error occured during the export: $1"
-    failed_read: Failed to read file content
     invalid_config: "Invalid configuration file - $1"
     success: Configuration successfully imported
     error_import: "An error occured during file process: $1"
@@ -486,6 +517,24 @@ options:
     delete_title: Delete ignored path?
     delete_desc: Are you sure you want to delete "$1"?
   settings:
+    ui_theme: "Extension theme"
+    ui_theme_desc: "Visual identity of the popup, the options, the DevTools panel and the technical sidebar."
+    theme_odoo_native: "Odoo native"
+    theme_odoo_native_desc: "Compact, close to the Odoo interface."
+    theme_access: "Access"
+    theme_access_desc: "High legibility: larger text, 44px targets, AAA contrast."
+    theme_console: "Console"
+    theme_console_desc: "Dense developer workbench: mono metadata, flat surfaces, 28px controls."
+    theme_toybox: "Toybox"
+    theme_toybox_desc: "Warm and tactile: rounded pastels, chunky pressable buttons, a little bounce."
+    accessibility: "Accessibility"
+    accessibility_desc: "Preferences combined with any theme"
+    large_text: "Large text"
+    large_text_desc: "Enlarges every text of the extension pages by about 12%."
+    reduce_motion: "Reduce motion"
+    reduce_motion_desc: "Disables animations and transitions, even if the system allows them."
+    color_safe: "Color-safe palette"
+    color_safe_desc: "Status colors distinguishable with color vision deficiencies. Same setting as the Odoo.sh color blind mode."
     language: Language
     language_auto: Auto (browser)
     language_desc: Choose the extension language
@@ -544,9 +593,8 @@ options:
     works_both: "Works on both backend and website pages"
     task_link_title: Task link on SH branch page
     task_link_desc: Specify an URL to redirect to when clicking on the task link icon on SH branch page. Leave it empty to disable the feature.
-    task_link_placeholder_hint: "Use the {{task_id}} placeholder to replace it with the task ID"
+    task_link_hint: "Use {{task_id}} in the URL. Each favorite can override this default from the Favorites page."
     task_link_default: "By default, it's triggered with the following pattern: VERSION-TASKID-OPTIONAL_DESCRIPTION (e.g. 17.0-12345 , 15.0-6789-fixes)"
-    task_link_per_favorite: You can set up a specific URL per favorite from the "SH Favorites" page
     task_link_label: Task link
     branch_regex: Branch name regex
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
@@ -565,9 +613,16 @@ browser_context_menu:
   domain_path: Ignore debug mode on this path (this domain)
 
 popup:
-  header_your: Your
+  search_label: "Search projects"
+  tagline: "Odoo companion"
+  open_sh: "Open Odoo.sh projects"
+  title: "Your projects"
+  search_placeholder: "Find a project…"
+  no_match: "No match"
+  no_match_hint: "Try another project name."
+  results_count_one: "1 project"
+  results_count_other: "$1 projects"
   header_sh: Odoo.SH
-  header_projects: projects
   footer:
     light_theme: Switch to light theme
     dark_theme: Switch to dark theme
@@ -608,8 +663,6 @@ technical_list:
     buttons_list: Buttons list
     no_match: No elements match your filters
     no_fields: No technical fields or buttons found in this view
-    click_field_detail: Click on a field in the page to see its details
-    click_button_detail: Click on a button in the page to see its details
     click_element_detail: Click on an element in the page to see its details
     selected_field: Selected Field
     selected_button: Selected Button
@@ -619,6 +672,8 @@ technical_list:
     fields_found: fields
     buttons_found: buttons
     found: found
+    reset_filters: Reset filters
+    visible_count: "$1 / $2 visible"
   field_item:
     copy_hint: Click to copy field name
     invisible_when: "Invisible when: $1"
@@ -673,9 +728,6 @@ technical_list:
   button_item:
     copy_hint: Click to copy button name
     string: String
-    invisible: Invisible
-    invisible_conditional: Invisible*
-    invisible_when: "Invisible when: $1"
     invisible_condition: Invisible Condition
     context: Context
     confirm: Confirm
@@ -685,8 +737,6 @@ technical_list:
     conditional_hint: "* indicates conditional behavior based on button state"
   model_actions:
     view_fields: View model fields (ir.model.fields)
-    view_access: View model access rights (ir.model.access)
-    view_rules: View record rules (ir.rule)
     view_server_actions: View server actions (ir.actions.server)
     view_current_action: "Open current action ($1, ID: $2)"
     view_record_data: View current record data
@@ -713,7 +763,6 @@ technical_list:
     access_modal_title: "Access - $1"
     more_details: More details
     group: Group
-    rule: Rule
     groups: Groups
     domain: Domain
     create: Create
@@ -742,7 +791,6 @@ technical_list:
     inherited_views: Inherited Views
     no_inherited: No inherited views
     priority: Priority
-    module: Module
     xml_id: XML ID
     key: Key
     view_arch: View XML
@@ -776,10 +824,13 @@ technical_list:
     view_xml_id: View XML ID
     view_id: View ID
   states:
-    scanning: Scanning technical fields...
+    error_title: Could not read this view
+    retry: Retry
+    empty_hint: Open a form, list or kanban view, then reopen the panel.
+    no_elements: No technical elements
+    element_count: "$1 elements"
   record_data:
     loading: Loading record data...
-    please_wait: Please wait a moment.
     copy_json: Copy JSON to clipboard
   info_item:
     click_to_copy: Click to copy
@@ -795,7 +846,6 @@ technical_list:
   errors:
     odoo_not_found: Odoo object not found
     failed_view: Failed to load view information
-    failed_db: Failed to load database information
   highlight:
     selected: "✓ Selected"
 
@@ -856,20 +906,10 @@ services:
   errors:
     devtools_unavailable: DevTools API not available
     invalid_odoo_error: Invalid Odoo error response format
-    action_unavailable: Action service not available
   quick_domains:
     active_records: Active records
     all_records: All records
-    exists: 'Quick domain with ID "$1" already exists'
     not_found: 'Quick domain with ID "$1" not found'
-  config:
-    settings_object: Settings must be an object
-    favorites_array: Favorites must be an array
-    invalid_favorite: "Invalid favorite at index $1: must be an object"
-    missing_favorite_fields: "Invalid favorite at index $1: missing required fields"
-    domains_array: Quick domains must be an array
-    invalid_domain: "Invalid quick domain at index $1: must be an object"
-    missing_domain_fields: "Invalid quick domain at index $1: missing required fields"
   current_page:
     no_record: No record found on current page
     found_records: "Found $1 record(s) ($2 view)"
@@ -882,12 +922,6 @@ services:
     invalid_domain_format: "Invalid domain format: $1"
     unable_to_parse_domain: Unable to parse domain
     invalid_domain_format_expected: Invalid domain format. Expected JSON array or Python list format.
-    model_required: Model is required
-    invalid_model_format: Invalid model format
-    invalid_domain_format_simple: Invalid domain format
-    invalid_ids_format: "Invalid IDs format (expected: comma-separated numbers)"
-    invalid_limit: "Invalid limit (must be between 1 and 10000)"
-    invalid_offset: "Invalid offset (must be 0 or greater)"
     json_arrays_not_allowed: Arrays are not allowed. Please provide a JSON object with key-value pairs.
     json_primitives_not_allowed: Primitive values are not allowed. Please provide a JSON object with key-value pairs.
     json_objects_only: 'Only JSON objects are allowed. Please provide data as {"field": "value"}.'
@@ -895,6 +929,44 @@ services:
     invalid_field: "Invalid field(s): $1. Please use the autocomplete suggestions or check the model fields."
     missing_required_field: "Missing required field(s): $1. These fields must be provided when creating a record."
     context_must_be_object: Context must be a JSON object.
-  no_valid_ids: No valid IDs found
   invalid_context: "Invalid context format: $1"
   invalid_json: Invalid JSON
+
+commands:
+  ui_theme: "Use the $1 theme"
+  current: "current"
+  text_size_large: "Use large text"
+  text_size_standard: "Use standard text size"
+  motion_reduced: "Reduce motion"
+  motion_system: "Follow the system motion setting"
+  color_safe_on: "Use the color-safe palette"
+  color_safe_off: "Use the default palette"
+  trigger: "Commands"
+  placeholder: "Search a command…"
+  move: "move"
+  run: "run"
+  close: "close"
+  count: "$1 commands"
+  no_match: "No command matches “$1”"
+  empty: "No command available here"
+  scope_popup: "Popup"
+  scope_options: "Options"
+  scope_devtools: "DevTools"
+  boundary_popup: "The DevTools panel is a separate browser context: open it from the browser developer tools."
+  boundary_options: "The popup opens from the extension icon and the DevTools panel from the browser developer tools: neither can be launched from this page."
+  boundary_devtools: "The popup is a separate context: open it from the extension icon in the browser toolbar."
+  group_favorites: "Favorites"
+  group_tools: "Tools"
+  group_navigation: "Navigation"
+  group_settings: "Settings"
+  group_appearance: "Appearance"
+  group_language: "Language"
+  group_configuration: "Configuration"
+  group_links: "Links"
+  group_query: "Query"
+  group_focus: "Focus"
+  export_config: "Export configuration"
+  import_config: "Import configuration"
+  run_primary: "Run the primary action"
+  focus_field: "Focus $1"
+  system_theme: "Follow the system theme"
