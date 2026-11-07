@@ -1,40 +1,5 @@
+import type { OdooWebClientRoot } from "@/types";
 import { getCookie } from "@/utils/cookie-utils";
-
-type CompanyServiceLike = {
-  activeCompanyIds?: number[];
-  allowedCompanyIds?: number[];
-  currentCompany?: { id?: number };
-};
-
-type UserServiceLike = {
-  context?: Record<string, unknown>;
-};
-
-type PrintOrmLike = {
-  call?: (
-    model: string,
-    method: string,
-    args?: unknown[],
-    kwargs?: Record<string, unknown>,
-  ) => Promise<unknown>;
-  searchRead?: (
-    model: string,
-    domain: unknown[],
-    fields: string[],
-    kwargs?: Record<string, unknown>,
-  ) => Promise<unknown[]>;
-};
-
-export type PrintRootLike = {
-  env?: {
-    services?: {
-      company?: CompanyServiceLike;
-      user?: UserServiceLike;
-      orm?: PrintOrmLike;
-    };
-  };
-  user?: UserServiceLike;
-};
 
 // Parses both `cids` formats: "1,2" (Odoo <= 17) and "2-1" (Odoo >= 18).
 export const normalizeCompanyIds = (value: unknown): number[] => {
@@ -52,18 +17,9 @@ const firstCompanyIds = (...values: unknown[]): number[] => {
   return [];
 };
 
-const getCidsFromUrl = (): string | null => {
-  if (typeof window === "undefined") return null;
-
-  try {
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-    const search = new URLSearchParams(window.location.search);
-
-    return hash.get("cids") ?? search.get("cids");
-  } catch {
-    return null;
-  }
-};
+const getCidsFromUrl = (): string | null =>
+  new URLSearchParams(window.location.hash.replace(/^#/, "")).get("cids") ??
+  new URLSearchParams(window.location.search).get("cids");
 
 /**
  * Reads the companies currently active in the tab.
@@ -77,53 +33,28 @@ export const resolveActiveCompanyIds = ({
   cidsFromCookie = getCookie("cids"),
   preferCookie = false,
 }: {
-  root?: PrintRootLike;
+  root?: OdooWebClientRoot;
   cidsFromUrl?: string | null;
   cidsFromCookie?: string | null;
   preferCookie?: boolean;
 } = {}): number[] => {
-  try {
-    const companyService = root?.env?.services?.company;
-    const userContext = root?.env?.services?.user?.context ?? root?.user?.context;
+  const companyService = root?.env?.services?.company;
+  const userContext = root?.env?.services?.user?.context ?? root?.user?.context;
 
-    const activeCompanyIds = firstCompanyIds(
-      // Odoo 15/16 expose `allowedCompanyIds`, Odoo 17/18 expose `activeCompanyIds`.
-      companyService?.activeCompanyIds,
-      companyService?.allowedCompanyIds,
-      userContext?.allowed_company_ids,
-      // Up to Odoo 18 the URL is the per-tab source (the company service reads
-      // it before the cookie). From Odoo 19 the cookie is authoritative.
-      preferCookie ? cidsFromCookie : cidsFromUrl,
-      preferCookie ? cidsFromUrl : cidsFromCookie,
-    );
+  const activeCompanyIds = firstCompanyIds(
+    // Odoo 15/16 expose `allowedCompanyIds`, Odoo 17/18 expose `activeCompanyIds`.
+    companyService?.activeCompanyIds,
+    companyService?.allowedCompanyIds,
+    userContext?.allowed_company_ids,
+    // Up to Odoo 18 the URL is the per-tab source (the company service reads
+    // it before the cookie). From Odoo 19 the cookie is authoritative.
+    preferCookie ? cidsFromCookie : cidsFromUrl,
+    preferCookie ? cidsFromUrl : cidsFromCookie,
+  );
+  if (activeCompanyIds.length > 0) return activeCompanyIds;
 
-    if (activeCompanyIds.length > 0) return activeCompanyIds;
-
-    const currentCompanyId = companyService?.currentCompany?.id;
-    return typeof currentCompanyId === "number" && currentCompanyId > 0 ? [currentCompanyId] : [];
-  } catch {
-    return [];
-  }
-};
-
-export const getUserContext = async (
-  root: PrintRootLike | undefined,
-): Promise<Record<string, unknown>> => {
-  try {
-    const liveContext = root?.env?.services?.user?.context ?? root?.user?.context;
-    if (liveContext && Object.keys(liveContext).length > 0) return liveContext;
-
-    // Odoo 19/20: the user singleton is not exposed as a service anymore.
-    const orm = root?.env?.services?.orm;
-    if (!orm?.call) return {};
-
-    const context = await orm.call("res.users", "context_get", []);
-    return context && typeof context === "object" && !Array.isArray(context)
-      ? (context as Record<string, unknown>)
-      : {};
-  } catch {
-    return {};
-  }
+  const currentCompanyId = companyService?.currentCompany?.id;
+  return typeof currentCompanyId === "number" && currentCompanyId > 0 ? [currentCompanyId] : [];
 };
 
 /**

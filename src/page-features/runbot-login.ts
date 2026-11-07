@@ -1,33 +1,26 @@
 import { getConfiguredDebugModeUrl } from "@/page-features/debug-mode";
 import { t } from "@/utils/i18n-page";
-import { getRunbotAutoLogin, isRunbotBuildHost, isRunbotFrontendHost } from "@/utils/utils";
+import { isRunbotBuildHost, isRunbotFrontendHost } from "@/utils/odoo-hosts";
+import { readDatasetSetting } from "@/utils/settings-schema";
+
+import { DEMO_USERS, type DemoUser, isDemoUser } from "./login-form";
 
 const AUTOLOGIN_HASH_KEY = "x-odoo-toolbox-autologin";
 const CONTROLS_CLASS = "x-odoo-runbot-autologin-controls";
 const MENU_CLASS = "x-odoo-runbot-autologin-menu";
 
-const RUNBOT_USERS = {
-  admin: "admin",
-  demo: "demo",
-  portal: "portal",
-} as const;
-
-type RunbotUser = keyof typeof RUNBOT_USERS;
-
-const isRunbotUser = (value: string): value is RunbotUser => Object.hasOwn(RUNBOT_USERS, value);
-
 // The fragment survives the `/runbot/run/<id>` redirect, query parameters do not.
-const buildAutoLoginUrl = (href: string, user: RunbotUser): string => {
+const buildAutoLoginUrl = (href: string, user: DemoUser): string => {
   const url = new URL(href, window.location.href);
   url.hash = `${AUTOLOGIN_HASH_KEY}=${user}`;
   return url.toString();
 };
 
-const parseHashIntent = (): RunbotUser | null => {
+const parseHashIntent = (): DemoUser | null => {
   const prefix = `#${AUTOLOGIN_HASH_KEY}=`;
   if (!window.location.hash.startsWith(prefix)) return null;
   const user = window.location.hash.slice(prefix.length);
-  return isRunbotUser(user) ? user : null;
+  return isDemoUser(user) ? user : null;
 };
 
 const clearHash = (): void => {
@@ -70,7 +63,7 @@ const createAutoLoginControls = (signInLink: HTMLAnchorElement): HTMLDivElement 
   const menu = document.createElement("ul");
   menu.className = `dropdown-menu dropdown-menu-end ${MENU_CLASS}`;
 
-  for (const user of Object.keys(RUNBOT_USERS) as RunbotUser[]) {
+  for (const user of DEMO_USERS) {
     const li = document.createElement("li");
     const item = document.createElement("a");
     item.className = "dropdown-item";
@@ -151,14 +144,14 @@ const parseLoginError = (html: string): string | null => {
   return parsed.querySelector(".alert-danger")?.textContent?.trim() || null;
 };
 
-const silentLogin = async (user: RunbotUser): Promise<SilentLoginResult> => {
+const silentLogin = async (user: DemoUser): Promise<SilentLoginResult> => {
   const csrfToken = await getCsrfToken();
   if (!csrfToken) return failedLogin();
 
   const body = new URLSearchParams({
     csrf_token: csrfToken,
     login: user,
-    password: RUNBOT_USERS[user],
+    password: user,
     type: "password",
     redirect: "/web",
   });
@@ -214,7 +207,7 @@ const tryAutoLogin = (): boolean => {
 };
 
 const handleRunbotAutoLogin = (): boolean => {
-  if (getRunbotAutoLogin() !== "true") {
+  if (!readDatasetSetting("runbotAutoLogin")) {
     if (isRunbotBuildHost(window.location.hostname)) clearHash();
     return false;
   }
@@ -229,10 +222,4 @@ const handleRunbotAutoLogin = (): boolean => {
   return false;
 };
 
-export {
-  addAutoLoginControls,
-  buildAutoLoginUrl,
-  handleRunbotAutoLogin,
-  isRunbotBuildHost,
-  isRunbotFrontendHost,
-};
+export { addAutoLoginControls, buildAutoLoginUrl, handleRunbotAutoLogin };

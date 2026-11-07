@@ -11,62 +11,43 @@ import {
   handleTechnicalReportsVersion15and16,
   handleTechnicalReportsVersion17andAbove,
 } from "@/page-features/technical-report/print-options-handler";
-import { getOdooVersion } from "@/utils/utils";
+import { getOdooVersion } from "@/utils/odoo-page";
 
-const handleVersion17AndAbove = async (targetNode: Element) => {
-  handleTechnicalModelName(targetNode);
-  await handleTechnicalReportsVersion17andAbove(targetNode);
+const enhanceVersion17AndAbove = (element: Element) => {
+  handleTechnicalModelName(element);
+  void handleTechnicalReportsVersion17andAbove(element);
 };
 
-const handleVersion15and16 = async (targetNode: Element) => {
-  await handleTechnicalReportsVersion15and16(targetNode);
-};
-
-const observeMenuOpening = () => {
-  /**
-   * Monitors DOM changes to apply version-specific Odoo enhancements.
-   * Sets up a MutationObserver that detects new elements and applies:
-   * - For v17.0+: Technical model names and report options
-   * - For v15.0/16.0: Technical report options only
-   * - For v14.0 and below: No features (early return)
-   */
+/**
+ * Enhances the Odoo UI as it renders: technical model names (17.0+) and technical print
+ * options (above 14.0). Older versions are not supported.
+ */
+const observeOdooUi = () => {
   const odooVersion = getOdooVersion();
-  if (!odooVersion || parseFloat(odooVersion) <= 14.0) return;
+  if (!odooVersion || odooVersion <= 14) return;
+  const enhance =
+    odooVersion >= 17
+      ? enhanceVersion17AndAbove
+      : (element: Element) => void handleTechnicalReportsVersion15and16(element);
 
-  const targetNode = document.querySelector("body");
-  const config = { attributes: false, childList: true, subtree: true };
-  if (!targetNode) return;
-
-  const callback: MutationCallback = (mutationsList) => {
+  const observer = new MutationObserver((mutations) => {
     let hasAddedElement = false;
-
-    for (const mutation of mutationsList) {
-      if (mutation.type !== "childList" || mutation.addedNodes.length === 0) continue;
-
+    for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         if (node.nodeType !== Node.ELEMENT_NODE) continue;
         hasAddedElement = true;
-        if (parseFloat(odooVersion) >= 17.0) {
-          void handleVersion17AndAbove(node as Element);
-        } else {
-          void handleVersion15and16(node as Element);
-        }
+        enhance(node as Element);
       }
     }
-
-    if (hasAddedElement && parseFloat(odooVersion) >= 17.0) {
-      scheduleTechnicalModelNameInModals();
-    }
-  };
-
-  const observer = new MutationObserver(callback);
-  observer.observe(targetNode, config);
+    if (hasAddedElement && odooVersion >= 17) scheduleTechnicalModelNameInModals();
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 };
 
 export default defineUnlistedScript(async () => {
   const tabUrl = new URL(window.location.href);
 
-  observeMenuOpening();
+  observeOdooUi();
   handleLoginButtons();
   handleOdooShLoginButton();
   const runbotAutoLoginHandled = handleRunbotAutoLogin();

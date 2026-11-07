@@ -1,20 +1,23 @@
 import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
 import { handleI18nMessage } from "@/entries/background/i18n";
-import { getDebugModeUrl } from "@/page-features/debug-mode";
 import { configurationService } from "@/services/configuration-service";
+import { toggleDebugMode } from "@/services/debug-mode-service";
+import {
+  DEVTOOLS_PAGE_SCRIPT,
+  ODOOSH_ROUTE_CHANGED,
+  type OdooShRouteChangedMessage,
+} from "@/services/extension-messages";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 import { updateService } from "@/services/update-service";
-import { handleToggleDebugCommand } from "@/utils/background-utils";
-import { isRunbotBuildHost } from "@/utils/utils";
-
-// Message sent to the Odoo.SH content script when the SPA changes its URL via the History API,
-const ROUTE_CHANGED_MESSAGE = { type: "odoosh:route-changed" };
+import type { ImportedConfig } from "@/utils/config-validation";
+import { getDebugModeUrl } from "@/utils/debug-mode-url";
+import { isRunbotBuildHost } from "@/utils/odoo-hosts";
 
 const COMMANDS: Record<string, () => void> = {
   "toggle-debug": () =>
-    handleToggleDebugCommand()
+    toggleDebugMode()
       .then(() => Logger.info("Debug mode toggled"))
       .catch((error) => Logger.error("An error occured toggling debug mode", error)),
 };
@@ -100,37 +103,37 @@ export default defineBackground(() => {
     if (handleI18nMessage(request, sendResponse)) {
       return true;
     }
-    if (request.tabId && request.scriptId) {
+    if (request?.type === DEVTOOLS_PAGE_SCRIPT) {
       handleDevToolsMessage(request, sendResponse);
       return true;
     }
     return false;
   });
 
+  // The Odoo.sh SPA navigates with the History API, which content scripts cannot observe.
   browser.webNavigation.onHistoryStateUpdated.addListener((details) => {
-    // Only react to the top-level frame navigation.
     if (details.frameId !== 0) return;
     if (!details.url?.startsWith("https://www.odoo.sh/")) return;
 
-    browser.tabs.sendMessage(details.tabId, ROUTE_CHANGED_MESSAGE).catch(() => undefined);
+    const message: OdooShRouteChangedMessage = { type: ODOOSH_ROUTE_CHANGED };
+    // The content script may not be injected (yet) in that tab.
+    browser.tabs.sendMessage(details.tabId, message).catch(() => undefined);
   });
 
   browser.webNavigation.onCommitted.addListener(async (details) => {
-    // Only react to the top-level frame.
     if (details.frameId !== 0) return;
 
-    const defaultDebugMode = await settingsService.getDebugMode();
+    const defaultDebugMode = await settingsService.get("enableDebugMode");
     if (!defaultDebugMode || defaultDebugMode === "disabled") return;
 
     // On Runbot builds, the page script applies debug mode after auto-login.
     if (
       isRunbotBuildHost(new URL(details.url).hostname) &&
-      (await settingsService.getRunbotAutoLogin())
+      (await settingsService.get("runbotAutoLogin"))
     ) {
       return;
     }
 
-    // Check if we are on Odoo website
     try {
       const [result] = await browser.scripting.executeScript({
         target: { tabId: details.tabId },
@@ -144,7 +147,7 @@ export default defineBackground(() => {
     }
 
     const url = new URL(details.url);
-    const ignoredPaths = await settingsService.getIgnoredDebugPaths();
+    const ignoredPaths = await settingsService.get("ignoredDebugPaths");
     const targetUrl = getDebugModeUrl(url, { defaultDebugMode, ignoredPaths });
     if (targetUrl && targetUrl !== details.url) {
       await browser.tabs.update(details.tabId, { url: targetUrl });
@@ -166,8 +169,10 @@ export default defineBackground(() => {
       });
     }
 
+    // Configs of the legacy extension may hold values the schema no longer accepts: the
+    // stores clean them on write, so they are imported instead of rejected as a whole.
     configurationService
-      .importConfiguration(request.config)
+      .importConfiguration(request.config as ImportedConfig)
       .then(() => {
         sendResponse({
           status: "success",

@@ -1,20 +1,9 @@
 import type { OdooOverlayItem } from "@/types";
-import { copyText } from "@/utils/clipboard";
+import { copyWithFeedback } from "@/utils/clipboard";
 import { t } from "@/utils/i18n-page";
-import { getShowTechnicalModel, hasNewOdooURL, isOnNewURLPos } from "@/utils/utils";
-const FEEDBACK_DURATION_MS = 1200;
+import { getCurrentController, hasNewOdooURL, isOnNewURLPos } from "@/utils/odoo-page";
+import { readDatasetSetting } from "@/utils/settings-schema";
 
-/**
- * Creates a span element for displaying the technical model name in the Odoo application.
- * This function dynamically generates a span element, assigns it a set of CSS class names,
- * and sets its inner HTML content to the specified value. This is used to enhance the UI
- * by adding technical model names to various parts of the Odoo interface, such as breadcrumbs
- * or control panels, for better identification and navigation.
- *
- * @param {string[]} classNames - An array of strings representing CSS class names to be added to the span element.
- * @param {string} innerContent - The HTML content to be inserted inside the span element.
- * @returns {HTMLSpanElement} The created span element with the specified classes and inner HTML content.
- */
 const createTechnicalModelNameSpan = (
   classNames: string[],
   innerContent: string,
@@ -25,16 +14,6 @@ const createTechnicalModelNameSpan = (
   return technicalModelNameSpan;
 };
 
-/**
- * Appends a model name to a breadcrumb element in the Odoo application interface.
- * This function creates a span element containing the model name and appends it to the specified breadcrumb.
- * The appearance and placement of the model name can be adjusted based on whether it is considered global.
- *
- * @param {Element} breadcrumb - The DOM element representing the breadcrumb to which the model name will be appended.
- * @param {string} modelName - The name of the model to be displayed within the breadcrumb.
- * @param {boolean} [isGlobal=false] - A flag indicating whether the model name should be treated as a global breadcrumb.
- *                                      This affects the styling and positioning of the model name.
- */
 const appendModelNameToBreadcrumb = (
   breadcrumb: Element,
   modelName: string,
@@ -54,24 +33,16 @@ const appendModelNameToBreadcrumb = (
 };
 
 /**
- * Handles the display of the technical model name within the Odoo application interface.
- * This function dynamically identifies the appropriate locations within the Odoo UI (breadcrumbs or control panels)
- * to insert the technical model name. It checks for the presence of a new Odoo URL format and whether the display
- * of technical model names is enabled. If these conditions are met, it retrieves the current model name from the
- * Odoo window object and appends it to the identified UI elements, enhancing the application's navigational context.
- *
- * @param {Element} targetNode - The root DOM element from which to start searching for specific UI elements
- *                               (breadcrumbs or control panels) to append the model name.
+ * Shows the current model next to the breadcrumb (or in the control panel when there is
+ * none) of a newly rendered view. Dialogs are handled by `handleTechnicalModelNameInModals`.
  */
 const handleTechnicalModelName = (targetNode: Element): void => {
   if (targetNode.closest(".o_dialog, .o-overlay-item")) return;
 
-  const showTechnicalModel = getShowTechnicalModel() === "true";
+  const showTechnicalModel = readDatasetSetting("showTechnicalModel");
   if (!hasNewOdooURL() || !showTechnicalModel || isOnNewURLPos()) return;
 
-  const odooWindowObject = window.odoo;
-  const currentModelName =
-    odooWindowObject?.__WOWL_DEBUG__?.root?.actionService?.currentController?.props?.resModel;
+  const currentModelName = getCurrentController()?.props?.resModel;
   if (!currentModelName) return;
 
   const leftModelBreadcrumb = targetNode.querySelector("ol.breadcrumb");
@@ -116,7 +87,7 @@ const getOpenModalModels = (): string[] => {
 };
 
 const handleTechnicalModelNameInModals = (): void => {
-  if (getShowTechnicalModel() !== "true") return;
+  if (!readDatasetSetting("showTechnicalModel")) return;
 
   const modalModels = getOpenModalModels();
   const dialogs = [...document.querySelectorAll<HTMLElement>(".o-overlay-item > .o_dialog")];
@@ -153,34 +124,11 @@ const scheduleTechnicalModelNameInModals = (): void => {
 };
 
 const attachCopyOnClick = (span: HTMLSpanElement, modelName: string): void => {
-  // Can't use @/hooks/use-copy-to-clipboard as it relies on Tailwind classes not available here.
-  const copyTitle = t("common.copy");
   span.style.cursor = "pointer";
-  span.title = copyTitle;
-
-  let busy = false;
-
-  span.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    if (busy) return;
-    busy = true;
-    span.style.cursor = "default";
-    span.title = "";
-    span.classList.add("x-odoo-copying");
-
-    const original = span.innerHTML;
-    const success = await copyText(modelName);
-    span.textContent = success ? `✓ ${t("common.copied")}` : `✗`;
-    span.style.color = success ? "var(--success, #28a745)" : "var(--danger, #dc3545)";
-
-    setTimeout(() => {
-      span.innerHTML = original;
-      span.style.removeProperty("color");
-      span.style.cursor = "pointer";
-      span.title = copyTitle;
-      span.classList.remove("x-odoo-copying");
-      busy = false;
-    }, FEEDBACK_DURATION_MS);
+  span.title = t("common.copy");
+  span.addEventListener("click", (event) => {
+    event.stopPropagation();
+    void copyWithFeedback(modelName, span);
   });
 };
 

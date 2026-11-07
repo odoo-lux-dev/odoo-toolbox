@@ -1,22 +1,19 @@
-import { OrmReportRecord, PrintOptionsReturn } from "@/types";
-import { getOdooVersion, isOnSpecificRecordPage } from "@/utils/utils";
+import { Logger } from "@/services/logger";
+import { getOdooContextFromWindow } from "@/services/owl-runtime";
+import type { OrmReportRecord, PrintOptionsReturn } from "@/types";
+import { getCurrentController, getOdooVersion, isOnSpecificRecordPage } from "@/utils/odoo-page";
 
-import {
-  buildPrintContext,
-  getUserContext,
-  resolveActiveCompanyIds,
-  type PrintRootLike,
-} from "./print-options-context";
+import { buildPrintContext, resolveActiveCompanyIds } from "./print-options-context";
 
 const getPrintOptionsList = async (): Promise<PrintOptionsReturn | undefined> => {
   if (!isOnSpecificRecordPage()) return;
   const odooVersion = getOdooVersion();
   if (!odooVersion) return;
-  const isLegacy = parseFloat(odooVersion) <= 16;
-  const isVersion15 = parseFloat(odooVersion) === 15;
-  const preferCookie = parseFloat(odooVersion) >= 19;
+  const isLegacy = odooVersion <= 16;
+  const isVersion15 = odooVersion === 15;
+  const preferCookie = odooVersion >= 19;
 
-  const controller = window.odoo?.__WOWL_DEBUG__?.root?.actionService?.currentController;
+  const controller = getCurrentController();
   if (!controller) return;
 
   const recordLocalState = controller.getLocalState?.();
@@ -26,10 +23,13 @@ const getPrintOptionsList = async (): Promise<PrintOptionsReturn | undefined> =>
   const currentResId = isVersion15 ? recordLocalState?.currentId : recordLocalState?.resId;
   if (currentResId === undefined || currentResId === null) return;
 
-  const root = window.odoo?.__WOWL_DEBUG__?.root as unknown as PrintRootLike | undefined;
+  const root = window.odoo?.__WOWL_DEBUG__?.root;
   const orm = root?.env?.services?.orm;
 
-  const userContext = await getUserContext(root);
+  const userContext = await getOdooContextFromWindow(window.odoo).catch((error: unknown) => {
+    Logger.warn("Could not read the user context, printing without it", error);
+    return {};
+  });
   const activeCompanyIds = resolveActiveCompanyIds({ root, preferCookie });
 
   const context = buildPrintContext({

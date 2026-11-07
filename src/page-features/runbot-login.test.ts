@@ -1,11 +1,8 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 
-import {
-  addAutoLoginControls,
-  buildAutoLoginUrl,
-  isRunbotBuildHost,
-  isRunbotFrontendHost,
-} from "./runbot-login";
+import { isRunbotBuildHost, isRunbotFrontendHost } from "@/utils/odoo-hosts";
+
+import { addAutoLoginControls, buildAutoLoginUrl } from "./runbot-login";
 
 beforeEach(() => {
   document.body.innerHTML = "";
@@ -34,6 +31,7 @@ describe("isRunbotBuildHost", () => {
   test("rejects Runbot frontend hosts", () => {
     expect(isRunbotBuildHost("runbot.odoo.com")).toBe(false);
     expect(isRunbotBuildHost("runbot320.odoo.com")).toBe(false);
+    expect(isRunbotBuildHost("www.runbot.odoo.com")).toBe(false);
     expect(isRunbotBuildHost("www.odoo.com")).toBe(false);
   });
 });

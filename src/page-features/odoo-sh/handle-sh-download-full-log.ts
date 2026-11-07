@@ -8,9 +8,6 @@ const BUTTON_CLASS = "x-odoo-sh-download-full-log";
 const BUTTON_LABEL_CLASS = "x-odoo-sh-download-full-log-label";
 const TOPBAR_SELECTOR = ".o_topbar div.o_filter";
 
-let currentLogUrl: string | null = null;
-let downloadButton: HTMLButtonElement | null = null;
-
 const findLogUrlFromLogViewerProps = (): string | null => {
   const odoo = (window as unknown as Record<string, unknown>).odoo;
   const props =
@@ -48,10 +45,9 @@ const getLogFileName = (url: string): string => {
  * viewer, which only renders one chunk at a time and drops lines that scroll
  * out of view. The `range: bytes=0-` header is required by the endpoint
  */
-const downloadFullLog = async (url: string): Promise<void> => {
-  const button = document.querySelector<HTMLButtonElement>(`.${BUTTON_CLASS}`);
+const downloadFullLog = async (url: string, button: HTMLButtonElement): Promise<void> => {
   const setLabel = (label: string): void => {
-    const labelSpan = button?.querySelector<HTMLSpanElement>(`.${BUTTON_LABEL_CLASS}`);
+    const labelSpan = button.querySelector<HTMLSpanElement>(`.${BUTTON_LABEL_CLASS}`);
     if (labelSpan) labelSpan.textContent = label;
   };
 
@@ -81,7 +77,7 @@ const downloadFullLog = async (url: string): Promise<void> => {
   }
 };
 
-const createDownloadButton = (): HTMLButtonElement => {
+const createDownloadButton = (getLogUrl: () => string | null): HTMLButtonElement => {
   const button = document.createElement("button");
   button.type = "button";
   button.className = `btn shadow-none text-white ${BUTTON_CLASS}`;
@@ -96,53 +92,45 @@ const createDownloadButton = (): HTMLButtonElement => {
 
   button.append(icon, label);
   button.addEventListener("click", () => {
-    if (currentLogUrl) downloadFullLog(currentLogUrl);
+    const url = getLogUrl();
+    if (url) downloadFullLog(url, button);
   });
   return button;
 };
 
 /**
- * Inserts the "download full log" button into the log viewer header before the
- * filter/search input. The button is created once and re-inserted only when it
- * is not currently in the DOM (e.g. the SPA unmounted the log viewer).
+ * Adds a "download full log" button before the filter input of the log viewer, once the
+ * raw log URL is known. The button is re-inserted when the SPA re-renders the viewer.
+ *
+ * @returns A teardown function removing the button and stopping the observer.
  */
-const placeButtonInTopbar = (): void => {
-  if (!currentLogUrl) return;
-  const topbar = document.querySelector<HTMLDivElement>(TOPBAR_SELECTOR);
-  if (!topbar) return;
-  if (!downloadButton) downloadButton = createDownloadButton();
-  if (downloadButton.isConnected) return;
-  topbar.before(downloadButton);
-};
-
 const handleShDownloadFullLog = (): (() => void) => {
+  let currentLogUrl: string | null = null;
+  const downloadButton = createDownloadButton(() => currentLogUrl);
+
   const updateLogUrl = (): void => {
-    const url = findLogUrl();
-    if (url) currentLogUrl = url;
-    placeButtonInTopbar();
+    currentLogUrl = findLogUrl() ?? currentLogUrl;
+    if (!currentLogUrl || downloadButton.isConnected) return;
+    document.querySelector(TOPBAR_SELECTOR)?.before(downloadButton);
   };
 
   updateLogUrl();
 
+  // Not available in every browser / context: the button then only uses the initial URL.
   let performanceObserver: PerformanceObserver | null = null;
-  if (typeof PerformanceObserver !== "undefined") {
-    try {
-      performanceObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        for (let i = entries.length - 1; i >= 0; i--) {
-          if (LOG_URL_REGEX.test(entries[i].name)) {
-            updateLogUrl();
-            break;
-          }
-        }
-      });
-      performanceObserver.observe({ type: "resource", buffered: true });
-    } catch {
-      performanceObserver = null;
-    }
+  try {
+    performanceObserver = new PerformanceObserver((list) => {
+      if (list.getEntries().some((entry) => LOG_URL_REGEX.test(entry.name))) updateLogUrl();
+    });
+    performanceObserver.observe({ type: "resource", buffered: true });
+  } catch {
+    performanceObserver = null;
   }
 
-  return () => performanceObserver?.disconnect();
+  return () => {
+    performanceObserver?.disconnect();
+    downloadButton.remove();
+  };
 };
 
 export { handleShDownloadFullLog };

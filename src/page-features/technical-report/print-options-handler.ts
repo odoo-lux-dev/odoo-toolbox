@@ -1,4 +1,5 @@
-import { getShowPrintOptionsHTML, getShowPrintOptionsPDF, getOdooVersion } from "@/utils/utils";
+import { getOdooVersion } from "@/utils/odoo-page";
+import { readDatasetSetting } from "@/utils/settings-schema";
 
 import {
   addLoadingIconOnPrintOption,
@@ -8,8 +9,8 @@ import {
 import { getPrintOptionsList } from "./print-options-fetcher";
 
 const handleTechnicalReportsVersion15and16 = async (targetNode: Element): Promise<void> => {
-  const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true";
-  const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true";
+  const showPrintOptionsHTML = readDatasetSetting("enablePrintOptionsHTML");
+  const showPrintOptionsPDF = readDatasetSetting("enablePrintOptionsPDF");
   if (!showPrintOptionsHTML && !showPrintOptionsPDF) return;
 
   const isPrintingOption = targetNode.parentElement?.querySelector("button i.fa-print") !== null;
@@ -26,7 +27,7 @@ const handleTechnicalReportsVersion15and16 = async (targetNode: Element): Promis
 
   const odooVersion = getOdooVersion();
   if (!odooVersion) return;
-  const isVersion15 = parseFloat(odooVersion) === 15;
+  const isVersion15 = odooVersion === 15;
 
   addLoadingIconOnPrintOption(dropdownMenu, isVersion15);
 
@@ -61,8 +62,8 @@ const getExpandedPrintToggle = (scope: ParentNode): HTMLButtonElement | undefine
 };
 
 const handleTechnicalReportsVersion17andAbove = async (targetNode: Element): Promise<void> => {
-  const showPrintOptionsHTML = getShowPrintOptionsHTML() === "true";
-  const showPrintOptionsPDF = getShowPrintOptionsPDF() === "true";
+  const showPrintOptionsHTML = readDatasetSetting("enablePrintOptionsHTML");
+  const showPrintOptionsPDF = readDatasetSetting("enablePrintOptionsPDF");
   if (!showPrintOptionsHTML && !showPrintOptionsPDF) return;
 
   const overlayMenu = getOverlayMenu(targetNode);

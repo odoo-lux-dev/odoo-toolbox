@@ -2,6 +2,7 @@ import "./odoosh-style.scss";
 import { handleShDownloadFullLog } from "@/page-features/odoo-sh/handle-sh-download-full-log";
 import { handleProjectListPageFavorites } from "@/page-features/odoo-sh/handle-sh-favorites";
 import { handleProjectPage } from "@/page-features/odoo-sh/handle-sh-project-page";
+import { ODOOSH_ROUTE_CHANGED } from "@/services/extension-messages";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 
@@ -37,7 +38,6 @@ export default defineContentScript({
       const pageType = getPageType();
       if (pageType === current.type) return;
 
-      // Stop the previous handler's observer before switching routes.
       current.dispose?.();
       current.downloadLogDispose?.();
       current = { type: pageType, dispose: null, downloadLogDispose: null };
@@ -67,7 +67,7 @@ export default defineContentScript({
     };
 
     browser.runtime.onMessage.addListener((message) => {
-      if (message?.type === "odoosh:route-changed") {
+      if (message?.type === ODOOSH_ROUTE_CHANGED) {
         initOdooSh();
       }
     });

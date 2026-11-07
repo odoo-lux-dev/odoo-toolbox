@@ -1,23 +1,20 @@
 import { t } from "@/utils/i18n-page";
-const renameShProjectPageTitle = (currentProjectName: string, baseProjectName: string): void => {
-  let urlSubPart = t("page_features.sh_rename.branches");
-  const currentUrl = window.location.href;
 
-  if (
-    currentUrl.includes(`project/${baseProjectName}/branches`) ||
-    currentUrl.endsWith(`project/${baseProjectName}`)
-  ) {
-    urlSubPart = t("page_features.sh_rename.branches");
-  } else if (currentUrl.includes(`project/${baseProjectName}/builds`)) {
-    urlSubPart = t("page_features.sh_rename.builds");
-  } else if (currentUrl.includes(`project/${baseProjectName}/status`)) {
-    urlSubPart = t("page_features.sh_rename.status");
-  } else if (currentUrl.includes(`project/${baseProjectName}/logs`)) {
-    urlSubPart = t("page_features.sh_rename.audit_logs");
-  } else if (currentUrl.includes(`project/${baseProjectName}/settings`)) {
-    urlSubPart = t("page_features.sh_rename.settings");
-  }
-  document.title = `${currentProjectName} (SH) - ${urlSubPart}`;
+const PAGE_TITLE_KEYS: [segment: string, key: string][] = [
+  ["builds", "page_features.sh_rename.builds"],
+  ["status", "page_features.sh_rename.status"],
+  ["logs", "page_features.sh_rename.audit_logs"],
+  ["settings", "page_features.sh_rename.settings"],
+];
+
+/** Titles the tab `<display name> (SH) - <page>`; the branches page is the default. */
+const renameShProjectPageTitle = (currentProjectName: string, baseProjectName: string): void => {
+  const currentUrl = window.location.href;
+  const titleKey =
+    PAGE_TITLE_KEYS.find(([segment]) =>
+      currentUrl.includes(`project/${baseProjectName}/${segment}`),
+    )?.[1] ?? "page_features.sh_rename.branches";
+  document.title = `${currentProjectName} (SH) - ${t(titleKey)}`;
 };
 
 export { renameShProjectPageTitle };

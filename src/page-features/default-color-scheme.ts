@@ -1,14 +1,11 @@
 import type { DefaultColorScheme } from "@/types";
 import { getCookie, setCookie } from "@/utils/cookie-utils";
-import { getDefaultColorScheme, getOdooVersion } from "@/utils/utils";
+import { getOdooVersion } from "@/utils/odoo-page";
+import { readDatasetSetting } from "@/utils/settings-schema";
 
 const COOKIE_TTL = 24 * 60 * 60 * 365;
 
-/**
- * Determines the effective color scheme based on user preference and system settings
- */
 const getEffectiveColorScheme = (colorScheme: DefaultColorScheme): "light" | "dark" | null => {
-  // None: don't interfere, let Odoo handle it
   if (colorScheme === "none") {
     return null;
   }
@@ -17,7 +14,6 @@ const getEffectiveColorScheme = (colorScheme: DefaultColorScheme): "light" | "da
     return colorScheme;
   }
 
-  // System mode: follow system preference
   if (colorScheme === "system") {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     return prefersDark ? "dark" : "light";
@@ -26,10 +22,7 @@ const getEffectiveColorScheme = (colorScheme: DefaultColorScheme): "light" | "da
   return null;
 };
 
-/**
- * Updates stylesheets in head (adds or removes "_dark" suffix)
- * Common logic for v17+
- */
+/** Swaps the web assets bundle between `assets_web` and `assets_web_dark` (17.0+). */
 const updateStylesheets = (targetScheme: "light" | "dark"): boolean => {
   const isDarkMode = targetScheme === "dark";
   let modified = false;
@@ -45,12 +38,10 @@ const updateStylesheets = (targetScheme: "light" | "dark"): boolean => {
     const hasLight = href.includes(".assets_web.");
 
     if (isDarkMode && hasLight && !hasDark) {
-      // Switch to dark: add "_dark" before ".min.css"
       const newHref = href.replace(/\.assets_web\.min\.css/, ".assets_web_dark.min.css");
       link.setAttribute("href", newHref);
       modified = true;
     } else if (!isDarkMode && hasDark) {
-      // Switch to light: remove "_dark"
       const newHref = href.replace(/\.assets_web_dark\.min\.css/, ".assets_web.min.css");
       link.setAttribute("href", newHref);
       modified = true;
@@ -60,9 +51,7 @@ const updateStylesheets = (targetScheme: "light" | "dark"): boolean => {
   return modified;
 };
 
-/**
- * Sets color scheme using cookies for Odoo v16
- */
+/** Odoo 16 picks the bundle server-side from these cookies: a reload is needed. */
 const setCookiesForV16 = (targetScheme: "light" | "dark"): boolean => {
   const reload =
     getCookie("configured_color_scheme") !== targetScheme ||
@@ -74,16 +63,12 @@ const setCookiesForV16 = (targetScheme: "light" | "dark"): boolean => {
   return reload;
 };
 
-/**
- * Applies color scheme to Odoo based on version
- * @returns Object indicating if page reload is needed
- */
+/** Applies the default color scheme setting (16.0+); tells whether a reload is needed. */
 const setDefaultColorScheme = (): { reload: boolean } => {
   const odooVersion = getOdooVersion();
-  const colorScheme = getDefaultColorScheme();
+  const colorScheme = readDatasetSetting("defaultColorScheme");
 
-  // Only apply to Odoo 16.0 and above
-  if (!odooVersion || parseFloat(odooVersion) < 16.0) {
+  if (!odooVersion || odooVersion < 16) {
     return { reload: false };
   }
 
@@ -92,10 +77,7 @@ const setDefaultColorScheme = (): { reload: boolean } => {
     return { reload: false };
   }
 
-  const odooVersionNumber = parseFloat(odooVersion);
-
-  // Odoo 16: Use cookies (requires reload)
-  if (odooVersionNumber < 17.0) {
+  if (odooVersion < 17) {
     const reload = setCookiesForV16(effectiveScheme);
     return { reload };
   }

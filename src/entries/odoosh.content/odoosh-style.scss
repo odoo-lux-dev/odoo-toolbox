@@ -74,7 +74,6 @@ $icon-size: 16px;
 }
 
 .x-odoo-sh-copy-branch-name,
-.x-odoo-sh-github-link,
 .x-odoo-sh-project-task-link {
   color: #b5b7ba;
   display: flex;
@@ -94,10 +93,10 @@ $icon-size: 16px;
 
 .x-odoo-sh-copy-branch-name {
   margin-left: 12px;
-}
 
-.x-odoo-sh-github-link {
-  margin-left: 8px;
+  i {
+    font-size: 14px;
+  }
 }
 
 .o_builds_view.x-odoo-options-colorblind-mode {

@@ -2,7 +2,6 @@ import {
   addCopyIconToBranchTitle,
   addCopyIconToBranchTitleBuildPage,
 } from "@/page-features/odoo-sh/handle-sh-branch-name-copy";
-import { addColorBlindClass } from "@/page-features/odoo-sh/handle-sh-colorblind-mode";
 import { updateProjectList } from "@/page-features/odoo-sh/handle-sh-favorites";
 import {
   addProjectTaskLinkBranchTitle,
@@ -13,91 +12,62 @@ import { favoritesService } from "@/services/favorites-service";
 import { settingsService } from "@/services/settings-service";
 
 const REGEX_CURRENT_PROJECT_NAME = /\/project\/(?<project_name>[^/?#&=;]+)/;
+const COLORBLIND_CLASS = "x-odoo-options-colorblind-mode";
 
 /**
- * Monitors the project page for changes and dynamically updates the project list based on favorite status.
- * This function targets a specific element identified by the \#wrapwrap selector and sets up a MutationObserver
- * to listen for changes in the DOM. When a new header node is added to the DOM, it implies that the project list
- * might have been updated. The function then retrieves the current list of favorite projects and sorts the projects
- * displayed in the "table tbody" within the "div.project-menu" based on whether they are marked as favorites.
- * Projects marked as favorites are given priority in the list. Additionally, if a project is a favorite but does not
- * have a star icon, a star icon is added to signify its favorite status. This dynamic update ensures that the project
- * list reflects the current favorite status of projects, enhancing user experience by allowing for easy identification
- * of favorite projects. Furthermore, it adds a copy icon to the branch title element, allowing users to copy the branch
- * name to the clipboard.
+ * Enhances an Odoo.sh project page as the SPA renders it: favorites in the project menu,
+ * branch name copy and task links on the branch and builds views, colorblind palette and
+ * page title.
  *
- * @async
- * @returns {Promise<() => void>} A promise that resolves to a teardown function which disconnects the observer (used when navigating away from this page in the SPA).
+ * @returns A teardown function disconnecting the observer (SPA navigation).
  */
 const handleProjectPage = async (): Promise<() => void> => {
   const wrapper = document.querySelector(".odoo_sh_app_body");
   if (!wrapper) return () => {};
-  const favorites = await favoritesService.getFavoritesProjects();
+  const favorites = await favoritesService.get();
   const {
     renameShProjectPage,
     taskUrl: globalTaskUrl,
     colorBlindMode,
   } = await settingsService.getSettings();
 
-  const getCurrentFavoriteProject = () => {
-    const currentProjectName = window.location.href.match(REGEX_CURRENT_PROJECT_NAME)?.groups
-      ?.project_name;
-    return {
-      currentProjectName,
-      currentFavoriteProject:
-        currentProjectName !== undefined
-          ? favorites.find((favorite) => favorite.name === currentProjectName)
-          : currentProjectName,
-    };
+  const getCurrentProject = () => {
+    const name = window.location.href.match(REGEX_CURRENT_PROJECT_NAME)?.groups?.project_name;
+    const favorite = name ? favorites.find((fav) => fav.name === name) : undefined;
+    return { name, favorite, taskUrl: favorite?.task_link || globalTaskUrl };
+  };
+
+  const handleAddedElement = (element: Element) => {
+    const { taskUrl } = getCurrentProject();
+    const { classList } = element;
+    if (classList.contains("project-menu")) {
+      updateProjectList(favorites);
+    } else if (classList.contains("o_branch_header")) {
+      addCopyIconToBranchTitle();
+      addProjectTaskLinkBranchTitle(taskUrl);
+    } else if (classList.contains("o_branches_view")) {
+      if (colorBlindMode) {
+        element.querySelector(".o_branches_listing")?.classList.add(COLORBLIND_CLASS);
+      }
+    } else if (classList.contains("o_builds_view")) {
+      if (colorBlindMode) classList.add(COLORBLIND_CLASS);
+      for (const buildLine of element.querySelectorAll(".o_builds_branch")) {
+        addCopyIconToBranchTitleBuildPage(buildLine);
+        addProjectTaskLinkBranchTitleBuildPage(buildLine, taskUrl);
+      }
+    }
   };
 
   const observer = new MutationObserver((mutations) => {
-    const { currentProjectName, currentFavoriteProject } = getCurrentFavoriteProject();
-    if (renameShProjectPage)
-      renameShProjectPageTitle(
-        currentFavoriteProject?.display_name || currentProjectName || "",
-        currentProjectName || "",
-      );
-    mutations.forEach((mutation) => {
-      if (mutation.type === "childList") {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeName === "DIV" && (node as Element).classList.contains("project-menu")) {
-            updateProjectList(favorites);
-          } else if (
-            node.nodeName === "DIV" &&
-            (node as Element).classList.contains("o_branch_header")
-          ) {
-            addCopyIconToBranchTitle();
-            addProjectTaskLinkBranchTitle(currentFavoriteProject?.task_link || globalTaskUrl);
-          } else if (
-            node.nodeName === "DIV" &&
-            (node as Element).classList.contains("o_branches_view")
-          ) {
-            const branchListingDiv = (node as Element).querySelector(".o_branches_listing");
-            if (colorBlindMode && branchListingDiv) {
-              addColorBlindClass(branchListingDiv);
-            }
-          } else if (
-            node.nodeName === "DIV" &&
-            // @ts-expect-error - TS doesn't recognize classList
-            node.classList.contains("o_builds_view")
-          ) {
-            if (colorBlindMode) {
-              addColorBlindClass(node);
-            }
-            const buildLines = (node as Element).querySelectorAll(".o_builds_branch");
-            if (!buildLines.length) return;
-            for (const buildLine of buildLines) {
-              addCopyIconToBranchTitleBuildPage(buildLine as HTMLDivElement);
-              addProjectTaskLinkBranchTitleBuildPage(
-                buildLine as HTMLDivElement,
-                currentFavoriteProject?.task_link || globalTaskUrl,
-              );
-            }
-          }
-        }
+    if (renameShProjectPage) {
+      const { name, favorite } = getCurrentProject();
+      renameShProjectPageTitle(favorite?.display_name || name || "", name || "");
+    }
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeName === "DIV") handleAddedElement(node as Element);
       }
-    });
+    }
   });
 
   observer.observe(wrapper, {

@@ -1,5 +1,8 @@
 import { t } from "@/utils/i18n-page";
-import { getShowOdooShLoginButton, isOdooShHosted } from "@/utils/utils";
+import { isOdooShHosted } from "@/utils/odoo-hosts";
+import { readDatasetSetting } from "@/utils/settings-schema";
+
+import { getLoginForm, insertInLoginForm } from "./login-form";
 
 const createOdooShLoginButton = (): HTMLAnchorElement => {
   const btn = document.createElement("a");
@@ -15,8 +18,8 @@ const createOdooShLoginButton = (): HTMLAnchorElement => {
  * standard "Log in" button inside the `.oe_login_buttons` container.
  */
 const handleOdooShLoginButton = async (): Promise<void> => {
-  const showOdooShLoginButton = getShowOdooShLoginButton() === "true";
-  const loginForm = document.querySelector("form.oe_login_form");
+  const showOdooShLoginButton = readDatasetSetting("showOdooShLoginButton");
+  const loginForm = getLoginForm();
 
   if (!showOdooShLoginButton || !loginForm || loginForm.querySelector(".x-odoosh-login-button"))
     return;
@@ -41,12 +44,7 @@ const handleOdooShLoginButton = async (): Promise<void> => {
   wrapper.className = "form-group mb-3 text-center";
   wrapper.appendChild(btn);
 
-  const submitContainer = loginForm.querySelector(".field-login");
-  if (submitContainer) {
-    loginForm.insertBefore(wrapper, submitContainer);
-  } else {
-    loginForm.appendChild(wrapper);
-  }
+  insertInLoginForm(loginForm, wrapper);
 };
 
 export { handleOdooShLoginButton };
