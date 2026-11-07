@@ -7,7 +7,7 @@ import type { FieldMetadata } from "@/types";
  *
  * They must never be sent to the RPC as a query field.
  */
-export const PSEUDO_FIELD_XML_ID = "xml_id";
+const PSEUDO_FIELD_XML_ID = "xml_id";
 
 export const PSEUDO_FIELD_METADATA: Record<string, FieldMetadata> = {
   [PSEUDO_FIELD_XML_ID]: { string: "External ID", type: "char" },

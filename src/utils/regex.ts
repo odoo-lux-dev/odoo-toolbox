@@ -1,38 +1,15 @@
-import { settingsService } from "@/services/settings-service";
+/** Splits a `/pattern/flags` input; anything else is a pattern without flags. */
+export const parseRegexInput = (input: string) => {
+  const match = input.match(/^\/(.+)\/([a-z]*)$/);
+  return match ? { pattern: match[1], flags: match[2] } : { pattern: input, flags: "" };
+};
 
-const isValidRegex = (userInput: string) => {
+export const isValidRegex = (userInput: string) => {
   try {
     const { pattern, flags } = parseRegexInput(userInput);
     new RegExp(pattern, flags);
     return true;
-  } catch (_e) {
+  } catch {
     return false;
   }
 };
-
-const parseRegexInput = (input: string) => {
-  const regex = /^\/(.+)\/([a-z]*)$/;
-  const match = input.match(regex);
-  if (match) {
-    return { pattern: match[1], flags: match[2] };
-  } else {
-    return { pattern: input, flags: "" };
-  }
-};
-
-const parseTaskTitle = async (taskTitle: string) => {
-  const currentPattern = await settingsService.getTaskRegex();
-  if (isValidRegex(currentPattern)) {
-    const { pattern, flags } = parseRegexInput(currentPattern);
-    const userRegex = new RegExp(pattern, flags);
-    return userRegex.exec(taskTitle);
-  }
-  return null;
-};
-
-const extractBranchFromGitClone = (command: string) => {
-  const match = command.match(/(?:--branch|-b)\s+(\S+)/);
-  return match ? match[1] : null;
-};
-
-export { isValidRegex, parseRegexInput, parseTaskTitle, extractBranchFromGitClone };

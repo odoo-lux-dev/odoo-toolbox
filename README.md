@@ -137,12 +137,12 @@ Odoo Toolbox supports internationalization. Translations are stored as YAML file
 
 1. Copy `src/locales/en.yml` to `src/locales/<code>.yml` (e.g., `ru.yml`)
 2. Translate all values (keep keys, structure, and placeholders like `$1`, `{model}` unchanged)
-3. Add one entry to the `LOCALES` dictionary in `src/services/i18n-service.ts`:
+3. Add the code to `SUPPORTED_LOCALES` in `src/services/i18n-locales.ts`
+4. Add its flag and native name to `LOCALES` in `src/services/i18n-service.ts`:
    ```ts
-   ru: { yaml: ruYaml, flag: "🇷🇺", label: "Русский" },
+   ru: { flag: "🇷🇺", label: "Русский" },
    ```
    - Add `rtl: true` if the language is right-to-left (Arabic, Hebrew, etc.)
-4. Add the import at the top of the file: `import ruYaml from "@/locales/ru.yml";`
 
 That's it. The language switcher, RTL support, and browser auto-detection all work automatically.
 

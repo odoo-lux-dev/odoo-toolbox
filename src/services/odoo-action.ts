@@ -1,65 +1,43 @@
-import { resolveDoActionFunction } from "@/services/owl-runtime";
-
-export interface ActWindowAction {
-  name?: string;
-  type: string;
+type ActWindowAction = {
+  name: string;
+  type: "ir.actions.act_window";
   res_model: string;
   res_id?: number;
-  views?: unknown[];
-  target?: string;
+  views: [false, string][];
+  target: "new" | "current";
   domain?: unknown[];
-  context?: Record<string, unknown>;
-}
+};
+
+const MULTI_RECORD_VIEWS: [false, string][] = [
+  [false, "list"],
+  [false, "kanban"],
+  [false, "form"],
+];
 
 export const buildActWindowAction = (opts: {
   model: string;
-  recordIds?: number[];
+  recordIds?: number | number[];
   domain?: unknown[];
   asPopup?: boolean;
   title?: string;
 }): ActWindowAction => {
-  const { model, recordIds, domain, asPopup, title } = opts;
+  const { model, domain, asPopup, title } = opts;
+  const recordIds = typeof opts.recordIds === "number" ? [opts.recordIds] : (opts.recordIds ?? []);
   const action: ActWindowAction = {
     name: title ?? "Odoo Toolbox",
     type: "ir.actions.act_window",
     res_model: model,
     target: asPopup ? "new" : "current",
+    views: MULTI_RECORD_VIEWS,
   };
 
-  if (Array.isArray(recordIds) && recordIds.length > 0) {
-    if (recordIds.length === 1) {
-      action.res_id = recordIds[0];
-      action.views = [[false, "form"]];
-    } else {
-      action.views = [
-        [false, "list"],
-        [false, "kanban"],
-        [false, "form"],
-      ];
-      action.domain = domain || [["id", "in", recordIds]];
-    }
-  } else if (typeof recordIds === "number") {
-    action.res_id = recordIds;
+  if (recordIds.length === 1) {
+    action.res_id = recordIds[0];
     action.views = [[false, "form"]];
-  } else {
-    action.views = [
-      [false, "list"],
-      [false, "kanban"],
-      [false, "form"],
-    ];
-    if (domain) action.domain = domain;
+  } else if (recordIds.length > 1) {
+    action.domain = domain || [["id", "in", recordIds]];
+  } else if (domain) {
+    action.domain = domain;
   }
-
   return action;
-};
-
-export const openViewViaOwlRuntime = (
-  action: ActWindowAction,
-  options: Record<string, unknown> = {},
-) => {
-  const doActionFn = resolveDoActionFunction(window.odoo as never);
-  if (!doActionFn) {
-    throw new Error("Action service not available");
-  }
-  return doActionFn(action, options);
 };

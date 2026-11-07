@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
 import {
-  COMMAND_CODES,
+  endsAtCommandValues,
+  findCommandKeywords,
   formatJsonWithCommands,
   hasCommandSyntax,
+  mergeIntoJsonWithCommands,
   parseJsonWithCommands,
   preprocessCommands,
 } from "@/utils/command-utils";
@@ -176,17 +178,25 @@ describe("parseJsonWithCommands", () => {
   });
 });
 
-describe("COMMAND_CODES", () => {
-  test("exposes the Odoo command codes", () => {
-    expect(COMMAND_CODES).toEqual({
-      create: 0,
-      update: 1,
-      delete: 2,
-      unlink: 3,
-      link: 4,
-      clear: 5,
-      set: 6,
-    });
+describe("findCommandKeywords", () => {
+  test("finds keywords outside strings only", () => {
+    const text = '{"note": "Command.link(1)", "ids": [Command.link(2)]}';
+    const from = text.lastIndexOf("Command");
+    expect(findCommandKeywords(text)).toEqual([
+      { from, actionFrom: from + "Command.".length, to: from + "Command.link".length },
+    ]);
+  });
+});
+
+describe("endsAtCommandValues", () => {
+  test("detects the values position of create and update", () => {
+    expect(endsAtCommandValues('{"line_ids": [Command.create(')).toBe(true);
+    expect(endsAtCommandValues('{"line_ids": [Command.update(12, ')).toBe(true);
+  });
+
+  test("ignores commands without a values argument", () => {
+    expect(endsAtCommandValues("[Command.link(")).toBe(false);
+    expect(endsAtCommandValues("[Command.set(")).toBe(false);
   });
 });
 
@@ -243,5 +253,37 @@ describe("formatJsonWithCommands", () => {
 
   test("preserves unknown Command calls (round-trips them)", () => {
     expect(formatJsonWithCommands('{"x":Command.foo(1)}')).toBe('{\n  "x": Command.foo(1)\n}');
+  });
+});
+
+describe("mergeIntoJsonWithCommands", () => {
+  test("keeps Command calls and the last value intact (regression)", () => {
+    const merged = mergeIntoJsonWithCommands(
+      '{"line_ids": [Command.create({"name": "x"})], "a": 1}',
+      { partner_id: null },
+    );
+    expect(parseJsonWithCommands(merged)).toEqual({
+      partner_id: null,
+      line_ids: [[0, 0, { name: "x" }]],
+      a: 1,
+    });
+    expect(merged).toContain("Command.create(");
+  });
+
+  test("existing values win over the added ones", () => {
+    expect(JSON.parse(mergeIntoJsonWithCommands('{"a": 1}', { a: 0, b: 2 }))).toEqual({
+      a: 1,
+      b: 2,
+    });
+  });
+
+  test("accepts empty input and a trailing comma left while typing", () => {
+    expect(JSON.parse(mergeIntoJsonWithCommands("", { a: 0 }))).toEqual({ a: 0 });
+    expect(JSON.parse(mergeIntoJsonWithCommands('{"a": 1, }', { b: 2 }))).toEqual({ a: 1, b: 2 });
+    expect(JSON.parse(mergeIntoJsonWithCommands('{"s": ", }"}', {}))).toEqual({ s: ", }" });
+  });
+
+  test("throws on invalid JSON", () => {
+    expect(() => mergeIntoJsonWithCommands('{"a": ', { b: 1 })).toThrow();
   });
 });

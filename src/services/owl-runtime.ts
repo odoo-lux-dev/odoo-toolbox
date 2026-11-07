@@ -1,18 +1,19 @@
-export interface OdooInfo {
-  version: number | null;
-  majorVersion: number | null;
-  database?: string;
-}
+import type { OdooActionParams, OdooInfo, OdooPageInfo, OdooWebClient } from "@/types";
+import { getOdooVersion } from "@/utils/odoo-page";
 
-export interface OdooPageInfo {
-  model?: string;
-  recordIds?: number[];
-  domain?: unknown[];
-  viewType?: string;
-  title?: string;
-}
+import {
+  type PageScriptId,
+  type PageScriptResponse,
+  type PageScripts,
+  serializeError,
+} from "./extension-messages";
 
-export interface SearchValues {
+/**
+ * Reads the state of the Odoo web client. Every function receives `window.odoo`
+ * explicitly so that it can run in the inspected page (see `runPageScript`) and in tests.
+ */
+
+interface SearchValues {
   model?: string | null;
   ids?: number | number[] | null;
   domain?: unknown[];
@@ -20,130 +21,39 @@ export interface SearchValues {
   viewType?: string;
 }
 
-interface OwlComponent {
-  name?: string;
-  children?: Record<string, OwlComponent | undefined>;
-  props?: Record<string, unknown>;
-  [key: string]: unknown;
-}
-
-interface OwlRoot {
-  actionService?: {
-    doAction?: (...args: unknown[]) => unknown;
-  };
-  env?: {
-    services?: {
-      action?: {
-        doAction?: (...args: unknown[]) => unknown;
-      };
-      user?: {
-        context?: Record<string, unknown>;
-      };
-      orm?: {
-        call?: (
-          model: string,
-          method: string,
-          args?: unknown[],
-          kwargs?: Record<string, unknown>,
-        ) => Promise<unknown>;
-      };
-    };
-  };
-  user?: {
-    context?: Record<string, unknown>;
-  };
-  orm?: {
-    searchRead?: (model: string, domain: unknown[], fields: string[]) => Promise<unknown[]>;
-    [key: string]: unknown;
-  };
-  __owl__?: OwlComponent;
-  [key: string]: unknown;
-}
-
-interface OwlDebugServices {
-  "web.rpc"?: {
-    query: (params: Record<string, unknown>) => Promise<unknown>;
-  };
-  "web.web_client"?: {
-    do_action?: (...args: unknown[]) => unknown;
-  };
-  "@web/session"?: {
-    session?: {
-      user_context?: Record<string, unknown>;
-    };
-  };
-  user?: {
-    context?: {
-      user_context?: Record<string, unknown>;
-    };
-  };
-  [key: string]: unknown;
-}
-
-interface OdooWindow {
-  info?: {
-    server_version_info?: string[];
-    db?: string;
-  };
-  session_info?: {
-    server_version_info?: string[];
-    db?: string;
-  };
-  __WOWL_DEBUG__?: {
-    root?: OwlRoot;
-  };
-  __DEBUG__?: {
-    services?: OwlDebugServices;
-  };
-}
-
-export const getOdooInfoFromWindow = (odoo: OdooWindow | undefined): OdooInfo => {
-  const serverInfoVersion = (odoo?.info || odoo?.session_info)?.server_version_info
-    ?.slice(0, 2)
-    .join(".")
-    .replace(/^saas~/, "")
-    .replace(/\.0$/, "");
-
-  const version = Number(serverInfoVersion);
-  const majorVersion = Number(serverInfoVersion?.split(".")[0]);
-  const database = odoo?.info?.db || odoo?.session_info?.db;
-
+export const getOdooInfoFromWindow = (odoo: OdooWebClient | undefined): OdooInfo => {
+  const version = getOdooVersion(odoo);
   return {
-    version: isNaN(version) ? null : version,
-    majorVersion: isNaN(majorVersion) ? null : majorVersion,
-    database,
+    version,
+    majorVersion: version === null ? null : Math.trunc(version),
+    database: odoo?.info?.db || odoo?.session_info?.db,
   };
 };
 
+/** User context of the web client. Rejects when the server has to be asked and fails. */
 export const getOdooContextFromWindow = async (
-  odoo: OdooWindow | undefined,
+  odoo: OdooWebClient | undefined,
 ): Promise<Record<string, unknown>> => {
-  try {
-    const { version, majorVersion } = getOdooInfoFromWindow(odoo);
-    if (!version || !majorVersion) return {};
+  if (!getOdooVersion(odoo)) return {};
+  const root = odoo?.__WOWL_DEBUG__?.root;
 
-    const userService =
-      odoo?.__WOWL_DEBUG__?.root?.env?.services?.user ?? odoo?.__WOWL_DEBUG__?.root?.user;
-    const context = userService?.context;
-    if (context && Object.keys(context).length > 0) return context;
+  const context = (root?.env?.services?.user ?? root?.user)?.context;
+  if (context && Object.keys(context).length > 0) return context;
 
-    const legacyContext = odoo?.__DEBUG__?.services
-      ? (odoo.__DEBUG__.services["@web/session"]?.session?.user_context ??
-        odoo.__DEBUG__.services.user?.context?.user_context)
-      : undefined;
-    if (legacyContext && Object.keys(legacyContext).length > 0) return legacyContext;
+  const legacyServices = odoo?.__DEBUG__?.services;
+  const legacyContext =
+    legacyServices?.["@web/session"]?.session?.user_context ??
+    legacyServices?.user?.context?.user_context;
+  if (legacyContext && Object.keys(legacyContext).length > 0) return legacyContext;
 
-    // Odoo 19+: the user singleton is not exposed anymore, ask the server.
-    const orm = odoo?.__WOWL_DEBUG__?.root?.env?.services?.orm;
-    if (!orm?.call) return {};
+  // Odoo 19+: the user singleton is not exposed anymore, ask the server.
+  const orm = root?.env?.services?.orm;
+  if (!orm?.call) return {};
 
-    const fetchedContext = await orm.call("res.users", "context_get", []);
-    return fetchedContext && typeof fetchedContext === "object" && !Array.isArray(fetchedContext)
-      ? (fetchedContext as Record<string, unknown>)
-      : {};
-  } catch {
-    return {};
-  }
+  const fetchedContext = await orm.call("res.users", "context_get", []);
+  return fetchedContext && typeof fetchedContext === "object" && !Array.isArray(fetchedContext)
+    ? (fetchedContext as Record<string, unknown>)
+    : {};
 };
 
 export const parseOdooUrl = (
@@ -195,7 +105,8 @@ export const retrieveMatchingOwlComponentRecursively = (
 ): Record<string, unknown> | undefined => {
   if (!parentComponent) return undefined;
 
-  if (typeof parentComponent.name === "string" && matchingRegex.test(parentComponent.name)) {
+  const names = [parentComponent.name, parentComponent.componentName];
+  if (names.some((name) => typeof name === "string" && matchingRegex.test(name))) {
     return parentComponent;
   }
 
@@ -219,7 +130,7 @@ export const retrieveMatchingOwlComponentRecursively = (
 };
 
 export const getCurrentSearchValues = (
-  odoo: OdooWindow | undefined,
+  odoo: OdooWebClient | undefined,
   location: { hash: string; pathname: string },
 ): SearchValues => {
   const urlData = parseOdooUrl(location.hash, location.pathname);
@@ -227,9 +138,7 @@ export const getCurrentSearchValues = (
   if (urlData.ids && urlData.model) return urlData;
 
   try {
-    const owlDebug = odoo?.__WOWL_DEBUG__ as Record<string, unknown>;
-    const owlRoot = owlDebug?.root as Record<string, unknown>;
-    const baseComponent = owlRoot?.__owl__ as Record<string, unknown>;
+    const baseComponent = odoo?.__WOWL_DEBUG__?.root?.__owl__;
     if (!baseComponent) return { context: urlData.context };
 
     const mainController = retrieveMatchingOwlComponentRecursively(
@@ -312,7 +221,7 @@ export const getCurrentSearchValues = (
 };
 
 export const getCurrentPageInfoFromWindow = (
-  odoo: OdooWindow | undefined,
+  odoo: OdooWebClient | undefined,
   location: { hash: string; pathname: string },
   documentTitle: string,
 ): OdooPageInfo => {
@@ -354,7 +263,7 @@ export const getCurrentPageInfoFromWindow = (
   }
 };
 
-export const resolveDoActionFunction = (odoo: OdooWindow | undefined) => {
+export const resolveDoActionFunction = (odoo: OdooWebClient | undefined) => {
   const wowlRoot = odoo?.__WOWL_DEBUG__?.root;
   const fn =
     wowlRoot?.actionService?.doAction ??
@@ -364,6 +273,59 @@ export const resolveDoActionFunction = (odoo: OdooWindow | undefined) => {
   return typeof fn === "function" ? fn : undefined;
 };
 
-export const serializeErrorForFirefox = (error: unknown): Record<string, unknown> => {
-  return { ...(error as Record<string, unknown>) };
+/**
+ * Runs an Odoo action, merging `params.context` into the action (or into the options
+ * when the action is referenced by id / xml id).
+ */
+export const executeOdooAction = async (
+  odoo: OdooWebClient | undefined,
+  params: OdooActionParams,
+): Promise<unknown> => {
+  if (!getOdooInfoFromWindow(odoo).version) {
+    throw new Error("Odoo not detected on this page");
+  }
+  const doAction = resolveDoActionFunction(odoo);
+  if (!doAction) {
+    throw new Error("Action service not available");
+  }
+
+  const { action, context } = params;
+  const options = params.options || {};
+  if (!context) return doAction(action, options);
+
+  if (typeof action === "object" && action !== null) {
+    const actionContext = (action.context as Record<string, unknown> | undefined) ?? {};
+    return doAction({ ...action, context: { ...actionContext, ...context } }, options);
+  }
+  const optionsContext = (options.context as Record<string, unknown> | undefined) ?? {};
+  return doAction(action, { ...options, context: { ...optionsContext, ...context } });
+};
+
+const PAGE_SCRIPTS: {
+  [K in PageScriptId]: (
+    odoo: OdooWebClient | undefined,
+    params: PageScripts[K]["params"],
+  ) => PageScripts[K]["result"] | Promise<PageScripts[K]["result"]>;
+} = {
+  GET_ODOO_INFO: (odoo) => getOdooInfoFromWindow(odoo),
+  GET_CURRENT_PAGE_INFO: (odoo) =>
+    getCurrentPageInfoFromWindow(odoo, window.location, document.title),
+  EXECUTE_ODOO_ACTION: (odoo, params) => {
+    if (!params || typeof params !== "object") throw new Error("Invalid action parameters");
+    return executeOdooAction(odoo, params);
+  },
+};
+
+export const runPageScript = async <K extends PageScriptId>(
+  scriptId: K,
+  params: PageScripts[K]["params"],
+): Promise<PageScriptResponse<PageScripts[K]["result"]>> => {
+  try {
+    const script = PAGE_SCRIPTS[scriptId];
+    if (!script) throw new Error(`Unknown script ID: ${scriptId}`);
+    const result = await script(window.odoo, params);
+    return { ok: true, result };
+  } catch (error) {
+    return { ok: false, error: serializeError(error) };
+  }
 };

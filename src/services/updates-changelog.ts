@@ -120,35 +120,15 @@ export const MAJOR_UPDATES: UpdateConfig[] = [
         icon: "rocket-01",
         text: "By clicking here",
         action: "custom",
-        customHandler: (
-          updateButtonState?: (newState: {
-            text: string;
-            icon: string;
-            disabled?: boolean;
-          }) => void,
-        ) => {
-          if (updateButtonState) {
-            updateButtonState({
-              text: "Enabling...",
-              icon: "loading-03",
-              disabled: true,
-            });
-            settingsService.setShowTechnicalList(true).then(() => {
-              updateButtonState({
-                text: "Enabled !",
-                icon: "tick-01",
-                disabled: true,
-              });
-
-              setTimeout(() => {
-                updateButtonState({
-                  text: "By clicking here",
-                  icon: "rocket-01",
-                  disabled: false,
-                });
-              }, 2000);
-            });
-          }
+        customHandler: async (updateButtonState) => {
+          updateButtonState({ text: "Enabling...", icon: "loading-03", disabled: true });
+          await settingsService.set("showTechnicalList", true);
+          updateButtonState({ text: "Enabled !", icon: "tick-01", disabled: true });
+          setTimeout(
+            () =>
+              updateButtonState({ text: "By clicking here", icon: "rocket-01", disabled: false }),
+            2000,
+          );
         },
       },
     ],

@@ -7,10 +7,8 @@ import {
   dropTargetForElements,
   monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { disableNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview";
 import { createSignal, onCleanup, onMount } from "solid-js";
-
-const TRANSPARENT_PIXEL =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 export interface DropTargetState {
   index: number;
@@ -45,12 +43,10 @@ export function createSortableList(opts: {
         element,
         dragHandle,
         getInitialData: () => ({ index: getIndex(), type: opts.type }),
-        onGenerateDragPreview: ({ nativeSetDragImage }) => {
-          if (!nativeSetDragImage) return;
-          const img = new Image();
-          img.src = TRANSPARENT_PIXEL;
-          nativeSetDragImage(img, 0, 0);
-        },
+        // The library preloads its transparent image when the module loads. An image
+        // created here would still be decoding on the first drag, and the browser
+        // would fall back to its native preview (a snapshot of the row).
+        onGenerateDragPreview: disableNativeDragPreview,
         onDragStart: () => setIsDragging(true),
         onDrop: () => setIsDragging(false),
       });

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { extractBranchFromGitClone, isValidRegex, parseRegexInput } from "@/utils/regex";
+import { isValidRegex, parseRegexInput } from "@/utils/regex";
 
 describe("isValidRegex", () => {
   test("should return true for valid regex without slashes", () => {
@@ -42,34 +42,5 @@ describe("parseRegexInput", () => {
     const result = parseRegexInput("");
     expect(result.pattern).toBe("");
     expect(result.flags).toBe("");
-  });
-});
-
-describe("extractBranchFromGitClone", () => {
-  test("should extract branch from --branch flag", () => {
-    const result = extractBranchFromGitClone("git clone --branch main https://github.com/repo.git");
-    expect(result).toBe("main");
-  });
-
-  test("should extract branch from -b flag", () => {
-    const result = extractBranchFromGitClone("git clone -b develop https://github.com/repo.git");
-    expect(result).toBe("develop");
-  });
-
-  test("should return null when no branch flag", () => {
-    const result = extractBranchFromGitClone("git clone https://github.com/repo.git");
-    expect(result).toBeNull();
-  });
-
-  test("should handle --branch with numbers", () => {
-    const result = extractBranchFromGitClone(
-      "git clone --branch 17.0-12345 https://github.com/repo.git",
-    );
-    expect(result).toBe("17.0-12345");
-  });
-
-  test("should return null for empty input", () => {
-    const result = extractBranchFromGitClone("");
-    expect(result).toBeNull();
   });
 });

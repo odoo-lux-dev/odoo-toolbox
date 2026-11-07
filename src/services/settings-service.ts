@@ -1,404 +1,23 @@
-import type { StorageItemKey, WatchCallback } from "wxt/utils/storage";
-import { storage } from "wxt/utils/storage";
-
 import { Logger } from "@/services/logger";
-import type {
-  DebugModeType,
-  DefaultColorScheme,
-  IgnoredDebugPath,
-  StoredSettings,
-  StoredSettingsV1,
-  StoredSettingsV10,
-  StoredSettingsV11,
-  StoredSettingsV12,
-  StoredSettingsV13,
-  StoredSettingsV14,
-  StoredSettingsV15,
-  StoredSettingsV16,
-  StoredSettingsV17,
-  StoredSettingsV18,
-  StoredSettingsV2,
-  StoredSettingsV3,
-  StoredSettingsV4,
-  StoredSettingsV5,
-  StoredSettingsV6,
-  StoredSettingsV7,
-  StoredSettingsV8,
-  StoredSettingsV9,
-  TechnicalListPosition,
-} from "@/types";
-import {
-  DEBUG_MODE_TYPES,
-  DEFAULT_COLOR_SCHEMES,
-  EXTENSION_THEMES,
-  TECHNICAL_LIST_POSITIONS,
-} from "@/types/settings.types";
-import {
-  CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
-  CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY,
-  CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME,
-  CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE,
-  CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
-  CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS,
-  CHROME_STORAGE_SETTINGS_KEY,
-  CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
-  CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML,
-  CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF,
-  CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
-  CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
-  CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON,
-  CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
-  CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL,
-  CHROME_STORAGE_SETTINGS_TASK_URL,
-  CHROME_STORAGE_SETTINGS_TASK_URL_REGEX,
-  CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION,
-  CHROME_STORAGE_SETTINGS_USER_LOCALE,
-  CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
-  CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN,
-} from "@/utils/constants";
+import { createSyncedStore } from "@/services/synced-store";
+import { resolveColorScheme } from "@/theme/themes";
+import type { BooleanSettingKey, IgnoredDebugPath, SettingKey, StoredSettings } from "@/types";
+import { CHROME_STORAGE_SETTINGS_KEY } from "@/utils/constants";
+import { getDefaultSettings, sanitizeSettings } from "@/utils/settings-schema";
 
-export interface SettingDef {
-  key: keyof StoredSettings;
-  default: StoredSettings[keyof StoredSettings];
-  datasetKey?: string;
-  datasetTransform?: (value: unknown) => string;
-  allowedValues?: readonly string[]; // when set, the stored value must be one of these strings
-}
-
-export const SETTINGS_CONFIG: SettingDef[] = [
-  {
-    key: "enableDebugMode",
-    default: "disabled",
-    datasetKey: "defaultDebugMode",
-    allowedValues: DEBUG_MODE_TYPES,
-  },
-  {
-    key: "enablePrintOptionsPDF",
-    default: false,
-    datasetKey: "showPrintOptionsPDF",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "enablePrintOptionsHTML",
-    default: false,
-    datasetKey: "showPrintOptionsHTML",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "showTechnicalModel",
-    default: false,
-    datasetKey: "showTechnicalModel",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "renameShProjectPage",
-    default: false,
-  },
-  {
-    key: "extensionTheme",
-    default: "dark",
-    datasetKey: "odooToolboxTheme",
-    allowedValues: EXTENSION_THEMES,
-  },
-  {
-    key: "taskUrl",
-    default: "",
-  },
-  {
-    key: "taskUrlRegex",
-    default: "/-(\\d+)-/",
-  },
-  {
-    key: "nostalgiaMode",
-    default: false,
-  },
-  {
-    key: "colorBlindMode",
-    default: false,
-  },
-  {
-    key: "defaultColorScheme",
-    default: "none",
-    datasetKey: "defaultColorScheme",
-    allowedValues: DEFAULT_COLOR_SCHEMES,
-  },
-  {
-    key: "showTechnicalList",
-    default: false,
-    datasetKey: "showTechnicalList",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "technicalListPosition",
-    default: "right",
-    datasetKey: "technicalListPosition",
-    allowedValues: TECHNICAL_LIST_POSITIONS,
-  },
-  {
-    key: "showLoginButtons",
-    default: false,
-    datasetKey: "showLoginButtons",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "userLocale",
-    default: "en",
-  },
-  {
-    key: "ignoredDebugPaths",
-    default: [{ scope: "path" as const, path: "/thanks/trial", deletable: false }],
-    datasetKey: "ignoredDebugPaths",
-    datasetTransform: (v) => JSON.stringify(v ?? []),
-  },
-  {
-    key: "downloadFullLog",
-    default: false,
-  },
-  {
-    key: "showOdooShLoginButton",
-    default: false,
-    datasetKey: "showOdooShLoginButton",
-    datasetTransform: (v) => String(v || false),
-  },
-  {
-    key: "runbotAutoLogin",
-    default: false,
-    datasetKey: "runbotAutoLogin",
-    datasetTransform: (v) => String(v || false),
-  },
-];
-
-export const getSettingDefault = <K extends keyof StoredSettings>(key: K): StoredSettings[K] => {
-  const def = SETTINGS_CONFIG.find((s) => s.key === key);
-  return def?.default as StoredSettings[K];
-};
-
-export const getDefaultSettings = (): StoredSettings => {
-  const defaults = {} as StoredSettings;
-  for (const def of SETTINGS_CONFIG) {
-    (defaults as Record<string, unknown>)[def.key] = def.default;
-  }
-  return defaults;
-};
-
-const isIgnoredDebugPath = (value: unknown): value is IgnoredDebugPath => {
-  if (typeof value !== "object" || value === null) return false;
-  const candidate = value as Partial<IgnoredDebugPath>;
-  switch (candidate.scope) {
-    case "domain":
-      return typeof candidate.domain === "string";
-    case "path":
-      return typeof candidate.path === "string";
-    case "domain_path":
-      return typeof candidate.domain === "string" && typeof candidate.path === "string";
-    default:
-      return false;
-  }
-};
-
-const sanitizeValue = (def: SettingDef, value: unknown): unknown => {
-  if (def.allowedValues) {
-    return typeof value === "string" && def.allowedValues.includes(value) ? value : def.default;
-  }
-  if (def.key === CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS) {
-    const defaultPaths = getSettingDefault(CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS);
-    if (!Array.isArray(value)) {
-      return defaultPaths.map((path) => ({ ...path }));
-    }
-    return value.filter(isIgnoredDebugPath);
-  }
-  if (typeof def.default === "boolean") {
-    return typeof value === "boolean" ? value : def.default;
-  }
-  if (typeof def.default === "string") {
-    return typeof value === "string" ? value : def.default;
-  }
-  return value ?? def.default;
-};
+type RawSettings = Record<string, unknown>;
 
 /**
- * Ensures a settings object always conforms to the schema.
- *
- * Missing keys, wrong types, invalid enum values and malformed entries are
- * replaced by the configured defaults. This protects every reader against
- * corrupted or partially-written data (e.g. bad values coming from the synced
- * storage), so `undefined` can never leak into a setting that must be an
- * array, boolean or string.
- *
- * @param input - A raw settings value, possibly partial or malformed.
- * @returns A fully valid `StoredSettings` object.
+ * `defaultDarkMode: boolean` became `defaultColorScheme` (sync v11, local v2).
+ * The other version bumps added keys, or seeded task URL values that the schema defaults
+ * now replace on purpose: `sanitizeSettings()` fills those.
  */
-export const sanitizeSettings = (input: unknown): StoredSettings => {
-  const source = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
-  const result = getDefaultSettings() as Record<string, unknown>;
-  for (const def of SETTINGS_CONFIG) {
-    result[def.key] = sanitizeValue(def, source[def.key]);
-  }
-  return result as StoredSettings;
-};
+const migrateDefaultDarkMode = (settings: RawSettings): RawSettings => ({
+  ...settings,
+  defaultColorScheme: settings.defaultDarkMode ? "dark" : "none",
+});
 
-export const getSettingFromDataset = <K extends keyof StoredSettings>(
-  key: K,
-): string | undefined => {
-  const def = SETTINGS_CONFIG.find((s) => s.key === key);
-  if (!def?.datasetKey) return undefined;
-  return document.body.dataset[def.datasetKey];
-};
-
-const applyMigration = (
-  version: number,
-  settings: Record<string, unknown>,
-): Record<string, unknown> => {
-  const current = { ...settings };
-  switch (version) {
-    case 2:
-      if (!("extensionTheme" in current) || current.extensionTheme === undefined) {
-        current[CHROME_STORAGE_SETTINGS_EXTENSION_THEME] = "dark";
-      }
-      break;
-    case 3:
-      if (current[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] === "0") {
-        current[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] = "manual";
-      }
-      break;
-    case 4:
-      if (current[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] === "manual") {
-        current[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY] = "disabled";
-      }
-      break;
-    case 5:
-      current[CHROME_STORAGE_SETTINGS_TASK_URL] =
-        "https://www.odoo.com/odoo/project.task/{{task_id}}";
-      break;
-    case 6:
-      current[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX] = "";
-      break;
-    case 7:
-      current[CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE] = false;
-      break;
-    case 8:
-      current[CHROME_STORAGE_SETTINGS_COLORBLIND_MODE] = false;
-      break;
-    case 9:
-      current[CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE] = false;
-      break;
-    case 10:
-      current[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST] = false;
-      break;
-    case 11: {
-      const darkMode = current[CHROME_STORAGE_SETTINGS_DEFAULT_DARK_MODE];
-      current[CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME] = darkMode ? "dark" : "none";
-      break;
-    }
-    case 12:
-      current[CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS] = false;
-      break;
-    case 13:
-      current[CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION] = "right";
-      break;
-    case 14:
-      current[CHROME_STORAGE_SETTINGS_USER_LOCALE] = "en";
-      break;
-    case 15:
-      current[CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS] = [
-        { scope: "path", path: "/thanks/trial", deletable: false },
-      ];
-      break;
-    case 16:
-      current[CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG] = false;
-      break;
-    case 17:
-      current[CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON] = false;
-      break;
-    case 18:
-      current[CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN] = false;
-      break;
-  }
-  return current;
-};
-
-const LOCAL_MIGRATIONS = {
-  2: (settings: StoredSettingsV10): StoredSettingsV11 => {
-    return applyMigration(11, settings as Record<string, unknown>) as StoredSettingsV11;
-  },
-  3: (settings: StoredSettingsV12): StoredSettingsV13 => {
-    return applyMigration(13, settings as Record<string, unknown>) as StoredSettingsV13;
-  },
-  4: (settings: StoredSettingsV13): StoredSettingsV14 => {
-    return applyMigration(14, settings as Record<string, unknown>) as StoredSettingsV14;
-  },
-  5: (settings: StoredSettingsV14): StoredSettingsV15 => {
-    return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
-  },
-  6: (settings: StoredSettingsV15): StoredSettingsV16 => {
-    return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
-  },
-  7: (settings: StoredSettingsV16): StoredSettingsV17 => {
-    return applyMigration(17, settings as Record<string, unknown>) as StoredSettingsV17;
-  },
-  8: (settings: StoredSettingsV17): StoredSettingsV18 => {
-    return applyMigration(18, settings as Record<string, unknown>) as StoredSettingsV18;
-  },
-};
-
-const SYNC_MIGRATIONS = {
-  2: (settings: StoredSettingsV1 | StoredSettingsV2): StoredSettingsV2 => {
-    return applyMigration(2, settings as Record<string, unknown>) as StoredSettingsV2;
-  },
-  3: (settings: StoredSettingsV2): StoredSettingsV3 => {
-    return applyMigration(3, settings as Record<string, unknown>) as StoredSettingsV3;
-  },
-  4: (settings: StoredSettingsV3): StoredSettingsV4 => {
-    return applyMigration(4, settings as Record<string, unknown>) as StoredSettingsV4;
-  },
-  5: (settings: StoredSettingsV4): StoredSettingsV5 => {
-    return applyMigration(5, settings as Record<string, unknown>) as StoredSettingsV5;
-  },
-  6: (settings: StoredSettingsV5): StoredSettingsV6 => {
-    return applyMigration(6, settings as Record<string, unknown>) as StoredSettingsV6;
-  },
-  7: (settings: StoredSettingsV6): StoredSettingsV7 => {
-    return applyMigration(7, settings as Record<string, unknown>) as StoredSettingsV7;
-  },
-  8: (settings: StoredSettingsV7): StoredSettingsV8 => {
-    return applyMigration(8, settings as Record<string, unknown>) as StoredSettingsV8;
-  },
-  9: (settings: StoredSettingsV8): StoredSettingsV9 => {
-    return applyMigration(9, settings as Record<string, unknown>) as StoredSettingsV9;
-  },
-  10: (settings: StoredSettingsV9): StoredSettingsV10 => {
-    return applyMigration(10, settings as Record<string, unknown>) as StoredSettingsV10;
-  },
-  11: (settings: StoredSettingsV10): StoredSettingsV11 => {
-    return applyMigration(11, settings as Record<string, unknown>) as StoredSettingsV11;
-  },
-  12: (settings: StoredSettingsV11): StoredSettingsV12 => {
-    return applyMigration(12, settings as Record<string, unknown>) as StoredSettingsV12;
-  },
-  13: (settings: StoredSettingsV12): StoredSettingsV13 => {
-    return applyMigration(13, settings as Record<string, unknown>) as StoredSettingsV13;
-  },
-  14: (settings: StoredSettingsV13): StoredSettingsV14 => {
-    return applyMigration(14, settings as Record<string, unknown>) as StoredSettingsV14;
-  },
-  15: (settings: StoredSettingsV14): StoredSettingsV15 => {
-    return applyMigration(15, settings as Record<string, unknown>) as StoredSettingsV15;
-  },
-  16: (settings: StoredSettingsV15): StoredSettingsV16 => {
-    return applyMigration(16, settings as Record<string, unknown>) as StoredSettingsV16;
-  },
-  17: (settings: StoredSettingsV16): StoredSettingsV17 => {
-    return applyMigration(17, settings as Record<string, unknown>) as StoredSettingsV17;
-  },
-  18: (settings: StoredSettingsV17): StoredSettingsV18 => {
-    return applyMigration(18, settings as Record<string, unknown>) as StoredSettingsV18;
-  },
-};
-
-/**
- * Serializes an ignored debug path into a comparable key so entries can be
- * deduplicated regardless of which field their scope uses.
- */
+/** Serializes an ignored debug path into a comparable key, whatever its scope. */
 const toIgnoredDebugPathKey = (path: IgnoredDebugPath): string => {
   switch (path.scope) {
     case "domain":
@@ -410,175 +29,50 @@ const toIgnoredDebugPathKey = (path: IgnoredDebugPath): string => {
   }
 };
 
+// Versions only move forward (WXT runs the migrations above the stored one).
+const store = createSyncedStore<StoredSettings>(CHROME_STORAGE_SETTINGS_KEY, {
+  init: getDefaultSettings,
+  normalize: sanitizeSettings,
+  version: 9,
+  migrations: { 2: migrateDefaultDarkMode },
+  sync: { init: getDefaultSettings, version: 19, migrations: { 11: migrateDefaultDarkMode } },
+});
+
 class SettingsService {
-  private settingsLocalStorage = storage.defineItem<StoredSettings>(
-    <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
-    {
-      init: () => getDefaultSettings(),
-      version: 8,
-      migrations: LOCAL_MIGRATIONS,
-    },
-  );
+  getSettings = store.get;
+  setSettings = store.set;
+  watchSettings = store.watch;
 
-  private settingsSyncStorage = storage.defineItem<StoredSettings>(
-    <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
-    {
-      init: () => getDefaultSettings(),
-      version: 18,
-      migrations: SYNC_MIGRATIONS,
-    },
-  );
-
-  async getSettings(): Promise<StoredSettings> {
-    return sanitizeSettings(await this.settingsLocalStorage.getValue());
+  async get<K extends SettingKey>(key: K): Promise<StoredSettings[K]> {
+    return (await this.getSettings())[key];
   }
 
-  async setSettings(settings: StoredSettings): Promise<void> {
-    return this.settingsLocalStorage.setValue(sanitizeSettings(settings));
-  }
-
-  watchSettings(callback: WatchCallback<StoredSettings | null>): () => void {
-    return storage.watch<StoredSettings>(
-      <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
-      callback,
-    );
-  }
-
-  async updateSetting<K extends keyof StoredSettings>(
-    key: K,
-    value: StoredSettings[K],
-  ): Promise<void> {
+  async set<K extends SettingKey>(key: K, value: StoredSettings[K]): Promise<void> {
     const settings = await this.getSettings();
     return this.setSettings({ ...settings, [key]: value });
   }
 
-  async getDebugMode(): Promise<DebugModeType> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY];
+  async toggle(key: BooleanSettingKey): Promise<void> {
+    return this.set(key, !(await this.get(key)));
   }
 
-  async setDownloadFullLog(downloadFullLog: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG, downloadFullLog);
-  }
-
-  async setDebugMode(enableDebugMode: DebugModeType): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_DEBUG_MODE_KEY, enableDebugMode);
-  }
-
-  async setPrintOptionsPDF(enablePrintOptionsPDF: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_PDF, enablePrintOptionsPDF);
-  }
-
-  async setPrintOptionsHTML(enablePrintOptionsHTML: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_PRINT_OPTIONS_HTML, enablePrintOptionsHTML);
-  }
-
-  async setShowTechnicalModel(showTechnicalModel: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_MODEL, showTechnicalModel);
-  }
-
-  async setShowTechnicalList(showTechnicalList: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST, showTechnicalList);
-  }
-
-  async setTechnicalListPosition(position: TechnicalListPosition): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_TECHNICAL_LIST_POSITION, position);
-  }
-
-  async toggleTechnicalList(): Promise<void> {
-    const settings = await this.getSettings();
-    return this.updateSetting(
-      CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST,
-      !settings[CHROME_STORAGE_SETTINGS_SHOW_TECHNICAL_LIST],
-    );
-  }
-
-  async setRenameShProjectPage(renameShProjectPage: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME, renameShProjectPage);
-  }
-
+  /**
+   * Switches to the scheme opposite to the one displayed. A `system` preference
+   * becomes an explicit light/dark choice (the opposite of the OS scheme).
+   */
   async toggleExtensionTheme(): Promise<void> {
-    const settings = await this.getSettings();
-    return this.updateSetting(
-      CHROME_STORAGE_SETTINGS_EXTENSION_THEME,
-      settings[CHROME_STORAGE_SETTINGS_EXTENSION_THEME] === "dark" ? "light" : "dark",
-    );
-  }
-
-  async getDefaultColorScheme(): Promise<DefaultColorScheme> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME];
-  }
-
-  async setDefaultColorScheme(colorScheme: DefaultColorScheme): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_DEFAULT_COLOR_SCHEME, colorScheme);
-  }
-
-  async setColorBlindMode(colorBlindMode: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_COLORBLIND_MODE, colorBlindMode);
-  }
-
-  async getNostalgiaMode(): Promise<boolean> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE];
-  }
-
-  async setNostalgiaMode(nostalgiaMode: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE, nostalgiaMode);
-  }
-
-  async setGlobalTaskUrl(taskUrl: string): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_TASK_URL, taskUrl);
-  }
-
-  async setTaskRegex(taskRegex: string): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_TASK_URL_REGEX, taskRegex);
-  }
-
-  async getTaskRegex(): Promise<string> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_TASK_URL_REGEX];
-  }
-
-  async setShowLoginButtons(showLoginButtons: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS, showLoginButtons);
-  }
-
-  async setShowOdooShLoginButton(showOdooShLoginButton: boolean): Promise<void> {
-    return this.updateSetting(
-      CHROME_STORAGE_SETTINGS_SHOW_ODOO_SH_LOGIN_BUTTON,
-      showOdooShLoginButton,
-    );
-  }
-
-  async getRunbotAutoLogin(): Promise<boolean> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN];
-  }
-
-  async setRunbotAutoLogin(runbotAutoLogin: boolean): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN, runbotAutoLogin);
-  }
-
-  async getUserLocale(): Promise<string> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_USER_LOCALE];
-  }
-
-  async setUserLocale(locale: string): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_USER_LOCALE, locale);
-  }
-
-  async getIgnoredDebugPaths(): Promise<IgnoredDebugPath[]> {
-    return (await this.getSettings())[CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS];
-  }
-
-  async setIgnoredDebugPaths(paths: IgnoredDebugPath[]): Promise<void> {
-    return this.updateSetting(CHROME_STORAGE_SETTINGS_IGNORED_DEBUG_PATHS, paths);
+    const displayed = resolveColorScheme(await this.get("extensionTheme"));
+    return this.set("extensionTheme", displayed === "dark" ? "light" : "dark");
   }
 
   async addIgnoredDebugPath(path: IgnoredDebugPath): Promise<void> {
-    const paths = await this.getIgnoredDebugPaths();
+    const paths = await this.get("ignoredDebugPaths");
     const key = toIgnoredDebugPathKey(path);
     if (paths.some((existing) => toIgnoredDebugPathKey(existing) === key)) {
       Logger.info(`Path ${key} is already ignored`);
       return;
     }
-    return this.setIgnoredDebugPaths([...paths, path]);
+    return this.set("ignoredDebugPaths", [...paths, path]);
   }
 
   async removeIgnoredDebugPath(path: IgnoredDebugPath): Promise<void> {
@@ -587,36 +81,18 @@ class SettingsService {
       Logger.info(`Path ${key} is undeletable`);
       return;
     }
-    const paths = await this.getIgnoredDebugPaths();
-    const updated = paths.filter((existing) => toIgnoredDebugPathKey(existing) !== key);
-    return this.setIgnoredDebugPaths(updated);
+    const paths = await this.get("ignoredDebugPaths");
+    return this.set(
+      "ignoredDebugPaths",
+      paths.filter((existing) => toIgnoredDebugPathKey(existing) !== key),
+    );
   }
 
   async getSyncedSettings(): Promise<StoredSettings> {
-    return sanitizeSettings(await this.settingsSyncStorage.getValue());
+    return sanitizeSettings(await store.getSynced());
   }
 
-  async persistSettingsToSync(): Promise<void> {
-    const settings = await this.getSettings();
-    await this.settingsSyncStorage.setValue(settings);
-  }
-
-  async alignLocalSettingsWithSync(): Promise<void> {
-    Logger.info("Aligning local settings with cloud data");
-    const syncedSettings = await this.getSyncedSettings();
-    await this.setSettings(syncedSettings);
-    Logger.info("Local settings aligned with cloud data");
-  }
-
-  async exportSettings(): Promise<StoredSettings> {
-    return this.getSettings();
-  }
-
-  async importSettings(settings: StoredSettings): Promise<void> {
-    Logger.info("Importing settings from configuration");
-    await this.setSettings(settings);
-    Logger.info("Settings imported successfully");
-  }
+  persistSettingsToSync = store.persistToSync;
 }
 
 export const settingsService = new SettingsService();

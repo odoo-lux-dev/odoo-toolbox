@@ -1,7 +1,3 @@
-import type { JSX } from "solid-js";
-
-import type { ActionButton, NotificationType } from "@/utils/notifications";
-
 export interface FieldMetadata {
   string: string;
   type: string;
@@ -21,8 +17,6 @@ export interface RpcQueryState {
   offset: number;
   orderBy: string;
   context?: string;
-  fieldsMetadata?: Record<string, FieldMetadata>;
-  isQueryValid: boolean;
 }
 
 export interface RpcResultState {
@@ -47,19 +41,4 @@ export interface ModelsState {
   models: OdooModel[];
   loading: boolean;
   error: string | null;
-  lastLoaded: number | null;
-}
-
-export interface DevToolsFunctions {
-  executeQuery: (isNewQuery?: boolean, queryOverrides?: Partial<RpcQueryState>) => Promise<void>;
-  clearQuery: () => void;
-  focusRecord: (model: string, recordId: number | number[]) => Promise<void>;
-  loadModels: (forceReload?: boolean) => Promise<void>;
-  showNotification?: (
-    message: string | JSX.Element,
-    type: NotificationType,
-    duration?: number,
-    actionButton?: ActionButton,
-  ) => void;
-  setOdooVersion: (version: string | null) => void;
 }

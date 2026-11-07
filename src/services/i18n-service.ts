@@ -1,18 +1,15 @@
 import { createSignal } from "solid-js";
 
 import {
-  AUTO_LOCALE,
-  DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
-  normalizeLocale,
-  resolveLocale,
-} from "@/services/i18n-locales";
-import { I18N_GET_MESSAGES, type I18nGetMessagesResponse } from "@/services/i18n-messages";
+  I18N_GET_MESSAGES,
+  type I18nGetMessagesRequest,
+  type I18nGetMessagesResponse,
+} from "@/services/extension-messages";
+import { DEFAULT_LOCALE, resolveLocale, type SupportedLocale } from "@/services/i18n-locales";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
-import { injectTranslations } from "@/utils/i18n-page";
-export { AUTO_LOCALE, SUPPORTED_LOCALES, normalizeLocale };
-export type { SupportedLocale } from "@/services/i18n-locales";
+import { createAsyncCache } from "@/utils/async-cache";
+import { injectTranslations, t as translate } from "@/utils/i18n-page";
 
 interface LocaleConfig {
   flag: string;
@@ -31,9 +28,9 @@ const LOCALES = {
   pt_BR: { flag: "🇧🇷", label: "Português (BR)" },
   hi: { flag: "🇮🇳", label: "हिन्दी" },
   ar: { flag: "🇸🇦", label: "العربية", rtl: true },
-} satisfies Record<string, LocaleConfig>;
+} satisfies Record<SupportedLocale, LocaleConfig>;
 
-export const getLocaleConfig = (locale: string): LocaleConfig | undefined =>
+const getLocaleConfig = (locale: string): LocaleConfig | undefined =>
   (LOCALES as Record<string, LocaleConfig>)[locale];
 
 export function getLocaleLabel(locale: string): { flag: string; label: string } {
@@ -41,34 +38,16 @@ export function getLocaleLabel(locale: string): { flag: string; label: string } 
   return config ? { flag: config.flag, label: config.label } : { flag: "🌐", label: locale };
 }
 
-const messagesCache = new Map<string, Promise<Record<string, string>>>();
-
-const loadMessages = (locale: string): Promise<Record<string, string>> => {
-  if (!messagesCache.has(locale)) {
-    const promise = (async () => {
-      const response = (await browser.runtime.sendMessage({
-        type: I18N_GET_MESSAGES,
-        locale,
-      })) as I18nGetMessagesResponse;
-
-      if (!response?.ok) {
-        throw new Error(response?.error ?? `Failed to load messages for locale "${locale}"`);
-      }
-
-      return response.messages;
-    })().catch((error) => {
-      messagesCache.delete(locale);
-      throw error;
-    });
-
-    messagesCache.set(locale, promise);
+const loadMessages = createAsyncCache(async (locale) => {
+  const request: I18nGetMessagesRequest = { type: I18N_GET_MESSAGES, locale };
+  const response = (await browser.runtime.sendMessage(request)) as I18nGetMessagesResponse;
+  if (!response?.ok) {
+    throw new Error(response?.error ?? `Failed to load messages for locale "${locale}"`);
   }
-
-  return messagesCache.get(locale)!;
-};
+  return response.messages;
+});
 
 let currentLocale: string = DEFAULT_LOCALE;
-let currentMessages: Record<string, string> = {};
 
 const [localeVersion, setLocaleVersion] = createSignal(0);
 export { localeVersion };
@@ -77,66 +56,56 @@ export function getDirection(locale: string): "ltr" | "rtl" {
   return getLocaleConfig(locale)?.rtl ? "rtl" : "ltr";
 }
 
-export async function initI18n(): Promise<{ locale: string; messages: Record<string, string> }> {
-  currentLocale = await resolveLocale();
+/** Loads `locale` and injects it; `currentLocale` changes first so a concurrent change wins. */
+const applyLocale = async (locale: SupportedLocale): Promise<void> => {
+  currentLocale = locale;
 
+  let messages: Record<string, string> = {};
   try {
-    currentMessages = await loadMessages(currentLocale);
+    messages = await loadMessages(locale);
   } catch (error) {
-    Logger.error(`Failed to load messages for locale "${currentLocale}"`, error);
-    currentMessages = {};
-    if (currentLocale !== DEFAULT_LOCALE) {
+    Logger.error(`Failed to load messages for locale "${locale}"`, error);
+    if (locale !== DEFAULT_LOCALE) {
       try {
-        currentMessages = await loadMessages(DEFAULT_LOCALE);
+        messages = await loadMessages(DEFAULT_LOCALE);
       } catch (fallbackError) {
         Logger.error("Failed to load fallback locale messages", fallbackError);
       }
     }
   }
+  if (currentLocale !== locale) return;
 
-  if (typeof document !== "undefined") {
-    const isExtensionPage = location.protocol.includes("extension");
-    if (isExtensionPage) {
-      document.documentElement.dir = getDirection(currentLocale);
-      document.documentElement.lang = currentLocale;
-    }
-    injectTranslations({
-      messages: currentMessages,
-      dir: getDirection(currentLocale),
-      locale: currentLocale,
-    });
+  const dir = getDirection(locale);
+  if (typeof document !== "undefined" && location.protocol.includes("extension")) {
+    document.documentElement.dir = dir;
+    document.documentElement.lang = locale;
   }
-
+  injectTranslations({ messages, dir, locale });
   setLocaleVersion((v) => v + 1);
-  return { locale: currentLocale, messages: currentMessages };
+};
+
+export async function initI18n(): Promise<void> {
+  await applyLocale(await resolveLocale(await settingsService.get("userLocale")));
 }
 
-export async function changeLanguage(locale: string): Promise<void> {
-  await settingsService.setUserLocale(locale);
-  await initI18n();
+export async function changeLanguage(userLocale: string): Promise<void> {
+  const applied = applyLocale(await resolveLocale(userLocale));
+  await settingsService.set("userLocale", userLocale);
+  await applied;
 }
 
 export function getLocale(): string {
   return currentLocale;
 }
 
+/** Reactive `t()`: re-evaluates in Solid computations when the locale changes. */
 export function t(key: string, substitutions?: (string | number)[]): string {
   localeVersion();
-
-  const underscoredKey = key.replace(/\./g, "_");
-  let message =
-    currentMessages[underscoredKey] ||
-    (typeof browser !== "undefined" ? browser.i18n.getMessage(underscoredKey as never) : "") ||
-    key;
-
-  if (substitutions) {
-    for (let i = 0; i < substitutions.length; i++) {
-      message = message.replace(`$${i + 1}`, String(substitutions[i]));
-    }
-  }
-  return message;
+  return translate(key, substitutions);
 }
 
-settingsService.watchSettings(() => {
-  initI18n();
+// Follows a language change made in another extension page.
+settingsService.watchSettings(async ({ userLocale }) => {
+  const locale = await resolveLocale(userLocale);
+  if (locale !== currentLocale) await applyLocale(locale);
 });

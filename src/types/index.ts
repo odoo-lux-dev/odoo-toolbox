@@ -1,4 +1,3 @@
-export type * from "./context.types";
 export type * from "./devtools.types";
 export type * from "./favorites.types";
 export type * from "./history.types";
@@ -6,6 +5,5 @@ export type * from "./odoo.types";
 export type * from "./quick-domains.types";
 export type * from "./reports.types";
 export type * from "./settings.types";
-export type * from "./technical.types";
 export type * from "./update.types";
 export type * from "./utils.types";

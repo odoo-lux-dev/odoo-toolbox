@@ -43,24 +43,20 @@ describe("buildActWindowAction", () => {
     ]);
   });
 
-  test("should build action with empty record IDs array", () => {
-    const action = buildActWindowAction({ model: "res.partner", recordIds: [] });
-    expect(action.res_id).toBeUndefined();
-    expect(action.views).toEqual([
-      [false, "list"],
-      [false, "kanban"],
-      [false, "form"],
-    ]);
+  test("accepts a single record id", () => {
+    const action = buildActWindowAction({ model: "res.partner", recordIds: 7 });
+    expect(action.res_id).toBe(7);
+    expect(action.views).toEqual([[false, "form"]]);
+  });
+
+  test("applies the domain when no record id is given", () => {
+    const domain = [["active", "=", false]];
+    expect(buildActWindowAction({ model: "res.partner", domain }).domain).toBe(domain);
   });
 
   test("should set target to 'new' for popup", () => {
     const action = buildActWindowAction({ model: "res.partner", recordIds: [1], asPopup: true });
     expect(action.target).toBe("new");
-  });
-
-  test("should set target to 'current' by default", () => {
-    const action = buildActWindowAction({ model: "res.partner", recordIds: [1] });
-    expect(action.target).toBe("current");
   });
 
   test("should use custom title when provided", () => {

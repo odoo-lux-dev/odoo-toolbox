@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { isDebugTrue, isDynamicCondition, shouldUseCSSFallback } from "@/utils/field-utils";
+import { isDebugTrue, isDynamicCondition } from "@/utils/field-utils";
 
 describe("isDynamicCondition", () => {
   test("should return true for dynamic string conditions", () => {
@@ -63,43 +63,5 @@ describe("isDebugTrue", () => {
   test("should return false for null/undefined", () => {
     expect(isDebugTrue(null)).toBe(false);
     expect(isDebugTrue(undefined)).toBe(false);
-  });
-});
-
-describe("shouldUseCSSFallback", () => {
-  test("should return true when hasDebugInfo is false", () => {
-    expect(shouldUseCSSFallback(true, false)).toBe(true);
-  });
-
-  test("should return true when debugValue is null", () => {
-    expect(shouldUseCSSFallback(null, true)).toBe(true);
-  });
-
-  test("should return true when debugValue is undefined", () => {
-    expect(shouldUseCSSFallback(undefined, true)).toBe(true);
-  });
-
-  test("should return true when debugValue is false", () => {
-    expect(shouldUseCSSFallback(false, true)).toBe(true);
-  });
-
-  test("should return true when debugValue is 'False'", () => {
-    expect(shouldUseCSSFallback("False", true)).toBe(true);
-  });
-
-  test("should return true when debugValue is '0'", () => {
-    expect(shouldUseCSSFallback("0", true)).toBe(true);
-  });
-
-  test("should return false when debugValue is true and hasDebugInfo", () => {
-    expect(shouldUseCSSFallback(true, true)).toBe(false);
-  });
-
-  test("should return false when debugValue is 'True' and hasDebugInfo", () => {
-    expect(shouldUseCSSFallback("True", true)).toBe(false);
-  });
-
-  test("should return false when debugValue is '1' and hasDebugInfo", () => {
-    expect(shouldUseCSSFallback("1", true)).toBe(false);
   });
 });

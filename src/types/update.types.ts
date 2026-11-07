@@ -1,17 +1,16 @@
-export type AlarmOption = {
-  when: number;
-  periodInMinutes: number;
-  delayInMinutes: number;
-};
+/** Text, icon name and state of an activation button. */
+export interface ActivationButtonState {
+  text: string;
+  icon: string;
+  disabled?: boolean;
+}
 
 export interface ActivationMethod {
   icon: string;
   text: string;
   action?: "openSettings" | "openUrl" | "custom";
   url?: string;
-  customHandler?: (
-    updateButtonState?: (newState: { text: string; icon: string; disabled?: boolean }) => void,
-  ) => void;
+  customHandler?: (updateButtonState: (state: ActivationButtonState) => void) => Promise<void>;
 }
 
 export interface UpdateConfig {
