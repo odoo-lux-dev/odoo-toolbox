@@ -1,20 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
-import { validateConfigFile } from "@/utils/config-validation";
-
-const validSettings = {
-  enableDebugMode: "disabled",
-  enablePrintOptionsPDF: false,
-  enablePrintOptionsHTML: false,
-  showTechnicalModel: false,
-  renameShProjectPage: false,
-  extensionTheme: "dark",
-  taskUrl: "",
-  taskUrlRegex: "/-(\\d+)-/",
-  nostalgiaMode: false,
-  colorBlindMode: false,
-  showLoginButtons: false,
-};
+import { parseConfigFile } from "@/utils/config-validation";
+import { getDefaultSettings } from "@/utils/settings-schema";
 
 const validFavorite = {
   name: "my-project",
@@ -22,93 +9,49 @@ const validFavorite = {
   sequence: 0,
   task_link: "",
 };
+const validDomain = { id: "1", name: "Mine", domain: "[]", sequence: 0 };
 
-describe("validateConfigFile", () => {
-  test("should accept valid settings only", () => {
-    const result = validateConfigFile({ settings: validSettings });
-    expect(result.valid).toBe(true);
-  });
+const parse = (file: unknown) => parseConfigFile(file);
+const message = (file: unknown) => {
+  const result = parse(file);
+  return result.valid ? "" : result.message;
+};
 
-  test("should accept valid favorites only", () => {
-    const result = validateConfigFile({ favorites: [validFavorite] });
-    expect(result.valid).toBe(true);
-  });
-
-  test("should accept both settings and favorites", () => {
-    const result = validateConfigFile({ settings: validSettings, favorites: [validFavorite] });
-    expect(result.valid).toBe(true);
-  });
-
-  test("should reject empty config", () => {
-    const result = validateConfigFile({});
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject settings that is not an object", () => {
-    const result = validateConfigFile({ settings: "not-an-object" as never });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject settings with missing properties", () => {
-    const result = validateConfigFile({ settings: { enableDebugMode: "disabled" } as never });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject invalid debugMode value", () => {
-    const result = validateConfigFile({
-      settings: { ...validSettings, enableDebugMode: "invalid" },
+describe("parseConfigFile", () => {
+  test("accepts an export, completing the settings with their defaults", () => {
+    const result = parse({
+      settings: { enableDebugMode: "1", nostalgiaMode: true },
+      favorites: [validFavorite],
+      quickDomains: [validDomain],
     });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject non-boolean boolean props", () => {
-    const result = validateConfigFile({
-      settings: { ...validSettings, enablePrintOptionsPDF: "yes" as never },
+    expect(result.valid && result.config).toEqual({
+      settings: { ...getDefaultSettings(), enableDebugMode: "1", nostalgiaMode: true },
+      favorites: [validFavorite],
+      quickDomains: [validDomain],
     });
-    expect(result.valid).toBe(false);
   });
 
-  test("should reject invalid extensionTheme", () => {
-    const result = validateConfigFile({
-      settings: { ...validSettings, extensionTheme: "purple" },
-    });
-    expect(result.valid).toBe(false);
+  test("accepts every debug mode the settings allow (assets,tests)", () => {
+    expect(parse({ settings: { enableDebugMode: "assets,tests" } }).valid).toBe(true);
   });
 
-  test("should reject non-string taskUrl", () => {
-    const result = validateConfigFile({
-      settings: { ...validSettings, taskUrl: 123 as never },
-    });
-    expect(result.valid).toBe(false);
+  test("rejects files that are not a configuration", () => {
+    expect(parse(null).valid).toBe(false);
+    expect(parse({}).valid).toBe(false);
+    expect(parse({ settings: "nope" }).valid).toBe(false);
+    expect(parse({ settings: { color: "red" } }).valid).toBe(false);
   });
 
-  test("should reject favorites that is not an array", () => {
-    const result = validateConfigFile({ favorites: "not-an-array" as never });
-    expect(result.valid).toBe(false);
+  test("names the settings holding an invalid value", () => {
+    expect(message({ settings: { extensionMotion: "fast", taskUrl: 1 } })).toContain(
+      "taskUrl, extensionMotion",
+    );
   });
 
-  test("should reject favorite that is not an object", () => {
-    const result = validateConfigFile({ favorites: ["not-an-object" as never] });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject favorite with missing properties", () => {
-    const result = validateConfigFile({ favorites: [{ name: "test" } as never] });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should reject favorite with wrong types", () => {
-    const result = validateConfigFile({
-      favorites: [{ ...validFavorite, sequence: "zero" as never }],
-    });
-    expect(result.valid).toBe(false);
-  });
-
-  test("should report the correct favorite index in error", () => {
-    const result = validateConfigFile({
-      favorites: [validFavorite, { name: "bad" } as never],
-    });
-    expect(result.valid).toBe(false);
-    expect(result.message).toContain("index 1");
+  test("reports the first malformed record with its index", () => {
+    expect(message({ favorites: "nope" })).toContain("must be an array");
+    expect(message({ favorites: [validFavorite, { name: "bad" }] })).toContain("index 1");
+    expect(message({ favorites: [{ ...validFavorite, sequence: "0" }] })).toContain("'sequence'");
+    expect(message({ favorites: [], quickDomains: [{ ...validDomain, id: 1 }] })).toContain("'id'");
   });
 });

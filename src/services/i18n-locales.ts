@@ -1,12 +1,9 @@
-import { settingsService } from "@/services/settings-service";
-
 /**
  * Shared locale definitions and resolution helpers.
  *
  * Kept separate from `i18n-service`, which loads translations at runtime.
  * Background-only consumers (e.g. the context menu) can import this module to
- * read/resolve the active locale without pulling translation files into their
- * bundle.
+ * resolve the active locale without pulling the translation loading in.
  */
 
 export const SUPPORTED_LOCALES = [
@@ -27,12 +24,10 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 export const AUTO_LOCALE = "auto";
 export const DEFAULT_LOCALE: SupportedLocale = "en";
 
-export const isSupportedLocale = (code: string): code is SupportedLocale =>
-  (SUPPORTED_LOCALES as readonly string[]).includes(code);
-
 export const normalizeLocale = (code: string): SupportedLocale | null => {
   const normalized = code.toLowerCase().replace("-", "_");
-  if (isSupportedLocale(normalized)) return normalized;
+  const exact = SUPPORTED_LOCALES.find((locale) => locale.toLowerCase() === normalized);
+  if (exact) return exact;
   const base = normalized.split("_")[0];
   const match = SUPPORTED_LOCALES.find(
     (locale) => locale === base || locale.startsWith(`${base}_`),
@@ -40,28 +35,17 @@ export const normalizeLocale = (code: string): SupportedLocale | null => {
   return match ?? null;
 };
 
-export const resolveLocale = async (): Promise<SupportedLocale> => {
-  const stored = await settingsService.getUserLocale();
-
-  if (stored === AUTO_LOCALE) {
-    try {
-      const acceptLanguages = await browser.i18n.getAcceptLanguages();
-      for (const lang of acceptLanguages) {
-        const matched = normalizeLocale(lang);
-        if (matched) return matched;
-      }
-      const uiMatched = normalizeLocale(browser.i18n.getUILanguage());
-      if (uiMatched) return uiMatched;
-    } catch {
-      // browser.i18n not available
-    }
-    return DEFAULT_LOCALE;
+/** Locale to display for the `userLocale` setting (`auto` follows the browser languages). */
+export const resolveLocale = async (userLocale: string): Promise<SupportedLocale> => {
+  if (userLocale !== AUTO_LOCALE) return normalizeLocale(userLocale) ?? DEFAULT_LOCALE;
+  const browserLocales = [
+    // Rejects in some contexts: the UI language is still a usable hint.
+    ...(await browser.i18n.getAcceptLanguages().catch(() => [])),
+    browser.i18n.getUILanguage(),
+  ];
+  for (const lang of browserLocales) {
+    const matched = normalizeLocale(lang);
+    if (matched) return matched;
   }
-
-  if (stored) {
-    const normalized = normalizeLocale(stored);
-    if (normalized) return normalized;
-  }
-
   return DEFAULT_LOCALE;
 };

@@ -8,6 +8,8 @@ import {
   getCurrentPageInfoFromWindow,
   getOdooContextFromWindow,
   resolveDoActionFunction,
+  executeOdooAction,
+  runPageScript,
 } from "./owl-runtime";
 
 describe("getOdooInfoFromWindow", () => {
@@ -243,6 +245,28 @@ describe("getOdooContextFromWindow", () => {
   });
 });
 
+describe("getOdooContextFromWindow - failures", () => {
+  it("lets the caller see a failed ORM call", async () => {
+    const odoo = {
+      info: { server_version_info: ["19", "0"] },
+      __WOWL_DEBUG__: {
+        root: {
+          env: {
+            services: {
+              orm: {
+                call: async () => {
+                  throw new Error("boom");
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+    await expect(getOdooContextFromWindow(odoo as never)).rejects.toThrow("boom");
+  });
+});
+
 describe("getCurrentSearchValues", () => {
   it("returns url data when id and model present in hash", () => {
     const odoo = {
@@ -458,5 +482,76 @@ describe("resolveDoActionFunction", () => {
       },
     };
     expect(resolveDoActionFunction(odoo as never)).toBeUndefined();
+  });
+});
+
+const odooWith = (doAction: (...args: unknown[]) => unknown) => ({
+  info: { server_version_info: ["17", "0"] },
+  __WOWL_DEBUG__: { root: { actionService: { doAction } } },
+});
+
+describe("retrieveMatchingOwlComponentRecursively - componentName", () => {
+  it("also matches the componentName of a node", () => {
+    const tree = { name: "Root", children: { a: { componentName: "FormController" } } };
+    expect(retrieveMatchingOwlComponentRecursively(tree, /Controller$/)).toBe(
+      tree.children.a as never,
+    );
+  });
+});
+
+describe("executeOdooAction", () => {
+  it("merges the context into an action object", async () => {
+    let received: unknown[] = [];
+    const odoo = odooWith((...args) => (received = args));
+    await executeOdooAction(odoo as never, {
+      action: { type: "ir.actions.act_window", context: { a: 1 } },
+      context: { b: 2 },
+    });
+    expect(received).toEqual([{ type: "ir.actions.act_window", context: { a: 1, b: 2 } }, {}]);
+  });
+
+  it("merges the context into the options of an action referenced by xml id", async () => {
+    let received: unknown[] = [];
+    const odoo = odooWith((...args) => (received = args));
+    await executeOdooAction(odoo as never, { action: "base.action", context: { b: 2 } });
+    expect(received).toEqual(["base.action", { context: { b: 2 } }]);
+  });
+
+  it("fails when Odoo is not detected", async () => {
+    await expect(executeOdooAction(undefined, { action: "x" })).rejects.toThrow();
+  });
+});
+
+describe("runPageScript", () => {
+  it("wraps the result of a page script", async () => {
+    window.odoo = { info: { server_version_info: ["17", "0"], db: "db" } } as never;
+    try {
+      expect(await runPageScript("GET_ODOO_INFO", null)).toEqual({
+        ok: true,
+        result: { version: 17, majorVersion: 17, database: "db" },
+      });
+    } finally {
+      delete window.odoo;
+    }
+  });
+
+  it("returns errors as cloneable objects keeping their name, message and details", async () => {
+    const odooError = Object.assign(new Error("Access denied"), {
+      name: "RPC_ERROR",
+      data: { debug: "trace" },
+    });
+    window.odoo = odooWith(() => {
+      throw odooError;
+    }) as never;
+    try {
+      const response = await runPageScript("EXECUTE_ODOO_ACTION", { action: "x" });
+      expect(response.ok).toBe(false);
+      const error = !response.ok ? response.error : undefined;
+      expect(error).toMatchObject({ name: "RPC_ERROR", message: "Access denied" });
+      expect(error?.data).toEqual({ debug: "trace" });
+      expect(structuredClone(error)).toEqual(error as never);
+    } finally {
+      delete window.odoo;
+    }
   });
 });

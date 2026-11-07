@@ -1,5 +1,4 @@
-import { StorageItemKey, storage } from "wxt/utils/storage";
-
+import { createStore } from "@/services/synced-store";
 import type {
   CreateHistoryActionParams,
   HistoryAction,
@@ -8,200 +7,63 @@ import type {
   HistoryActionV2,
 } from "@/types";
 
-import { Logger } from "./logger";
-
-const HISTORY_STORAGE_KEY = "devtools_history";
 export const MAX_HISTORY_ENTRIES = 150;
 
 /**
- * Service for managing DevTools action history
- * Stores the last MAX_HISTORY_ENTRIES actions performed through DevTools
+ * Pinned actions first, then newest first. Pinned actions are always kept; the unpinned
+ * ones fill the remaining `MAX_HISTORY_ENTRIES` slots.
  */
-export class HistoryService {
-  private static instance: HistoryService | null = null;
+const applyLimit = (history: HistoryAction[]): HistoryAction[] => {
+  const sorted = history.toSorted((a, b) => b.timestamp - a.timestamp);
+  const pinned = sorted.filter((action) => action.pinned);
+  const unpinned = sorted.filter((action) => !action.pinned);
+  return [...pinned, ...unpinned.slice(0, Math.max(0, MAX_HISTORY_ENTRIES - pinned.length))];
+};
 
-  private historyStorage = storage.defineItem<HistoryAction[]>(
-    <StorageItemKey>`local:${HISTORY_STORAGE_KEY}`,
-    {
-      init: () => [],
-      version: 3,
-      migrations: {
-        2: (history: HistoryActionV1[]) => history.map((action) => ({ ...action, pinned: false })),
-        3: (history: HistoryActionV2[]) => history.map((action) => ({ ...action, label: "" })),
-      },
-    },
+const store = createStore<HistoryAction[]>("devtools_history", {
+  init: () => [],
+  normalize: applyLimit,
+  version: 3,
+  migrations: {
+    2: (history: HistoryActionV1[]) => history.map((action) => ({ ...action, pinned: false })),
+    3: (history: HistoryActionV2[]) => history.map((action) => ({ ...action, label: "" })),
+  },
+});
+
+const updateAction = async (actionId: string, changes: Partial<HistoryAction>) => {
+  const history = await store.get();
+  await store.set(
+    history.map((action) =>
+      action.id === actionId ? ({ ...action, ...changes } as HistoryAction) : action,
+    ),
   );
+};
 
-  static getInstance(): HistoryService {
-    if (!HistoryService.instance) {
-      HistoryService.instance = new HistoryService();
-    }
-    return HistoryService.instance;
-  }
+/** Actions performed through the DevTools panel. */
+export const historyService = {
+  get: store.get,
+  watch: store.watch,
 
-  /**
-   * Add a new action to history
-   */
   async addAction<T extends HistoryActionType>(
     actionParams: CreateHistoryActionParams<T>,
   ): Promise<void> {
-    try {
-      const history = await this.getHistory();
+    const newAction = {
+      ...actionParams,
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+      timestamp: Date.now(),
+      pinned: false,
+    } as HistoryAction;
+    await store.set([newAction, ...(await store.get())]);
+  },
 
-      const newAction: HistoryAction = {
-        ...actionParams,
-        id: this.generateId(),
-        timestamp: Date.now(),
-        pinned: false,
-      } as HistoryAction;
+  clearHistory: () => store.set([]),
 
-      // Add to beginning of array (newest first)
-      history.unshift(newAction);
-
-      const trimmedHistory = this.applyLimit(history);
-      await this.historyStorage.setValue(trimmedHistory);
-    } catch (error) {
-      Logger.error("Failed to add action to history:", error);
-    }
-  }
-
-  /**
-   * Get all history actions
-   */
-  async getHistory(): Promise<HistoryAction[]> {
-    try {
-      const history = await this.historyStorage.getValue();
-      return this.applyLimit(history);
-    } catch (error) {
-      Logger.error("Failed to load history:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Clear all history
-   */
-  async clearHistory(): Promise<void> {
-    try {
-      await this.historyStorage.setValue([]);
-    } catch (error) {
-      Logger.error("Failed to clear history:", error);
-    }
-  }
-
-  /**
-   * Remove a specific action from history
-   */
   async removeAction(actionId: string): Promise<void> {
-    try {
-      const history = await this.getHistory();
-      const filteredHistory = history.filter((action) => action.id !== actionId);
-      await this.historyStorage.setValue(this.applyLimit(filteredHistory));
-    } catch (error) {
-      Logger.error("Failed to remove action from history:", error);
-    }
-  }
+    const history = await store.get();
+    await store.set(history.filter((action) => action.id !== actionId));
+  },
 
-  /**
-   * Get actions by type
-   */
-  async getActionsByType(type: HistoryActionType): Promise<HistoryAction[]> {
-    const history = await this.getHistory();
-    return history.filter((action) => action.type === type);
-  }
+  setActionPinned: (actionId: string, pinned: boolean) => updateAction(actionId, { pinned }),
 
-  /**
-   * Get actions by model
-   */
-  async getActionsByModel(model: string): Promise<HistoryAction[]> {
-    const history = await this.getHistory();
-    return history.filter((action) => action.model === model);
-  }
-
-  /**
-   * Watch for history changes
-   */
-  watchHistory(callback: (history: HistoryAction[]) => void): () => void {
-    return storage.watch<HistoryAction[]>(
-      <StorageItemKey>`local:${HISTORY_STORAGE_KEY}`,
-      (newValue) => {
-        callback(this.applyLimit(newValue || []));
-      },
-    );
-  }
-
-  /**
-   * Set pinned state for a specific action
-   */
-  async setActionPinned(actionId: string, pinned: boolean): Promise<void> {
-    try {
-      const history = await this.getHistory();
-      const updatedHistory = history.map((action) =>
-        action.id === actionId ? { ...action, pinned } : action,
-      );
-      await this.historyStorage.setValue(this.applyLimit(updatedHistory));
-    } catch (error) {
-      Logger.error("Failed to update pinned history action:", error);
-    }
-  }
-
-  /**
-   * Set label for a specific action
-   */
-  async setActionLabel(actionId: string, label: string): Promise<void> {
-    try {
-      const history = await this.getHistory();
-      const updatedHistory = history.map((action) =>
-        action.id === actionId ? { ...action, label } : action,
-      );
-      await this.historyStorage.setValue(this.applyLimit(updatedHistory));
-    } catch (error) {
-      Logger.error("Failed to update history action label:", error);
-    }
-  }
-
-  private sortHistory(history: HistoryAction[]): HistoryAction[] {
-    return history.toSorted((a, b) => {
-      const aPinned = a.pinned ? 1 : 0;
-      const bPinned = b.pinned ? 1 : 0;
-
-      if (aPinned !== bPinned) {
-        return bPinned - aPinned;
-      }
-
-      return b.timestamp - a.timestamp;
-    });
-  }
-
-  private applyLimit(history: HistoryAction[]): HistoryAction[] {
-    const sortedHistory = this.sortHistory(history);
-    const pinned = sortedHistory.filter((action) => action.pinned);
-    const unpinned = sortedHistory.filter((action) => !action.pinned);
-    const remaining = Math.max(0, MAX_HISTORY_ENTRIES - pinned.length);
-
-    return [...pinned, ...unpinned.slice(0, remaining)];
-  }
-
-  private generateId(): string {
-    return `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-}
-
-// Convenience functions for easy access
-export const historyService = HistoryService.getInstance();
-
-export const addHistoryAction = <T extends HistoryActionType>(
-  actionParams: CreateHistoryActionParams<T>,
-) => historyService.addAction(actionParams);
-
-export const getHistory = () => historyService.getHistory();
-export const clearHistory = () => historyService.clearHistory();
-export const removeHistoryAction = (actionId: string) => historyService.removeAction(actionId);
-export const setHistoryActionPinned = (actionId: string, pinned: boolean) =>
-  historyService.setActionPinned(actionId, pinned);
-export const setHistoryActionLabel = (actionId: string, label: string) =>
-  historyService.setActionLabel(actionId, label);
-export const getHistoryByType = (type: HistoryActionType) => historyService.getActionsByType(type);
-export const getHistoryByModel = (model: string) => historyService.getActionsByModel(model);
-export const watchHistory = (callback: (history: HistoryAction[]) => void) =>
-  historyService.watchHistory(callback);
+  setActionLabel: (actionId: string, label: string) => updateAction(actionId, { label }),
+};

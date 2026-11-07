@@ -1,167 +1,90 @@
-interface ConfigFile {
-  settings?: {
-    enableDebugMode: string;
-    enablePrintOptionsPDF: boolean;
-    enablePrintOptionsHTML: boolean;
-    showTechnicalModel: boolean;
-    renameShProjectPage: boolean;
-    extensionTheme: string;
-    taskUrl: string;
-    taskUrlRegex: string;
-    nostalgiaMode: boolean;
-    colorBlindMode: boolean;
-    showLoginButtons: boolean;
-  };
-  favorites?: Array<{
-    name: string;
-    display_name: string;
-    sequence: number;
-    task_link: string;
-  }>;
+import type { Favorite, QuickDomain, StoredSettings } from "@/types";
+import { findInvalidSettings, isSettingKey, sanitizeSettings } from "@/utils/settings-schema";
+
+export interface ImportedConfig {
+  /** Complete settings: keys absent from the file take their default. */
+  settings?: StoredSettings;
+  favorites?: Favorite[];
+  quickDomains?: QuickDomain[];
 }
 
-export type { ConfigFile };
+type ParseResult = { valid: true; config: ImportedConfig } | { valid: false; message: string };
 
-export const validateConfigFile = (config: ConfigFile): { valid: boolean; message: string } => {
-  if (!config.settings && !config.favorites) {
-    return {
-      valid: false,
-      message: "File must contain at least 'settings' or 'favorites' properties.",
-    };
-  }
+const invalid = (message: string): ParseResult => ({ valid: false, message });
 
-  if (config.settings) {
-    if (typeof config.settings !== "object" || config.settings === null) {
-      return {
-        valid: false,
-        message: "'settings' must be an object.",
-      };
-    }
+type FieldTypes = Record<string, "string" | "number">;
 
-    const requiredSettingsProps = [
-      "enableDebugMode",
-      "enablePrintOptionsPDF",
-      "enablePrintOptionsHTML",
-      "showTechnicalModel",
-      "renameShProjectPage",
-      "extensionTheme",
-      "taskUrl",
-      "taskUrlRegex",
-      "nostalgiaMode",
-      "colorBlindMode",
-    ];
+const FAVORITE_FIELDS: FieldTypes = {
+  name: "string",
+  display_name: "string",
+  sequence: "number",
+  task_link: "string",
+};
+const QUICK_DOMAIN_FIELDS: FieldTypes = {
+  id: "string",
+  name: "string",
+  domain: "string",
+  sequence: "number",
+};
 
-    const missingProps = requiredSettingsProps.filter(
-      (prop) => !Object.hasOwn(config.settings!, prop),
+/** First problem of a list of records (`undefined` when every record has the fields). */
+const listError = (label: string, list: unknown, fields: FieldTypes): string | undefined => {
+  if (!Array.isArray(list)) return `'${label}' must be an array.`;
+  for (const [index, item] of list.entries()) {
+    const where = `${label} at index ${index}`;
+    if (typeof item !== "object" || item === null) return `${where} must be an object.`;
+    const missing = Object.keys(fields).filter((prop) => !Object.hasOwn(item, prop));
+    if (missing.length > 0) return `${where} is missing required properties: ${missing.join(", ")}`;
+    const wrong = Object.entries(fields).filter(
+      ([prop, type]) => typeof (item as Record<string, unknown>)[prop] !== type,
     );
-
-    if (missingProps.length > 0) {
-      return {
-        valid: false,
-        message: `Settings missing required properties: ${missingProps.join(", ")}`,
-      };
-    }
-
-    if (!["1", "disabled", "assets"].includes(config.settings.enableDebugMode)) {
-      return {
-        valid: false,
-        message: "Invalid 'debugMode' value. Expected '1', 'disabled', or 'assets'.",
-      };
-    }
-
-    const booleanProps = [
-      "enablePrintOptionsHTML",
-      "enablePrintOptionsPDF",
-      "showTechnicalModel",
-      "renameShProjectPage",
-      "nostalgiaMode",
-      "colorBlindMode",
-    ] as const;
-
-    for (const prop of booleanProps) {
-      if (typeof config.settings[prop] !== "boolean") {
-        return {
-          valid: false,
-          message: `Property '${prop}' must be a boolean.`,
-        };
-      }
-    }
-
-    if (!["dark", "light"].includes(config.settings.extensionTheme)) {
-      return {
-        valid: false,
-        message: "Invalid 'extensionTheme' value. Expected 'dark' or 'light'.",
-      };
-    }
-
-    if (typeof config.settings.taskUrl !== "string") {
-      return {
-        valid: false,
-        message: "'taskUrl' must be a string.",
-      };
-    }
-
-    if (typeof config.settings.taskUrlRegex !== "string") {
-      return {
-        valid: false,
-        message: "'taskUrlRegex' must be a string.",
-      };
+    if (wrong.length > 0) {
+      return `${where}: ${wrong.map(([prop, type]) => `'${prop}' must be a ${type}`).join(", ")}.`;
     }
   }
+  return undefined;
+};
 
-  if (config.favorites) {
-    if (!Array.isArray(config.favorites)) {
-      return {
-        valid: false,
-        message: "'favorites' must be an array.",
-      };
-    }
-
-    for (let i = 0; i < config.favorites.length; i++) {
-      const favorite = config.favorites[i];
-
-      if (typeof favorite !== "object" || favorite === null) {
-        return {
-          valid: false,
-          message: `Favorite at index ${i} must be an object.`,
-        };
-      }
-
-      const requiredFavoriteProps = ["name", "display_name", "sequence", "task_link"];
-
-      const missingFavoriteProps = requiredFavoriteProps.filter(
-        (prop) => !Object.hasOwn(favorite, prop),
-      );
-
-      if (missingFavoriteProps.length > 0) {
-        return {
-          valid: false,
-          message: `Favorite at index ${i} is missing required properties: ${missingFavoriteProps.join(", ")}`,
-        };
-      }
-
-      if (typeof favorite.name !== "string" || typeof favorite.display_name !== "string") {
-        return {
-          valid: false,
-          message: `Favorite at index ${i}: 'name' and 'display_name' must be strings.`,
-        };
-      }
-
-      if (typeof favorite.sequence !== "number") {
-        return {
-          valid: false,
-          message: `Favorite at index ${i}: 'sequence' must be a number.`,
-        };
-      }
-
-      if (typeof favorite.task_link !== "string") {
-        return {
-          valid: false,
-          message: `Favorite at index ${i}: 'task_link' must be a string.`,
-        };
-      }
-    }
+/**
+ * Validates a backup file against the settings schema and the record shapes.
+ * Settings are checked with the same schema as the storage, so every setting
+ * (present or future) is validated without listing it here.
+ */
+export const parseConfigFile = (file: unknown): ParseResult => {
+  if (typeof file !== "object" || file === null) return invalid("The file must contain an object.");
+  const { settings, favorites, quickDomains } = file as Record<string, unknown>;
+  if (settings === undefined && favorites === undefined) {
+    return invalid("File must contain at least 'settings' or 'favorites' properties.");
   }
 
-  return { valid: true, message: "" };
+  const config: ImportedConfig = {};
+
+  if (settings !== undefined) {
+    if (typeof settings !== "object" || settings === null || Array.isArray(settings)) {
+      return invalid("'settings' must be an object.");
+    }
+    const values = settings as Record<string, unknown>;
+    if (!Object.keys(values).some(isSettingKey)) {
+      return invalid("'settings' contains no known setting.");
+    }
+    const wrongKeys = findInvalidSettings(values);
+    if (wrongKeys.length > 0) {
+      return invalid(`Invalid value for: ${wrongKeys.join(", ")}.`);
+    }
+    config.settings = sanitizeSettings(values);
+  }
+
+  if (favorites !== undefined) {
+    const error = listError("favorites", favorites, FAVORITE_FIELDS);
+    if (error) return invalid(error);
+    config.favorites = favorites as Favorite[];
+  }
+
+  if (quickDomains !== undefined) {
+    const error = listError("quickDomains", quickDomains, QUICK_DOMAIN_FIELDS);
+    if (error) return invalid(error);
+    config.quickDomains = quickDomains as QuickDomain[];
+  }
+
+  return { valid: true, config };
 };

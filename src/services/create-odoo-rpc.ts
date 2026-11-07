@@ -1,7 +1,7 @@
+import { buildActWindowAction } from "@/services/odoo-action";
 import { createOdooError } from "@/services/odoo-error";
 import type {
   FieldMetadata,
-  OdooArchiveParams,
   OdooCallMethodParams,
   OdooCreateParams,
   OdooInfo,
@@ -10,8 +10,7 @@ import type {
   OdooRpcParams,
   OdooSearchParams,
   OdooSearchReadParams,
-  OdooUnarchiveParams,
-  OdooUnlinkParams,
+  OdooRecordsParams,
   OdooWriteParams,
   OdooActionParams,
 } from "@/types";
@@ -31,11 +30,13 @@ const EXCLUDED_FIELDS_CONFIG: Record<string, string[]> = {
   "ir.attachment": ["raw"],
 };
 
+/**
+ * How the RPC client reaches the Odoo page. Only `getOrigin` is required: JSON-RPC calls
+ * are plain `fetch` requests. The optional hooks need access to the page's web client.
+ */
 export interface OdooRpcOptions {
   getOrigin: () => Promise<string>;
-  sendBrowserMessage?: (scriptId: string, params?: unknown) => Promise<unknown>;
   getOdooInfo?: () => Promise<OdooInfo>;
-  getOdooContext?: () => Promise<Record<string, unknown>>;
   getCurrentPageInfo?: () => Promise<OdooPageInfo>;
   executeAction?: (params: OdooActionParams) => Promise<unknown>;
   checkHostPermission?: () => Promise<boolean>;
@@ -49,18 +50,14 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
   const getExcludedFieldsConfig = () => ({ ...excludedFieldsConfig });
 
   const initialize = async () => {
-    if (odooInfo) return;
-    if (options.getOdooInfo) {
-      odooInfo = await options.getOdooInfo();
-    }
+    if (odooInfo || !options.getOdooInfo) return;
+    odooInfo = await options.getOdooInfo();
   };
 
   const makeJsonRpcCall = async (
     endpoint: string,
     params: Record<string, unknown>,
   ): Promise<unknown> => {
-    if (options.getOdooInfo) await initialize();
-
     const origin = await options.getOrigin();
     const url = `${origin}${endpoint}`;
 
@@ -84,43 +81,24 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     const result = await response.json();
 
     if (result.error) {
-      throw createOdooError({
-        name: "RPC_ERROR",
-        message: result.error.data?.message || result.error.message,
-        code: result.error.code,
-        data: result.error.data,
-      });
+      throw createOdooError(result.error);
     }
 
     return result.result;
   };
 
   const executeRpc = async (params: OdooRpcParams): Promise<unknown> => {
-    try {
-      if (options.getOdooInfo) await initialize();
-
-      if (odooInfo && !odooInfo.version) {
-        throw new Error(t("services.rpc.version_not_supported"));
-      }
-
-      const mergedContext = { ...params.context };
-
-      const endpoint = `/web/dataset/call_kw/${params.model}/${params.method}`;
-      const rpcParams = {
-        args: params.args || [],
-        kwargs: {
-          context: mergedContext,
-          ...params.kwargs,
-        },
-        model: params.model,
-        method: params.method,
-      };
-
-      return await makeJsonRpcCall(endpoint, rpcParams);
-    } catch (error) {
-      Logger.error("RPC call failed", error);
-      throw error;
+    await initialize();
+    if (odooInfo && !odooInfo.version) {
+      throw new Error(t("services.rpc.version_not_supported"));
     }
+
+    return makeJsonRpcCall(`/web/dataset/call_kw/${params.model}/${params.method}`, {
+      args: params.args || [],
+      kwargs: { context: { ...params.context }, ...params.kwargs },
+      model: params.model,
+      method: params.method,
+    });
   };
 
   const filterFields = async (
@@ -136,15 +114,12 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
       names.filter((f) => !perModelExcluded.includes(f) && !PSEUDO_FIELDS.includes(f));
 
     if (!fields || fields.length === 0) {
-      try {
-        const metadata = fieldsMetadata || (await getFieldsInfo(model));
-        const allFieldNames = Object.keys(metadata);
-        const filteredFields = stripFields(allFieldNames);
-        const actuallyExcluded = allFieldNames.filter((f) => perModelExcluded.includes(f));
-        return { filteredFields, excludedFields: actuallyExcluded };
-      } catch {
-        return { filteredFields: fields, excludedFields: [] };
-      }
+      // Listing the fields explicitly is the only way to leave the excluded ones out.
+      const metadata = fieldsMetadata || (await getFieldsInfo(model));
+      const allFieldNames = Object.keys(metadata);
+      const filteredFields = stripFields(allFieldNames);
+      const actuallyExcluded = allFieldNames.filter((f) => perModelExcluded.includes(f));
+      return { filteredFields, excludedFields: actuallyExcluded };
     }
 
     const filteredFields = stripFields(fields);
@@ -201,7 +176,6 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
         order,
       },
       context,
-      fieldsMetadata,
     }) as Promise<Record<string, unknown>[]>;
   };
 
@@ -248,7 +222,6 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
       args: [ids],
       kwargs: { fields: filterResult.filteredFields },
       context,
-      fieldsMetadata,
     }) as Promise<Record<string, unknown>[]>;
   };
 
@@ -279,41 +252,18 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     return Array.isArray(result) ? result : [result as number];
   };
 
-  const archive = async (params: OdooArchiveParams): Promise<boolean> => {
-    const { model, ids, context } = params;
-    if (!model || !ids || ids.length === 0) throw new Error(t("services.rpc.archive_required"));
+  /** RPC on a set of records whose ids are its only argument. */
+  const recordsMethod =
+    (method: string, missingRecordsKey: string) =>
+    async (params: OdooRecordsParams): Promise<boolean> => {
+      const { model, ids, context } = params;
+      if (!model || !ids || ids.length === 0) throw new Error(t(missingRecordsKey));
+      return executeRpc({ model, method, args: [ids], context }) as Promise<boolean>;
+    };
 
-    return executeRpc({
-      model,
-      method: "action_archive",
-      args: [ids],
-      context,
-    }) as Promise<boolean>;
-  };
-
-  const unarchive = async (params: OdooUnarchiveParams): Promise<boolean> => {
-    const { model, ids, context } = params;
-    if (!model || !ids || ids.length === 0) throw new Error(t("services.rpc.unarchive_required"));
-
-    return executeRpc({
-      model,
-      method: "action_unarchive",
-      args: [ids],
-      context,
-    }) as Promise<boolean>;
-  };
-
-  const unlink = async (params: OdooUnlinkParams): Promise<boolean> => {
-    const { model, ids, context } = params;
-    if (!model || !ids || ids.length === 0) throw new Error(t("services.rpc.unlink_required"));
-
-    return executeRpc({
-      model,
-      method: "unlink",
-      args: [ids],
-      context,
-    }) as Promise<boolean>;
-  };
+  const archive = recordsMethod("action_archive", "services.rpc.archive_required");
+  const unarchive = recordsMethod("action_unarchive", "services.rpc.unarchive_required");
+  const unlink = recordsMethod("unlink", "services.rpc.unlink_required");
 
   const callMethod = async (params: OdooCallMethodParams): Promise<unknown> => {
     const { model, method, ids, args = [], kwargs = {}, context } = params;
@@ -332,47 +282,20 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     if (!options.executeAction) {
       throw new Error(t("services.rpc.execute_action_unavailable"));
     }
-    const action = buildActWindowActionInline(params);
+    const action = buildActWindowAction(params);
     return options.executeAction({ action, options: params.options || {} });
   };
 
   const getAvailableModels = async (): Promise<Array<{ model: string; name: string }>> => {
-    const maxRetries = 3;
-    const retryDelay = 1000;
+    const version = await getOdooVersion();
+    if (!version) throw new Error(t("services.rpc.version_not_supported"));
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const version = await getOdooVersion();
-        if (!version) throw new Error(t("services.rpc.version_not_supported"));
-
-        const models = await searchRead({
-          model: "ir.model",
-          fields: ["model", "name"],
-          order: version >= 17 ? "name" : [{ name: "name" }],
-        });
-
-        if (!Array.isArray(models)) {
-          if (attempt === maxRetries) {
-            Logger.error("No models available after all retries");
-            return [];
-          }
-        } else {
-          return models.map((m: Record<string, unknown>) => ({
-            model: m.model as string,
-            name: m.name as string,
-          }));
-        }
-      } catch (error) {
-        Logger.error("Failed to get available models", error);
-        throw error;
-      }
-
-      if (attempt < maxRetries) {
-        Logger.info(`Retrying in ${retryDelay}ms...`);
-        await new Promise((r) => setTimeout(r, retryDelay));
-      }
-    }
-    return [];
+    const models = await searchRead({
+      model: "ir.model",
+      fields: ["model", "name"],
+      order: version >= 17 ? "name" : [{ name: "name" }],
+    });
+    return models.map((m) => ({ model: m.model as string, name: m.name as string }));
   };
 
   const getExcludedFieldsForQuery = async (
@@ -397,14 +320,13 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
   };
 
   const getRpcOdooInfo = async (): Promise<OdooInfo> => {
-    if (!options.getOdooInfo) {
-      return { version: null };
-    }
+    const unknown: OdooInfo = { version: null, majorVersion: null };
+    if (!options.getOdooInfo) return unknown;
     try {
       return await options.getOdooInfo();
     } catch (error) {
       Logger.error("Failed to get Odoo info", error);
-      return { version: null };
+      return unknown;
     }
   };
 
@@ -416,16 +338,6 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
   const isOdooVersionSupported = async (): Promise<boolean> => {
     const version = await getOdooVersion();
     return version !== null;
-  };
-
-  const getOdooContext = async (): Promise<Record<string, unknown>> => {
-    if (!options.getOdooContext) return {};
-    try {
-      return await options.getOdooContext();
-    } catch (error) {
-      Logger.error("Failed to get Odoo context", error);
-      return {};
-    }
   };
 
   const getCurrentPageInfo = async (): Promise<OdooPageInfo> => {
@@ -450,9 +362,7 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
 
   return {
     getExcludedFieldsConfig,
-    makeJsonRpcCall,
     executeRpc,
-    filterFields,
     search,
     searchCount,
     searchRead,
@@ -471,45 +381,8 @@ export const createOdooRpc = (options: OdooRpcOptions) => {
     getRpcOdooInfo,
     getOdooVersion,
     isOdooVersionSupported,
-    getOdooContext,
     getCurrentPageInfo,
     checkHostPermission,
     requestHostPermission,
   };
 };
-
-function buildActWindowActionInline(params: OdooOpenViewParams): Record<string, unknown> {
-  const { model, recordIds, domain, options = {}, asPopup = false } = params;
-
-  const action: Record<string, unknown> = {
-    name: "Odoo Toolbox",
-    type: "ir.actions.act_window",
-    res_model: model,
-    target: asPopup ? "new" : "current",
-  };
-
-  if (Array.isArray(recordIds) && recordIds.length > 0) {
-    if (recordIds.length === 1) {
-      action.res_id = recordIds[0];
-      action.views = [[false, "form"]];
-    } else {
-      action.views = [
-        [false, "list"],
-        [false, "kanban"],
-        [false, "form"],
-      ];
-      action.domain = domain || [["id", "in", recordIds]];
-    }
-  } else if (typeof recordIds === "number") {
-    action.res_id = recordIds;
-    action.views = [[false, "form"]];
-  } else {
-    action.views = [
-      [false, "list"],
-      [false, "kanban"],
-      [false, "form"],
-    ];
-  }
-
-  return action;
-}

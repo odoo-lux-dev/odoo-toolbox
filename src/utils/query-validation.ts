@@ -1,444 +1,160 @@
-import type { OdooDomain, RpcQueryState } from "@/types";
+import type { FieldMetadata, OdooDomain, RpcQueryState } from "@/types";
 import { parseJsonWithCommands } from "@/utils/command-utils";
 import { parseRpcContext } from "@/utils/context-utils";
 import { validateDomainStructure } from "@/utils/domain-utils";
 import { t } from "@/utils/i18n-page";
 import { evaluateExpr } from "@/utils/odoo-py_js/py.js";
+import { areValidIds } from "@/utils/record-ids";
 
-/**
- * Detects if a domain string appears to be in Python format
- */
-export const isPythonDomain = (domain: string): boolean => {
-  const trimmed = domain.trim();
+export type DomainValidation =
+  | { isValid: true; domain: OdooDomain }
+  | { isValid: false; error: string };
 
-  // Python domains typically use:
-  // - Parentheses instead of brackets for tuples: ('field', '=', value)
-  // - Python boolean values: True, False
-  // - Python None instead of null
-  // - Single quotes are more common in Python
+const LOGICAL_OPERATORS = ["&", "|", "!"];
 
-  const pythonIndicators = [
-    /\(\s*['"][^'"]*['"]\s*,/, // Tuple with quoted field name
-    /\bTrue\b/, // Python True
-    /\bFalse\b/, // Python False
-    /\bNone\b/, // Python None
-    /'\s*,\s*'/, // Single quotes with comma (common in Python)
-  ];
-
-  return pythonIndicators.some((pattern) => pattern.test(trimmed));
-};
-
-/**
- * Normalizes a domain for Odoo backend compatibility
- * Simple domains [field, operator, value] are wrapped in an array
- */
-const normalizeDomainForOdoo = (domain: unknown[]): unknown[] => {
-  // If it's a simple domain [field, operator, value], wrap it in an array
-  if (
+/** Odoo expects a list of conditions: a bare `[field, operator, value]` is wrapped. */
+const normalizeDomain = (domain: unknown[]): OdooDomain => {
+  const isBareCondition =
     domain.length === 3 &&
     typeof domain[0] === "string" &&
     typeof domain[1] === "string" &&
-    !["&", "|", "!"].includes(domain[0])
-  ) {
-    return [domain];
-  }
-  return domain;
+    !LOGICAL_OPERATORS.includes(domain[0]);
+  return (isBareCondition ? [domain] : domain) as OdooDomain;
 };
 
-/**
- * Validates and processes a parsed domain array
- */
-const validateAndProcessDomain = (
-  domain: unknown[],
-): {
-  isValid: boolean;
-  normalizedDomain?: unknown[];
-  error?: string;
-} => {
-  const validation = validateDomainStructure(domain);
-  if (validation.isValid) {
-    const normalizedDomain = normalizeDomainForOdoo(domain);
-    return {
-      isValid: true,
-      normalizedDomain,
-    };
-  } else {
-    return { isValid: false, error: validation.error };
-  }
-};
+/** Parses a domain written as JSON or as a Python expression (evaluated with Odoo's py.js). */
+export const validateDomain = (text: string): DomainValidation => {
+  const trimmed = text.trim();
+  if (!trimmed) return { isValid: true, domain: [] };
 
-/**
- * Parse and normalize a domain string for Odoo RPC calls
- * Handles both JSON and Python formats, returns normalized domain ready for Odoo
- */
-export const parseDomain = (domainString: string) => {
-  if (!domainString.trim()) return [] as OdooDomain;
-
+  let parsed: unknown;
   try {
-    // First try JSON parsing
-    const parsed = JSON.parse(domainString);
-    if (Array.isArray(parsed)) {
-      return normalizeDomainForOdoo(parsed) as OdooDomain;
-    } else {
-      throw new Error(t("services.validation.domain_must_be_array"));
-    }
+    parsed = JSON.parse(trimmed);
   } catch {
-    // If JSON fails, try Python domain validation
-    const validation = validateDomain(domainString);
-    if (validation.isValid && validation.normalizedDomain) {
-      return validation.normalizedDomain as OdooDomain;
-    } else {
-      throw new Error(
-        t("services.validation.invalid_domain_format", [
-          validation.error || t("services.validation.unable_to_parse_domain"),
-        ]),
-      );
-    }
-  }
-};
-
-/**
- * Enhanced domain validation that supports both JSON and Python formats
- * Uses py.js for Python evaluation, falls back to JSON parsing
- */
-export const validateDomain = (
-  domain: string,
-): {
-  isValid: boolean;
-  error?: string;
-  normalizedDomain?: unknown[];
-} => {
-  if (!domain || domain.trim() === "") {
-    return { isValid: true };
-  }
-
-  const trimmed = domain.trim();
-
-  // First try JSON parsing if it looks like JSON
-  if (trimmed.startsWith("[") && !isPythonDomain(trimmed)) {
     try {
-      const parsed = JSON.parse(trimmed);
-      if (Array.isArray(parsed)) {
-        return validateAndProcessDomain(parsed);
-      } else {
-        return {
-          isValid: false,
-          error: t("services.validation.domain_must_be_array"),
-        };
-      }
+      parsed = evaluateExpr(trimmed);
     } catch {
-      // If JSON parsing fails, continue to py.js
+      return { isValid: false, error: t("services.validation.invalid_domain_format_expected") };
     }
   }
 
-  // Try to evaluate as Python expression using py.js
-  try {
-    const result = evaluateExpr(trimmed);
-
-    if (Array.isArray(result)) {
-      return validateAndProcessDomain(result);
-    } else {
-      return {
-        isValid: false,
-        error: t("services.validation.domain_must_be_array"),
-      };
-    }
-  } catch {
-    // If py.js fails, try JSON parsing as final fallback
+  if (!Array.isArray(parsed)) {
+    return { isValid: false, error: t("services.validation.domain_must_be_array") };
   }
-
-  // Final fallback to JSON parsing
-  try {
-    const parsed = JSON.parse(trimmed);
-    if (Array.isArray(parsed)) {
-      return validateAndProcessDomain(parsed);
-    } else {
-      return {
-        isValid: false,
-        error: t("services.validation.domain_must_be_array"),
-      };
-    }
-  } catch {
+  const structure = validateDomainStructure(parsed);
+  if (!structure.isValid) {
     return {
       isValid: false,
-      error: t("services.validation.invalid_domain_format_expected"),
+      error: structure.error ?? t("services.validation.unable_to_parse_domain"),
     };
   }
+  return { isValid: true, domain: normalizeDomain(parsed) };
 };
 
-/**
- * Validates Odoo domain format with Python and JSON support
- * Uses py.js for Python evaluation and falls back to JSON
- */
-export const validateDomainWithPython = (domain?: string): boolean => {
-  if (domain === undefined) {
-    return true; // Undefined domain = uses default value (empty string, valid)
+/** Domain ready for an RPC call; throws on an invalid domain. */
+export const parseDomain = (text: string): OdooDomain => {
+  const result = validateDomain(text);
+  if (!result.isValid) {
+    throw new Error(t("services.validation.invalid_domain_format", [result.error]));
   }
-
-  if (domain.trim() === "") {
-    return true; // Empty domain = valid
-  }
-
-  const validation = validateDomain(domain);
-  return validation.isValid;
+  return result.domain;
 };
 
-/**
- * Validates IDs format (expected: "1,2,3" or "1" or "")
- */
-export const validateIds = (ids?: string): boolean => {
-  if (ids === undefined) {
-    return true; // Undefined IDs = uses default value (empty string, valid)
-  }
+const isValidModel = (model = "") => /^[a-z][a-z0-9_.]*[a-z0-9]$|^[a-z]$/.test(model);
 
-  if (ids.trim() === "") {
-    return true; // Empty IDs = valid
-  }
+const isValidLimit = (limit?: number) =>
+  limit === undefined || (Number.isInteger(limit) && limit > 0 && limit <= 10000);
 
-  // Check that they are numbers separated by commas
-  const idsArray = ids.split(",").map((id) => id.trim());
-  return idsArray.every((id) => /^\d+$/.test(id));
-};
+const isValidOffset = (offset?: number) =>
+  offset === undefined || (Number.isInteger(offset) && offset >= 0);
 
-/**
- * Validates Odoo model name (technical name)
- */
-export const validateModel = (model?: string): boolean => {
-  if (model === undefined) {
-    return false; // Undefined model = invalid
-  }
+export const calculateQueryValidity = (query: Partial<RpcQueryState>): boolean =>
+  isValidModel(query.model) &&
+  validateDomain(query.domain ?? "").isValid &&
+  areValidIds(query.ids ?? "") &&
+  isValidLimit(query.limit) &&
+  isValidOffset(query.offset) &&
+  parseRpcContext(query.context || "").isValid;
 
-  if (model.trim() === "") {
-    return false; // Model required
-  }
-
-  // Basic format of an Odoo model name (letters, numbers, dots, underscores)
-  return /^[a-z][a-z0-9_.]*[a-z0-9]$|^[a-z]$/.test(model);
-};
-
-/**
- * Validates limit (must be a positive number)
- */
-export const validateLimit = (limit?: number): boolean => {
-  if (limit === undefined) {
-    return true; // Undefined limit = uses default value (considered valid)
-  }
-
-  return Number.isInteger(limit) && limit > 0 && limit <= 10000;
-};
-
-/**
- * Validates offset (must be a positive number or zero)
- */
-export const validateOffset = (offset?: number): boolean => {
-  if (offset === undefined) {
-    return true; // Undefined offset = uses default value (considered valid)
-  }
-
-  return Number.isInteger(offset) && offset >= 0;
-};
-
-/**
- * Calculates overall query validity
- */
-export const calculateQueryValidity = (query: Partial<RpcQueryState>): boolean => {
-  return (
-    validateModel(query.model) &&
-    validateDomainWithPython(query.domain) &&
-    validateIds(query.ids) &&
-    validateLimit(query.limit) &&
-    validateOffset(query.offset) &&
-    parseRpcContext(query.context || "").isValid
-  );
-};
-
-/**
- * Returns validation errors as an array
- */
-export const getValidationErrors = (query: RpcQueryState): string[] => {
-  const errors: string[] = [];
-
-  if (!validateModel(query.model)) {
-    if (query.model.trim() === "") {
-      errors.push(t("services.validation.model_required"));
-    } else {
-      errors.push(t("services.validation.invalid_model_format"));
-    }
-  }
-
-  if (!validateDomainWithPython(query.domain)) {
-    const validation = validateDomain(query.domain);
-    errors.push(validation.error || t("services.validation.invalid_domain_format_simple"));
-  }
-
-  const contextValidation = parseRpcContext(query.context || "");
-  if (!contextValidation.isValid) {
-    errors.push(
-      t("services.invalid_context", [contextValidation.error || t("services.invalid_json")]),
-    );
-  }
-
-  if (!validateIds(query.ids)) {
-    errors.push(t("services.validation.invalid_ids_format"));
-  }
-
-  if (!validateLimit(query.limit)) {
-    errors.push(t("services.validation.invalid_limit"));
-  }
-
-  if (!validateOffset(query.offset)) {
-    errors.push(t("services.validation.invalid_offset"));
-  }
-
-  return errors;
-};
-
-/**
- * Validates JSON format of a string
- */
+/** Values payload of create/write: a non-empty JSON object, `Command.X(...)` allowed. */
 export const validateJSON = (jsonString: string): { isValid: boolean; error?: string } => {
-  // An empty string is considered valid (user might be typing)
-  if (jsonString.trim() === "") {
-    return { isValid: true };
+  // Empty is accepted while the user is typing.
+  if (jsonString.trim() === "") return { isValid: true };
+
+  let parsed: unknown;
+  try {
+    parsed = parseJsonWithCommands(jsonString);
+  } catch (error) {
+    return {
+      isValid: false,
+      error: error instanceof Error ? error.message : t("services.invalid_json"),
+    };
   }
 
+  if (Array.isArray(parsed)) {
+    return { isValid: false, error: t("services.validation.json_arrays_not_allowed") };
+  }
+  if (["string", "number", "boolean"].includes(typeof parsed)) {
+    return { isValid: false, error: t("services.validation.json_primitives_not_allowed") };
+  }
+  if (typeof parsed !== "object" || parsed === null) {
+    return { isValid: false, error: t("services.validation.json_objects_only") };
+  }
+  if (Object.keys(parsed).length === 0) {
+    return { isValid: false, error: t("services.validation.json_empty_not_allowed") };
+  }
+  return { isValid: true };
+};
+
+/** Top-level keys of a JSON object payload, or null when it is not one (`validateJSON` reports why). */
+const payloadKeys = (jsonValue: string): string[] | null => {
+  if (!jsonValue.trim()) return null;
   try {
-    const parsed = parseJsonWithCommands(jsonString);
-
-    // Must be an object (not null, not an array, not a primitive type)
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      if (Array.isArray(parsed)) {
-        return {
-          isValid: false,
-          error: t("services.validation.json_arrays_not_allowed"),
-        };
-      } else if (
-        typeof parsed === "string" ||
-        typeof parsed === "number" ||
-        typeof parsed === "boolean"
-      ) {
-        return {
-          isValid: false,
-          error: t("services.validation.json_primitives_not_allowed"),
-        };
-      } else {
-        return {
-          isValid: false,
-          error: t("services.validation.json_objects_only"),
-        };
-      }
-    }
-
-    // Reject empty objects {}
-    const keys = Object.keys(parsed);
-    if (keys.length === 0) {
-      return {
-        isValid: false,
-        error: t("services.validation.json_empty_not_allowed"),
-      };
-    }
-
-    return { isValid: true };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : t("services.invalid_json");
-    return { isValid: false, error: errorMessage };
+    const parsed = parseJsonWithCommands(jsonValue);
+    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+      ? Object.keys(parsed)
+      : null;
+  } catch {
+    return null;
   }
 };
 
-/**
- * Validates that first-level JSON keys exist in field metadata
- * @param jsonValue - JSON string to validate
- * @param fieldsMetadata - Model field metadata
- */
+const quotedList = (fields: string[]) => fields.map((field) => `"${field}"`).join(", ");
+
 export const validateFieldsExistence = (
   jsonValue: string,
-  fieldsMetadata: Record<string, unknown>,
+  fieldsMetadata: Record<string, FieldMetadata>,
 ): { isValid: boolean; invalidFields: string[]; error?: string } => {
-  // If JSON is empty, it's valid (handled by validateJSON)
-  if (!jsonValue.trim()) {
-    return { isValid: true, invalidFields: [] };
-  }
-
-  try {
-    const parsed = parseJsonWithCommands(jsonValue);
-
-    // If it's not an object, it's handled by validateJSON
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      return { isValid: true, invalidFields: [] };
-    }
-
-    const firstLevelKeys = Object.keys(parsed);
-    const invalidFields = firstLevelKeys.filter((key) => !(key in fieldsMetadata));
-
-    if (invalidFields.length > 0) {
-      const fieldList = invalidFields.map((field) => `"${field}"`).join(", ");
-      return {
-        isValid: false,
-        invalidFields,
-        error: t("services.validation.invalid_field", [fieldList]),
-      };
-    }
-
-    return { isValid: true, invalidFields: [] };
-  } catch {
-    // If JSON is invalid, it's handled by validateJSON
-    return { isValid: true, invalidFields: [] };
-  }
+  const invalidFields = (payloadKeys(jsonValue) ?? []).filter((key) => !(key in fieldsMetadata));
+  if (invalidFields.length === 0) return { isValid: true, invalidFields };
+  return {
+    isValid: false,
+    invalidFields,
+    error: t("services.validation.invalid_field", [quotedList(invalidFields)]),
+  };
 };
 
-/**
- * Validates that all required fields are present in JSON data for creation
- * @param jsonValue - JSON string to validate
- * @param fieldsMetadata - Model field metadata
- */
+/** Required fields a create payload must provide (readonly ones are computed by Odoo). */
+export const missingRequiredFields = (
+  presentFields: Iterable<string>,
+  fieldsMetadata: Record<string, FieldMetadata>,
+): string[] => {
+  const present = new Set(presentFields);
+  return Object.entries(fieldsMetadata)
+    .filter(([field, meta]) => meta.required && !meta.readonly && !present.has(field))
+    .map(([field]) => field);
+};
+
 export const validateRequiredFields = (
   jsonValue: string,
-  fieldsMetadata: Record<string, unknown>,
+  fieldsMetadata: Record<string, FieldMetadata>,
 ): { isValid: boolean; missingRequiredFields: string[]; error?: string } => {
-  // If JSON is empty, we can't validate required fields
-  if (!jsonValue.trim()) {
-    return { isValid: true, missingRequiredFields: [] };
-  }
-
-  try {
-    const parsed = parseJsonWithCommands(jsonValue);
-
-    // If it's not an object, it's handled by validateJSON
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      return { isValid: true, missingRequiredFields: [] };
-    }
-
-    const providedFields = Object.keys(parsed);
-
-    // Find all required fields of the model
-    const requiredFields = Object.entries(fieldsMetadata)
-      .filter(([, fieldMeta]) => {
-        // Check if field is required
-        const meta = fieldMeta as {
-          required?: boolean;
-          readonly?: boolean;
-        };
-        return meta.required === true && meta.readonly !== true;
-      })
-      .map(([fieldName]) => fieldName);
-
-    // Identify missing required fields
-    const missingRequiredFields = requiredFields.filter(
-      (requiredField) => !providedFields.includes(requiredField),
-    );
-
-    if (missingRequiredFields.length > 0) {
-      const fieldList = missingRequiredFields.map((field) => `"${field}"`).join(", ");
-      return {
-        isValid: false,
-        missingRequiredFields,
-        error: t("services.validation.missing_required_field", [fieldList]),
-      };
-    }
-
-    return { isValid: true, missingRequiredFields: [] };
-  } catch {
-    // If JSON is invalid, it's handled by validateJSON
-    return { isValid: true, missingRequiredFields: [] };
-  }
+  const keys = payloadKeys(jsonValue);
+  const missing = keys ? missingRequiredFields(keys, fieldsMetadata) : [];
+  if (missing.length === 0) return { isValid: true, missingRequiredFields: missing };
+  return {
+    isValid: false,
+    missingRequiredFields: missing,
+    error: t("services.validation.missing_required_field", [quotedList(missing)]),
+  };
 };

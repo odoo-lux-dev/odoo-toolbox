@@ -1,4 +1,3 @@
-import yaml from "@modyfi/vite-plugin-yaml";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, UserManifest, WxtViteConfig } from "wxt";
 
@@ -120,7 +119,7 @@ export default defineConfig({
       };
     }
     return {
-      plugins: [tailwindcss(), yaml()],
+      plugins: [tailwindcss()],
       build,
       // Tailwind generates a sourcemap in build mode only when this is enabled,
       // otherwise Rolldown warns about a broken sourcemap during `wxt dev`.
