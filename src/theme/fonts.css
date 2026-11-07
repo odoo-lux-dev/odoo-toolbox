@@ -1,0 +1,5 @@
+/* Bundled font files of every UI theme (extension pages only). */
+@import "./odoo-native/fonts.css";
+@import "./access/fonts.css";
+@import "./console/fonts.css";
+@import "./toybox/fonts.css";

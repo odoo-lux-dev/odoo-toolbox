@@ -1,0 +1,4 @@
+/* Bundled locally: extension pages never load fonts from a CDN at runtime. */
+@import "@fontsource-variable/inter-tight/wght.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";

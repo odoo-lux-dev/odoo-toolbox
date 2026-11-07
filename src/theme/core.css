@@ -1,0 +1,39 @@
+/**
+ * Theme core: everything but the font files. Imported as is by content scripts
+ * rendered inside a host page (technical list), where bundled fonts cannot be
+ * loaded; extension pages import `index.css` instead.
+ *
+ * - Tailwind + DaisyUI, with one light and one dark DaisyUI theme per UI theme;
+ * - `tokens.css`: the theme contract (semantic tokens exposed as utilities);
+ * - one `<id>/theme.css` per UI theme, filling the contract;
+ * - `base.css`: shared base styles written against the contract only.
+ *
+ * The active theme is selected at runtime by `applyTheme()` (src/theme/apply-theme.ts),
+ * which sets `data-theme`, `data-ui-theme` and `data-color-scheme` on the root.
+ * See src/theme/README.md to add a theme.
+ */
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  /* Keep in sync with UI_THEMES in src/theme/themes.ts */
+  themes:
+    odoo-native-dark --default --prefersdark,
+    odoo-native-light,
+    access-light,
+    access-dark,
+    console-light,
+    console-dark,
+    toybox-light,
+    toybox-dark;
+}
+
+/* `dark:` follows the color scheme of any UI theme */
+@custom-variant dark (&:where([data-color-scheme="dark"], [data-color-scheme="dark"] *));
+
+@import "./tokens.css";
+@import "./primitives.css";
+@import "./odoo-native/theme.css";
+@import "./access/theme.css";
+@import "./console/theme.css";
+@import "./toybox/theme.css";
+@import "./base.css";

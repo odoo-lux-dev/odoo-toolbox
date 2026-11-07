@@ -40,7 +40,7 @@
       "typecheck": false
     },
     "better-tailwindcss": {
-      "entryPoint": "src/theme/daisy-theme.css"
+      "entryPoint": "src/theme/index.css"
     }
   },
   "env": {

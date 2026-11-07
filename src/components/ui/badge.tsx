@@ -2,7 +2,12 @@ import { splitProps, type JSX } from "solid-js";
 
 import { cx } from "@/components/ui/cx";
 
-type BadgeVariant = "solid" | "outline";
+/**
+ * - `solid`: filled with the color;
+ * - `outline`: colored border and text;
+ * - `soft`: tinted background, colored text (`color="neutral"` gives a quiet grey pill).
+ */
+type BadgeVariant = "solid" | "outline" | "soft";
 type BadgeColor =
   | "neutral"
   | "primary"
@@ -24,6 +29,7 @@ export interface BadgeProps extends JSX.HTMLAttributes<HTMLSpanElement> {
 const variantClassMap: Record<BadgeVariant, string> = {
   solid: "",
   outline: "badge-outline",
+  soft: "badge-soft",
 };
 
 const colorClassMap: Record<BadgeColor, string> = {

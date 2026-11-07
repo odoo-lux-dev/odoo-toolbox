@@ -1,0 +1,584 @@
+/**
+ * UI theme "access" — mockups/07-access (v0.1), accessibility first.
+ *
+ * Same Odoo palette as odoo-native, darkened to AAA inks (7:1 for text pairs, 3:1 for
+ * control borders and focus) on warm paper in light and warm plum-brown in dark.
+ * Atkinson Hyperlegible for the interface (designed for low vision), Inter Tight for
+ * titles, JetBrains Mono for technical metadata. 16px body, 44px targets, 3px focus
+ * outline, wider surfaces. Font files are declared in ./fonts.css (extension pages only).
+ *
+ * Contrast ratios are documented in mockups/07-access/brand-spec.md (branch design/mockups).
+ */
+
+/* ------------------------------------------------------------
+   DaisyUI colors and sizes
+   ------------------------------------------------------------ */
+@plugin "daisyui/theme" {
+  name: "access-light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #ffffff;
+  --color-base-200: #faf7f3;
+  --color-base-300: #efe9e3;
+  --color-base-content: #1a1613;
+  --color-primary: #714b67;
+  --color-primary-content: #ffffff;
+  --color-secondary: #00565a;
+  --color-secondary-content: #ffffff;
+  /* Teal ink rather than the #017e84 fill: links and focus must reach 7:1 */
+  --color-accent: #00565a;
+  --color-accent-content: #ffffff;
+  --color-neutral: #423a34;
+  --color-neutral-content: #ffffff;
+  --color-info: #1a5069;
+  --color-info-content: #ffffff;
+  --color-success: #1d5a35;
+  --color-success-content: #ffffff;
+  --color-warning: #6e4700;
+  --color-warning-content: #ffffff;
+  --color-error: #8a211c;
+  --color-error-content: #ffffff;
+  --radius-selector: 999px;
+  --radius-field: 10px;
+  --radius-box: 14px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "access-dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: #201b18;
+  --color-base-200: #1a1613;
+  --color-base-300: #312a25;
+  --color-base-content: #f8f3ee;
+  --color-primary: #d9aacb;
+  --color-primary-content: #2a1723;
+  --color-secondary: #8fe6e1;
+  --color-secondary-content: #0d2322;
+  --color-accent: #8fe6e1;
+  --color-accent-content: #0d2322;
+  --color-neutral: #dad1c8;
+  --color-neutral-content: #201b18;
+  --color-info: #a5d4ec;
+  --color-info-content: #10202a;
+  --color-success: #8cd9a8;
+  --color-success-content: #10241a;
+  --color-warning: #f2c46d;
+  --color-warning-content: #2a1d08;
+  --color-error: #ffa39b;
+  --color-error-content: #2a1514;
+  --radius-selector: 999px;
+  --radius-field: 10px;
+  --radius-box: 14px;
+  --size-selector: 4px;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ------------------------------------------------------------
+   Contract tokens (see src/theme/tokens.css)
+   ------------------------------------------------------------ */
+[data-ui-theme="access"] {
+  --ot-font-display:
+    "Inter Tight Variable", "Atkinson Hyperlegible", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --ot-font-ui:
+    "Atkinson Hyperlegible", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Noto Sans Devanagari", "Noto Sans Arabic", sans-serif;
+  --ot-font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ot-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /*
+   * Type scale of mockup 07 (1rem = 16px): 16px body and labels, 15px descriptions
+   * and DevTools text, 14px metadata, 12px floor (mono uppercase micro labels only).
+   * Scaled by the large text preference.
+   */
+  --ot-text-micro: calc(12px * var(--ot-text-scale));
+  --ot-text-caption: calc(13px * var(--ot-text-scale));
+  --ot-text-meta: calc(14px * var(--ot-text-scale));
+  --ot-text-small: calc(14px * var(--ot-text-scale));
+  --ot-text-note: calc(15px * var(--ot-text-scale));
+  --ot-text-ui: calc(15px * var(--ot-text-scale));
+  --ot-text-label: calc(16px * var(--ot-text-scale));
+  --ot-text-body: calc(16px * var(--ot-text-scale));
+  --ot-text-title: calc(18px * var(--ot-text-scale));
+  --ot-text-heading: calc(20px * var(--ot-text-scale));
+  --ot-text-headline: calc(24px * var(--ot-text-scale));
+  --ot-text-display-sm: calc(32px * var(--ot-text-scale));
+  --ot-text-display: calc(40px * var(--ot-text-scale));
+  --ot-leading-title: 1.3;
+  --ot-leading-heading: 1.25;
+  --ot-leading-display: 1.15;
+
+  /* Tailwind's text-xs / text-sm used by components: 14px / 15px floor */
+  --ot-tw-text-xs: 14px;
+  --ot-tw-text-sm: 15px;
+
+  --ot-border-w: 2px;
+  --ot-radius-tight: 6px;
+  --ot-radius-panel: 18px;
+
+  /* Density: 44px minimum for every interactive target */
+  --ot-target: 44px;
+  --ot-target-sm: 44px;
+  --ot-control-h: 44px;
+  --ot-control-sm-h: 44px;
+  /* Page searches: 48px field (mockup 07 popup and options) */
+  --ot-search-h: 48px;
+  --ot-row-h: 68px;
+  /* DevTools table (mockup 07): 52px rows, 40px sticky header */
+  --ot-table-row-h: 52px;
+  --ot-table-head-h: 40px;
+  --ot-tab-h: 48px;
+  --ot-chip-h: 26px;
+  --ot-pill-h: 22px;
+  --ot-switch-h: 28px;
+  --ot-popup-w: 420px;
+  --ot-options-sidebar-w: 304px;
+  --ot-query-rail-w: 368px;
+  --ot-focus-width: 3px;
+  --ot-focus-offset: 3px;
+}
+
+[data-ui-theme="access"][data-color-scheme="light"],
+[data-ui-theme="access"] [data-color-scheme="light"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #f2e9ef;
+  --ot-avatar-1-ink: #59364f;
+  --ot-avatar-2-soft: #e2f1f0;
+  --ot-avatar-2-ink: #00565a;
+  --ot-avatar-3-soft: #fbf1dd;
+  --ot-avatar-3-ink: #6e4700;
+  --ot-avatar-4-soft: #e8f1f6;
+  --ot-avatar-4-ink: #1a5069;
+  --ot-avatar-5-soft: #e7f2ea;
+  --ot-avatar-5-ink: #1d5a35;
+  --ot-avatar-6-soft: #fbece5;
+  --ot-avatar-6-ink: #7e3519;
+  --ot-avatar-7-soft: #eeeafb;
+  --ot-avatar-7-ink: #4d3d96;
+  --ot-avatar-8-soft: #e9edf1;
+  --ot-avatar-8-ink: #38475a;
+
+  --ot-canvas: #f4f0ec;
+  --ot-canvas-soft: #f8f4f0;
+  --ot-surface: #ffffff;
+  --ot-surface-2: #faf7f3;
+  --ot-surface-3: #efe9e3;
+  --ot-surface-inset: #f6f2ee;
+
+  --ot-line: #d8cfc7;
+  /* Control borders: 3.93:1 on surface */
+  --ot-line-strong: #8b7e75;
+  --ot-line-soft: #e6dfd8;
+
+  /*
+   * Components use ink-3 for descriptions and ink-4 for metadata: one step darker
+   * than mockup 07's roles so every text pair stays at 7:1 or more.
+   */
+  --ot-ink: #1a1613;
+  --ot-ink-2: #3a332e;
+  --ot-ink-3: #423a34;
+  --ot-ink-4: #4f4842;
+
+  --ot-primary-strong: #59364f;
+  --ot-primary-soft: #f2e9ef;
+  --ot-primary-tint: #e6d6e1;
+  --ot-accent-strong: #004a4e;
+  --ot-accent-soft: #e2f1f0;
+  --ot-accent-tint: #c6e6e4;
+
+  --ot-warning-soft: #fbf1dd;
+  --ot-warning-ink: #6e4700;
+  --ot-error-soft: #fbeae8;
+  --ot-error-ink: #8a211c;
+  --ot-success-soft: #e7f2ea;
+  --ot-success-ink: #1d5a35;
+  --ot-info-soft: #e8f1f6;
+  --ot-info-ink: #1a5069;
+
+  --ot-scrim: rgba(26, 22, 19, 0.45);
+
+  --ot-topbar: #714b67;
+  --ot-topbar-content: #ffffff;
+  --ot-topbar-muted: rgba(255, 255, 255, 0.86);
+  --ot-topbar-line: rgba(255, 255, 255, 0.32);
+
+  --ot-focus-ring: 0 0 0 3px rgba(0, 86, 90, 0.3);
+  /* Two elevation levels only: card and popup */
+  --ot-shadow-raised: 0 1px 2px rgba(45, 31, 24, 0.06);
+  --ot-shadow-card: 0 12px 32px -20px rgba(45, 31, 24, 0.35), 0 2px 8px -4px rgba(45, 31, 24, 0.08);
+  --ot-shadow-overlay:
+    0 26px 64px -28px rgba(45, 31, 24, 0.45), 0 6px 18px -12px rgba(45, 31, 24, 0.14);
+  --ot-shadow-pop:
+    0 26px 64px -28px rgba(45, 31, 24, 0.45), 0 6px 18px -12px rgba(45, 31, 24, 0.14);
+}
+
+[data-ui-theme="access"][data-color-scheme="dark"],
+[data-ui-theme="access"] [data-color-scheme="dark"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: #372733;
+  --ot-avatar-1-ink: #edc5e1;
+  --ot-avatar-2-soft: #153332;
+  --ot-avatar-2-ink: #8fe6e1;
+  --ot-avatar-3-soft: #3a2c16;
+  --ot-avatar-3-ink: #f2c46d;
+  --ot-avatar-4-soft: #1d2c37;
+  --ot-avatar-4-ink: #a5d4ec;
+  --ot-avatar-5-soft: #1c3225;
+  --ot-avatar-5-ink: #8cd9a8;
+  --ot-avatar-6-soft: #3d241b;
+  --ot-avatar-6-ink: #f4b49a;
+  --ot-avatar-7-soft: #241f3d;
+  --ot-avatar-7-ink: #c3b5ff;
+  --ot-avatar-8-soft: #222a32;
+  --ot-avatar-8-ink: #c2cfdc;
+
+  --ot-canvas: #141110;
+  --ot-canvas-soft: #191513;
+  --ot-surface: #201b18;
+  --ot-surface-2: #27211d;
+  --ot-surface-3: #312a25;
+  --ot-surface-inset: #1a1613;
+
+  --ot-line: #4b423b;
+  /* Control borders: 3.91:1 on surface */
+  --ot-line-strong: #82776e;
+  --ot-line-soft: #372f29;
+
+  /* Lighter secondary inks than mockup 07's roles (see the light scheme) */
+  --ot-ink: #f8f3ee;
+  --ot-ink-2: #e6ded6;
+  --ot-ink-3: #dad1c8;
+  --ot-ink-4: #c0b5ab;
+
+  --ot-primary-strong: #edc5e1;
+  --ot-primary-soft: #372733;
+  --ot-primary-tint: #4a3444;
+  --ot-accent-strong: #a6f0ec;
+  --ot-accent-soft: #153332;
+  --ot-accent-tint: #1e4543;
+
+  --ot-warning-soft: #3a2c16;
+  --ot-warning-ink: #f2c46d;
+  --ot-error-soft: #3e211e;
+  --ot-error-ink: #ffa39b;
+  --ot-success-soft: #1c3225;
+  --ot-success-ink: #8cd9a8;
+  --ot-info-soft: #1d2c37;
+  --ot-info-ink: #a5d4ec;
+
+  --ot-scrim: rgba(0, 0, 0, 0.65);
+
+  --ot-topbar: #2b2029;
+  --ot-topbar-content: #f8f3ee;
+  --ot-topbar-muted: #dad1c8;
+  --ot-topbar-line: #4a3a45;
+
+  --ot-focus-ring: 0 0 0 3px rgba(143, 230, 225, 0.32);
+  --ot-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.32);
+  --ot-shadow-card: 0 14px 34px -20px rgba(0, 0, 0, 0.72), 0 2px 8px -4px rgba(0, 0, 0, 0.38);
+  --ot-shadow-overlay: 0 30px 72px -28px rgba(0, 0, 0, 0.85), 0 8px 22px -12px rgba(0, 0, 0, 0.52);
+  --ot-shadow-pop: 0 30px 72px -28px rgba(0, 0, 0, 0.85), 0 8px 22px -12px rgba(0, 0, 0, 0.52);
+}
+
+/* Color-safe palette tints (the shared hues are in base.css). */
+[data-ui-theme="access"][data-cvd="on"][data-color-scheme="light"],
+[data-ui-theme="access"][data-cvd="on"] [data-color-scheme="light"] {
+  --ot-success-soft: #e5f1f8;
+  --ot-error-soft: #fcebe2;
+  --ot-info-soft: #eeeafb;
+}
+
+[data-ui-theme="access"][data-cvd="on"][data-color-scheme="dark"],
+[data-ui-theme="access"][data-cvd="on"] [data-color-scheme="dark"] {
+  --ot-success-soft: #162936;
+  --ot-error-soft: #3a2116;
+  --ot-info-soft: #241f3d;
+}
+
+/* ------------------------------------------------------------
+   Component tweaks
+   Placed in a DaisyUI sub-layer declared after DaisyUI's own, so they win over
+   DaisyUI components but still lose to Tailwind utilities used in components.
+   ------------------------------------------------------------ */
+@layer utilities {
+  @layer daisyui.ui-theme {
+    [data-ui-theme="access"] {
+      line-height: 1.6;
+
+      & .btn {
+        --fontsize: var(--ot-text-body);
+        --btn-p: 18px;
+        font-weight: 700;
+        transition:
+          background-color 180ms var(--ot-ease),
+          border-color 180ms var(--ot-ease),
+          color 180ms var(--ot-ease),
+          box-shadow 180ms var(--ot-ease);
+      }
+
+      /* Every button keeps a 44px hit area, whatever its DaisyUI size */
+      & :is(.btn-sm, .btn-xs) {
+        --fontsize: var(--ot-text-ui);
+        --btn-p: 14px;
+        min-height: var(--ot-target);
+      }
+
+      & :is(.btn-sm, .btn-xs):is(.btn-square, .btn-circle) {
+        min-width: var(--ot-target);
+      }
+
+      & .btn-primary:not(.btn-soft, .btn-outline, .btn-ghost, .btn-link):hover {
+        --btn-bg: var(--ot-primary-strong);
+        --btn-border: var(--ot-primary-strong);
+      }
+
+      & .btn-ghost:not(.btn-active):hover {
+        --btn-bg: var(--ot-surface-3);
+        --btn-border: transparent;
+        color: var(--ot-ink);
+      }
+
+      & .btn-soft.btn-primary {
+        --btn-bg: var(--ot-primary-soft);
+        --btn-fg: var(--ot-primary-strong);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-accent {
+        --btn-bg: var(--ot-accent-soft);
+        --btn-fg: var(--ot-accent-strong);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-accent:hover {
+        --btn-bg: var(--ot-accent-tint);
+      }
+
+      & .btn-link {
+        --btn-fg: var(--color-accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      /* Fields: control border at 3:1, focus border + halo */
+      & :is(.input, .select, .textarea) {
+        --input-color: var(--ot-line-strong);
+        background-color: var(--ot-surface);
+        transition:
+          border-color 180ms var(--ot-ease),
+          box-shadow 180ms var(--ot-ease);
+      }
+
+      & :is(.input, .select, .textarea):focus,
+      & :is(.input, .select, .textarea):focus-within {
+        --input-color: var(--color-accent);
+        outline: var(--ot-focus-width) solid var(--color-accent);
+        outline-offset: 1px;
+      }
+
+      & :is(.input, .select, .textarea)::placeholder {
+        color: var(--ot-ink-3);
+      }
+
+      /* Switch: 48x28 track, brand when on, visible off border */
+      & .toggle:not(.toggle-xs) {
+        --size: var(--ot-switch-h);
+      }
+
+      & .toggle {
+        --input-color: var(--ot-line-strong);
+        border-color: var(--ot-line-strong);
+        background-color: var(--ot-surface-3);
+      }
+
+      & .toggle:checked,
+      & .toggle:has(> input:checked) {
+        --input-color: var(--color-primary);
+        border-color: var(--color-primary);
+        background-color: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+
+      & :is(.checkbox, .radio) {
+        border-color: var(--ot-line-strong);
+      }
+
+      & .checkbox {
+        border-radius: 6px;
+      }
+
+      & :is(.checkbox, .radio):checked {
+        --input-color: var(--color-primary);
+      }
+
+      & .badge {
+        font-family: var(--ot-font-mono);
+        font-weight: 500;
+      }
+
+      & .badge-soft.badge-primary {
+        color: var(--ot-primary-strong);
+        background-color: var(--ot-primary-soft);
+        border-color: color-mix(in oklab, var(--color-primary) 24%, transparent);
+      }
+
+      & .kbd {
+        --size: 24px;
+        background-color: var(--ot-surface);
+        border-color: var(--ot-line-strong);
+        color: var(--ot-ink-2);
+        font-family: var(--ot-font-mono);
+        font-size: var(--ot-text-caption);
+        border-radius: 6px;
+      }
+
+      & .card-border {
+        border-color: var(--ot-line);
+        background-color: var(--ot-surface);
+      }
+
+      & .modal-box {
+        border: 1px solid var(--ot-line);
+        background-color: var(--ot-surface);
+        box-shadow: var(--ot-shadow-pop);
+        border-radius: var(--ot-radius-panel);
+      }
+
+      & .tooltip {
+        --tt-bg: var(--ot-ink);
+        color: var(--ot-surface);
+      }
+
+      & :is(h1, h2, h3, .card-title) {
+        font-family: var(--ot-font-display);
+        letter-spacing: -0.02em;
+      }
+
+      & ::selection {
+        background: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+
+      /* Links inside running text stay identifiable without color */
+      & p a:not(.btn, .ot-tool) {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      /* Choice tiles: icon and text on one line, 76px, control border */
+      & .ot-choice-box {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.6rem;
+        min-height: 76px;
+        padding: 0.6rem 0.7rem;
+        border-color: var(--ot-line-strong);
+        border-radius: var(--radius-box);
+        background-color: var(--ot-surface);
+      }
+
+      & .ot-choice > input:checked + .ot-choice-box {
+        box-shadow: inset 0 0 0 1px var(--color-primary);
+      }
+
+      & .ot-choice-icon {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: var(--radius-field);
+        background-color: var(--ot-surface-3);
+        color: var(--ot-ink-2);
+      }
+
+      & .ot-choice > input:checked + .ot-choice-box .ot-choice-icon {
+        background-color: var(--ot-surface);
+        color: var(--ot-primary-strong);
+      }
+
+      & .ot-choice-label {
+        font-size: var(--ot-text-body);
+        font-weight: 700;
+      }
+
+      & .ot-choice-hint {
+        color: var(--ot-ink-2);
+        font-size: var(--ot-text-micro);
+      }
+
+      & .ot-choice-check {
+        position: static;
+        margin-inline-start: auto;
+        scale: 1;
+      }
+
+      /* Navigation: bordered current item, underlined current sub item */
+      & .ot-nav-item {
+        font-weight: 700;
+      }
+
+      & .ot-nav-item[aria-current] {
+        border-color: color-mix(in oklab, var(--color-primary) 34%, var(--ot-line));
+        color: var(--ot-primary-strong);
+      }
+
+      & .ot-nav-subitem {
+        color: var(--ot-ink-2);
+        font-weight: 600;
+      }
+
+      & .ot-nav-subitem[aria-current] {
+        color: var(--ot-primary-strong);
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 5px;
+      }
+
+      & .ot-nav-subitem[aria-current]::before {
+        display: none;
+      }
+
+      & .ot-nav-link {
+        color: var(--ot-ink-2);
+      }
+
+      /* External links announce themselves without hover */
+      & .ot-nav-external {
+        opacity: 1;
+      }
+
+      /* Visible labels on searches */
+      & .ot-field-label {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip-path: none;
+        display: block;
+        color: var(--ot-ink-2);
+        font-size: var(--ot-text-note);
+        font-weight: 700;
+      }
+
+      /* Selected tab: thicker indicator */
+      & .ot-tab[aria-selected="true"] {
+        border-bottom-width: 3px;
+      }
+    }
+
+    /* Focus on the brand bar: white ring stays visible on plum */
+    [data-ui-theme="access"] [data-slot="popup-header"] :focus-visible {
+      outline-color: var(--ot-topbar-content);
+    }
+  }
+}

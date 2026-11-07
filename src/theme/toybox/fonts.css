@@ -1,0 +1,5 @@
+/* Bundled locally: extension pages never load fonts from a CDN at runtime. */
+@import "@fontsource-variable/fredoka/wght.css";
+@import "@fontsource-variable/nunito/wght.css";
+@import "@fontsource-variable/nunito/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";

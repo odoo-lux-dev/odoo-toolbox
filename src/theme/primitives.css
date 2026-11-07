@@ -1,0 +1,838 @@
+/**
+ * Shared primitives (src/components/ui/), styled once from the theme contract.
+ *
+ * Each primitive has a stable `ot-*` class. Geometry (sizes, radii, padding, type)
+ * comes from the density and type tokens, so a theme changes every surface by
+ * changing values only. A theme can still restyle a primitive in its sub-layer,
+ * which wins over this one:
+ *
+ *   @layer utilities { @layer daisyui.ui-theme { [data-ui-theme="x"] .ot-tab { ... } } }
+ *
+ * States are read from ARIA / data attributes (`aria-selected`, `aria-pressed`,
+ * `data-tone`, `data-size`...), never from extra classes, so markup stays the
+ * single source of truth for the state. Tailwind utilities passed by a caller
+ * win over these rules: use them for layout only (margins, flex, width).
+ *
+ * Cascade: DaisyUI 5 emits its components in sub-layers of `utilities`, so they
+ * win over this `components` layer. Don't put an `ot-*` class and a DaisyUI
+ * component class (`btn`, `badge`, `card`...) on the same element.
+ */
+@layer components {
+  /* ------------------------------------------------------------
+     Tool button: square icon button of toolbars and row actions
+     ------------------------------------------------------------ */
+  .ot-tool {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--ot-target);
+    height: var(--ot-target);
+    border: var(--ot-border-w) solid transparent;
+    border-radius: var(--radius-field);
+    color: var(--ot-ink-3);
+    cursor: pointer;
+    transition:
+      background-color 150ms var(--ot-ease),
+      border-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-tool[data-size="sm"] {
+    width: var(--ot-target-sm);
+    height: var(--ot-target-sm);
+  }
+
+  /* Wide variant: icon + text (popup "Settings") */
+  .ot-tool[data-shape="label"] {
+    width: auto;
+    grid-auto-flow: column;
+    gap: calc(var(--spacing) * 1.5);
+    padding-inline: calc(var(--spacing) * 2);
+    color: var(--ot-ink-2);
+    font-size: var(--ot-text-label);
+    font-weight: 600;
+  }
+
+  .ot-tool[data-variant="outline"] {
+    border-color: var(--ot-line);
+    background-color: var(--ot-surface);
+  }
+
+  .ot-tool:hover {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink);
+  }
+
+  .ot-tool:is([aria-pressed="true"], [data-active="true"]) {
+    border-color: transparent;
+    background-color: var(--ot-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .ot-tool:is([aria-pressed="true"], [data-active="true"]):hover {
+    background-color: var(--ot-accent-tint);
+  }
+
+  .ot-tool:is([aria-pressed="true"], [data-active="true"])[data-tone="primary"] {
+    background-color: var(--ot-primary-soft);
+    color: var(--color-primary);
+  }
+
+  .ot-tool:is([aria-pressed="true"], [data-active="true"])[data-tone="warning"] {
+    border-color: color-mix(in oklab, var(--color-warning) 40%, transparent);
+    background-color: var(--ot-warning-soft);
+    color: var(--ot-warning-ink);
+  }
+
+  /* Destructive action: neutral at rest, error on hover */
+  .ot-tool[data-tone="error"]:hover {
+    background-color: var(--ot-error-soft);
+    color: var(--ot-error-ink);
+  }
+
+  .ot-tool:disabled,
+  .ot-tool[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* ------------------------------------------------------------
+     Tabs (DevTools tab rail)
+     ------------------------------------------------------------ */
+  .ot-tabs {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .ot-tab {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: calc(var(--spacing) * 1.5);
+    padding-inline: calc(var(--spacing) * 3);
+    border-bottom: 2px solid transparent;
+    color: var(--ot-ink-3);
+    font-size: var(--ot-text-ui);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 150ms var(--ot-ease),
+      border-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-tab > svg {
+    color: var(--ot-ink-4);
+  }
+
+  .ot-tab:hover {
+    background-color: var(--ot-surface-2);
+    color: var(--ot-ink);
+  }
+
+  .ot-tab[aria-selected="true"] {
+    border-bottom-color: var(--color-primary);
+    background-color: transparent;
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .ot-tab[aria-selected="true"] > svg {
+    color: inherit;
+  }
+
+  /* The tab rail scrolls horizontally: keep the focus ring inside the tab */
+  .ot-tab:focus-visible {
+    outline-offset: calc(var(--ot-focus-width) * -1);
+  }
+
+  .ot-tab:disabled,
+  .ot-tab[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* ------------------------------------------------------------
+     Segmented control: one pressed item among a few (theme, view mode)
+     ------------------------------------------------------------ */
+  .ot-segmented {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 0.5);
+    padding: calc(var(--spacing) * 0.5);
+    border: var(--ot-border-w) solid var(--ot-line);
+    border-radius: var(--radius-field);
+    background-color: var(--ot-surface-inset);
+  }
+
+  /* The control is as tall as a hit target: segment = target - padding - border */
+  .ot-segment {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 1.5);
+    min-height: calc(var(--ot-target) - var(--spacing) - 2 * var(--ot-border-w));
+    padding-inline: calc(var(--spacing) * 2.5);
+    border-radius: var(--ot-radius-tight);
+    color: var(--ot-ink-3);
+    font-size: var(--ot-text-label);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-segmented[data-size="sm"] .ot-segment {
+    min-height: calc(var(--ot-target-sm) - var(--spacing) - 2 * var(--ot-border-w));
+    font-size: var(--ot-text-note);
+  }
+
+  .ot-segment[data-icon-only] {
+    min-width: calc(var(--ot-target) - var(--spacing) - 2 * var(--ot-border-w));
+    padding-inline: 0;
+  }
+
+  .ot-segmented[data-size="sm"] .ot-segment[data-icon-only] {
+    min-width: calc(var(--ot-target-sm) - var(--spacing) - 2 * var(--ot-border-w));
+  }
+
+  .ot-segment:hover:enabled {
+    color: var(--ot-ink);
+  }
+
+  .ot-segment[aria-pressed="true"] {
+    background-color: var(--ot-surface);
+    box-shadow: var(--ot-shadow-raised);
+    color: var(--ot-ink);
+    font-weight: 600;
+  }
+
+  [data-color-scheme="dark"] .ot-segment[aria-pressed="true"] {
+    background-color: var(--ot-surface-3);
+  }
+
+  .ot-segment:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  /* ------------------------------------------------------------
+     List row (popup projects, favorites, history)
+     ------------------------------------------------------------ */
+  .ot-row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 2.25);
+    min-height: var(--ot-row-h);
+    padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2.5);
+    transition:
+      background-color 150ms var(--ot-ease),
+      border-color 150ms var(--ot-ease);
+  }
+
+  .ot-row:is(a, button, [data-interactive]) {
+    cursor: pointer;
+  }
+
+  .ot-row:is(a, button, [data-interactive]):hover,
+  .ot-row[data-state="open"] {
+    background-color: var(--ot-surface-2);
+  }
+
+  /* A focused row is drawn inside its list (rows touch each other) */
+  .ot-row:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline-offset: calc(var(--ot-focus-width) * -1);
+  }
+
+  /* ------------------------------------------------------------
+     Chip (mono labels: field names, values, RPC methods) and count pill
+     ------------------------------------------------------------ */
+  .ot-chip {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--spacing);
+    max-width: 100%;
+    height: var(--ot-chip-h);
+    padding-inline: calc(var(--spacing) * 1.5);
+    border: var(--ot-border-w) solid var(--ot-line);
+    border-radius: var(--ot-radius-tight);
+    background-color: var(--ot-surface-2);
+    color: var(--ot-ink-2);
+    font-family: var(--ot-font-mono);
+    font-size: var(--ot-text-caption);
+    white-space: nowrap;
+  }
+
+  .ot-chip[data-shape="pill"] {
+    padding-inline: calc(var(--spacing) * 2);
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  /* Chip acting as a button ("+3", "−"): dashed outline */
+  .ot-chip[data-variant="action"] {
+    border-style: dashed;
+    border-color: var(--ot-line-strong);
+    background-color: transparent;
+    color: var(--ot-ink-3);
+    cursor: pointer;
+    transition:
+      border-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-chip[data-variant="action"]:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .ot-chip[data-tone="primary"] {
+    border-color: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    background-color: var(--ot-primary-soft);
+    color: var(--color-primary);
+  }
+
+  .ot-chip[data-tone="accent"] {
+    border-color: color-mix(in oklab, var(--color-accent) 20%, transparent);
+    background-color: var(--ot-accent-soft);
+    color: var(--ot-accent-strong);
+  }
+
+  .ot-chip[data-tone="warning"] {
+    border-color: color-mix(in oklab, var(--color-warning) 20%, transparent);
+    background-color: var(--ot-warning-soft);
+    color: var(--ot-warning-ink);
+  }
+
+  .ot-chip[data-tone="error"] {
+    border-color: color-mix(in oklab, var(--color-error) 20%, transparent);
+    background-color: var(--ot-error-soft);
+    color: var(--ot-error-ink);
+  }
+
+  .ot-chip[data-tone="neutral"] {
+    background-color: var(--ot-surface-3);
+  }
+
+  .ot-pill {
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    min-width: calc(var(--spacing) * 5);
+    height: var(--ot-pill-h);
+    padding-inline: calc(var(--spacing) * 1.5);
+    border-radius: 999px;
+    background-color: var(--ot-primary-soft);
+    color: var(--color-primary);
+    font-family: var(--ot-font-mono);
+    font-size: var(--ot-text-caption);
+    font-weight: 500;
+    letter-spacing: normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ot-pill[data-tone="neutral"] {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink-2);
+  }
+
+  /* ------------------------------------------------------------
+     Card, card header and icon tile
+     ------------------------------------------------------------ */
+  .ot-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border: var(--ot-border-w) solid var(--ot-line);
+    border-radius: var(--radius-box);
+    background-color: var(--ot-surface);
+    transition:
+      border-color 150ms var(--ot-ease),
+      box-shadow 150ms var(--ot-ease);
+  }
+
+  .ot-card[data-hover]:hover {
+    border-color: var(--ot-line-strong);
+  }
+
+  .ot-card-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--spacing) * 3);
+    min-height: var(--ot-control-h);
+    padding: var(--spacing) calc(var(--spacing) * 3);
+    border-bottom: var(--ot-border-w) solid var(--ot-line-soft);
+    background-color: var(--ot-surface-2);
+  }
+
+  .ot-icon-tile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--ot-target);
+    height: var(--ot-target);
+    border-radius: var(--radius-field);
+    background-color: var(--ot-primary-soft);
+    color: var(--color-primary);
+  }
+
+  .ot-icon-tile[data-size="lg"] {
+    width: calc(var(--ot-target) + var(--spacing));
+    height: calc(var(--ot-target) + var(--spacing));
+    border-radius: var(--radius-box);
+  }
+
+  .ot-icon-tile[data-size="xl"] {
+    width: calc(var(--ot-target) * 1.5);
+    height: calc(var(--ot-target) * 1.5);
+    border-radius: var(--ot-radius-panel);
+  }
+
+  .ot-icon-tile[data-tone="accent"] {
+    background-color: var(--ot-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .ot-icon-tile[data-tone="success"] {
+    background-color: var(--ot-success-soft);
+    color: var(--ot-success-ink);
+  }
+
+  .ot-icon-tile[data-tone="info"] {
+    background-color: var(--ot-info-soft);
+    color: var(--ot-info-ink);
+  }
+
+  .ot-icon-tile[data-tone="warning"] {
+    background-color: var(--ot-warning-soft);
+    color: var(--ot-warning-ink);
+  }
+
+  .ot-icon-tile[data-tone="error"] {
+    background-color: var(--ot-error-soft);
+    color: var(--ot-error-ink);
+  }
+
+  .ot-icon-tile[data-tone="neutral"] {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink-3);
+  }
+
+  /* ------------------------------------------------------------
+     Status: dot, note, state message (empty / error), skeleton
+     ------------------------------------------------------------ */
+  .ot-status-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 1.5);
+    color: var(--ot-success-ink);
+  }
+
+  .ot-status-dot[data-tone="error"] {
+    color: var(--ot-error-ink);
+  }
+
+  .ot-status-dot[data-tone="warning"] {
+    color: var(--ot-warning-ink);
+  }
+
+  /* Filled box tinted by its tone, so a warning stands out in every theme */
+  .ot-note {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    padding: 0.8rem 0.9rem;
+    border: var(--ot-border-w) solid color-mix(in oklab, var(--ot-warning-ink) 36%, var(--ot-line));
+    border-radius: var(--radius-field);
+    background-color: var(--ot-warning-soft);
+    color: var(--ot-ink);
+    font-size: var(--ot-text-note);
+    line-height: 1.55;
+  }
+
+  .ot-note[data-tone="info"] {
+    border-color: color-mix(in oklab, var(--color-accent) 34%, var(--ot-line));
+    background-color: var(--ot-accent-soft);
+  }
+
+  .ot-note[data-tone="error"] {
+    border-color: color-mix(in oklab, var(--ot-error-ink) 36%, var(--ot-line));
+    background-color: var(--ot-error-soft);
+  }
+
+  .ot-note-icon {
+    display: flex;
+    flex: none;
+    color: var(--ot-warning-ink);
+  }
+
+  .ot-note[data-tone="info"] .ot-note-icon {
+    color: var(--color-accent);
+  }
+
+  .ot-note[data-tone="error"] .ot-note-icon {
+    color: var(--ot-error-ink);
+  }
+
+  .ot-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 2);
+    padding: calc(var(--spacing) * 8) calc(var(--spacing) * 6);
+    text-align: center;
+  }
+
+  .ot-state[data-framed] {
+    border: var(--ot-border-w) dashed var(--ot-line-strong);
+    border-radius: var(--ot-radius-panel);
+    background-color: var(--ot-surface);
+    padding-block: calc(var(--spacing) * 14);
+  }
+
+  .ot-state-title {
+    color: var(--ot-ink);
+    font-family: var(--ot-font-display);
+    font-size: var(--ot-text-title);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .ot-state-text {
+    max-width: 24rem;
+    color: var(--ot-ink-2);
+    font-size: var(--ot-text-ui);
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .ot-skeleton {
+    border-radius: var(--ot-radius-tight);
+    background-color: var(--ot-surface-3);
+  }
+
+  .ot-skeleton[data-pulse] {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* ------------------------------------------------------------
+     Choice tiles: radio group drawn as tiles (debug mode, color scheme)
+     ------------------------------------------------------------ */
+  .ot-choice {
+    position: relative;
+    display: block;
+    cursor: pointer;
+  }
+
+  .ot-choice > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .ot-choice-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 1.5);
+    height: 100%;
+    padding: calc(var(--spacing) * 2.25);
+    border: var(--ot-border-w) solid var(--ot-line);
+    border-radius: var(--radius-field);
+    background-color: var(--ot-surface-2);
+    transition:
+      background-color 150ms var(--ot-ease),
+      border-color 150ms var(--ot-ease),
+      box-shadow 150ms var(--ot-ease);
+  }
+
+  .ot-choice:hover .ot-choice-box {
+    border-color: var(--ot-line-strong);
+    background-color: var(--ot-surface-3);
+  }
+
+  .ot-choice > input:checked + .ot-choice-box {
+    border-color: var(--color-primary);
+    background-color: var(--ot-primary-soft);
+  }
+
+  .ot-choice > input:focus-visible + .ot-choice-box {
+    outline: var(--ot-focus-width) solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .ot-choice-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: calc(var(--spacing) * 6);
+    height: calc(var(--spacing) * 6);
+    border: var(--ot-border-w) solid var(--ot-line);
+    border-radius: var(--ot-radius-tight);
+    background-color: var(--ot-surface);
+    color: var(--ot-ink-3);
+  }
+
+  .ot-choice > input:checked + .ot-choice-box .ot-choice-icon {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-primary-content);
+  }
+
+  .ot-choice-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .ot-choice-label {
+    font-size: var(--ot-text-label);
+    font-weight: 600;
+  }
+
+  .ot-choice > input:checked + .ot-choice-box .ot-choice-label {
+    color: var(--color-primary);
+  }
+
+  .ot-choice-hint {
+    margin-top: calc(var(--spacing) * 0.5);
+    color: var(--ot-ink-3);
+    font-family: var(--ot-font-mono);
+    font-size: var(--ot-text-caption);
+  }
+
+  .ot-choice-check {
+    position: absolute;
+    inset-inline-end: calc(var(--spacing) * 1.75);
+    top: calc(var(--spacing) * 1.75);
+    color: var(--color-primary);
+    opacity: 0;
+    scale: 0.75;
+    transition:
+      opacity 150ms var(--ot-ease),
+      scale 150ms var(--ot-ease);
+  }
+
+  .ot-choice > input:checked + .ot-choice-box .ot-choice-check {
+    opacity: 1;
+    scale: 1;
+  }
+
+  /* ------------------------------------------------------------
+     Navigation (options sidebar): items, sub items, resource links.
+     The current entry carries `aria-current`.
+     ------------------------------------------------------------ */
+  .ot-nav-item {
+    display: flex;
+    min-height: var(--ot-control-h);
+    align-items: center;
+    gap: calc(var(--spacing) * 2.25);
+    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.25);
+    border: var(--ot-border-w) solid transparent;
+    border-radius: var(--radius-field);
+    color: var(--ot-ink-2);
+    font-size: var(--ot-text-body);
+    font-weight: 500;
+    transition:
+      background-color 150ms var(--ot-ease),
+      border-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-nav-item:hover {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink);
+  }
+
+  .ot-nav-item[aria-current] {
+    background-color: var(--ot-primary-soft);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .ot-nav-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    color: var(--ot-ink-3);
+  }
+
+  /* Label trimmed to its cap height so it centers optically on the icon (the
+     UI fonts sit ~1px high otherwise). `clip` + margin keeps descenders visible
+     while still truncating. */
+  .ot-nav-label {
+    min-width: 0;
+    flex: 1;
+    overflow: clip;
+    overflow-clip-margin: 4px;
+    text-box: trim-both cap alphabetic;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ot-nav-item[aria-current] .ot-nav-icon {
+    color: var(--color-primary);
+  }
+
+  .ot-nav-subitem {
+    display: flex;
+    min-height: var(--ot-control-sm-h);
+    align-items: center;
+    gap: calc(var(--spacing) * 1.5);
+    padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2);
+    border-radius: var(--ot-radius-tight);
+    color: var(--ot-ink-3);
+    font-size: var(--ot-text-label);
+    transition:
+      background-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-nav-subitem:hover {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink);
+  }
+
+  /* Current sub item: dot before the label */
+  .ot-nav-subitem[aria-current] {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .ot-nav-subitem[aria-current]::before {
+    content: "";
+    width: var(--spacing);
+    height: var(--spacing);
+    flex: none;
+    border-radius: 999px;
+    background-color: currentColor;
+  }
+
+  .ot-nav-link {
+    display: flex;
+    min-height: var(--ot-control-sm-h);
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    padding-inline: var(--spacing);
+    border-radius: var(--ot-radius-tight);
+    color: var(--ot-ink-3);
+    font-size: var(--ot-text-note);
+    transition:
+      background-color 150ms var(--ot-ease),
+      color 150ms var(--ot-ease);
+  }
+
+  .ot-nav-link:hover {
+    background-color: var(--ot-surface-3);
+    color: var(--ot-ink);
+  }
+
+  .ot-nav-link-icon {
+    color: var(--ot-ink-4);
+  }
+
+  /* "Opens in a new tab" mark: shown on hover (a theme may always show it) */
+  .ot-nav-external {
+    color: var(--ot-ink-4);
+    opacity: 0;
+    transition: opacity 150ms var(--ot-ease);
+  }
+
+  .ot-nav-link:is(:hover, :focus-visible) .ot-nav-external {
+    opacity: 0.75;
+  }
+
+  /* ------------------------------------------------------------
+     Field label a theme may show: visually hidden by default, still read by
+     screen readers (popup search).
+     ------------------------------------------------------------ */
+  .ot-field-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------
+     Avatar: icon tile colored from the theme avatar palette (data-avatar = 1..8,
+     see AVATAR_TONE_COUNT in src/components/ui/avatar-tone.ts)
+     ------------------------------------------------------------ */
+  .ot-avatar[data-avatar="1"] {
+    background-color: var(--ot-avatar-1-soft);
+    color: var(--ot-avatar-1-ink);
+  }
+
+  .ot-avatar[data-avatar="2"] {
+    background-color: var(--ot-avatar-2-soft);
+    color: var(--ot-avatar-2-ink);
+  }
+
+  .ot-avatar[data-avatar="3"] {
+    background-color: var(--ot-avatar-3-soft);
+    color: var(--ot-avatar-3-ink);
+  }
+
+  .ot-avatar[data-avatar="4"] {
+    background-color: var(--ot-avatar-4-soft);
+    color: var(--ot-avatar-4-ink);
+  }
+
+  .ot-avatar[data-avatar="5"] {
+    background-color: var(--ot-avatar-5-soft);
+    color: var(--ot-avatar-5-ink);
+  }
+
+  .ot-avatar[data-avatar="6"] {
+    background-color: var(--ot-avatar-6-soft);
+    color: var(--ot-avatar-6-ink);
+  }
+
+  .ot-avatar[data-avatar="7"] {
+    background-color: var(--ot-avatar-7-soft);
+    color: var(--ot-avatar-7-ink);
+  }
+
+  .ot-avatar[data-avatar="8"] {
+    background-color: var(--ot-avatar-8-soft);
+    color: var(--ot-avatar-8-ink);
+  }
+
+  /* Copy feedback (copyWithFeedback): a label laid over the copied element, so
+     its content (rendered by Solid) is never replaced. */
+  [data-clipboard-state] {
+    position: relative;
+    pointer-events: none;
+  }
+
+  [data-clipboard-state]::after {
+    content: attr(data-clipboard-message);
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-inline: 0.5rem;
+    border-radius: inherit;
+    white-space: nowrap;
+    background-color: var(--ot-success-soft);
+    color: var(--ot-success-ink);
+  }
+
+  [data-clipboard-state="error"]::after {
+    background-color: var(--ot-error-soft);
+    color: var(--ot-error-ink);
+  }
+}

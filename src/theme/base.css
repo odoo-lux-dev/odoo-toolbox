@@ -1,0 +1,177 @@
+/**
+ * Base styles shared by every UI theme. Only contract tokens are used here
+ * (see tokens.css), never raw colors.
+ */
+/*
+ * Unlayered on purpose: Chrome injects an unlayered `body { font-family }` in
+ * extension pages, which would win over any layered rule.
+ */
+[data-ui-theme],
+[data-ui-theme] body {
+  font-family: var(--ot-font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Accessibility preferences (set by applyTheme(), shared by every UI theme).
+ *
+ * Large text: every type scale token of a theme is written
+ * `calc(<px> * var(--ot-text-scale))`, so the whole typography grows at once
+ * without changing the root font size (the technical list pins its root to
+ * 16px because Odoo hosts change it). `:where()` keeps these defaults below any
+ * theme specific value, e.g. `[data-ui-theme="x"][data-text-size="large"]`.
+ */
+:where([data-ui-theme]) {
+  --ot-text-scale: 1;
+
+  /*
+   * Tailwind's own sizes (text-xs, text-sm...) follow the scale too. In px, like the
+   * theme scale, so the technical list needs no override; a theme may change the base
+   * size of each step with `--ot-tw-text-<step>` (see access/theme.css).
+   */
+  --text-xs: calc(var(--ot-tw-text-xs, 12px) * var(--ot-text-scale));
+  --text-sm: calc(var(--ot-tw-text-sm, 14px) * var(--ot-text-scale));
+  --text-base: calc(var(--ot-tw-text-base, 16px) * var(--ot-text-scale));
+  --text-lg: calc(var(--ot-tw-text-lg, 18px) * var(--ot-text-scale));
+  --text-xl: calc(var(--ot-tw-text-xl, 20px) * var(--ot-text-scale));
+  --text-2xl: calc(var(--ot-tw-text-2xl, 24px) * var(--ot-text-scale));
+  --text-3xl: calc(var(--ot-tw-text-3xl, 30px) * var(--ot-text-scale));
+}
+
+:where([data-ui-theme][data-text-size="large"]) {
+  --ot-text-scale: 1.125;
+}
+
+/*
+ * Color-safe palette (data-cvd="on", "Color blind mode" setting): Okabe–Ito
+ * based semantic colors, shared by every UI theme (each theme only tints the
+ * `-soft` backgrounds). Success is blue, danger vermilion, info purple; warning
+ * keeps its ochre. Icons and labels still carry meaning.
+ */
+[data-cvd="on"][data-color-scheme="light"],
+[data-cvd="on"] [data-color-scheme="light"] {
+  --color-success: #00546d;
+  --color-success-content: #ffffff;
+  --color-error: #7e2d00;
+  --color-error-content: #ffffff;
+  --color-info: #4d3d96;
+  --color-info-content: #ffffff;
+  --ot-success-ink: #00546d;
+  --ot-error-ink: #7e2d00;
+  --ot-info-ink: #4d3d96;
+}
+
+[data-cvd="on"][data-color-scheme="dark"],
+[data-cvd="on"] [data-color-scheme="dark"] {
+  --color-success: #8ccdf0;
+  --color-success-content: #10202a;
+  --color-error: #ffb08a;
+  --color-error-content: #2a1514;
+  --color-info: #c3b5ff;
+  --color-info-content: #1a1530;
+  --ot-success-ink: #8ccdf0;
+  --ot-error-ink: #ffb08a;
+  --ot-info-ink: #c3b5ff;
+}
+
+@layer base {
+  /* Visible keyboard focus for every theme (width and offset are density tokens) */
+  :focus-visible {
+    outline: var(--ot-focus-width) solid var(--color-accent);
+    outline-offset: var(--ot-focus-offset);
+  }
+
+  /* The main content focused by SkipLink (MAIN_CONTENT_ID) is not a control */
+  #main-content:focus-visible {
+    outline: none;
+  }
+
+  code {
+    background: var(--ot-surface-inset);
+    color: var(--color-base-content);
+    border: 1px solid var(--ot-line);
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.375rem;
+    font-family: var(--ot-font-mono);
+    font-variant-ligatures: none;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ot-line-strong) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: var(--ot-line-strong);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 99px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--ot-ink-4);
+    background-clip: padding-box;
+  }
+}
+
+/*
+ * DaisyUI components draw their own focus outline (2px): align them on the focus
+ * tokens so every theme controls the width and offset in one place. Declared after
+ * DaisyUI's layers (and the theme sub-layers), still below Tailwind utilities.
+ */
+@layer utilities {
+  @layer daisyui.focus {
+    :is(.btn, .tab, .checkbox, .radio, .toggle, .kbd, .menu li > *):focus-visible {
+      outline-width: var(--ot-focus-width);
+      outline-offset: var(--ot-focus-offset);
+    }
+  }
+}
+
+@keyframes recordSearchIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-record-search-in {
+  animation: recordSearchIn 0.18s ease-out;
+}
+
+/* Reduced motion: from the OS, or forced by the `motion` preference (data-motion) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+[data-motion="reduced"],
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

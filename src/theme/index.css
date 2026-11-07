@@ -1,0 +1,7 @@
+/**
+ * Theme entry point of the extension pages (popup, options, devtools, update).
+ * Content scripts rendered in a host page import `core.css` instead.
+ */
+@import "./core.css";
+@import "./fonts.css";
+@import "./flag-emoji.css";
