@@ -1,68 +1,38 @@
-import { Show, splitProps, type JSX } from "solid-js";
+import { Show } from "solid-js";
 
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { CopyableText } from "@/components/ui/copyable-text";
+import { cx } from "@/components/ui/cx";
 import { t } from "@/utils/i18n-page";
 
-interface InfoItemProps {
+/** Label/value row of an InfoSection. Long values are truncated (full value in the title). */
+export const InfoItem = (props: {
   label: string;
   value: string;
-  valueClass?: string;
-  icon?: JSX.Element;
   copyable?: boolean;
-}
-
-const baseValueClasses = [
-  "text-xs",
-  "font-mono",
-  "rounded-md",
-  "px-2",
-  "py-1",
-  "max-w-[200px]",
-  "truncate",
-];
-
-const copyableClasses = [
-  "cursor-pointer",
-  "bg-base-200",
-  "hover:bg-primary",
-  "hover:text-primary-content",
-  "transition-colors",
-];
-
-const staticClasses = ["bg-base-200/60", "text-base-content/80"];
-
-export const InfoItem = (props: InfoItemProps) => {
-  const [local] = splitProps(props, ["label", "value", "valueClass", "icon", "copyable"]);
-  const { copyToClipboard } = useCopyToClipboard();
-
-  const handleCopyValue = async (event: MouseEvent) => {
-    if (!local.copyable) return;
-    const target = event.currentTarget as HTMLElement;
-    await copyToClipboard(local.value, target);
-  };
-
-  const classes = () =>
-    [...baseValueClasses, ...(local.copyable ? copyableClasses : staticClasses), local.valueClass]
-      .filter(Boolean)
-      .join(" ");
-
-  return (
-    <div class="flex items-center justify-between gap-4 px-4 py-1">
-      <div class="inline-flex items-center gap-2 text-sm font-medium text-base-content/70">
-        <Show when={local.icon}>
-          <span class="text-base opacity-70">{local.icon}</span>
-        </Show>
-        <span>{local.label}</span>
-      </div>
-      <div
-        class={classes()}
-        onClick={local.copyable ? handleCopyValue : undefined}
-        title={local.copyable ? t("technical_list.info_item.click_to_copy") : undefined}
-        data-clipboard-copyable={local.copyable ? "true" : "false"}
-        data-clipboard-value={local.copyable ? local.value : undefined}
-      >
-        {local.value}
-      </div>
-    </div>
-  );
-};
+  valueClass?: string;
+}) => (
+  <div class="flex min-h-8 items-center gap-2.5 border-t border-solid border-line-soft px-3 py-0.5 first:border-t-0">
+    <span class="w-26 shrink-0 text-xs text-ink-3">{props.label}</span>
+    <Show
+      when={props.copyable ?? true}
+      fallback={
+        <span
+          class={cx(
+            "inline-flex max-w-full min-w-0 px-1.5 py-0.5 font-mono text-xs text-ink-2",
+            props.valueClass,
+          )}
+          title={props.value}
+        >
+          <span class="truncate">{props.value}</span>
+        </span>
+      }
+    >
+      <CopyableText
+        variant="subtle"
+        value={props.value}
+        title={`${t("technical_list.info_item.click_to_copy")}: ${props.value}`}
+        class={cx("text-xs", props.valueClass)}
+      />
+    </Show>
+  </div>
+);

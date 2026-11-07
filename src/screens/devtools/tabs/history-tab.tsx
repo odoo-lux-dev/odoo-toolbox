@@ -1,63 +1,69 @@
-import { Search02Icon, TransactionHistoryIcon } from "@hugeicons/core-free-icons";
-import { createSignal, createEffect, createMemo, Show, For } from "solid-js";
+import {
+  Alert02Icon,
+  Delete02Icon,
+  RefreshIcon,
+  Search02Icon,
+  TransactionHistoryIcon,
+} from "@hugeicons/core-free-icons";
+import { createMemo, For, onMount, Show } from "solid-js";
+import { createStore } from "solid-js/store";
 
 import { Button } from "@/components/ui/button";
+import { CountPill } from "@/components/ui/chip";
+import { confirm } from "@/components/ui/confirm-dialog";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { LiveRegion } from "@/components/ui/live-region";
+import { SkeletonRows, StateMessage } from "@/components/ui/status";
+import { Eyebrow } from "@/screens/devtools/components/devtools-ui";
+import { HistoryActionItem, HistoryFilters } from "@/screens/devtools/components/history";
 import {
-  ConfirmationModal,
-  useConfirmationModal,
-} from "@/screens/devtools/components/confirmation-modal";
-import { HistoryActionItem } from "@/screens/devtools/components/history";
-import { HistoryFilters } from "@/screens/devtools/components/history";
-import { useHistoryState } from "@/screens/devtools/history-signals";
-import { t } from "@/services/i18n-service";
-import type { HistoryActionType } from "@/types";
+  EMPTY_HISTORY_FILTER,
+  filterHistoryActions,
+  type HistoryFilter,
+} from "@/screens/devtools/history-actions";
+import {
+  clearAllHistory,
+  historyActions,
+  historyError,
+  historyLoading,
+  loadHistory,
+} from "@/screens/devtools/history-signals";
+import { formatDayLabel, groupByDay, intlLocale } from "@/screens/devtools/history-time";
+import { getLocale, localeVersion, t } from "@/services/i18n-service";
 
 export const HistoryTab = () => {
-  const { state, actions, loadHistory, clearHistory } = useHistoryState();
-  const [searchTerm, setSearchTerm] = createSignal("");
-  const [selectedType, setSelectedType] = createSignal<HistoryActionType | "all">("all");
-  const [selectedModel, setSelectedModel] = createSignal<string | "all">("all");
-  const { isOpen, config, openConfirmation, handleConfirm, handleCancel } = useConfirmationModal();
+  const [filter, setFilter] = createStore<HistoryFilter>({ ...EMPTY_HISTORY_FILTER });
 
-  createEffect(() => {
-    loadHistory();
-  });
+  onMount(loadHistory);
 
-  const availableModels = createMemo(() => {
-    const models = new Set(actions().map((action) => action.model));
-    return Array.from(models).sort();
-  });
+  const availableModels = createMemo(() =>
+    Array.from(new Set(historyActions().map((action) => action.model))).sort(),
+  );
 
-  const filteredActions = createMemo(() => {
-    let filtered = actions();
+  const filteredActions = createMemo(() => filterHistoryActions(historyActions(), filter));
 
-    if (selectedType() !== "all") {
-      filtered = filtered.filter((action) => action.type === selectedType());
-    }
+  const resultsLabel = () =>
+    `${filteredActions().length} ${t("devtools.record_search.of")} ${historyActions().length} ${t("devtools.history.actions_count")}`;
 
-    if (selectedModel() !== "all") {
-      filtered = filtered.filter((action) => action.model === selectedModel());
-    }
+  /** Screen reader announcement: loading, error, and the result of the filters. */
+  const announcement = () => {
+    if (historyLoading()) return t("devtools.history.loading");
+    if (historyError()) return t("common.error");
+    if (filteredActions().length === historyActions().length) return "";
+    return resultsLabel();
+  };
 
-    if (searchTerm().trim()) {
-      const term = searchTerm().toLowerCase();
-      filtered = filtered.filter(
-        (action) =>
-          action.model.toLowerCase().includes(term) ||
-          action.type.toLowerCase().includes(term) ||
-          (action.label ?? "").toLowerCase().includes(term),
-      );
-    }
-
-    const pinned = filtered.filter((action) => action.pinned);
-    const unpinned = filtered.filter((action) => !action.pinned);
-
-    return [...pinned, ...unpinned];
+  const groupedActions = createMemo(() => {
+    localeVersion();
+    const locale = intlLocale(getLocale());
+    return groupByDay(filteredActions(), {
+      pinned: t("devtools.history.pinned"),
+      day: (day) => formatDayLabel(day, locale),
+    });
   });
 
   const handleClearHistory = async () => {
-    const confirmed = await openConfirmation({
+    const confirmed = await confirm({
       title: t("devtools.history.clear_all"),
       message: t("devtools.history.clear_confirm"),
       variant: "danger",
@@ -65,149 +71,130 @@ export const HistoryTab = () => {
       cancelText: t("common.cancel"),
     });
     if (confirmed) {
-      await clearHistory();
+      await clearAllHistory();
     }
   };
 
   return (
-    <Show
-      when={!state().loading}
-      fallback={
-        <div class="flex flex-col items-center justify-center gap-3 p-10 text-center">
-          <span class="loading loading-sm loading-spinner text-primary" />
-          <span class="text-sm text-base-content/70">{t("devtools.history.loading")}</span>
-        </div>
-      }
-    >
-      <Show
-        when={!state().error}
-        fallback={
-          <div class="flex flex-col items-center justify-center gap-3 p-10 text-center">
-            <div class="flex flex-col items-center gap-2">
-              <span class="text-sm text-base-content/70">
-                {t("devtools.history.error", [state().error ?? ""])}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                color="primary"
-                size="sm"
-                onClick={loadHistory}
-              >
-                {t("common.retry")}
-              </Button>
-            </div>
-          </div>
-        }
-      >
-        <div class="flex h-full flex-col gap-4 pb-3">
-          <div class="flex items-center justify-between gap-4 px-4 pt-3">
-            <div class="flex items-center gap-3">
-              <h3 class="text-base font-semibold text-base-content">
-                {t("devtools.history.title")}
-              </h3>
-              <span class="rounded-full bg-base-200 px-2 py-0.5 text-xs text-base-content/70 tabular-nums">
-                {filteredActions().length} {t("devtools.record_search.of")} {actions().length}{" "}
-                {t("devtools.history.actions_count")}
-              </span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                color="secondary"
-                size="sm"
-                onClick={() => loadHistory()}
-                disabled={state().loading}
-              >
-                {t("devtools.history.refresh")}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                color="error"
-                size="sm"
-                onClick={handleClearHistory}
-                disabled={state().loading || actions().length === 0}
-              >
-                {t("devtools.history.clear_all")}
-              </Button>
-            </div>
+    <div class="flex h-full min-h-0 flex-col overflow-y-auto">
+      <div class="mx-auto flex w-full max-w-350 flex-col gap-4 px-5 pt-5 pb-6">
+        <header class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">
+              {t("devtools.history.title")}
+            </h1>
+            <CountPill tone="neutral">{historyActions().length}</CountPill>
           </div>
 
-          <HistoryFilters
-            searchTerm={searchTerm}
-            searchTermSetter={setSearchTerm}
-            selectedType={selectedType}
-            selectedTypeSetter={setSelectedType}
-            selectedModel={selectedModel}
-            selectedModelSetter={setSelectedModel}
-            availableModels={availableModels()}
-            totalActions={actions().length}
-          />
+          <div class="flex items-center gap-1.5">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              class="gap-1.5 border-line bg-surface"
+              onClick={() => loadHistory()}
+              disabled={historyLoading()}
+            >
+              <HugeiconsIcon icon={RefreshIcon} size={15} strokeWidth={1.6} />
+              {t("devtools.history.refresh")}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              color="error"
+              size="sm"
+              class="gap-1.5"
+              onClick={handleClearHistory}
+              disabled={historyLoading() || historyActions().length === 0}
+            >
+              <HugeiconsIcon icon={Delete02Icon} size={15} strokeWidth={1.6} />
+              {t("devtools.history.clear_all")}
+            </Button>
+          </div>
+        </header>
 
-          <div class="overflow-y-auto px-2">
+        <LiveRegion message={announcement()} />
+        <Show
+          when={!historyLoading()}
+          fallback={
+            <div aria-busy="true">
+              <SkeletonRows rows={5} />
+            </div>
+          }
+        >
+          <Show
+            when={!historyError()}
+            fallback={
+              <StateMessage
+                fill
+                tone="error"
+                icon={<HugeiconsIcon icon={Alert02Icon} size={20} strokeWidth={1.6} />}
+                description={t("devtools.history.error", [historyError() ?? ""])}
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  class="mt-1 border-line bg-surface"
+                  onClick={loadHistory}
+                >
+                  {t("common.retry")}
+                </Button>
+              </StateMessage>
+            }
+          >
+            <HistoryFilters
+              filter={filter}
+              onChange={setFilter}
+              availableModels={availableModels()}
+              totalActions={historyActions().length}
+              resultsLabel={resultsLabel()}
+            />
+
             <Show
               when={filteredActions().length > 0}
               fallback={
-                <div class="flex items-center justify-center p-12 text-center">
-                  <Show
-                    when={actions().length === 0}
-                    fallback={
-                      <div class="flex max-w-sm flex-col items-center gap-3">
-                        <div class="text-4xl opacity-60">
-                          <HugeiconsIcon
-                            icon={Search02Icon}
-                            size={32}
-                            color="currentColor"
-                            strokeWidth={1.8}
-                          />
-                        </div>
-                        <h4 class="m-0 font-medium text-base-content/70">
-                          {t("devtools.history.no_results")}
-                        </h4>
-                        <p class="m-0 text-sm/relaxed text-base-content/60">
-                          {t("devtools.history.no_results_hint")}
-                        </p>
-                      </div>
+                <Show
+                  when={historyActions().length === 0}
+                  fallback={
+                    <StateMessage
+                      fill
+                      icon={<HugeiconsIcon icon={Search02Icon} size={20} strokeWidth={1.6} />}
+                      title={t("devtools.history.no_results")}
+                      description={t("devtools.history.no_results_hint")}
+                    />
+                  }
+                >
+                  <StateMessage
+                    fill
+                    icon={
+                      <HugeiconsIcon icon={TransactionHistoryIcon} size={20} strokeWidth={1.6} />
                     }
-                  >
-                    <div class="flex max-w-sm flex-col items-center gap-3">
-                      <div class="text-4xl opacity-60">
-                        <HugeiconsIcon
-                          icon={TransactionHistoryIcon}
-                          size={32}
-                          color="currentColor"
-                          strokeWidth={1.8}
-                        />
-                      </div>
-                      <h4 class="m-0 font-medium text-base-content/70">
-                        {t("devtools.history.empty_title")}
-                      </h4>
-                      <p class="m-0 text-sm/relaxed text-base-content/60">
-                        {t("devtools.history.empty_desc")}
-                      </p>
-                    </div>
-                  </Show>
-                </div>
+                    title={t("devtools.history.empty_title")}
+                    description={t("devtools.history.empty_desc")}
+                  />
+                </Show>
               }
             >
-              <div class="flex flex-col gap-2 p-2">
-                <For each={filteredActions()}>
-                  {(action) => <HistoryActionItem action={action} />}
-                </For>
-              </div>
+              <For each={groupedActions()}>
+                {(group) => (
+                  <section class="flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between border-b border-line-soft pb-1.5">
+                      <Eyebrow>{group.label}</Eyebrow>
+                      <Eyebrow class="tabular-nums">
+                        {group.actions.length} {t("devtools.history.actions_count")}
+                      </Eyebrow>
+                    </div>
+                    <For each={group.actions}>
+                      {(action) => <HistoryActionItem action={action} />}
+                    </For>
+                  </section>
+                )}
+              </For>
             </Show>
-          </div>
-        </div>
-      </Show>
-      <ConfirmationModal
-        isOpen={isOpen()}
-        config={config()}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    </Show>
+          </Show>
+        </Show>
+      </div>
+    </div>
   );
 };

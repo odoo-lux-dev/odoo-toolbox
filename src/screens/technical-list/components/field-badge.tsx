@@ -1,67 +1,42 @@
 import { Show } from "solid-js";
 
-import { Badge } from "@/components/ui/badge";
-import { isDynamicCondition, isDebugTrue, shouldUseCSSFallback } from "@/utils/field-utils";
+import { isDynamicCondition } from "@/utils/field-utils";
 import { t } from "@/utils/i18n-page";
 
-interface FieldBadgeProps {
-  debugValue: boolean | string | null | undefined;
-  cssValue: boolean | undefined;
-  hasDebugInfo: boolean;
-  badgeType: "required" | "readonly";
-}
+import type { Modifier } from "../types";
+import { TechnicalBadge } from "./technical-card";
 
-const getBadgeLabel = (badgeType: FieldBadgeProps["badgeType"]) =>
-  badgeType === "required"
-    ? t("technical_list.field_badge.required")
-    : t("technical_list.field_badge.readonly");
+const BADGES = {
+  required: { label: () => t("technical_list.field_badge.required"), tone: "primary" },
+  readonly: { label: () => t("technical_list.field_badge.readonly"), tone: "neutral" },
+} as const;
 
-const badgeColorMap: Record<FieldBadgeProps["badgeType"], "error" | "warning"> = {
-  required: "error",
-  readonly: "warning",
-};
+/** Required/readonly badge, shown when the modifier may apply (`*` when conditional). */
+export const FieldBadge = (props: {
+  kind: keyof typeof BADGES;
+  /** The modifier applies now or under a condition (see `FieldInfo.canBeRequired`). */
+  possible: boolean;
+  modifier: Modifier;
+}) => {
+  const badge = () => BADGES[props.kind];
+  const isConditional = () => isDynamicCondition(props.modifier);
 
-export const FieldBadge = (props: FieldBadgeProps) => (
-  <Show
-    when={isDynamicCondition(props.debugValue)}
-    fallback={
-      <Show
-        when={isDebugTrue(props.debugValue)}
-        fallback={
-          <Show when={props.cssValue && shouldUseCSSFallback(props.debugValue, props.hasDebugInfo)}>
-            <Badge
-              size="sm"
-              variant="outline"
-              color={badgeColorMap[props.badgeType]}
-              class="tracking-wide uppercase"
-            >
-              {getBadgeLabel(props.badgeType)}
-            </Badge>
-          </Show>
+  return (
+    <Show when={props.possible}>
+      <TechnicalBadge
+        tone={badge().tone}
+        title={
+          isConditional()
+            ? t("technical_list.field_badge.conditional_when", [
+                badge().label(),
+                String(props.modifier),
+              ])
+            : undefined
         }
       >
-        <Badge
-          size="sm"
-          variant="outline"
-          color={badgeColorMap[props.badgeType]}
-          class="tracking-wide uppercase"
-        >
-          {getBadgeLabel(props.badgeType)}
-        </Badge>
-      </Show>
-    }
-  >
-    <Badge
-      size="sm"
-      variant="outline"
-      color={badgeColorMap[props.badgeType]}
-      title={t("technical_list.field_badge.conditional_when", [
-        getBadgeLabel(props.badgeType),
-        String(props.debugValue),
-      ])}
-      class="tracking-wide uppercase"
-    >
-      {getBadgeLabel(props.badgeType)}*
-    </Badge>
-  </Show>
-);
+        {badge().label()}
+        {isConditional() ? "*" : ""}
+      </TechnicalBadge>
+    </Show>
+  );
+};

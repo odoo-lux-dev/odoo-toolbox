@@ -40,7 +40,6 @@ const comodelMeta: Record<string, FieldMetadata> = {
 const source = fieldCompletions(
   () => parentMeta,
   () => undefined,
-  () => undefined,
   (comodel) => (comodel === "account.move.line" ? comodelMeta : undefined),
 );
 
@@ -102,7 +101,6 @@ describe("fieldCompletions - comodel context", () => {
     const lazySource = fieldCompletions(
       () => parentMeta,
       () => undefined,
-      () => undefined,
       () => undefined, // comodel fields never available
     );
     const doc = '{"line_ids": [Command.create({})]}';
@@ -114,12 +112,13 @@ describe("fieldCompletions - comodel context", () => {
   });
 });
 
-describe("fieldCompletions - PropertyName apply", () => {
+describe("fieldCompletions - apply", () => {
   function applyCompletion(
     doc: string,
     cursor: number,
     fieldsMetadata: Record<string, FieldMetadata>,
     label: string,
+    onAddRequiredFields?: () => void,
   ): { doc: string; cursor: number } {
     const view = new EditorView({
       state: EditorState.create({ doc, extensions: [json()] }),
@@ -128,8 +127,7 @@ describe("fieldCompletions - PropertyName apply", () => {
     const ctx = new CompletionContext(view.state, cursor, false);
     const src = fieldCompletions(
       () => fieldsMetadata,
-      () => undefined,
-      () => undefined,
+      () => onAddRequiredFields,
       () => undefined,
     );
     const result = src(ctx);
@@ -215,5 +213,42 @@ describe("fieldCompletions - PropertyName apply", () => {
     );
     expect(result.doc).toBe('{"name": "foo", "line_ids": []}');
     expect(result.cursor).toBe(29);
+  });
+
+  test("fresh key: adds a comma only when a property follows", () => {
+    const name = { string: "Name", type: "char" };
+    const qty = { string: "Qty", type: "integer" };
+    expect(applyCompletion('{ "name": "a"}', 1, { name, qty }, "qty")).toEqual({
+      doc: '{"qty": , "name": "a"}',
+      cursor: 8,
+    });
+    expect(applyCompletion('{"name": "a", }', 14, { name, qty }, "qty").doc).toBe(
+      '{"name": "a", "qty": }',
+    );
+  });
+
+  test("offers adding the missing required fields first, from the top-level keys", () => {
+    let added = 0;
+    const meta = {
+      name: { string: "Name", type: "char", required: true },
+      line_ids: { string: "Lines", type: "one2many", relation: "x.line" },
+    };
+    const doc = '{"line_ids": [[0, 0, {"name": "nested"}]], }';
+    const ctx = context(doc, doc.length - 1);
+    const src = fieldCompletions(
+      () => meta,
+      () => () => added++,
+      () => undefined,
+    );
+    const result = src(ctx);
+    expect(labels(result)[0]).toBe("devtools.notifications.auto_add_required");
+    applyCompletion(
+      doc,
+      doc.length - 1,
+      meta,
+      "devtools.notifications.auto_add_required",
+      () => added++,
+    );
+    expect(added).toBe(1);
   });
 });

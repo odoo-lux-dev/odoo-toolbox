@@ -1,63 +1,125 @@
-import { makeEventListener } from "@solid-primitives/event-listener";
-import { createSignal, createRoot, For, type JSX } from "solid-js";
+import { SidebarLeftIcon } from "@hugeicons/core-free-icons";
+import { For, Show, type JSX } from "solid-js";
 
+import { CommandPalette, CommandTrigger, useCommandPalette } from "@/components/ui/command-palette";
+import { CopyableText } from "@/components/ui/copyable-text";
+import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { MAIN_CONTENT_ID, SkipLink } from "@/components/ui/skip-link";
+import { StatusDot } from "@/components/ui/status";
 import { Tab, Tabs } from "@/components/ui/tabs";
+import { ToolButton } from "@/components/ui/tool-button";
+import { devtoolsCommands } from "@/screens/devtools/commands";
+import { databaseSignal, odooVersionSignal } from "@/screens/devtools/environment";
+import {
+  currentTab,
+  navigate,
+  queryRailCollapsed,
+  TABS,
+  toggleQueryRail,
+} from "@/screens/devtools/router";
 import { t } from "@/services/i18n-service";
 
-interface DevToolsLayoutProps {
-  children: JSX.Element;
-  currentPath: string;
-}
-
-interface NavItem {
-  id: string;
-  label: string;
-  path: string;
-}
-
-const navItems = (): NavItem[] => [
-  { id: "search", label: t("devtools.nav.search"), path: "/search" },
-  { id: "write", label: t("devtools.nav.write"), path: "/write" },
-  { id: "create", label: t("devtools.nav.create"), path: "/create" },
-  { id: "call-method", label: t("devtools.nav.call_method"), path: "/call-method" },
-  { id: "unlink", label: t("devtools.nav.unlink"), path: "/unlink" },
-  { id: "history", label: t("devtools.nav.history"), path: "/history" },
-];
-
-const getRoute = () => window.location.hash.slice(1) || "/search";
-export const [route, setRoute] = createSignal(getRoute());
-export const navigate = (path: string) => {
-  window.location.hash = path;
+const extensionVersion = () => {
+  try {
+    return browser.runtime.getManifest().version;
+  } catch {
+    return "";
+  }
 };
-createRoot(() => {
-  makeEventListener(window, "hashchange", () => setRoute(getRoute()));
-});
 
-export const DevToolsLayout = (props: DevToolsLayoutProps) => {
-  const handleNavigation = (path: string) => {
-    navigate(path);
-  };
+const StatusFooter = () => (
+  <footer class="flex min-h-6.5 shrink-0 items-center gap-2 border-t border-line bg-surface px-3 font-mono text-caption text-ink-3">
+    <StatusDot tone="success" pulse size="caption" class="shrink-0 text-ink-2">
+      <Show when={odooVersionSignal()}>Odoo {odooVersionSignal()} </Show>
+      {t("devtools.layout.connected")}
+    </StatusDot>
+    <Show when={databaseSignal()}>
+      <span class="flex min-w-0 items-center gap-0.5">
+        <span aria-hidden="true">·</span> {t("devtools.layout.database")}
+        <CopyableText
+          variant="subtle"
+          value={databaseSignal()!}
+          title={t("devtools.layout.copy_database")}
+        />
+      </span>
+    </Show>
+    <span class="ms-auto shrink-0 truncate">Odoo Toolbox · v{extensionVersion()}</span>
+  </footer>
+);
+
+/** Tab rail ↔ content relationship (WAI-ARIA tabs pattern). */
+const TAB_PANEL_ID = "devtools-tabpanel";
+const tabId = (id: string) => `devtools-tab-${id}`;
+
+export const DevToolsLayout = (props: { children: JSX.Element }) => {
+  const palette = useCommandPalette();
 
   return (
-    <div class="devtools-app flex h-screen min-h-0 flex-col overflow-hidden bg-base-300 text-base-content">
-      <nav class="devtools-nav bg-base-300">
-        <Tabs variant="bordered" class="px-6">
-          <For each={navItems()}>
-            {(item) => (
-              <Tab
-                active={props.currentPath === item.path}
-                onClick={() => handleNavigation(item.path)}
-              >
-                {item.label}
-              </Tab>
-            )}
+    <div class="flex h-screen min-h-0 flex-col overflow-hidden bg-canvas text-ink">
+      <SkipLink />
+      <nav
+        data-slot="devtools-tab-rail"
+        class="flex h-tab shrink-0 items-stretch border-b border-line bg-surface px-2.5"
+      >
+        <Show when={currentTab().hasQueryRail}>
+          <ToolButton
+            label={t("devtools.layout.toggle_query_rail")}
+            aria-expanded={!queryRailCollapsed()}
+            size="sm"
+            tone="primary"
+            data-active={queryRailCollapsed() ? "true" : undefined}
+            class="self-center"
+            onClick={toggleQueryRail}
+            icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} strokeWidth={1.6} />}
+          />
+          <span class="mx-1.5 h-4.5 w-px shrink-0 self-center bg-line" aria-hidden="true" />
+        </Show>
+
+        <Tabs class="min-w-0 flex-1 scrollbar-none overflow-x-auto">
+          <For each={TABS}>
+            {(item) => {
+              const active = () => currentTab().id === item.id;
+              return (
+                <Tab
+                  id={tabId(item.id)}
+                  aria-controls={TAB_PANEL_ID}
+                  active={active()}
+                  onClick={() => navigate(item.id)}
+                >
+                  <HugeiconsIcon icon={item.icon} size={15} strokeWidth={1.6} />
+                  {t(item.labelKey)}
+                </Tab>
+              );
+            }}
           </For>
         </Tabs>
+
+        <CommandTrigger
+          label={t("commands.trigger")}
+          onClick={() => palette.setOpen(true)}
+          class="ms-2 self-center"
+        />
       </nav>
 
-      <main class="devtools-content flex min-h-0 flex-1 flex-col bg-base-100">
-        {props.children}
+      <main id={MAIN_CONTENT_ID} class="flex min-h-0 flex-1 flex-col bg-canvas">
+        <div
+          id={TAB_PANEL_ID}
+          role="tabpanel"
+          aria-labelledby={tabId(currentTab().id)}
+          class="flex min-h-0 flex-1 flex-col"
+        >
+          {props.children}
+        </div>
       </main>
+
+      <StatusFooter />
+
+      <CommandPalette
+        open={palette.open()}
+        onClose={() => palette.setOpen(false)}
+        commands={devtoolsCommands}
+        scope="devtools"
+      />
     </div>
   );
 };

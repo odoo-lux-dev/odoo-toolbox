@@ -1,135 +1,78 @@
 import { MagicWand05Icon } from "@hugeicons/core-free-icons";
 import { makeEventListener } from "@solid-primitives/event-listener";
-import { Show, createSignal, splitProps, type JSX } from "solid-js";
+import { createEffect, createSignal, onCleanup, Show } from "solid-js";
 
-import { Button } from "@/components/ui/button";
-import { IconButton } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
+import { Button, IconButton } from "@/components/ui/button";
+import { cx } from "@/components/ui/cx";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
-import { DomainEditor } from "@/screens/devtools/components/domain-editor";
+import { Eyebrow, MethodBadge, RailField } from "@/screens/devtools/components/devtools-ui";
+import { DomainEditor, DomainHelpButton } from "@/screens/devtools/components/domain-editor";
 import { FieldSelect, ModelSelect, OrderBySelect } from "@/screens/devtools/components/selects";
-import { useGetCurrentPage } from "@/screens/devtools/components/ui-hooks";
 import {
+  applyCurrentPage,
   isQueryValid,
   modelsStore,
   queryStore,
+  railFieldsMetadata,
+  resetRpcQuery,
+  resetRpcResult,
   resultStore,
   setQueryStore,
 } from "@/screens/devtools/devtools-signals";
+import { queryRailCollapsed } from "@/screens/devtools/router";
 import { t } from "@/services/i18n-service";
 import { Logger } from "@/services/logger";
 import { odooRpcService } from "@/services/odoo-rpc-service";
 import { parseRpcContext } from "@/utils/context-utils";
-
-interface FormSectionProps {
-  label?: string;
-  required?: boolean;
-  helpText?: string;
-  helpTextWarning?: boolean;
-  class?: string;
-  children: JSX.Element;
-}
-
-const FormSection = (props: FormSectionProps) => {
-  return (
-    <div class={`mb-3 ${props.class ?? ""}`.trim()}>
-      <Show when={props.label}>
-        <label class="block text-sm font-medium text-base-content">
-          {props.label}{" "}
-          <Show when={props.required}>
-            <span class="text-error">*</span>
-          </Show>
-          <Show when={props.helpText}>
-            <span
-              class={`mt-1 block text-xs ${props.helpTextWarning ? "text-warning" : "text-base-content/60"}`}
-            >
-              {props.helpText}
-            </span>
-          </Show>
-        </label>
-      </Show>
-      {props.children}
-    </div>
-  );
-};
+import { errorMessage } from "@/utils/error-message";
+import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
 
 interface QueryFormSidebarProps {
-  children?: JSX.Element;
-  showModelSection?: boolean;
-  modelPlaceholder?: string;
-
-  showRecordIdsSection?: boolean;
-  recordIdsLabel?: string;
-  recordIdsHelpText?: string;
-  recordIdsPlaceholder?: string;
-  recordIdsValue?: string;
-  recordIdsRequired?: boolean;
-  onRecordIdsChange?: (value: string) => void;
-
+  /** Rail title (the tab name) and the RPC method it builds. */
+  title: string;
+  method: string;
+  methodTone?: "primary" | "warning" | "error" | "neutral";
+  /** Record ids input, or `false` to hide it. */
+  recordIds: { help: string; required?: boolean } | false;
   showFieldsSection?: boolean;
-  fieldsPlaceholder?: string;
-
   showDomainSection?: boolean;
-  domainPlaceholder?: string;
-
-  showContextSection?: boolean;
-  contextPlaceholder?: string;
-  contextHelpText?: string;
-
   showLimitOffsetSection?: boolean;
-
   showOrderBySection?: boolean;
-  orderByPlaceholder?: string;
-
-  primaryActionLabel?: string;
-  primaryActionDisabled?: boolean;
-  onPrimaryAction?: () => void;
-  onGetCurrent?: () => void;
+  /** Ctrl+Enter action of the rail, enabled once the query is valid. */
+  primaryAction?: { label: string; run: () => unknown };
+  /** Clears the tab's own input, after the rail and the results. */
   onClear?: () => void;
   isLoading?: boolean;
-
-  computePrimaryActionDisabled?: boolean;
 }
 
+const [primaryAction, setPrimaryAction] = createSignal<(() => void) | null>(null);
+
+/** Primary action of the visible query rail, also run by the command palette. */
+export const hasPrimaryAction = () => primaryAction() !== null;
+export const runPrimaryAction = () => primaryAction()?.();
+
 export const QueryFormSidebar = (props: QueryFormSidebarProps) => {
-  const [local] = splitProps(props, [
-    "children",
-    "showModelSection",
-    "modelPlaceholder",
-    "showRecordIdsSection",
-    "recordIdsLabel",
-    "recordIdsHelpText",
-    "recordIdsPlaceholder",
-    "recordIdsValue",
-    "recordIdsRequired",
-    "onRecordIdsChange",
-    "showFieldsSection",
-    "fieldsPlaceholder",
-    "showDomainSection",
-    "domainPlaceholder",
-    "showContextSection",
-    "contextPlaceholder",
-    "contextHelpText",
-    "showLimitOffsetSection",
-    "showOrderBySection",
-    "orderByPlaceholder",
-    "primaryActionLabel",
-    "primaryActionDisabled",
-    "onPrimaryAction",
-    "onGetCurrent",
-    "onClear",
-    "isLoading",
-    "computePrimaryActionDisabled",
-  ]);
+  const isBusy = () => resultStore.loading || !!props.isLoading;
+  const isPrimaryActionDisabled = () => !queryStore.model || !isQueryValid() || isBusy();
 
-  const { getAndApplyCurrentPage } = useGetCurrentPage();
+  const tryPrimaryAction = () => {
+    if (props.primaryAction && !isPrimaryActionDisabled()) props.primaryAction.run();
+  };
 
-  const finalPrimaryActionDisabled = () =>
-    local.computePrimaryActionDisabled
-      ? !queryStore.model || !isQueryValid()
-      : (local.primaryActionDisabled ?? false);
+  createEffect(() => {
+    if (!props.primaryAction) return;
+    setPrimaryAction(() => tryPrimaryAction);
+    onCleanup(() => setPrimaryAction(null));
+  });
+
+  makeEventListener(document, "keydown", (event: KeyboardEvent) => {
+    if (event.ctrlKey && event.key === "Enter" && props.primaryAction) {
+      event.preventDefault();
+      tryPrimaryAction();
+    }
+  });
 
   const [contextLoading, setContextLoading] = createSignal(false);
   const contextValidation = () => parseRpcContext(queryStore.context || "");
@@ -138,308 +81,261 @@ export const QueryFormSidebar = (props: QueryFormSidebarProps) => {
       ? ""
       : t("services.invalid_context", [contextValidation().error || t("services.invalid_json")]);
 
+  /** Fills the context with every company and an English language (else the first one). */
   const handleSetDefaultContext = async () => {
     if (contextLoading()) return;
     setContextLoading(true);
     try {
-      const [companyRecords, langRecords] = await Promise.all([
-        odooRpcService.searchRead({
-          model: "res.company",
-          fields: ["id"],
-        }),
-        odooRpcService.searchRead({
-          model: "res.lang",
-          fields: ["code"],
-        }),
+      const [companies, languages] = await Promise.all([
+        odooRpcService.searchRead({ model: "res.company", fields: ["id"] }),
+        odooRpcService.searchRead({ model: "res.lang", fields: ["code"] }),
       ]);
-
-      const companyIds = Array.isArray(companyRecords)
-        ? companyRecords
-            .map((record) => Number((record as Record<string, unknown>).id ?? NaN))
-            .filter((id) => !Number.isNaN(id))
-        : [];
-
-      const langCodes = Array.isArray(langRecords)
-        ? langRecords
-            .map((record) => String((record as Record<string, unknown>).code ?? ""))
-            .filter((code) => code)
-        : [];
-
-      const context: Record<string, unknown> = {};
-
-      // Search for an English language, default to the first one if not found
-      const preferredLang = langCodes.find((code) => code.startsWith("en_")) || langCodes[0];
-
-      if (preferredLang) {
-        context.lang = preferredLang;
-      }
-
-      context.active_test = true;
-      context.allowed_company_ids = companyIds;
-      setQueryStore("context", JSON.stringify(context));
+      const langCodes = languages.map((record) => String(record.code ?? "")).filter(Boolean);
+      const lang = langCodes.find((code) => code.startsWith("en_")) || langCodes[0];
+      setQueryStore(
+        "context",
+        JSON.stringify({
+          ...(lang && { lang }),
+          active_test: true,
+          allowed_company_ids: companies
+            .map((record) => Number(record.id ?? NaN))
+            .filter((id) => !Number.isNaN(id)),
+        }),
+      );
     } catch (error) {
       Logger.error("Failed to set default context", error);
+      showNotification(
+        errorMessage(error, t("common.unknown_error")),
+        "error",
+        ERROR_NOTIFICATION_TIMEOUT,
+      );
     } finally {
       setContextLoading(false);
     }
   };
 
-  const handleGetCurrent = async () => {
-    if (local.onGetCurrent) {
-      local.onGetCurrent();
-    } else {
-      await getAndApplyCurrentPage({
-        showNotifications: true,
-        autoExecute: true,
-        onError: (error: unknown) => {
-          Logger.error("Error in handleGetCurrent:", error);
-        },
-      });
-    }
+  const selectedFieldsMeta = () => {
+    const total = Object.keys(railFieldsMetadata() ?? {}).length;
+    const selected = queryStore.selectedFields.length;
+    if (!total) return undefined;
+    return selected ? `${selected} / ${total}` : String(total);
   };
-
-  const handleClear = () => {
-    if (local.onClear) {
-      local.onClear();
-    }
-  };
-
-  // Handle CTRL+Enter keyboard shortcut
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.ctrlKey && event.key === "Enter" && local.onPrimaryAction) {
-      event.preventDefault();
-      if (!finalPrimaryActionDisabled() && !resultStore.loading && !local.isLoading) {
-        local.onPrimaryAction();
-      }
-    }
-  };
-
-  makeEventListener(document, "keydown", handleKeyDown);
 
   return (
-    <div class="flex h-full min-h-0 shrink-0 flex-col gap-4 bg-base-300 p-3">
-      <div class="-ms-1 -me-3 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto bg-base-300 ps-1 pe-2">
-        {(local.showModelSection ?? true) && (
-          <FormField
-            label={t("devtools.sidebar.model")}
-            required
-            helpText={modelsStore.error ? t("devtools.sidebar.model_fetch_error") : ""}
-            helpTone={modelsStore.error ? "warning" : "neutral"}
-          >
-            <ModelSelect
-              placeholder={local.modelPlaceholder ?? t("devtools.sidebar.model_placeholder")}
-            />
-          </FormField>
-        )}
+    <aside
+      data-slot="query-rail"
+      data-state={queryRailCollapsed() ? "collapsed" : "open"}
+      class={cx(
+        "flex min-h-0 w-full shrink-0 flex-col border-line bg-surface-2 max-lg:max-h-[55vh] max-lg:border-b lg:h-full lg:w-query-rail lg:border-e",
+        queryRailCollapsed() ? "hidden" : undefined,
+      )}
+    >
+      <header class="flex shrink-0 items-start justify-between gap-2.5 border-b border-line-soft px-3.5 pt-3 pb-2.5">
+        <div class="min-w-0">
+          <Eyebrow>{t("devtools.sidebar.query_builder")}</Eyebrow>
+          <h1 class="mt-0.5 truncate font-display text-base font-semibold tracking-tight text-ink">
+            {props.title}
+          </h1>
+        </div>
+        <span class="mt-0.5">
+          <MethodBadge tone={props.methodTone}>{props.method}</MethodBadge>
+        </span>
+      </header>
 
-        {(local.showRecordIdsSection ?? true) && (
-          <FormField
-            label={local.recordIdsLabel ?? t("devtools.sidebar.record_ids")}
-            required={local.recordIdsRequired ?? false}
-            helpText={local.recordIdsHelpText}
-          >
-            <Input
-              type="text"
-              value={local.recordIdsValue ?? queryStore.ids}
-              onInput={(e) => {
-                const target = e.target as HTMLInputElement;
-                setQueryStore("ids", target.value);
-              }}
-              onBlur={() => {
-                if (local.onRecordIdsChange) {
-                  local.onRecordIdsChange(queryStore.ids);
-                }
-              }}
-              size="sm"
-              placeholder={
-                local.recordIdsPlaceholder ?? t("devtools.sidebar.record_ids_placeholder")
-              }
-              fullWidth
-              disabled={resultStore.loading || local.isLoading}
-            />
-          </FormField>
-        )}
+      <div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3.5 py-3">
+        <RailField
+          label={t("devtools.sidebar.model")}
+          required
+          helpText={modelsStore.error ? t("devtools.sidebar.model_fetch_error") : undefined}
+          helpTone="warning"
+        >
+          <ModelSelect placeholder={t("devtools.sidebar.model_placeholder")} />
+        </RailField>
 
-        {local.showFieldsSection && (
-          <FormField label={t("devtools.sidebar.fields")}>
-            <FieldSelect
-              placeholder={local.fieldsPlaceholder ?? t("devtools.sidebar.fields_placeholder")}
-            />
-          </FormField>
-        )}
+        <Show when={props.recordIds}>
+          {(recordIds) => (
+            <RailField
+              label={t("devtools.sidebar.record_ids")}
+              required={recordIds().required ?? false}
+              meta={recordIds().required ? undefined : t("devtools.sidebar.optional")}
+              helpText={recordIds().help}
+            >
+              <Input
+                type="text"
+                value={queryStore.ids}
+                onInput={(e) => setQueryStore("ids", e.currentTarget.value)}
+                size="sm"
+                class="font-mono"
+                spellcheck={false}
+                placeholder={t("devtools.sidebar.record_ids_placeholder")}
+                fullWidth
+                disabled={isBusy()}
+              />
+            </RailField>
+          )}
+        </Show>
 
-        {local.showDomainSection && (
-          <FormField
+        <Show when={props.showFieldsSection}>
+          <RailField label={t("devtools.sidebar.fields")} meta={selectedFieldsMeta()}>
+            <FieldSelect placeholder={t("devtools.sidebar.fields_placeholder")} />
+          </RailField>
+        </Show>
+
+        <Show when={props.showDomainSection}>
+          <RailField
             label={t("devtools.sidebar.domain")}
+            meta="JSON · Python"
+            metaAction={<DomainHelpButton />}
             helpText={t("devtools.sidebar.domain_help")}
           >
-            <DomainEditor
-              placeholder={local.domainPlaceholder ?? t("devtools.sidebar.domain_placeholder")}
-            />
-          </FormField>
-        )}
+            <DomainEditor placeholder={t("devtools.sidebar.domain_placeholder")} />
+          </RailField>
+        </Show>
 
-        {local.showLimitOffsetSection && (
-          <div class="grid grid-cols-2 gap-3">
-            <FormField label={t("devtools.sidebar.limit")}>
+        <Show when={props.showLimitOffsetSection}>
+          <div class="grid grid-cols-2 gap-2">
+            <RailField label={t("devtools.sidebar.limit")}>
               <Input
                 type="number"
                 value={queryStore.limit}
-                onInput={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  setQueryStore("limit", parseInt(target.value) || 80);
-                }}
+                onInput={(e) => setQueryStore("limit", parseInt(e.currentTarget.value) || 80)}
                 size="sm"
+                class="font-mono"
                 placeholder={t("devtools.sidebar.limit_placeholder")}
                 min="0"
                 max="10000"
                 fullWidth
-                disabled={resultStore.loading || local.isLoading}
+                disabled={isBusy()}
               />
-            </FormField>
+            </RailField>
 
-            <FormField label={t("devtools.sidebar.offset")}>
+            <RailField label={t("devtools.sidebar.offset")}>
               <Input
                 type="number"
                 value={queryStore.offset}
-                onInput={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  setQueryStore("offset", parseInt(target.value) || 0);
-                }}
+                onInput={(e) => setQueryStore("offset", parseInt(e.currentTarget.value) || 0)}
                 size="sm"
+                class="font-mono"
                 placeholder={t("devtools.sidebar.offset_placeholder")}
                 min="0"
                 fullWidth
-                disabled={resultStore.loading || local.isLoading}
+                disabled={isBusy()}
               />
-            </FormField>
+            </RailField>
           </div>
-        )}
+        </Show>
 
-        {(local.showContextSection ?? true) && (
-          <FormField
-            label={t("devtools.sidebar.context")}
-            helpText={
-              contextError() || (local.contextHelpText ?? t("devtools.sidebar.context_help"))
-            }
-            helpTone={contextError() ? "error" : "neutral"}
-          >
-            <div class="relative">
-              <Input
-                type="text"
-                value={queryStore.context}
-                onInput={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  setQueryStore("context", target.value);
-                }}
-                placeholder={local.contextPlaceholder ?? t("devtools.sidebar.context_placeholder")}
-                size="sm"
-                fullWidth
-                class="pe-8"
-                color={contextError() ? "error" : undefined}
-                disabled={resultStore.loading || local.isLoading || contextLoading()}
-              />
-              <IconButton
-                class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
-                label={t("devtools.sidebar.set_default_context")}
-                type="button"
-                size="xs"
-                variant="ghost"
-                circle={false}
-                disabled={resultStore.loading || local.isLoading || contextLoading()}
-                loading={contextLoading()}
-                onClick={handleSetDefaultContext}
-                icon={
-                  contextLoading() ? null : (
-                    <HugeiconsIcon
-                      icon={MagicWand05Icon}
-                      size={16}
-                      color="currentColor"
-                      strokeWidth={1.6}
-                    />
-                  )
-                }
-              />
-            </div>
-          </FormField>
-        )}
+        <RailField
+          label={t("devtools.sidebar.context")}
+          helpText={contextError() || t("devtools.sidebar.context_help")}
+          helpTone={contextError() ? "error" : "neutral"}
+        >
+          <div class="flex items-center gap-1">
+            <Input
+              type="text"
+              value={queryStore.context}
+              onInput={(e) => setQueryStore("context", e.currentTarget.value)}
+              placeholder={t("devtools.sidebar.context_placeholder")}
+              size="sm"
+              fullWidth
+              class="min-w-0 flex-1 font-mono"
+              spellcheck={false}
+              color={contextError() ? "error" : undefined}
+              disabled={isBusy() || contextLoading()}
+            />
+            <IconButton
+              class="shrink-0 text-ink-3 hover:text-ink"
+              label={t("devtools.sidebar.set_default_context")}
+              type="button"
+              size="sm"
+              variant="ghost"
+              square
+              circle={false}
+              disabled={isBusy() || contextLoading()}
+              loading={contextLoading()}
+              onClick={handleSetDefaultContext}
+              icon={
+                contextLoading() ? null : (
+                  <HugeiconsIcon icon={MagicWand05Icon} size={16} strokeWidth={1.6} />
+                )
+              }
+            />
+          </div>
+        </RailField>
 
-        {local.showOrderBySection && (
-          <FormField
+        <Show when={props.showOrderBySection}>
+          <RailField
             label={t("devtools.sidebar.order_by")}
             helpText={t("devtools.sidebar.order_by_help")}
           >
-            <OrderBySelect
-              placeholder={local.orderByPlaceholder ?? t("devtools.sidebar.order_by_placeholder")}
-            />
-          </FormField>
-        )}
-
-        {local.children}
+            <OrderBySelect placeholder={t("devtools.sidebar.order_by_placeholder")} />
+          </RailField>
+        </Show>
       </div>
 
-      <div class="flex flex-col gap-3">
-        {local.onPrimaryAction && (
-          <div>
+      <div class="flex shrink-0 flex-col gap-1.5 border-t border-line bg-surface-2 px-3.5 pt-2.5 pb-3">
+        <Show when={props.primaryAction}>
+          {(action) => (
             <Button
               color="primary"
               block
-              onClick={local.onPrimaryAction}
-              disabled={finalPrimaryActionDisabled() || resultStore.loading || local.isLoading}
-              loading={resultStore.loading || local.isLoading}
+              onClick={tryPrimaryAction}
+              disabled={isPrimaryActionDisabled()}
+              loading={isBusy()}
               title={t("devtools.sidebar.execute_hint")}
+              aria-keyshortcuts="Control+Enter"
               class="justify-between"
             >
-              <span class="flex w-full items-center justify-between">
-                <span>
-                  {resultStore.loading || local.isLoading
-                    ? t("common.loading")
-                    : (local.primaryActionLabel ?? t("devtools.sidebar.execute_query"))}
-                </span>
-                {!resultStore.loading && !local.isLoading ? (
-                  <span class="flex items-center gap-1 text-xs opacity-70">
-                    <Kbd size="sm" class="not-dark:text-primary">
-                      ⌃
+              <span class="flex w-full items-center justify-between gap-2">
+                <span class="truncate">{isBusy() ? t("common.loading") : action().label}</span>
+                <Show when={!isBusy()}>
+                  <span class="flex shrink-0 items-center gap-1 text-caption font-normal opacity-80">
+                    <Kbd
+                      size="xs"
+                      class="border-primary-content/30 bg-primary-content/10 text-primary-content"
+                    >
+                      Ctrl
                     </Kbd>
                     <span>+</span>
-                    <Kbd size="sm" class="not-dark:text-primary">
-                      ⏎
+                    <Kbd
+                      size="xs"
+                      class="border-primary-content/30 bg-primary-content/10 text-primary-content"
+                    >
+                      Enter
                     </Kbd>
                   </span>
-                ) : null}
+                </Show>
               </span>
             </Button>
-          </div>
-        )}
+          )}
+        </Show>
 
-        <div class="flex w-full gap-2">
-          <div class="flex-1">
-            <Button
-              variant="outline"
-              color="primary"
-              onClick={handleGetCurrent}
-              disabled={resultStore.loading || local.isLoading}
-              class="w-full"
-              size="sm"
-              title={t("devtools.sidebar.get_current_hint")}
-            >
-              {t("devtools.sidebar.get_current")}
-            </Button>
-          </div>
-          <div class="flex-1">
-            <Button
-              variant="outline"
-              color="secondary"
-              onClick={handleClear}
-              disabled={resultStore.loading || local.isLoading}
-              class="w-full"
-              size="sm"
-            >
-              {t("common.clear")}
-            </Button>
-          </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <Button
+            variant="outline"
+            onClick={() => applyCurrentPage(true)}
+            disabled={isBusy()}
+            class="w-full border-line bg-surface"
+            size="sm"
+            title={t("devtools.sidebar.get_current_hint")}
+          >
+            {t("devtools.sidebar.get_current")}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              resetRpcQuery();
+              resetRpcResult();
+              props.onClear?.();
+            }}
+            disabled={isBusy()}
+            class="w-full text-ink-2"
+            size="sm"
+          >
+            {t("common.clear")}
+          </Button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };

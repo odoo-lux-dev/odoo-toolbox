@@ -1,129 +1,123 @@
-import { Download01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
-import { createSignal, Show } from "solid-js";
+import { DatabaseIcon, Download01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
+import { createRoot, createSignal, Show } from "solid-js";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { IconTile } from "@/components/ui/icon-tile";
 import { configurationService } from "@/services/configuration-service";
 import { t } from "@/services/i18n-service";
 import { Logger } from "@/services/logger";
-import { validateConfigFile } from "@/utils/config-validation";
+import { parseConfigFile } from "@/utils/config-validation";
+import { downloadJson } from "@/utils/download";
+import { errorMessage } from "@/utils/error-message";
 
-export const BackupControls = () => {
-  const [status, setStatus] = createSignal<{
-    message: string;
-    class: string;
-  } | null>(null);
-  const [fileInputRef, setFileInputRef] = createSignal<HTMLInputElement | null>(null);
+type BackupStatus = { message: string; tone: "info" | "success" | "error" };
 
-  const handleExport = async () => {
-    setStatus({
-      message: t("options.backup.exporting"),
-      class: "text-sm text-info",
+const STATUS_CLASS: Record<BackupStatus["tone"], string> = {
+  info: "text-info-ink",
+  success: "text-success-ink",
+  error: "text-error-ink",
+};
+
+const SUCCESS_DISPLAY_MS = 3000;
+
+// Shared by the sidebar controls and the command palette.
+const { status, setStatus } = createRoot(() => {
+  const [status, setStatus] = createSignal<BackupStatus | null>(null);
+  return { status, setStatus };
+});
+
+let clearTimer: number | undefined;
+const showStatus = (next: BackupStatus | null, clearAfter?: number) => {
+  clearTimeout(clearTimer);
+  setStatus(next);
+  if (clearAfter) clearTimer = window.setTimeout(() => setStatus(null), clearAfter);
+};
+
+export const exportConfiguration = async () => {
+  showStatus({ message: t("options.backup.exporting"), tone: "info" });
+  try {
+    const config = await configurationService.exportConfiguration();
+    downloadJson(`odoo-toolbox-config-${new Date().toISOString().split("T")[0]}.json`, config);
+    showStatus(null);
+  } catch (error) {
+    Logger.error("An error occured during the export:", error);
+    showStatus({
+      message: t("options.backup.error_export", [errorMessage(error, t("common.unknown_error"))]),
+      tone: "error",
     });
-    try {
-      const config = await configurationService.exportConfiguration();
-      const blob = new Blob([JSON.stringify(config, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      const date = new Date().toISOString().split("T")[0];
-      a.download = `odoo-toolbox-config-${date}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      setStatus(null);
-    } catch (error) {
-      Logger.error("An error occured during the export:", error);
-      setStatus({
-        message: t("options.backup.error_export", [
-          error instanceof Error ? error.message : t("common.unknown_error"),
-        ]),
-        class: "text-sm text-error",
-      });
-    }
-  };
+  }
+};
 
-  const handleImportClick = () => {
-    fileInputRef()?.click();
-  };
-
-  const handleFileChange = async (event: Event) => {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    setStatus({
-      message: t("options.backup.importing"),
-      class: "text-sm text-info",
+const importFile = async (file: File) => {
+  showStatus({ message: t("options.backup.importing"), tone: "info" });
+  try {
+    const result = parseConfigFile(JSON.parse(await file.text()));
+    if (!result.valid) throw new Error(t("options.backup.invalid_config", [result.message]));
+    await configurationService.importConfiguration(result.config);
+    showStatus({ message: t("options.backup.success"), tone: "success" }, SUCCESS_DISPLAY_MS);
+  } catch (error) {
+    Logger.error("An error occured during file process:", error);
+    showStatus({
+      message: t("options.backup.error_import", [
+        errorMessage(error, t("options.backup.invalid_format")),
+      ]),
+      tone: "error",
     });
+  }
+};
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const content = e.target?.result;
-        if (typeof content !== "string") {
-          throw new Error(t("options.backup.failed_read"));
-        }
-        const config = JSON.parse(content);
-        const validationResult = validateConfigFile(config);
-        if (!validationResult.valid) {
-          throw new Error(t("options.backup.invalid_config", [validationResult.message]));
-        }
-        await configurationService.importConfiguration(config);
-        setStatus({
-          message: t("options.backup.success"),
-          class: "text-sm text-success",
-        });
-        setTimeout(() => setStatus(null), 3000);
-      } catch (parseError) {
-        Logger.error("An error occured during file process:", parseError);
-        setStatus({
-          message: t("options.backup.error_import", [
-            parseError instanceof Error ? parseError.message : t("options.backup.invalid_format"),
-          ]),
-          class: "text-sm text-error",
-        });
-      }
-    };
-    reader.readAsText(file);
+/** Opens the file picker and imports the chosen backup. */
+export const importConfiguration = () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.addEventListener("change", () => {
+    const file = input.files?.[0];
+    if (file) void importFile(file);
+  });
+  input.click();
+};
 
-    if (event.target) {
-      (event.target as HTMLInputElement).value = "";
-    }
-  };
-
-  return (
-    <div class="flex w-full flex-col items-center gap-2">
-      <Show when={status()}>
-        <div class={status()!.class}>{status()!.message}</div>
-      </Show>
-      <div class="flex w-full gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          class="flex-1 gap-2 border border-base-content/15"
-          onClick={handleExport}
-        >
-          <HugeiconsIcon icon={Download01Icon} size={14} color="currentColor" strokeWidth={1.6} />
-          {t("options.backup.export")}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          class="flex-1 gap-2 border border-base-content/15"
-          onClick={handleImportClick}
-        >
-          <HugeiconsIcon icon={Upload01Icon} size={14} color="currentColor" strokeWidth={1.6} />
-          {t("options.backup.restore")}
-        </Button>
-        <input
-          type="file"
-          accept=".json"
-          class="hidden"
-          ref={setFileInputRef}
-          onInput={handleFileChange}
-        />
+export const BackupControls = () => (
+  <div class="rounded-box border border-line bg-surface-2 p-2.5">
+    <div class="flex items-center gap-2">
+      <IconTile>
+        <HugeiconsIcon icon={DatabaseIcon} size={15} strokeWidth={1.8} />
+      </IconTile>
+      <div class="flex min-w-0 flex-col leading-tight">
+        <strong class="text-label font-semibold">{t("options.shell.backup_title")}</strong>
+        <span class="mt-0.5 text-meta text-ink-3">{t("options.shell.backup_desc")}</span>
       </div>
     </div>
-  );
-};
+    <div class="mt-2.25 grid grid-cols-2 gap-1.25">
+      <Button
+        variant="ghost"
+        size="sm"
+        class="gap-1 border-line bg-surface px-1.5 text-small"
+        id="options-export-config"
+        onClick={exportConfiguration}
+      >
+        <HugeiconsIcon icon={Download01Icon} size={12} strokeWidth={1.8} />
+        {t("options.backup.export")}
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="gap-1 border-line bg-surface px-1.5 text-small"
+        id="options-import-config"
+        onClick={importConfiguration}
+      >
+        <HugeiconsIcon icon={Upload01Icon} size={12} strokeWidth={1.8} />
+        {t("options.backup.restore")}
+      </Button>
+    </div>
+    <Show when={status()}>
+      {(current) => (
+        <p class={`mt-2 text-note ${STATUS_CLASS[current().tone]}`} role="status">
+          {current().message}
+        </p>
+      )}
+    </Show>
+  </div>
+);

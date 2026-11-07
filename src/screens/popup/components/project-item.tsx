@@ -1,16 +1,12 @@
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
-import { splitProps } from "solid-js";
 
+import { Avatar } from "@/components/ui/avatar";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { Favorite } from "@/types";
+import { openFavoriteInTab } from "@/screens/popup/actions";
+import type { Favorite } from "@/types";
+import { odooShProjectUrl } from "@/utils/constants";
 
-interface ProjectItemProps {
-  favorite: Favorite;
-}
-
-export const ProjectItem = (props: ProjectItemProps) => {
-  const [local] = splitProps(props, ["favorite"]);
-
+export const ProjectItem = (props: { favorite: Favorite }) => {
   const handleClick = (event: MouseEvent) => {
     if (
       event.button === 0 &&
@@ -20,25 +16,29 @@ export const ProjectItem = (props: ProjectItemProps) => {
       !event.metaKey
     ) {
       event.preventDefault();
-      browser.tabs.update({
-        url: `https://www.odoo.sh/project/${local.favorite.name}`,
-      });
-      window.close();
+      openFavoriteInTab(props.favorite.name);
     }
   };
 
   return (
-    <div class="rounded-md text-primary odd:bg-base-200 even:bg-transparent hover:bg-base-300 dark:text-base-content">
-      <a
-        href={`https://www.odoo.sh/project/${local.favorite.name}`}
-        class="flex w-full cursor-pointer items-center justify-between p-3 text-start text-sm"
-        onClick={handleClick}
-      >
-        <span class="truncate">{local.favorite.display_name}</span>
-        <span class="text-base-content/70">
-          <HugeiconsIcon icon={ArrowRight01Icon} size={18} color="currentColor" strokeWidth={2} />
+    <li class="border-line-soft not-first:border-t">
+      <a href={odooShProjectUrl(props.favorite.name)} class="ot-row group" onClick={handleClick}>
+        <Avatar
+          name={props.favorite.display_name || props.favorite.name}
+          colorKey={props.favorite.name}
+        />
+        <span class="flex min-w-0 flex-1 flex-col">
+          <span class="truncate text-body/tight font-semibold tracking-[-0.01em] text-ink">
+            {props.favorite.display_name}
+          </span>
+          <span class="mt-0.5 truncate font-mono text-meta/tight text-ink-3">
+            {props.favorite.name}
+          </span>
+        </span>
+        <span class="flex-none -translate-x-0.75 text-ink-3 opacity-0 transition duration-150 ease-theme group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 rtl:translate-x-0.75 rtl:-scale-x-100">
+          <HugeiconsIcon icon={ArrowRight01Icon} size={15} strokeWidth={2} />
         </span>
       </a>
-    </div>
+    </li>
   );
 };

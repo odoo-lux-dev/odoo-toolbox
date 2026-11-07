@@ -1,70 +1,99 @@
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
-import { createEffect, createMemo, JSX, Show, splitProps } from "solid-js";
+import { Index, Show, type JSX } from "solid-js";
 
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import {
-  expandedSectionsSignal,
-  setSectionExpanded,
-  useTechnicalListSections,
-} from "@/screens/technical-list/technical-list-signals";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
 import { t } from "@/utils/i18n-page";
 
-interface InfoSectionProps {
-  icon: JSX.Element;
-  title: string;
-  children: JSX.Element;
-  defaultExpanded?: boolean;
-  sectionId?: string;
+import { useSidebar } from "../sidebar-store";
+import { InfoItem } from "./info-item";
+
+export interface InfoRow {
+  label: string;
+  value: string | number | null | undefined;
+  copyable?: boolean;
+  valueClass?: string;
 }
 
+interface InfoSectionProps {
+  icon: IconData;
+  title: string;
+  /** Rows with an empty value are left out. */
+  rows: InfoRow[];
+  /** Collapse state key; the section can't be collapsed without it. */
+  collapseId?: string;
+  /** Extra content at the end of the header (status pills, ...). */
+  aside?: JSX.Element;
+  /** Block rendered under the rows (actions). */
+  footer?: JSX.Element;
+}
+
+const headerClasses =
+  "flex min-h-9 w-full items-center gap-2 bg-surface px-3 text-start text-ink transition-colors duration-150 ease-theme";
+
+/** Info card of the technical list (database, record, website): titled copyable rows. */
 export const InfoSection = (props: InfoSectionProps) => {
-  const [local] = splitProps(props, ["icon", "title", "children", "defaultExpanded", "sectionId"]);
-  const { toggleSectionExpanded } = useTechnicalListSections();
+  const sidebar = useSidebar();
+  const visibleRows = () =>
+    props.rows.filter((row) => row.value !== undefined && row.value !== null && row.value !== "");
+  const isExpanded = () => !props.collapseId || sidebar.isSectionExpanded(props.collapseId);
 
-  const effectiveSectionId = () =>
-    local.sectionId || local.title.toLowerCase().replace(/\s+/g, "-");
-
-  createEffect(() => {
-    const id = effectiveSectionId();
-    if (local.defaultExpanded && !expandedSectionsSignal().has(id)) {
-      setSectionExpanded(id, true);
-    }
-  });
-
-  const isExpanded = createMemo(() => expandedSectionsSignal().has(effectiveSectionId()));
-
-  const toggleExpanded = () => {
-    toggleSectionExpanded(effectiveSectionId());
-  };
+  const header = () => (
+    <>
+      <span class="flex shrink-0 text-primary">
+        <HugeiconsIcon icon={props.icon} size={14} strokeWidth={1.6} />
+      </span>
+      <h3 class="m-0 min-w-0 truncate font-display text-title font-semibold tracking-tight">
+        {props.title}
+      </h3>
+      <span class="ms-auto flex shrink-0 items-center gap-2">
+        {props.aside}
+        <Show when={props.collapseId}>
+          <span class="font-mono text-ui text-ink-3">{visibleRows().length}</span>
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            size={13}
+            strokeWidth={1.6}
+            class={`text-ink-3 transition-transform duration-200 ease-theme rtl:-scale-x-100 ${isExpanded() ? "rotate-90 rtl:-rotate-90" : ""}`}
+          />
+        </Show>
+      </span>
+    </>
+  );
 
   return (
-    <div class="border-b border-solid border-base-100 px-2 py-4 dark:border-base-200">
-      <button
-        type="button"
-        onClick={toggleExpanded}
-        aria-expanded={isExpanded()}
-        class="flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-start text-base font-semibold text-base-content transition-colors hover:bg-base-200/60"
-        title={
-          isExpanded()
-            ? t("technical_list.info_section.collapse")
-            : t("technical_list.info_section.expand")
-        }
-      >
-        <div class="flex items-center gap-2">
-          <span class="text-base opacity-70">{local.icon}</span>
-          <span>{local.title}</span>
-        </div>
-        <HugeiconsIcon
-          icon={ArrowRight01Icon}
-          size={14}
-          color="currentColor"
-          strokeWidth={1.6}
-          class={`transition-transform duration-200 ${isExpanded() ? "rotate-90" : ""}`}
-        />
-      </button>
-      <Show when={isExpanded()}>
-        <div class="mt-3">{local.children}</div>
+    <section class="ot-card overflow-hidden bg-surface-2">
+      <Show when={props.collapseId} fallback={<div class={headerClasses}>{header()}</div>}>
+        {(id) => (
+          <button
+            type="button"
+            onClick={() => sidebar.toggleSection(id())}
+            aria-expanded={isExpanded()}
+            class={`${headerClasses} cursor-pointer hover:bg-surface-3`}
+            title={
+              isExpanded()
+                ? t("technical_list.info_section.collapse")
+                : t("technical_list.info_section.expand")
+            }
+          >
+            {header()}
+          </button>
+        )}
       </Show>
-    </div>
+      <Show when={isExpanded()}>
+        <div class="flex flex-col border-t border-solid border-line">
+          <Index each={visibleRows()}>
+            {(row) => (
+              <InfoItem
+                label={row().label}
+                value={String(row().value)}
+                copyable={row().copyable}
+                valueClass={row().valueClass}
+              />
+            )}
+          </Index>
+        </div>
+        {props.footer}
+      </Show>
+    </section>
   );
 };

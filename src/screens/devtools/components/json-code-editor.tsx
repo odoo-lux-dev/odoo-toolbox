@@ -29,57 +29,12 @@ import {
 } from "@codemirror/view";
 import { tags as lezerTags } from "@lezer/highlight";
 import { createCodeMirror, createEditorReadonly } from "solid-codemirror";
-import { createEffect, createSignal, type JSX } from "solid-js";
+import { createEffect, type JSX } from "solid-js";
 
-import { clearComodelFieldsCache, getComodelFields } from "@/screens/devtools/comodel-fields";
 import { fieldCompletions } from "@/screens/devtools/components/json-cm-completions";
-import { t } from "@/services/i18n-service";
+import { cachedFieldsOf } from "@/screens/devtools/fields-metadata";
 import type { FieldMetadata } from "@/types";
-import { formatJsonWithCommands } from "@/utils/command-utils";
-import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
-import { validateJSON } from "@/utils/query-validation";
-
-export const useJsonEditor = (props: {
-  initialValue?: string;
-  onValueChange?: (value: string) => void;
-}) => {
-  const [jsonData, setJsonData] = createSignal(props.initialValue ?? "");
-  const [jsonValidation, setJsonValidation] = createSignal<{
-    isValid: boolean;
-    error?: string;
-  }>({ isValid: true });
-
-  const handleJsonChange = (newValue: string) => {
-    setJsonData(newValue);
-    setJsonValidation(newValue.trim() === "" ? { isValid: true } : validateJSON(newValue));
-    props.onValueChange?.(newValue);
-  };
-
-  const formatJson = () => {
-    if (!jsonData().trim()) {
-      showNotification(t("devtools.notifications.no_data_to_format"), "warning");
-      return;
-    }
-    try {
-      const formatted = formatJsonWithCommands(jsonData());
-      setJsonData(formatted);
-      setJsonValidation(validateJSON(formatted));
-    } catch {
-      showNotification(
-        t("devtools.notifications.cannot_format_invalid"),
-        "error",
-        ERROR_NOTIFICATION_TIMEOUT,
-      );
-    }
-  };
-
-  const clearJson = () => {
-    setJsonData("");
-    setJsonValidation({ isValid: true });
-  };
-
-  return { jsonData, jsonValidation, handleJsonChange, formatJson, clearJson };
-};
+import { findCommandKeywords } from "@/utils/command-utils";
 
 export interface JsonCodeEditorProps {
   value: string;
@@ -88,7 +43,7 @@ export interface JsonCodeEditorProps {
   disabled?: boolean;
   class?: string;
   placeholder?: string;
-  mode?: "create" | "write";
+  /** Offered by the autocomplete when required fields are missing (create payloads). */
   onAddRequiredFields?: () => void;
 }
 
@@ -96,7 +51,7 @@ const editorTheme = EditorView.theme({
   "&": {
     backgroundColor: "transparent",
     color: "inherit",
-    fontSize: "0.875rem",
+    fontSize: "0.8125rem",
     height: "100%",
     minHeight: "11rem",
   },
@@ -105,21 +60,17 @@ const editorTheme = EditorView.theme({
   },
   ".cm-content": {
     fontFamily:
-      "var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace)",
-    padding: "0.5rem",
+      "var(--ot-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace)",
+    padding: "0.5rem 0",
   },
   ".cm-line": {
-    padding: "0 0.125rem",
-  },
-  ".cm-gutters": {
-    display: "none",
+    padding: "0 0.625rem",
   },
   ".cm-scroller": {
     overflow: "auto",
   },
   "& .cm-placeholder": {
-    color: "currentColor",
-    opacity: "0.4",
+    color: "var(--ot-ink-4)",
   },
   ".cm-activeLine": {
     backgroundColor: "transparent",
@@ -134,12 +85,12 @@ const editorTheme = EditorView.theme({
 });
 
 const jsonHighlightStyle = HighlightStyle.define([
-  { tag: lezerTags.string, color: "var(--color-success)" },
-  { tag: lezerTags.number, color: "var(--color-accent)" },
-  { tag: lezerTags.bool, color: "var(--color-warning)" },
-  { tag: lezerTags.null, color: "var(--color-warning)" },
-  { tag: lezerTags.propertyName, color: "var(--color-secondary)" },
-  { tag: lezerTags.punctuation, color: "var(--color-base-content)", opacity: "0.6" },
+  { tag: lezerTags.string, color: "var(--color-accent)" },
+  { tag: lezerTags.number, color: "var(--color-info)" },
+  { tag: lezerTags.bool, color: "var(--ot-warning-ink)" },
+  { tag: lezerTags.null, color: "var(--ot-warning-ink)" },
+  { tag: lezerTags.propertyName, color: "var(--color-primary)" },
+  { tag: lezerTags.punctuation, color: "var(--ot-ink-3)" },
 ]);
 
 const autoValueCompletionPlugin = ViewPlugin.fromClass(
@@ -187,16 +138,8 @@ const commandHighlightPlugin = ViewPlugin.fromClass(
     }
     build(view: EditorView): DecorationSet {
       const decos: Range<Decoration>[] = [];
-      const text = view.state.doc.toString();
-      const re = /\bCommand\.([a-zA-Z]+)/g;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(text)) !== null) {
-        const cmdFrom = m.index;
-        const cmdTo = cmdFrom + 7;
-        const actFrom = cmdTo + 1;
-        const actTo = actFrom + m[1].length;
-        decos.push(commandMark.range(cmdFrom, cmdTo));
-        decos.push(actionMark.range(actFrom, actTo));
+      for (const { from, actionFrom, to } of findCommandKeywords(view.state.doc.toString())) {
+        decos.push(commandMark.range(from, actionFrom - 1), actionMark.range(actionFrom, to));
       }
       return Decoration.set(decos, true);
     }
@@ -233,26 +176,15 @@ export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
     onValueChange: (value) => props.onChange(value),
   });
 
-  let currentFieldsMetadata = props.fieldsMetadata ?? {};
-  let currentMode = props.mode;
-  let currentOnAddRequiredFields = props.onAddRequiredFields;
-  createEffect(() => {
-    currentFieldsMetadata = props.fieldsMetadata ?? {};
-    currentMode = props.mode;
-    currentOnAddRequiredFields = props.onAddRequiredFields;
-    clearComodelFieldsCache();
-  });
-
   createExtension(baseExtensions());
   createExtension(() => (props.placeholder ? placeholderExt(props.placeholder) : []));
   createExtension(
     autocompletion({
       override: [
         fieldCompletions(
-          () => currentFieldsMetadata,
-          () => currentMode,
-          () => currentOnAddRequiredFields,
-          getComodelFields,
+          () => props.fieldsMetadata ?? {},
+          () => props.onAddRequiredFields,
+          cachedFieldsOf,
         ),
       ],
       defaultKeymap: true,
@@ -275,7 +207,7 @@ export const JsonCodeEditor = (props: JsonCodeEditorProps): JSX.Element => {
   return (
     <div
       ref={editorRef}
-      class={`textarea w-full bg-transparent! p-0! font-mono textarea-md ${props.class ?? ""}`}
+      class={`flex w-full flex-col bg-surface font-mono text-ink *:flex-1 ${props.class ?? ""}`}
     />
   );
 };

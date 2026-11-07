@@ -1,100 +1,58 @@
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 
 import { historyService } from "@/services/history-service";
-import type { HistoryAction, HistoryActionType, HistoryState } from "@/types";
+import { t } from "@/services/i18n-service";
+import type { HistoryAction } from "@/types";
+import { errorMessage } from "@/utils/error-message";
+import { ERROR_NOTIFICATION_TIMEOUT, showNotification } from "@/utils/notifications";
 
-export const [historyActionsSignal, setHistoryActionsSignal] = createSignal<HistoryAction[]>([]);
-export const [historyLoadingSignal, setHistoryLoadingSignal] = createSignal(false);
-export const [historyErrorSignal, setHistoryErrorSignal] = createSignal<string | null>(null);
+const [historyActions, setHistoryActions] = createSignal<HistoryAction[]>([]);
+const [historyLoading, setHistoryLoading] = createSignal(false);
+const [historyError, setHistoryError] = createSignal<string | null>(null);
 
-const _memos = createRoot(() => ({
-  historyState: createMemo((): HistoryState => ({
-    actions: historyActionsSignal(),
-    loading: historyLoadingSignal(),
-    error: historyErrorSignal(),
-  })),
-  byType: createMemo(
-    () => (type: HistoryActionType) =>
-      historyActionsSignal().filter((action) => action.type === type),
-  ),
-  byModel: createMemo(
-    () => (model: string) => historyActionsSignal().filter((action) => action.model === model),
-  ),
-  recent: createMemo(() => historyActionsSignal().slice(0, 10)),
-}));
-export const historyStateSignal = _memos.historyState;
-export const historyActionsByTypeSignal = _memos.byType;
-export const historyActionsByModelSignal = _memos.byModel;
-export const recentHistoryActionsSignal = _memos.recent;
+export { historyActions, historyError, historyLoading };
 
-export const loadHistory = async () => {
+/** Runs a whole-list operation: its failure replaces the list by an error state. */
+const runListOperation = async (operation: () => Promise<HistoryAction[]>, fallback: string) => {
   try {
-    setHistoryLoadingSignal(true);
-    setHistoryErrorSignal(null);
-
-    const history = await historyService.getHistory();
-    setHistoryActionsSignal(history);
+    setHistoryLoading(true);
+    setHistoryError(null);
+    setHistoryActions(await operation());
   } catch (error) {
-    setHistoryErrorSignal(error instanceof Error ? error.message : "Failed to load history");
+    setHistoryError(errorMessage(error, fallback));
   } finally {
-    setHistoryLoadingSignal(false);
+    setHistoryLoading(false);
   }
 };
 
-export const clearAllHistory = async () => {
-  try {
-    setHistoryLoadingSignal(true);
-    setHistoryErrorSignal(null);
+export const loadHistory = () =>
+  runListOperation(() => historyService.get(), "Failed to load history");
 
+export const clearAllHistory = () =>
+  runListOperation(async () => {
     await historyService.clearHistory();
-    setHistoryActionsSignal([]);
-  } catch (error) {
-    setHistoryErrorSignal(error instanceof Error ? error.message : "Failed to clear history");
-  } finally {
-    setHistoryLoadingSignal(false);
-  }
-};
+    return [];
+  }, "Failed to clear history");
 
-export const removeHistoryAction = async (actionId: string) => {
+/** Runs an operation on one action: its failure is notified, the list stays. */
+const runItemOperation = async (operation: () => Promise<void>) => {
   try {
-    await historyService.removeAction(actionId);
-    setHistoryActionsSignal(historyActionsSignal().filter((action) => action.id !== actionId));
+    await operation();
+    setHistoryActions(await historyService.get());
   } catch (error) {
-    setHistoryErrorSignal(error instanceof Error ? error.message : "Failed to remove action");
-  }
-};
-
-export const setHistoryActionPinned = async (actionId: string, pinned: boolean) => {
-  try {
-    await historyService.setActionPinned(actionId, pinned);
-    setHistoryActionsSignal(await historyService.getHistory());
-  } catch (error) {
-    setHistoryErrorSignal(
-      error instanceof Error ? error.message : "Failed to update pinned action",
+    showNotification(
+      errorMessage(error, t("common.unknown_error")),
+      "error",
+      ERROR_NOTIFICATION_TIMEOUT,
     );
   }
 };
 
-export const setHistoryActionLabel = async (actionId: string, label: string) => {
-  try {
-    await historyService.setActionLabel(actionId, label);
-    setHistoryActionsSignal(await historyService.getHistory());
-  } catch (error) {
-    setHistoryErrorSignal(error instanceof Error ? error.message : "Failed to update action label");
-  }
-};
+export const removeHistoryAction = (actionId: string) =>
+  runItemOperation(() => historyService.removeAction(actionId));
 
-export const useHistoryState = () => {
-  return {
-    state: historyStateSignal,
+export const setHistoryActionPinned = (actionId: string, pinned: boolean) =>
+  runItemOperation(() => historyService.setActionPinned(actionId, pinned));
 
-    loadHistory,
-    clearHistory: clearAllHistory,
-    removeAction: removeHistoryAction,
-    setActionPinned: setHistoryActionPinned,
-    setActionLabel: setHistoryActionLabel,
-
-    actions: historyActionsSignal,
-    recent: recentHistoryActionsSignal,
-  };
-};
+export const setHistoryActionLabel = (actionId: string, label: string) =>
+  runItemOperation(() => historyService.setActionLabel(actionId, label));

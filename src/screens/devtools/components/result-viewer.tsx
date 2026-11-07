@@ -1,28 +1,25 @@
 import {
   ArrowUpRight01Icon,
-  Calendar02Icon,
   Copy01Icon,
   Download04Icon,
+  InformationCircleIcon,
   Layers02Icon,
-  ListViewIcon,
-  TableIcon,
-  PivotIcon,
 } from "@hugeicons/core-free-icons";
-import { createEffect, createMemo, createSignal, Show, splitProps, type JSX } from "solid-js";
+import { createMemo, createSignal, Match, Show, Switch, type JSX } from "solid-js";
 
 import { Button, IconButton } from "@/components/ui/button";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { Join } from "@/components/ui/join";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { CalendarView } from "@/screens/devtools/components/calendar-view";
-import { ContextMenu } from "@/screens/devtools/components/context-menu";
-import { usePagination } from "@/screens/devtools/components/record-hooks";
-import { useRecordActions } from "@/screens/devtools/components/record-hooks";
-import { useRecordContextMenu } from "@/screens/devtools/components/record-hooks";
-import { useTableContextMenu } from "@/screens/devtools/components/record-hooks";
-import { RecordRenderer } from "@/screens/devtools/components/record-renderer";
+import { cx } from "@/components/ui/cx";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
+import { LiveRegion } from "@/components/ui/live-region";
+import { PanelHeader } from "@/components/ui/panel";
+import { Segmented } from "@/components/ui/segmented";
+import { hasDateField } from "@/screens/devtools/components/calendar-utils";
+import { Panel, WorkspaceHeader } from "@/screens/devtools/components/devtools-ui";
+import { openRecords } from "@/screens/devtools/components/record-actions";
+import { RecordContextMenuProvider } from "@/screens/devtools/components/record-context-menu";
 import { RecordSearch } from "@/screens/devtools/components/record-search";
-import { useRecordSearch } from "@/screens/devtools/components/record-search";
+import { sortedFieldNames } from "@/screens/devtools/components/record-utils";
+import { RecordsView, VIEW_MODES, type ViewMode } from "@/screens/devtools/components/records-view";
 import {
   EmptyQueryState,
   ErrorState,
@@ -31,445 +28,239 @@ import {
   PaginationControls,
   PaginationInfo,
 } from "@/screens/devtools/components/result-states";
-import { VirtualTable } from "@/screens/devtools/components/virtual-table";
-import { queryStore, resultStore, xmlIdMapSignal } from "@/screens/devtools/devtools-signals";
+import { queryStore, resultStore, usePagination } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
+import { copyWithFeedback } from "@/utils/clipboard";
+import { downloadJson } from "@/utils/download";
 import { PSEUDO_FIELD_METADATA } from "@/utils/pseudo-fields";
 
-type ViewMode = "table" | "list" | "pivot" | "calendar";
-
 interface ResultViewerProps {
-  hideCopyButton?: boolean;
-  hideDownloadButton?: boolean;
-  hideSwitchViewButton?: boolean;
-  hideFieldNumber?: boolean;
-  hideRecordPagingData?: boolean;
-  hidePaging?: boolean;
-  customText?: JSX.Element;
+  /** Header title of the full result view (the tab action). */
+  title?: string;
+  /** Compact result card used below the mutation forms (write, create, ...). */
+  embedded?: boolean;
+  /** Title of the embedded card once records are loaded. */
+  caption?: JSX.Element;
 }
 
+const viewIcon = (icon: IconData) => <HugeiconsIcon icon={icon} size={14} strokeWidth={1.6} />;
+
+/** Results of the last query, rendered with the metadata of the model it ran on. */
 export const ResultViewer = (props: ResultViewerProps) => {
-  const [local] = splitProps(props, [
-    "hideCopyButton",
-    "hideDownloadButton",
-    "hideSwitchViewButton",
-    "hideFieldNumber",
-    "hideRecordPagingData",
-    "hidePaging",
-    "customText",
-  ]);
-  const fieldsMetadata = () => queryStore.fieldsMetadata;
-  const data = () => resultStore.data;
-  const loading = () => resultStore.loading;
-  const error = () => resultStore.error;
-  const errorDetails = () => resultStore.errorDetails;
-  const isNewQuery = () => resultStore.isNewQuery;
+  const records = () => resultStore.data;
+  const hasRecords = () => (records()?.length ?? 0) > 0;
+  const model = () => resultStore.model ?? undefined;
+  const fieldsMetadata = createMemo(() => ({
+    ...resultStore.fieldsMetadata,
+    ...PSEUDO_FIELD_METADATA,
+  }));
+  const selectedFields = () => resultStore.lastQuery?.selectedFields ?? [];
 
-  const enrichedData = createMemo(() => {
-    const currentData = data();
-    if (!currentData) return null;
-    const map = xmlIdMapSignal();
-    if (Object.keys(map).length === 0) return currentData;
-    return currentData.map((record) => ({
-      ...record,
-      xml_id: map[record.id as number] ?? false,
-    }));
-  });
-
-  const enrichedFieldsMetadata = createMemo(() => {
-    const meta = fieldsMetadata();
-    return { ...meta, ...PSEUDO_FIELD_METADATA };
-  });
-
-  const { copyToClipboard } = useCopyToClipboard();
-  const { openRecords } = useRecordActions();
   const pagination = usePagination();
-
   const [viewMode, setViewMode] = createSignal<ViewMode>("list");
-  const [expandedRows, setExpandedRows] = createSignal<Set<number>>(new Set());
-  const { clearHighlights } = useRecordSearch();
+  const [listRoot, setListRoot] = createSignal<HTMLElement>();
 
-  const hasDateField = createMemo(() => {
-    const meta = fieldsMetadata();
-    if (!meta) return false;
-    const selected = queryStore.selectedFields;
-    const entries = Object.entries(meta).filter(
-      ([, m]) => m.type === "date" || m.type === "datetime",
-    );
-    if (selected.length > 0) {
-      return entries.some(([name]) => selected.includes(name));
-    }
-    return entries.length > 0;
-  });
-
-  const { contextMenu, handleFieldContextMenu, closeContextMenu, getContextMenuItems } =
-    useRecordContextMenu();
-
-  const contextMenuItems = createMemo(() => {
-    return contextMenu().visible ? getContextMenuItems() : [];
-  });
-
-  const { handleTableContextMenu } = useTableContextMenu({
-    data: () => enrichedData() || null,
-    fieldsMetadata: () => enrichedFieldsMetadata() || undefined,
-    model: () => queryStore.model,
-    handleFieldContextMenu,
-  });
-
-  createEffect(() => {
-    const currentData = data();
-    void queryStore.model;
-    void queryStore.offset;
-    const newExpanded = new Set<number>();
-
-    if (currentData && currentData.length === 1) {
-      newExpanded.add(0);
-    }
-
-    setExpandedRows(newExpanded);
-    clearHighlights();
-  });
-
-  const toggleRowExpansion = (index: number) => {
-    const newExpanded = new Set(expandedRows());
-    if (newExpanded.has(index)) {
-      newExpanded.delete(index);
-    } else {
-      newExpanded.add(index);
-    }
-    setExpandedRows(newExpanded);
+  /** A single record is exported as an object, several as an array. */
+  const exported = () => {
+    const data = records() ?? [];
+    return data.length === 1 ? data[0] : data;
   };
 
-  const copyJson = (target: HTMLButtonElement) => {
-    const currentData = enrichedData();
-    if (currentData) {
-      const dataToCopy = currentData.length === 1 ? currentData[0] : currentData;
-      copyToClipboard(JSON.stringify(dataToCopy, null, 2), target);
-    }
+  const openAllInOdoo = (asPopup: boolean) => {
+    const ids = (records() ?? []).map((record) => record.id as number).filter((id) => id != null);
+    if (model()) openRecords(model()!, ids, asPopup);
   };
 
-  const handleOpenInOdoo = (event: Event, asPopup = false) => {
-    const currentData = data();
-    const model = queryStore.model;
-    if (!currentData || !model) return;
-    const ids = currentData.map((record) => record.id as number).filter((id) => id != null);
-    if (ids.length === 0) return;
-    openRecords(ids, model, event, asPopup);
-  };
+  const recordCount = () => (records() ? String(resultStore.totalCount ?? records()!.length) : "–");
 
-  const downloadJson = () => {
-    const currentData = enrichedData();
-    if (currentData) {
-      const dataToDownload = currentData.length === 1 ? currentData[0] : currentData;
-      const blob = new Blob([JSON.stringify(dataToDownload, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = currentData.length === 1 ? "odoo_record.json" : "odoo_query_results.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-  };
+  const queryModel = () => queryStore.model || resultStore.model || undefined;
 
-  const allKeys = createMemo(() => {
-    const currentData = enrichedData();
-    return currentData
-      ? Array.from(new Set(currentData.flatMap((record) => Object.keys(record)))).sort((a, b) => {
-          if (a === "id" && b !== "id") return -1;
-          if (b === "id" && a !== "id") return 1;
-          return a.localeCompare(b);
-        })
-      : [];
-  });
+  const viewSwitch = () => (
+    <Segmented<ViewMode>
+      ariaLabel={t("devtools.result_viewer.table_view")}
+      iconOnly
+      value={viewMode()}
+      onChange={setViewMode}
+      class="shrink-0"
+      items={VIEW_MODES.map((mode) => ({
+        value: mode.value,
+        ariaLabel: t(mode.label),
+        icon: viewIcon(mode.icon),
+        disabled: mode.value === "calendar" && !hasDateField(fieldsMetadata(), selectedFields()),
+      }))}
+    />
+  );
 
-  return (
-    <Show when={!(loading() && isNewQuery())} fallback={<LoadingState />}>
-      <Show
-        when={!error()}
-        fallback={<ErrorState error={error()!} errorDetails={errorDetails()} />}
-      >
-        <Show when={enrichedData() || loading()} fallback={<EmptyQueryState />}>
-          <Show
-            when={!(enrichedData() && enrichedData()!.length === 0 && !loading())}
-            fallback={<NoResultsState />}
-          >
-            <Show
-              when={enrichedData()}
-              fallback={
-                <div class="flex h-full min-h-0 flex-col">
-                  <div class="result-header sticky top-0 z-20 flex items-center justify-between border-b border-base-200 bg-base-100 px-4 py-3">
-                    <div class="result-stats flex flex-1 items-center gap-4 text-xs text-base-content/70">
-                      <span class="record-count">{t("common.loading")}</span>
-                    </div>
-                  </div>
-                  <Show when={loading()}>
-                    <div class="content-loading flex min-h-[200px] items-center justify-center p-10">
-                      <div class="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
-                        <span class="loading loading-md loading-spinner" />
-                        <span>{t("devtools.result_viewer.loading_records")}</span>
-                      </div>
-                    </div>
-                  </Show>
-                </div>
-              }
-            >
-              <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-box bg-base-100 pb-3">
-                <div class="result-header sticky top-0 z-20 flex flex-col flex-wrap items-center justify-between gap-3 bg-base-100 px-4 py-3 md:flex-row">
-                  <div class="result-stats flex flex-1 flex-wrap items-center gap-3 text-sm text-base-content/70">
-                    <Show when={local.customText}>{local.customText}</Show>
-                    <Show when={!local.hideRecordPagingData || !local.hideFieldNumber}>
-                      <div class="result-informations flex flex-wrap items-center gap-3 text-sm text-base-content/70">
-                        <Show when={!local.hideRecordPagingData}>
-                          <PaginationInfo />
-                        </Show>
-                        <Show when={!local.hideFieldNumber}>
-                          <span class="field-count badge badge-outline badge-sm">
-                            {allKeys().length} {t("devtools.result_viewer.fields_count")}
-                          </span>
-                        </Show>
-                      </div>
-                    </Show>
-                    <Show when={queryStore.model && enrichedData() && enrichedData()!.length > 0}>
-                      <div class="flex items-center gap-1">
-                        <IconButton
-                          label={t("devtools.result_viewer.open_in_odoo")}
-                          variant="ghost"
-                          size="xs"
-                          square
-                          class="text-base-content/60 hover:text-primary"
-                          onClick={(e) => handleOpenInOdoo(e as unknown as Event, false)}
-                          icon={
-                            <HugeiconsIcon
-                              icon={ArrowUpRight01Icon}
-                              size={14}
-                              color="currentColor"
-                              strokeWidth={1.5}
-                            />
-                          }
-                        />
-                        <IconButton
-                          label={t("devtools.result_viewer.open_in_popup")}
-                          variant="ghost"
-                          size="xs"
-                          square
-                          class="text-base-content/60 hover:text-warning"
-                          onClick={(e) => handleOpenInOdoo(e as unknown as Event, true)}
-                          icon={
-                            <HugeiconsIcon
-                              icon={Layers02Icon}
-                              size={14}
-                              color="currentColor"
-                              strokeWidth={1.5}
-                            />
-                          }
-                        />
-                      </div>
-                    </Show>
-                    <Show when={pagination.totalPages() > 1 && !local.hidePaging}>
-                      <PaginationControls loading={loading()} />
-                    </Show>
-                  </div>
-                  <Show
-                    when={
-                      !local.hideDownloadButton ||
-                      !local.hideSwitchViewButton ||
-                      !local.hideCopyButton
-                    }
-                  >
-                    <div class="result-buttons flex flex-wrap items-center justify-center gap-2">
-                      <Show when={!local.hideCopyButton || !local.hideDownloadButton}>
-                        <div class="flex items-center gap-2">
-                          <Show when={!local.hideCopyButton}>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={(event) => copyJson(event.currentTarget)}
-                              title={t("devtools.result_viewer.copy_json")}
-                            >
-                              <span class="flex items-center gap-2">
-                                <HugeiconsIcon
-                                  icon={Copy01Icon}
-                                  size={16}
-                                  color="currentColor"
-                                  strokeWidth={1.5}
-                                />
-                                <span>{t("common.copy")}</span>
-                              </span>
-                            </Button>
-                          </Show>
+  /** Right-click hint, next to the view switch (full text on wide panels, icon only otherwise). */
+  const contextMenuHint = () => (
+    <span
+      class="inline-flex shrink-0 items-center gap-1.5 text-caption text-ink-4"
+      title={t("devtools.result_viewer.context_menu_hint")}
+    >
+      <HugeiconsIcon icon={InformationCircleIcon} size={13} strokeWidth={1.6} />
+      <span class="max-xl:sr-only">{t("devtools.result_viewer.context_menu_hint")}</span>
+    </span>
+  );
 
-                          <Show when={!local.hideDownloadButton}>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={downloadJson}
-                              title={t("devtools.result_viewer.download_json")}
-                            >
-                              <span class="flex items-center gap-2">
-                                <HugeiconsIcon
-                                  icon={Download04Icon}
-                                  size={16}
-                                  color="currentColor"
-                                  strokeWidth={1.5}
-                                />
-                                <span>{t("common.download")}</span>
-                              </span>
-                            </Button>
-                          </Show>
-                        </div>
-                      </Show>
-                      <Show
-                        when={
-                          !local.hideSwitchViewButton &&
-                          (!local.hideCopyButton || !local.hideDownloadButton)
-                        }
-                      >
-                        <div class="divider mx-1 hidden divider-horizontal md:flex" />
-                      </Show>
-                      <Show when={!local.hideSwitchViewButton}>
-                        <Join>
-                          <IconButton
-                            label={t("devtools.result_viewer.list_view")}
-                            variant="solid"
-                            size="sm"
-                            active={viewMode() === "list"}
-                            class="rounded-e-none"
-                            onClick={() => setViewMode("list")}
-                            icon={
-                              <HugeiconsIcon
-                                icon={ListViewIcon}
-                                size={16}
-                                color="currentColor"
-                                strokeWidth={1.5}
-                              />
-                            }
-                          />
-                          <IconButton
-                            label={t("devtools.result_viewer.table_view")}
-                            variant="solid"
-                            size="sm"
-                            active={viewMode() === "table"}
-                            class="rounded-none"
-                            onClick={() => setViewMode("table")}
-                            icon={
-                              <HugeiconsIcon
-                                icon={TableIcon}
-                                size={16}
-                                color="currentColor"
-                                strokeWidth={1.5}
-                              />
-                            }
-                          />
-                          <IconButton
-                            label={t("devtools.result_viewer.pivot_view")}
-                            variant="solid"
-                            size="sm"
-                            active={viewMode() === "pivot"}
-                            class="rounded-none"
-                            onClick={() => setViewMode("pivot")}
-                            icon={
-                              <HugeiconsIcon
-                                icon={PivotIcon}
-                                size={16}
-                                color="currentColor"
-                                strokeWidth={1.5}
-                              />
-                            }
-                          />
-                          <IconButton
-                            label={t("devtools.result_viewer.calendar_view")}
-                            variant="solid"
-                            size="sm"
-                            active={viewMode() === "calendar"}
-                            class="rounded-s-none"
-                            onClick={() => setViewMode("calendar")}
-                            disabled={!hasDateField()}
-                            icon={
-                              <HugeiconsIcon
-                                icon={Calendar02Icon}
-                                size={16}
-                                color="currentColor"
-                                strokeWidth={1.5}
-                              />
-                            }
-                          />
-                        </Join>
-                      </Show>
-                    </div>
-                  </Show>
-                </div>
-
-                <Show when={enrichedData() && enrichedData()!.length > 0 && viewMode() === "list"}>
-                  <RecordSearch expandedRecords={expandedRows} />
-                </Show>
-
-                <Show
-                  when={loading() && !isNewQuery()}
-                  fallback={
-                    <Show
-                      when={viewMode() === "calendar"}
-                      fallback={
-                        <Show
-                          when={viewMode() === "table" || viewMode() === "pivot"}
-                          fallback={
-                            <div class="flex min-h-0 overflow-auto rounded-box border border-base-300 dark:border-base-200">
-                              <RecordRenderer
-                                records={enrichedData() || []}
-                                fieldsMetadata={enrichedFieldsMetadata()}
-                                clickableRow={true}
-                                showId={true}
-                                renderAsList={true}
-                                onExpandToggle={toggleRowExpansion}
-                                expandedRecords={expandedRows}
-                              />
-                            </div>
-                          }
-                        >
-                          <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
-                            <VirtualTable
-                              data={enrichedData() || []}
-                              allKeys={allKeys()}
-                              handleTableContextMenu={handleTableContextMenu}
-                              pivoted={viewMode() === "pivot"}
-                            />
-                            <Show when={contextMenu().visible}>
-                              <ContextMenu
-                                visible={contextMenu().visible}
-                                position={contextMenu().position}
-                                items={contextMenuItems()}
-                                onClose={closeContextMenu}
-                              />
-                            </Show>
-                          </div>
-                        </Show>
-                      }
-                    >
-                      <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-300 dark:border-base-200">
-                        <CalendarView
-                          data={enrichedData() || []}
-                          fieldsMetadata={enrichedFieldsMetadata() || undefined}
-                          model={queryStore.model || undefined}
-                        />
-                      </div>
-                    </Show>
-                  }
-                >
-                  <div class="content-loading flex min-h-50 items-center justify-center p-10">
-                    <div class="loading-indicator flex items-center justify-center gap-3 py-6 text-base-content/70">
-                      <span class="loading loading-md loading-spinner" />
-                      <span>{t("devtools.result_viewer.loading_records")}</span>
-                    </div>
-                  </div>
-                </Show>
-              </div>
-            </Show>
-          </Show>
-        </Show>
+  /** Model, then the records and fields counts once loaded. */
+  const headerPath = () => (
+    <Show when={queryModel()}>
+      {queryModel()}
+      <Show when={hasRecords() && !resultStore.loading}>
+        {" · "}
+        <PaginationInfo showRecords fieldCount={sortedFieldNames(records()!).length} />
       </Show>
     </Show>
+  );
+
+  const headerActions = () => (
+    <>
+      <Show when={pagination.totalPages() > 1}>
+        <PaginationControls loading={resultStore.loading} />
+      </Show>
+      <Show when={hasRecords() && viewMode() !== "calendar"}>{contextMenuHint()}</Show>
+      <Show when={hasRecords()}>
+        {recordActions()}
+        <span class="mx-1.5 h-4.5 w-px shrink-0 self-center bg-line" aria-hidden="true" />
+      </Show>
+      {viewSwitch()}
+    </>
+  );
+
+  const recordActions = () => (
+    <>
+      <Button
+        size="sm"
+        variant="ghost"
+        class="gap-1.5 text-ink-2"
+        onClick={(event) =>
+          copyWithFeedback(JSON.stringify(exported(), null, 2), event.currentTarget)
+        }
+        title={t("devtools.result_viewer.copy_json")}
+      >
+        <HugeiconsIcon icon={Copy01Icon} size={15} strokeWidth={1.6} />
+        <span>{t("common.copy")}</span>
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        class="gap-1.5 text-ink-2"
+        onClick={() =>
+          downloadJson(
+            records()!.length === 1 ? "odoo_record.json" : "odoo_query_results.json",
+            exported(),
+          )
+        }
+        title={t("devtools.result_viewer.download_json")}
+      >
+        <HugeiconsIcon icon={Download04Icon} size={15} strokeWidth={1.6} />
+        <span>{t("common.download")}</span>
+      </Button>
+      <Show when={model()}>
+        <IconButton
+          label={t("devtools.result_viewer.open_in_odoo")}
+          variant="ghost"
+          size="sm"
+          square
+          circle={false}
+          class="text-ink-3 hover:text-primary"
+          onClick={() => openAllInOdoo(false)}
+          icon={<HugeiconsIcon icon={ArrowUpRight01Icon} size={15} strokeWidth={1.6} />}
+        />
+        <IconButton
+          label={t("devtools.result_viewer.open_in_popup")}
+          variant="ghost"
+          size="sm"
+          square
+          circle={false}
+          class="text-ink-3 hover:text-primary"
+          onClick={() => openAllInOdoo(true)}
+          icon={<HugeiconsIcon icon={Layers02Icon} size={15} strokeWidth={1.6} />}
+        />
+      </Show>
+    </>
+  );
+
+  const recordsView = (mode: ViewMode) => (
+    <RecordsView
+      records={records() ?? []}
+      fieldsMetadata={fieldsMetadata()}
+      model={model()}
+      mode={mode}
+      selectedFields={selectedFields()}
+      resetKey={resultStore.lastQuery}
+      listRef={setListRoot}
+      listHeader={<RecordSearch root={listRoot} resetKey={resultStore.lastQuery} />}
+    />
+  );
+
+  /** Screen reader announcement of the query state (loading, error, results count). */
+  const announcement = () => {
+    if (resultStore.loading) return t("devtools.result_states.executing");
+    if (resultStore.error) return t("devtools.result_states.error");
+    if (!records()) return "";
+    if (records()!.length === 0) return t("devtools.result_states.no_records");
+    return t("devtools.result_states.records_found", [recordCount()]);
+  };
+
+  const states = (content: () => JSX.Element) => (
+    <>
+      <LiveRegion message={announcement()} />
+      <Switch fallback={content()}>
+        <Match when={resultStore.loading && (resultStore.isNewQuery || !records())}>
+          <LoadingState />
+        </Match>
+        <Match when={resultStore.error}>
+          <ErrorState error={resultStore.error!} errorDetails={resultStore.errorDetails} />
+        </Match>
+        <Match when={!records()}>
+          <EmptyQueryState compact={props.embedded} />
+        </Match>
+        <Match when={records()!.length === 0}>
+          <NoResultsState compact={props.embedded} />
+        </Match>
+        <Match when={resultStore.loading}>
+          <LoadingState />
+        </Match>
+      </Switch>
+    </>
+  );
+
+  return (
+    <RecordContextMenuProvider>
+      <Show
+        when={!props.embedded}
+        fallback={
+          // With records or an error the preview takes the remaining height of the tab and
+          // scrolls on its own (the tab body only scrolls when it is too short)
+          <Panel
+            class={cx(
+              "flex flex-col",
+              hasRecords() || resultStore.error ? "min-h-48! flex-1" : "shrink-0",
+            )}
+          >
+            <PanelHeader
+              start={
+                <div class="flex min-w-0 flex-col">
+                  <span class="truncate text-ui font-semibold text-ink">
+                    <Show when={hasRecords() && props.caption} fallback={queryModel() || "—"}>
+                      {props.caption}
+                    </Show>
+                  </span>
+                </div>
+              }
+            />
+            <div class="flex min-h-0 flex-1 flex-col overflow-auto">
+              {states(() => recordsView("list"))}
+            </div>
+          </Panel>
+        }
+      >
+        <section class="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface">
+          <WorkspaceHeader title={props.title} path={headerPath()} actions={headerActions()} />
+          {states(() => recordsView(viewMode()))}
+        </section>
+      </Show>
+    </RecordContextMenuProvider>
   );
 };

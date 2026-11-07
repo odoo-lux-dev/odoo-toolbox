@@ -4,415 +4,317 @@ import {
   CheckmarkCircle01Icon,
   Refresh01Icon,
 } from "@hugeicons/core-free-icons";
-import { createEffect, createMemo, createSignal, For, Show, splitProps, type JSX } from "solid-js";
+import { createMemo, createSignal, For, Match, onMount, Show, Switch } from "solid-js";
 
-import { Badge } from "@/components/ui/badge";
 import { IconButton } from "@/components/ui/button";
-import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
+import { Chip, ChipButton } from "@/components/ui/chip";
+import { cx } from "@/components/ui/cx";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
+import { Popover } from "@/components/ui/popover";
 import { useDropdownNavigation } from "@/hooks/use-dropdown-navigation";
 import {
   loadModels,
   modelsStore,
   queryStore,
+  railFieldsMetadata,
   resultStore,
   setQueryStore,
   setRpcQuery,
 } from "@/screens/devtools/devtools-signals";
 import { t } from "@/services/i18n-service";
+import type { FieldMetadata } from "@/types";
 import { PSEUDO_FIELD_METADATA } from "@/utils/pseudo-fields";
 
-export interface GenericSelectOption {
+interface SelectOption {
   value: string;
   label: string;
   searchableText?: string;
 }
 
-type GenericSelectInputProps = Omit<
-  Parameters<typeof Input>[0],
-  | "value"
-  | "onInput"
-  | "onKeyDown"
-  | "onFocus"
-  | "onBlur"
-  | "type"
-  | "placeholder"
-  | "disabled"
-  | "class"
->;
-
-export interface GenericSelectProps {
-  options: GenericSelectOption[];
-  value: string | string[];
-  onChange: (value: string | string[]) => void;
-
+interface SelectBaseProps {
+  options: SelectOption[];
   placeholder?: string;
-  className?: string;
   disabled?: boolean;
-
+  /** With `onRefresh`, shows the refresh button state (spinner, error). */
   loading?: boolean;
   error?: string;
   onRefresh?: () => void;
-
-  maxDisplayedOptions?: number;
-  allowFreeInput?: boolean;
-  highlightSearch?: boolean;
-  multiple?: boolean;
-
-  enableSmartSort?: boolean;
-  customSort?: (options: GenericSelectOption[], searchTerm: string) => GenericSelectOption[];
-
-  excludedFields?: string[];
-
-  inputClassName?: string;
-  inputProps?: GenericSelectInputProps;
 }
 
-interface SelectOptionProps {
-  option: GenericSelectOption;
-  index: number;
-  focusedIndex: number;
-  isSelected: boolean;
-  isMultiple: boolean;
-  searchValue: string;
-  onSelect: (value: string) => void;
-  highlightMatch: (text: string, search: string) => JSX.Element;
-}
-
-export const SelectOption = (props: SelectOptionProps) => {
-  return (
-    <div
-      class={`select-option relative flex w-full cursor-pointer items-start gap-2 border-s-2 border-transparent px-3 py-2 text-start text-xs transition hover:border-primary hover:bg-base-200 ${props.index === props.focusedIndex ? "border-primary! bg-base-200" : ""} ${props.isSelected ? "border-primary bg-primary/10" : ""}`}
-      onClick={() => props.onSelect(props.option.value)}
-    >
-      <Show when={props.isMultiple && props.isSelected}>
-        <div class="select-check-indicator absolute inset-e-3 top-1/2 -translate-y-1/2 text-primary">
-          <HugeiconsIcon
-            icon={CheckmarkCircle01Icon}
-            size={16}
-            color="currentColor"
-            strokeWidth={1.6}
-          />
-        </div>
-      </Show>
-      <div class="select-content flex min-w-0 flex-1 flex-col gap-0.5">
-        <div class="select-technical-name text-xs font-medium wrap-break-word text-base-content">
-          {props.highlightMatch(props.option.value, props.searchValue)}
-        </div>
-        <div class="select-display-name text-[11px] wrap-break-word text-base-content/70">
-          {props.highlightMatch(props.option.label, props.searchValue)}
-        </div>
-      </div>
-    </div>
+type SelectProps = SelectBaseProps &
+  (
+    | { multiple?: false; value: string; onChange: (value: string) => void }
+    | {
+        multiple: true;
+        value: string[];
+        onChange: (values: string[]) => void;
+        /** Title of a selected value shown as a warning chip, if any. */
+        chipWarning?: (value: string) => string | undefined;
+      }
   );
+
+const MAX_DISPLAYED_OPTIONS = 100;
+const MAX_VISIBLE_CHIPS = 3;
+
+/** Exact matches first, then prefix matches (shortest first), then earliest match. */
+const rankOptions = (options: SelectOption[], term: string): SelectOption[] => {
+  const score = (option: SelectOption) => {
+    const value = option.value.toLowerCase();
+    const label = option.label.toLowerCase();
+    if (value === term) return [0, 0];
+    if (label === term) return [1, 0];
+    if (value.startsWith(term)) return [2, value.length];
+    if (label.startsWith(term)) return [3, label.length];
+    const valueIndex = value.indexOf(term);
+    if (valueIndex !== -1) return [4, valueIndex, value.length];
+    const labelIndex = label.indexOf(term);
+    return [5, labelIndex === -1 ? Infinity : labelIndex, value.length];
+  };
+  const scored = options.map((option) => ({ option, key: score(option) }));
+  scored.sort((a, b) => {
+    for (let i = 0; i < Math.max(a.key.length, b.key.length); i++) {
+      const diff = (a.key[i] ?? 0) - (b.key[i] ?? 0);
+      if (diff !== 0) return diff;
+    }
+    return 0;
+  });
+  return scored.map(({ option }) => option);
 };
 
-interface RefreshButtonProps {
-  loading: boolean;
-  error: string;
-  hasOptions: boolean;
-  disabled: boolean;
-  onRefresh?: () => void;
-}
-
-export const RefreshButton = (props: RefreshButtonProps) => {
+const HighlightedText = (props: { text: string; search: string }) => {
+  const index = () =>
+    props.search ? props.text.toLowerCase().indexOf(props.search.toLowerCase()) : -1;
   return (
-    <Show when={props.onRefresh}>
-      <Show
-        when={props.loading}
-        fallback={
-          <Show
-            when={props.error}
-            fallback={
-              <Show when={props.hasOptions}>
-                <IconButton
-                  class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-base-content/60 hover:text-base-content"
-                  label={t("devtools.selects.refresh_list")}
-                  onClick={props.onRefresh}
-                  title={t("devtools.selects.refresh_list")}
-                  type="button"
-                  disabled={props.disabled}
-                  variant="ghost"
-                  size="xs"
-                  circle={false}
-                  icon={
-                    <HugeiconsIcon
-                      icon={Refresh01Icon}
-                      size={16}
-                      color="currentColor"
-                      strokeWidth={1.6}
-                    />
-                  }
-                />
-              </Show>
-            }
-          >
-            <IconButton
-              class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-warning hover:text-warning/80"
-              label={t("devtools.selects.refresh_error", [props.error])}
-              onClick={props.onRefresh}
-              title={t("devtools.selects.refresh_error_title", [props.error])}
-              type="button"
-              disabled={props.disabled}
-              variant="ghost"
-              size="xs"
-              circle={false}
-              icon={
-                <HugeiconsIcon
-                  icon={Alert01Icon}
-                  size={16}
-                  color="currentColor"
-                  strokeWidth={1.6}
-                />
-              }
-            />
-          </Show>
-        }
-      >
-        <IconButton
-          class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-base-content/60"
-          label={t("devtools.selects.refreshing")}
-          title={t("devtools.selects.refreshing")}
-          type="button"
-          disabled={true}
-          variant="ghost"
-          size="xs"
-          circle={false}
-          loading={true}
-          icon={null}
-        />
-      </Show>
+    <Show when={index() !== -1} fallback={props.text}>
+      {props.text.slice(0, index())}
+      <mark class="rounded-sm bg-warning-soft px-0.5 text-warning-ink">
+        {props.text.slice(index(), index() + props.search.length)}
+      </mark>
+      {props.text.slice(index() + props.search.length)}
     </Show>
   );
 };
 
-interface SelectedFieldBadgesProps {
-  selectedValues: string[];
-  onRemove: (value: string) => void;
-  className?: string;
-  excludedFields?: string[];
-}
+const OptionRow = (props: {
+  option: SelectOption;
+  focused: boolean;
+  selected: boolean;
+  showCheck: boolean;
+  search: string;
+  onSelect: (value: string) => void;
+}) => (
+  <div
+    class={cx(
+      "relative flex w-full cursor-pointer items-start gap-2 border-s-2 border-transparent px-3 py-1.5 text-start text-ui transition hover:border-primary hover:bg-surface-2",
+      props.focused ? "border-primary! bg-surface-2" : undefined,
+      props.selected ? "border-primary bg-primary-soft" : undefined,
+    )}
+    onClick={() => props.onSelect(props.option.value)}
+  >
+    <Show when={props.showCheck}>
+      <div class="absolute inset-e-3 top-1/2 -translate-y-1/2 text-primary">
+        <HugeiconsIcon icon={CheckmarkCircle01Icon} size={16} strokeWidth={1.6} />
+      </div>
+    </Show>
+    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div class="font-mono text-ui font-medium wrap-break-word text-ink">
+        <HighlightedText text={props.option.value} search={props.search} />
+      </div>
+      <div class="text-ui wrap-break-word text-ink-3">
+        <HighlightedText text={props.option.label} search={props.search} />
+      </div>
+    </div>
+  </div>
+);
 
-export const SelectedFieldBadges = (props: SelectedFieldBadgesProps) => {
-  const isExcluded = (value: string) => (props.excludedFields ?? []).includes(value);
+const FIELD_BUTTON_PROPS = {
+  type: "button",
+  variant: "ghost",
+  size: "xs",
+  circle: false,
+} as const;
+
+const fieldIcon = (icon: IconData, size = 16) => (
+  <HugeiconsIcon icon={icon} size={size} strokeWidth={1.6} />
+);
+
+const RefreshButton = (props: {
+  loading: boolean;
+  error: string;
+  disabled: boolean;
+  onRefresh: () => void;
+}) => (
+  <Switch
+    fallback={
+      <IconButton
+        {...FIELD_BUTTON_PROPS}
+        class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-ink-4 hover:text-ink"
+        label={t("devtools.selects.refresh_list")}
+        title={t("devtools.selects.refresh_list")}
+        onClick={props.onRefresh}
+        disabled={props.disabled}
+        icon={fieldIcon(Refresh01Icon)}
+      />
+    }
+  >
+    <Match when={props.loading}>
+      <IconButton
+        {...FIELD_BUTTON_PROPS}
+        class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-ink-4"
+        label={t("devtools.selects.refreshing")}
+        title={t("devtools.selects.refreshing")}
+        disabled
+        loading
+        icon={null}
+      />
+    </Match>
+    <Match when={props.error}>
+      <IconButton
+        {...FIELD_BUTTON_PROPS}
+        class="absolute inset-e-2 top-1/2 -translate-y-1/2 text-warning hover:text-warning/80"
+        label={t("devtools.selects.refresh_error", [props.error])}
+        title={t("devtools.selects.refresh_error_title", [props.error])}
+        onClick={props.onRefresh}
+        disabled={props.disabled}
+        icon={fieldIcon(Alert01Icon)}
+      />
+    </Match>
+  </Switch>
+);
+
+const SelectedChips = (props: {
+  values: string[];
+  onRemove: (value: string) => void;
+  warning?: (value: string) => string | undefined;
+}) => {
+  const [expanded, setExpanded] = createSignal(false);
+  const collapsible = () => props.values.length > MAX_VISIBLE_CHIPS;
+  const visibleValues = () =>
+    collapsible() && !expanded() ? props.values.slice(0, MAX_VISIBLE_CHIPS) : props.values;
+  const hiddenValues = () => props.values.slice(visibleValues().length);
 
   return (
-    <Show when={props.selectedValues.length > 0}>
-      <div class={`mb-2 flex min-h-[24px] flex-wrap gap-2 ${props.className ?? ""}`}>
-        <For each={props.selectedValues}>
-          {(selectedValue) => (
-            <Badge
-              size="sm"
-              color={isExcluded(selectedValue) ? "warning" : "primary"}
-              class="inline-flex items-center gap-1.5"
+    <>
+      <For each={visibleValues()}>
+        {(value) => {
+          const warning = () => props.warning?.(value);
+          return (
+            <Chip
+              tone={warning() ? "warning" : "neutral"}
               onMouseDown={(e) => {
-                if (e.button === 1) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  props.onRemove(selectedValue);
-                }
+                if (e.button !== 1) return;
+                e.preventDefault();
+                e.stopPropagation();
+                props.onRemove(value);
               }}
-              title={
-                isExcluded(selectedValue)
-                  ? t("devtools.selects.excluded_title", [selectedValue])
-                  : t("devtools.selects.middle_click_remove")
-              }
+              title={warning() ?? t("devtools.selects.middle_click_remove")}
             >
-              <span class="flex items-center gap-1.5 font-medium select-none">
-                <Show when={isExcluded(selectedValue)}>
+              <span class="flex items-center gap-1 select-none">
+                <Show when={warning()}>
                   <HugeiconsIcon
                     icon={Alert01Icon}
                     size={12}
-                    color="currentColor"
                     strokeWidth={1.6}
                     className="animate-pulse"
                   />
                 </Show>
-                {selectedValue}
+                {value}
               </span>
               <button
                 type="button"
-                class="ms-1 inline-flex cursor-pointer items-center text-current/70 hover:text-current"
+                class="inline-flex cursor-pointer items-center text-ink-4 hover:text-error"
                 onClick={(e) => {
                   e.stopPropagation();
-                  props.onRemove(selectedValue);
+                  props.onRemove(value);
                 }}
-                aria-label={t("devtools.selects.remove_aria", [selectedValue])}
+                aria-label={t("devtools.selects.remove_aria", [value])}
               >
-                <HugeiconsIcon
-                  icon={Cancel01Icon}
-                  size={12}
-                  color="currentColor"
-                  strokeWidth={1.6}
-                />
+                {fieldIcon(Cancel01Icon, 12)}
               </button>
-            </Badge>
-          )}
-        </For>
-      </div>
-    </Show>
+            </Chip>
+          );
+        }}
+      </For>
+      <Show when={hiddenValues().length > 0}>
+        <ChipButton
+          title={hiddenValues().join(", ")}
+          label={t("devtools.selects.show_all_chips", [String(props.values.length)])}
+          onClick={() => setExpanded(true)}
+        >
+          +{hiddenValues().length}
+        </ChipButton>
+      </Show>
+      <Show when={collapsible() && expanded()}>
+        <ChipButton
+          title={t("devtools.selects.show_less_chips")}
+          label={t("devtools.selects.show_less_chips")}
+          onClick={() => setExpanded(false)}
+        >
+          −
+        </ChipButton>
+      </Show>
+    </>
   );
 };
 
-export const GenericSelect = (props: GenericSelectProps) => {
-  const [local] = splitProps(props, [
-    "options",
-    "value",
-    "onChange",
-    "placeholder",
-    "className",
-    "disabled",
-    "loading",
-    "error",
-    "onRefresh",
-    "maxDisplayedOptions",
-    "allowFreeInput",
-    "highlightSearch",
-    "enableSmartSort",
-    "customSort",
-    "multiple",
-    "excludedFields",
-    "inputClassName",
-    "inputProps",
-  ]);
-
-  const maxDisplayed = () => local.maxDisplayedOptions ?? 100;
-  const multiple = () => local.multiple ?? false;
-  const allowFreeInput = () => local.allowFreeInput ?? true;
-  const highlightSearch = () => local.highlightSearch ?? true;
-  const enableSmartSort = () => local.enableSmartSort ?? true;
-
+const Select = (props: SelectProps) => {
   const [searchValue, setSearchValue] = createSignal("");
   const [isOpen, setIsOpen] = createSignal(false);
-  const [shouldRenderAbove, setShouldRenderAbove] = createSignal(false);
-  const [containerEl, setContainerEl] = createSignal<HTMLDivElement | null>(null);
-  const [inputWrapperEl, setInputWrapperEl] = createSignal<HTMLDivElement | null>(null);
+  const [anchor, setAnchor] = createSignal<HTMLDivElement>();
+  const [dropdown, setDropdown] = createSignal<HTMLDivElement>();
+  let multiInputRef: HTMLInputElement | undefined;
 
-  const findScrollableAncestor = (element: HTMLElement): HTMLElement | null => {
-    let current: HTMLElement | null = element.parentElement;
-
-    while (current && current !== document.body) {
-      const style = window.getComputedStyle(current);
-      const overflowY = style.overflowY;
-      const overflow = style.overflow;
-      const isScrollContainer =
-        overflowY === "auto" ||
-        overflowY === "scroll" ||
-        overflow === "auto" ||
-        overflow === "scroll";
-
-      if (isScrollContainer) {
-        return current;
-      }
-
-      current = current.parentElement;
-    }
-
-    return document.scrollingElement instanceof HTMLElement ? document.scrollingElement : null;
-  };
-
-  const currentOptions = createMemo(() => local.options ?? []);
+  const selectedValues = () => (props.multiple ? props.value : []);
+  const isDisabled = () => Boolean(props.disabled || props.loading);
+  const hasOptions = () => props.options.length > 0;
 
   const filteredOptions = createMemo(() => {
-    const searchTerm = searchValue().toLowerCase();
-    const current = currentOptions();
-
-    if (!current || current.length === 0) return [];
-
-    if (searchTerm === "") {
-      return current;
-    }
-
-    const filtered = current.filter((option) => {
-      const searchableText = option.searchableText || `${option.value} ${option.label}`;
-      return searchableText.toLowerCase().includes(searchTerm);
-    });
-
-    if (local.customSort) {
-      return local.customSort(filtered, searchTerm);
-    }
-
-    if (!enableSmartSort()) {
-      return filtered;
-    }
-
-    const sorted = filtered.slice().sort((a, b) => {
-      const aValue = a.value.toLowerCase();
-      const bValue = b.value.toLowerCase();
-      const aLabel = a.label.toLowerCase();
-      const bLabel = b.label.toLowerCase();
-
-      if (aValue === searchTerm && bValue !== searchTerm) return -1;
-      if (bValue === searchTerm && aValue !== searchTerm) return 1;
-      if (aLabel === searchTerm && bLabel !== searchTerm) return -1;
-      if (bLabel === searchTerm && aLabel !== searchTerm) return 1;
-
-      const aValueStartsWith = aValue.startsWith(searchTerm);
-      const bValueStartsWith = bValue.startsWith(searchTerm);
-      const aLabelStartsWith = aLabel.startsWith(searchTerm);
-      const bLabelStartsWith = bLabel.startsWith(searchTerm);
-
-      if (aValueStartsWith && !bValueStartsWith) return -1;
-      if (bValueStartsWith && !aValueStartsWith) return 1;
-      if (aLabelStartsWith && !bLabelStartsWith) return -1;
-      if (bLabelStartsWith && !aLabelStartsWith) return 1;
-
-      if (aValueStartsWith && bValueStartsWith) {
-        return aValue.length - bValue.length;
-      }
-      if (aLabelStartsWith && bLabelStartsWith) {
-        return aLabel.length - bLabel.length;
-      }
-
-      const aValueIndex = aValue.indexOf(searchTerm);
-      const bValueIndex = bValue.indexOf(searchTerm);
-      const aLabelIndex = aLabel.indexOf(searchTerm);
-      const bLabelIndex = bLabel.indexOf(searchTerm);
-
-      if (aValueIndex !== -1 && bValueIndex !== -1 && aValueIndex !== bValueIndex) {
-        return aValueIndex - bValueIndex;
-      }
-      if (aLabelIndex !== -1 && bLabelIndex !== -1 && aLabelIndex !== bLabelIndex) {
-        return aLabelIndex - bLabelIndex;
-      }
-
-      return aValue.length - bValue.length;
-    });
-
-    return sorted;
+    const term = searchValue().toLowerCase();
+    if (!term) return props.options;
+    return rankOptions(
+      props.options.filter((option) =>
+        (option.searchableText || `${option.value} ${option.label}`).toLowerCase().includes(term),
+      ),
+      term,
+    );
   });
+  const visibleOptions = createMemo(() => filteredOptions().slice(0, MAX_DISPLAYED_OPTIONS));
 
-  const visibleOptions = createMemo(() => filteredOptions().slice(0, maxDisplayed()));
+  const close = () => {
+    setIsOpen(false);
+    setSearchValue("");
+    resetFocus();
+  };
 
-  const displayValue = createMemo(() => {
-    if (isOpen()) {
-      return searchValue();
+  const select = (value: string) => {
+    if (props.multiple) {
+      const values = props.value;
+      props.onChange(
+        values.includes(value) ? values.filter((v) => v !== value) : [...values, value],
+      );
+      return;
     }
-    return multiple() ? "" : typeof local.value === "string" ? local.value : "";
-  });
+    props.onChange(value);
+    close();
+  };
 
-  const getCurrentValues = (): string[] => (Array.isArray(local.value) ? local.value : []);
+  const removeValue = (value: string) => {
+    if (props.multiple) props.onChange(props.value.filter((v) => v !== value));
+  };
 
-  const handleOptionSelect = (optionValue: string) => {
-    if (multiple()) {
-      const currentValues = getCurrentValues();
-      const newValues = currentValues.includes(optionValue)
-        ? currentValues.filter((v) => v !== optionValue)
-        : [...currentValues, optionValue];
-
-      local.onChange(newValues);
-    } else {
-      setSearchValue("");
-      resetFocus();
-      local.onChange(optionValue);
-      setIsOpen(false);
-    }
+  /** Single mode: a value typed by hand is kept when nothing (or no loaded list) matches it. */
+  const commitTypedValue = () => {
+    const typed = searchValue();
+    if (props.multiple || !typed || (filteredOptions().length > 0 && !props.error)) return false;
+    props.onChange(typed);
+    return true;
   };
 
   const {
     focusedIndex,
     resetFocus,
-    handleKeyDown: originalHandleKeyDown,
+    handleKeyDown: navigate,
   } = useDropdownNavigation({
     get items() {
       return visibleOptions();
@@ -420,406 +322,279 @@ export const GenericSelect = (props: GenericSelectProps) => {
     get isOpen() {
       return isOpen();
     },
-    onSelect: (option: GenericSelectOption) => handleOptionSelect(option.value),
-    onClose: () => {
-      setIsOpen(false);
-      setSearchValue("");
-    },
-    cyclicNavigation: true,
-    acceptTab: false,
-    triggerKey: undefined,
-    containerSelector: ".select-dropdown",
-    itemSelector: ".select-option",
+    onSelect: (option: SelectOption) => select(option.value),
+    onClose: close,
+    container: dropdown,
   });
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (props.multiple && e.key === "Backspace" && !searchValue() && props.value.length > 0) {
+      e.preventDefault();
+      removeValue(props.value[props.value.length - 1]);
+      return;
+    }
     const isPlainEnter = e.key === "Enter" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey;
-
-    const err = local.error;
-    if (
-      isPlainEnter &&
-      searchValue() &&
-      allowFreeInput() &&
-      !multiple() &&
-      (filteredOptions().length === 0 || err)
-    ) {
+    if (isPlainEnter && commitTypedValue()) {
       e.preventDefault();
-      local.onChange(searchValue());
-      setSearchValue("");
-      setIsOpen(false);
+      close();
       return;
     }
-
-    if (e.key === "Escape" && multiple() && isOpen()) {
-      e.preventDefault();
-      setIsOpen(false);
-      setSearchValue("");
-      return;
-    }
-
-    originalHandleKeyDown(e);
+    navigate(e);
   };
 
-  const handleInputChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    setSearchValue(target.value);
+  const handleInput = (e: InputEvent & { currentTarget: HTMLInputElement }) => {
+    setSearchValue(e.currentTarget.value);
     resetFocus();
     setIsOpen(true);
   };
 
-  const handleRemoveBadge = (valueToRemove: string) => {
-    const newValues = getCurrentValues().filter((v) => v !== valueToRemove);
-    local.onChange(newValues);
-  };
-
-  const handleInputFocus = () => {
-    setSearchValue(multiple() ? "" : typeof local.value === "string" ? local.value : "");
+  const handleFocus = () => {
+    setSearchValue(props.multiple ? "" : props.value);
     resetFocus();
     setIsOpen(true);
-
-    setTimeout(() => {
-      const wrapper = inputWrapperEl();
-      if (wrapper) {
-        const rect = wrapper.getBoundingClientRect();
-        const scrollParent = findScrollableAncestor(wrapper);
-        const containerRect = scrollParent
-          ? scrollParent.getBoundingClientRect()
-          : { top: 0, bottom: window.innerHeight };
-
-        const spaceBelow = containerRect.bottom - rect.bottom;
-        const spaceAbove = rect.top - containerRect.top;
-        const estimatedDropdownHeight = Math.min(200, filteredOptions().length * 40);
-
-        setShouldRenderAbove(spaceBelow < estimatedDropdownHeight && spaceAbove > spaceBelow);
-      }
-    }, 0);
   };
 
-  const handleInputBlur = () => {
-    setTimeout(() => {
-      setIsOpen(false);
-
-      if (
-        !multiple() &&
-        searchValue() &&
-        allowFreeInput() &&
-        (filteredOptions().length === 0 || local.error)
-      ) {
-        local.onChange(searchValue());
-      }
-      setSearchValue("");
-      resetFocus();
-    }, 150);
+  const handleBlur = () => {
+    commitTypedValue();
+    close();
   };
 
-  const highlightMatch = (text: string, search: string) => {
-    if (!highlightSearch() || !search) return text;
+  const displayValue = () => (isOpen() || props.multiple ? searchValue() : props.value);
+  const placeholder = () => props.placeholder ?? t("devtools.selects.select_option");
+  const showRefresh = () => Boolean(props.onRefresh) && hasOptions();
+  const showClearAll = () => selectedValues().length > 0 && !isDisabled();
 
-    const searchLower = search.toLowerCase();
-    const textLower = text.toLowerCase();
-    const index = textLower.indexOf(searchLower);
-
-    if (index === -1) return text;
-
-    const before = text.slice(0, index);
-    const match = text.slice(index, index + search.length);
-    const after = text.slice(index + search.length);
-
-    return (
-      <>
-        {before}
-        <mark class="rounded-sm bg-warning/40 px-0.5 text-base-content">{match}</mark>
-        {after}
-      </>
-    );
+  const inputHandlers = {
+    onInput: handleInput,
+    onKeyDown: handleKeyDown,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
   };
 
   return (
-    <div
-      ref={setContainerEl}
-      class={`select-container relative ${local.className ?? ""} ${multiple() ? "multiple" : ""} ${shouldRenderAbove() ? "dropdown-above" : ""}`}
-    >
-      <Show when={multiple()}>
-        <SelectedFieldBadges
-          selectedValues={getCurrentValues()}
-          onRemove={handleRemoveBadge}
-          excludedFields={local.excludedFields}
-        />
-      </Show>
-
-      <div ref={setInputWrapperEl} class="input-wrapper relative">
-        <Input
-          type="text"
-          value={displayValue()}
-          onInput={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          placeholder={local.placeholder ?? t("devtools.selects.select_option")}
-          size="sm"
-          fullWidth
-          class={`form-input input-bordered pe-8 ${local.inputClassName ?? ""}`}
-          disabled={(local.disabled ?? false) || (local.loading ?? false)}
-          {...(local.inputProps as object)}
-        />
-
-        <RefreshButton
-          loading={local.loading ?? false}
-          error={local.error ?? ""}
-          hasOptions={currentOptions().length > 0}
-          onRefresh={local.onRefresh}
-          disabled={(local.disabled ?? false) || (local.loading ?? false)}
-        />
-
-        <Show when={isOpen() && (filteredOptions().length > 0 || local.loading)}>
+    <div class="relative">
+      <div ref={setAnchor} class="relative">
+        <Show
+          when={props.multiple}
+          fallback={
+            <Input
+              type="text"
+              value={displayValue()}
+              {...inputHandlers}
+              placeholder={placeholder()}
+              size="sm"
+              fullWidth
+              class="pe-8 font-mono"
+              disabled={isDisabled()}
+            />
+          }
+        >
+          {/*
+            Chips and the search input share one field-like box. Not a <label>: a click on a
+            label activates its first control, which is the remove button of the first chip.
+          */}
           <div
-            class={`select-dropdown absolute inset-x-0 z-50 max-h-52 overflow-x-hidden overflow-y-auto border border-base-300 bg-base-100 shadow-lg ${shouldRenderAbove() ? "bottom-full mb-1 rounded-md" : "top-full mt-1 rounded-md"}`}
+            class={`input h-auto min-h-control w-full cursor-text flex-wrap gap-1 py-1 ps-1.5 font-mono input-sm ${showClearAll() && showRefresh() ? "pe-14" : "pe-8"}`}
+            onMouseDown={(event) => {
+              if ((event.target as HTMLElement).closest("button")) return;
+              event.preventDefault();
+              multiInputRef?.focus();
+            }}
           >
-            <Show
-              when={local.loading}
-              fallback={
-                <For each={visibleOptions()}>
-                  {(option, index) => {
-                    const isSelected = () =>
-                      multiple() && getCurrentValues().includes(option.value);
-                    return (
-                      <SelectOption
-                        option={option}
-                        index={index()}
-                        focusedIndex={focusedIndex()}
-                        isSelected={isSelected()}
-                        isMultiple={multiple()}
-                        searchValue={searchValue()}
-                        onSelect={handleOptionSelect}
-                        highlightMatch={highlightMatch}
-                      />
-                    );
-                  }}
-                </For>
-              }
-            >
-              <div class="select-loading px-3 py-2 text-xs text-base-content/60">
-                {t("devtools.selects.loading")}
-              </div>
-            </Show>
-            <Show when={!local.loading && filteredOptions().length > maxDisplayed()}>
-              <div class="select-more bg-base-200/60 px-3 py-2 text-xs text-base-content/60 italic">
-                {t("devtools.selects.more_results", [String(maxDisplayed())])}
-              </div>
-            </Show>
+            <SelectedChips
+              values={selectedValues()}
+              onRemove={removeValue}
+              warning={props.multiple ? props.chipWarning : undefined}
+            />
+            <input
+              ref={(el) => (multiInputRef = el)}
+              type="text"
+              class="h-5 min-w-20 flex-1 text-ui"
+              value={displayValue()}
+              {...inputHandlers}
+              placeholder={selectedValues().length > 0 ? "" : placeholder()}
+              disabled={isDisabled()}
+            />
           </div>
         </Show>
+
+        <Show when={showClearAll()}>
+          <IconButton
+            {...FIELD_BUTTON_PROPS}
+            class={`absolute top-1/2 -translate-y-1/2 text-ink-4 hover:text-ink ${showRefresh() ? "inset-e-8" : "inset-e-2"}`}
+            label={t("devtools.selects.clear_all")}
+            title={t("devtools.selects.clear_all")}
+            onClick={() => {
+              if (props.multiple) props.onChange([]);
+              multiInputRef?.focus();
+            }}
+            icon={<HugeiconsIcon icon={Cancel01Icon} size={14} strokeWidth={1.8} />}
+          />
+        </Show>
+
+        <Show when={props.onRefresh && (props.loading || props.error || hasOptions())}>
+          <RefreshButton
+            loading={props.loading ?? false}
+            error={props.error ?? ""}
+            onRefresh={() => props.onRefresh?.()}
+            disabled={isDisabled()}
+          />
+        </Show>
       </div>
+
+      <Popover
+        open={isOpen() && (filteredOptions().length > 0 || Boolean(props.loading))}
+        anchor={anchor()}
+        onClose={close}
+        matchWidth
+        class="max-h-52 overflow-x-hidden overflow-y-auto"
+      >
+        {/* Keep the focus in the input: its blur closes the list. */}
+        <div ref={setDropdown} onMouseDown={(e) => e.preventDefault()}>
+          <Show
+            when={!props.loading}
+            fallback={
+              <div class="px-3 py-2 text-ui text-ink-3">{t("devtools.selects.loading")}</div>
+            }
+          >
+            <For each={visibleOptions()}>
+              {(option, index) => (
+                <OptionRow
+                  option={option}
+                  focused={index() === focusedIndex()}
+                  selected={selectedValues().includes(option.value)}
+                  showCheck={selectedValues().includes(option.value)}
+                  search={searchValue()}
+                  onSelect={select}
+                />
+              )}
+            </For>
+            <Show when={filteredOptions().length > MAX_DISPLAYED_OPTIONS}>
+              <div class="bg-surface-2 px-3 py-2 text-ui text-ink-3 italic">
+                {t("devtools.selects.more_results", [String(MAX_DISPLAYED_OPTIONS)])}
+              </div>
+            </Show>
+          </Show>
+        </div>
+      </Popover>
     </div>
   );
 };
 
-interface FieldSelectProps {
-  placeholder?: string;
-}
+const fieldOption = (name: string, info: FieldMetadata): SelectOption => ({
+  value: name,
+  label: info.string || name,
+  searchableText: `${name} ${info.string || name} ${info.type}`,
+});
 
-export const FieldSelect = (props: FieldSelectProps) => {
-  const model = () => queryStore.model;
-  const values = () => queryStore.selectedFields;
-  const disabled = () => !model() || resultStore.loading;
-
-  const fieldOptions = createMemo((): GenericSelectOption[] => {
-    const currentFieldsMetadata = queryStore.fieldsMetadata;
-    if (!model() || !currentFieldsMetadata) return [];
-
-    const options = Object.entries(currentFieldsMetadata).map(([name, info]) => ({
-      value: name,
-      label: info.string || name,
-      searchableText: `${name} ${info.string || name} ${info.type}`,
-    }));
-
-    // Expose pseudo-fields (e.g. xml_id) so they can be picked like real fields.
-    for (const [name, info] of Object.entries(PSEUDO_FIELD_METADATA)) {
-      if (!currentFieldsMetadata[name]) {
-        options.push({
-          value: name,
-          label: info.string || name,
-          searchableText: `${name} ${info.string || name} ${info.type}`,
-        });
-      }
-    }
-
-    return options;
+export const FieldSelect = (props: { placeholder?: string }) => {
+  const fieldOptions = createMemo((): SelectOption[] => {
+    const fieldsMetadata = railFieldsMetadata();
+    if (!queryStore.model || !fieldsMetadata) return [];
+    // Pseudo-fields (e.g. xml_id) can be picked like real fields.
+    const pseudoFields = Object.entries(PSEUDO_FIELD_METADATA).filter(
+      ([name]) => !fieldsMetadata[name],
+    );
+    return [...Object.entries(fieldsMetadata), ...pseudoFields].map(([name, info]) =>
+      fieldOption(name, info),
+    );
   });
-
-  const currentValues = createMemo(() => {
-    const v = values();
-    return Array.isArray(v) ? v : v ? [v] : [];
-  });
-  const excludedFields = () => resultStore.excludedFields || [];
-
-  const handleChange = (selectedValues: string | string[]) => {
-    const fieldsArray = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
-    setRpcQuery({
-      selectedFields: fieldsArray,
-      offset: 0,
-    });
-  };
 
   return (
-    <GenericSelect
+    <Select
+      multiple
       options={fieldOptions()}
-      value={currentValues()}
-      onChange={handleChange}
+      value={queryStore.selectedFields}
+      onChange={(selectedFields) => setRpcQuery({ selectedFields, offset: 0 })}
+      chipWarning={(value) =>
+        (resultStore.excludedFields ?? []).includes(value)
+          ? t("devtools.selects.excluded_title", [value])
+          : undefined
+      }
       placeholder={props.placeholder ?? t("devtools.selects.search_fields")}
-      disabled={disabled()}
-      allowFreeInput={true}
-      highlightSearch={true}
-      enableSmartSort={true}
-      maxDisplayedOptions={100}
-      multiple={true}
-      excludedFields={excludedFields()}
+      disabled={!queryStore.model || resultStore.loading}
     />
   );
 };
 
-interface ModelSelectProps {
-  placeholder?: string;
-}
-
-export const ModelSelect = (props: ModelSelectProps) => {
-  const value = () => queryStore.model;
-
-  const modelOptions = createMemo((): GenericSelectOption[] => {
-    const currentModels = modelsStore.models;
-    if (!currentModels || currentModels.length === 0) return [];
-
-    return currentModels.map((model) => ({
+export const ModelSelect = (props: { placeholder?: string }) => {
+  const modelOptions = createMemo((): SelectOption[] =>
+    modelsStore.models.map((model) => ({
       value: model.model,
       label: model.name,
       searchableText: `${model.model} ${model.name}`,
-    }));
-  });
+    })),
+  );
 
-  const handleChange = (selectedValue: string | string[]) => {
-    const modelValue = Array.isArray(selectedValue) ? selectedValue[0] : selectedValue;
-    setRpcQuery({
-      model: modelValue,
-      selectedFields: [],
-      offset: 0,
-    });
-  };
-
-  const handleRefresh = () => {
-    loadModels(true);
-  };
-
-  createEffect(() => {
-    if (modelsStore.models.length === 0 && !modelsStore.loading && !modelsStore.error) {
-      loadModels();
-    }
-  });
+  onMount(() => void loadModels());
 
   return (
-    <GenericSelect
+    <Select
       options={modelOptions()}
-      value={value()}
-      onChange={handleChange}
+      value={queryStore.model}
+      onChange={(model) => setRpcQuery({ model, selectedFields: [], offset: 0 })}
       placeholder={props.placeholder ?? t("devtools.selects.select_model")}
       disabled={resultStore.loading}
       loading={modelsStore.loading}
       error={modelsStore.error || ""}
-      onRefresh={handleRefresh}
-      allowFreeInput={true}
-      highlightSearch={true}
-      enableSmartSort={true}
-      maxDisplayedOptions={100}
+      onRefresh={() => loadModels(true)}
     />
   );
 };
 
-interface OrderBySelectProps {
-  placeholder?: string;
-}
+type Direction = "ASC" | "DESC";
 
-export const OrderBySelect = (props: OrderBySelectProps) => {
-  const model = () => queryStore.model;
-  const disabled = () => !model() || resultStore.loading;
-
-  const orderByOptions = createMemo((): GenericSelectOption[] => {
-    const currentFieldsMetadata = queryStore.fieldsMetadata;
-    if (!model() || !currentFieldsMetadata) return [];
-
-    const options: GenericSelectOption[] = [];
-
-    for (const [fieldName, fieldInfo] of Object.entries(currentFieldsMetadata)) {
-      if (fieldInfo.sortable) {
-        const label = fieldInfo.string || fieldName;
-
-        options.push({
-          value: `${fieldName} ASC`,
-          label: `${label} ${t("devtools.selects.asc")}`,
-          searchableText: `${fieldName} ${label} asc ascending`,
-        });
-
-        options.push({
-          value: `${fieldName} DESC`,
-          label: `${label} ${t("devtools.selects.desc")}`,
-          searchableText: `${fieldName} ${label} desc descending`,
-        });
-      }
-    }
-
-    return options.sort((a, b) => {
-      const fieldA = a.value.split(" ")[0].toLowerCase();
-      const fieldB = b.value.split(" ")[0].toLowerCase();
-      return fieldA.localeCompare(fieldB);
+/** `"name asc, id desc"` ↔ `["name ASC", "id DESC"]` (the select values). */
+const parseOrderBy = (orderBy: string): string[] =>
+  orderBy
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [field, direction] = part.split(/\s+/);
+      return `${field} ${direction?.toUpperCase() === "DESC" ? "DESC" : "ASC"}`;
     });
-  });
 
-  const currentValues = createMemo((): string[] => {
-    const orderBy = queryStore.orderBy.trim();
-    if (!orderBy) return [];
+const formatOrderBy = (values: string[]): string =>
+  values
+    .map((value) =>
+      value.replace(/\s+(ASC|DESC)$/, (_, direction: Direction) => ` ${direction.toLowerCase()}`),
+    )
+    .join(", ");
 
-    return orderBy
-      .split(",")
-      .map((part) => part.trim())
-      .filter((part) => part.length > 0)
-      .map((part) => {
-        const tokens = part.split(/\s+/);
-        const fieldName = tokens[0];
-        const direction = tokens[1]?.toUpperCase();
+export const OrderBySelect = (props: { placeholder?: string }) => {
+  const orderByOptions = createMemo((): SelectOption[] => {
+    const fieldsMetadata = railFieldsMetadata();
+    if (!queryStore.model || !fieldsMetadata) return [];
 
-        if (direction === "DESC") {
-          return `${fieldName} DESC`;
-        }
-        return `${fieldName} ASC`;
+    return Object.entries(fieldsMetadata)
+      .filter(([, info]) => info.sortable)
+      .toSorted(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase()))
+      .flatMap(([name, info]) => {
+        const label = info.string || name;
+        return [
+          {
+            value: `${name} ASC`,
+            label: `${label} ${t("devtools.selects.asc")}`,
+            searchableText: `${name} ${label} asc ascending`,
+          },
+          {
+            value: `${name} DESC`,
+            label: `${label} ${t("devtools.selects.desc")}`,
+            searchableText: `${name} ${label} desc descending`,
+          },
+        ];
       });
   });
 
-  const handleChange = (selectedValues: string | string[]) => {
-    const valuesArray = Array.isArray(selectedValues) ? selectedValues : [selectedValues];
-
-    const orderByString = valuesArray
-      .map((value) => {
-        const match = value.match(/^(.+)\s+(ASC|DESC)$/);
-        if (!match) return value;
-
-        const [, fieldName, direction] = match;
-        return direction === "DESC" ? `${fieldName} desc` : `${fieldName} asc`;
-      })
-      .join(", ");
-
-    setQueryStore("orderBy", orderByString);
-  };
-
   return (
-    <GenericSelect
+    <Select
+      multiple
       options={orderByOptions()}
-      value={currentValues()}
-      onChange={handleChange}
+      value={parseOrderBy(queryStore.orderBy)}
+      onChange={(values) => setQueryStore("orderBy", formatOrderBy(values))}
       placeholder={props.placeholder ?? t("devtools.selects.order_by_placeholder")}
-      disabled={disabled()}
-      allowFreeInput={true}
-      highlightSearch={true}
-      enableSmartSort={true}
-      maxDisplayedOptions={100}
-      multiple={true}
+      disabled={!queryStore.model || resultStore.loading}
     />
   );
 };

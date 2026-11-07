@@ -1,39 +1,24 @@
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { t } from "@/services/i18n-service";
-import { Favorite } from "@/types";
-import { URL_CHECK_REGEX } from "@/utils/constants";
+import type { Favorite } from "@/types";
+import { isUrlOrEmpty } from "@/utils/constants";
 
+/** Mounted while editing: the form starts from the favorite on each opening. */
 export const FavoriteTaskLinkModal = (props: {
   favorite: Favorite;
-  open: boolean;
   onClose: () => void;
   onConfirm: (name: string, taskLink: string) => Promise<void>;
 }) => {
   const [taskLink, setTaskLink] = createSignal(props.favorite.task_link || "");
   const [hasError, setHasError] = createSignal(false);
-  const [inputRef, setInputRef] = createSignal<HTMLInputElement | null>(null);
-
-  createEffect(() => {
-    if (props.open && inputRef()) {
-      inputRef()!.focus();
-    }
-  });
-
-  createEffect(() => {
-    if (props.open) {
-      setTaskLink(props.favorite.task_link || "");
-      setHasError(false);
-    }
-  });
 
   const handleSave = async () => {
-    const isValidUrl = URL_CHECK_REGEX.test(taskLink()) || taskLink() === "";
-    if (!isValidUrl) {
+    if (!isUrlOrEmpty(taskLink())) {
       setHasError(true);
       return;
     }
@@ -41,23 +26,18 @@ export const FavoriteTaskLinkModal = (props: {
     props.onClose();
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") props.onClose();
-    if (e.key === "Enter") handleSave();
-  };
-
   return (
     <Modal
-      open={props.open}
+      open
       onClose={props.onClose}
       title={t("options.favorites.task_link_title", [props.favorite.display_name])}
       description={t("options.favorites.task_link_desc")}
       footer={
         <>
-          <Button id="cancel-task-link" color="error" variant="outline" onClick={props.onClose}>
+          <Button id="cancel-task-link" size="sm" variant="ghost" onClick={props.onClose}>
             {t("common.cancel")}
           </Button>
-          <Button id="save-task-link" color="primary" onClick={handleSave}>
+          <Button id="save-task-link" size="sm" color="primary" onClick={handleSave}>
             {t("common.save")}
           </Button>
         </>
@@ -65,7 +45,7 @@ export const FavoriteTaskLinkModal = (props: {
     >
       <div class="flex flex-col gap-3">
         <Input
-          ref={setInputRef}
+          ref={(el) => queueMicrotask(() => el.focus())}
           type="text"
           value={taskLink()}
           id="task-link-input"
@@ -76,7 +56,7 @@ export const FavoriteTaskLinkModal = (props: {
             setTaskLink(e.currentTarget.value);
             setHasError(false);
           }}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => e.key === "Enter" && handleSave()}
         />
         <Show when={hasError()}>
           <Alert color="error" variant="soft" class="text-sm">

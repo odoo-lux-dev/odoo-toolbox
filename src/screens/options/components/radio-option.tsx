@@ -1,76 +1,60 @@
-import { For, Show, type JSX } from "solid-js";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { For } from "solid-js";
 
-import { Radio } from "@/components/ui/radio";
-import { OptionItem } from "@/screens/options/components/option-item";
-import { useSettingValue } from "@/screens/options/options-signals";
-import type { StoredSettings } from "@/types";
+import { cx } from "@/components/ui/cx";
+import { HugeiconsIcon, type IconData } from "@/components/ui/hugeicons-icon";
 
-interface RadioChoice {
-  value: string;
+interface ChoiceTile<T extends string> {
+  value: T;
   label: string;
+  hint?: string;
+  icon: IconData;
 }
 
-export interface RadioOptionProps {
-  id: string;
-  title: string;
-  tooltipContent?: JSX.Element;
-  additionalTooltipContent?: JSX.Element;
-  settingKey: keyof StoredSettings;
-  choices: RadioChoice[];
-  defaultValue?: string;
-  onChange: (value: string) => void | Promise<void>;
-  children?: JSX.Element;
-  footer?: JSX.Element;
+interface ChoiceTilesProps<T extends string> {
+  name: string;
+  ariaLabel: string;
+  choices: readonly ChoiceTile<T>[];
+  value: T;
+  columns?: 2 | 4;
+  onChange: (value: T) => void;
 }
 
-export const RadioOption = (props: RadioOptionProps) => {
-  const value = useSettingValue(props.settingKey);
-  const currentValue = () =>
-    (value() as string) || props.defaultValue || props.choices[0]?.value || "";
-
-  const handleChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    props.onChange(target.value);
-  };
-
-  const renderChoices = () => (
+/** Radio group rendered as selectable tiles (`.ot-choice`). */
+export const ChoiceTiles = <T extends string>(props: ChoiceTilesProps<T>) => (
+  <div
+    id={props.name}
+    role="radiogroup"
+    aria-label={props.ariaLabel}
+    class={cx("grid grid-cols-2 gap-1.5", props.columns === 4 ? "md:grid-cols-4" : undefined)}
+  >
     <For each={props.choices}>
-      {(choice) => (
-        <Radio
-          name={props.id}
-          class="radio-primary dark:radio-accent"
-          value={choice.value}
-          checked={currentValue() === choice.value}
-          onChange={handleChange}
-          label={choice.label}
-          size="sm"
-        />
-      )}
+      {(choice) => {
+        const checked = () => props.value === choice.value;
+        return (
+          <label class="ot-choice">
+            <input
+              type="radio"
+              name={props.name}
+              value={choice.value}
+              checked={checked()}
+              onChange={() => props.onChange(choice.value)}
+            />
+            <span class="ot-choice-box">
+              <span class="ot-choice-icon">
+                <HugeiconsIcon icon={choice.icon} size={13} strokeWidth={1.8} />
+              </span>
+              <span class="ot-choice-copy">
+                <strong class="ot-choice-label">{choice.label}</strong>
+                <small class="ot-choice-hint rtl:font-sans">{choice.hint}</small>
+              </span>
+              <span class="ot-choice-check">
+                <HugeiconsIcon icon={Tick02Icon} size={12} strokeWidth={2} />
+              </span>
+            </span>
+          </label>
+        );
+      }}
     </For>
-  );
-
-  return (
-    <OptionItem
-      id={props.id}
-      title={props.title}
-      tooltipContent={props.tooltipContent}
-      additionalTooltipContent={props.additionalTooltipContent}
-    >
-      <Show
-        when={props.children}
-        fallback={
-          <div id={props.id} class="flex flex-col gap-3">
-            {renderChoices()}
-            <Show when={props.footer}>{props.footer}</Show>
-          </div>
-        }
-      >
-        <div id={props.id} class="flex flex-col gap-4">
-          {props.children}
-          <div class="flex flex-col gap-3">{renderChoices()}</div>
-          <Show when={props.footer}>{props.footer}</Show>
-        </div>
-      </Show>
-    </OptionItem>
-  );
-};
+  </div>
+);

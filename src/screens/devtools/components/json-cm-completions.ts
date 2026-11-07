@@ -10,95 +10,35 @@ import type { EditorState } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
 
-import {
-  buildSuggestions,
-  createRequiredFieldsSuggestion,
-  getMissingRequiredFields,
-  getValueTemplate,
-  needsCommaAfter,
-  needsCommaBefore,
-  type Suggestion,
-} from "@/screens/devtools/components/json-autocomplete-utils";
+import { fieldType } from "@/screens/devtools/components/field-types";
 import { t } from "@/services/i18n-service";
 import type { FieldMetadata } from "@/types";
-
-interface CommandSnippet {
-  label: string;
-  detail: string;
-  infoKey: string;
-  snippet: string;
-  cursorOffset: number;
-  autoComplete?: boolean;
-}
-
-const COMMAND_SNIPPETS: CommandSnippet[] = [
-  {
-    label: "Command.create",
-    detail: "(values)",
-    infoKey: "devtools.completions.command_create_info",
-    snippet: "Command.create({})",
-    cursorOffset: 16,
-    autoComplete: true,
-  },
-  {
-    label: "Command.update",
-    detail: "(id, values)",
-    infoKey: "devtools.completions.command_update_info",
-    snippet: "Command.update(0, {})",
-    cursorOffset: 19,
-    autoComplete: true,
-  },
-  {
-    label: "Command.delete",
-    detail: "(id)",
-    infoKey: "devtools.completions.command_delete_info",
-    snippet: "Command.delete(0)",
-    cursorOffset: 15,
-  },
-  {
-    label: "Command.unlink",
-    detail: "(id)",
-    infoKey: "devtools.completions.command_unlink_info",
-    snippet: "Command.unlink(0)",
-    cursorOffset: 15,
-  },
-  {
-    label: "Command.link",
-    detail: "(id)",
-    infoKey: "devtools.completions.command_link_info",
-    snippet: "Command.link(0)",
-    cursorOffset: 13,
-  },
-  {
-    label: "Command.clear",
-    detail: "()",
-    infoKey: "devtools.completions.command_clear_info",
-    snippet: "Command.clear()",
-    cursorOffset: 15,
-  },
-  {
-    label: "Command.set",
-    detail: "(ids)",
-    infoKey: "devtools.completions.command_set_info",
-    snippet: "Command.set([])",
-    cursorOffset: 13,
-  },
-];
+import {
+  COMMAND_ACTIONS,
+  commandSignature,
+  commandSnippet,
+  endsAtCommandValues,
+  COMMANDS,
+} from "@/utils/command-utils";
+import { missingRequiredFields } from "@/utils/query-validation";
 
 function buildCommandCompletionOptions(): Completion[] {
-  return COMMAND_SNIPPETS.map((snippet) => ({
-    label: snippet.label,
-    type: "function",
-    detail: snippet.detail,
-    info: t(snippet.infoKey),
-    apply: (view, _completion, from, to) => {
-      view.dispatch({
-        changes: { from, to, insert: snippet.snippet },
-        selection: { anchor: from + snippet.cursorOffset },
-      });
-      if (snippet.autoComplete) startCompletion(view);
-    },
-  }));
+  return COMMAND_ACTIONS.map((action) => {
+    const snippet = commandSnippet(action);
+    return {
+      label: `Command.${action}`,
+      type: "function",
+      detail: commandSignature(action),
+      info: t(`devtools.completions.command_${action}_info`),
+      apply: (view, _completion, from, to) => {
+        view.dispatch({
+          changes: { from, to, insert: snippet.text },
+          selection: { anchor: from + snippet.cursor },
+        });
+        if (COMMANDS[action].payload === "values") startCompletion(view);
+      },
+    };
+  });
 }
 
 function findAncestor(node: SyntaxNode | null, name: string): SyntaxNode | null {
@@ -122,43 +62,52 @@ function collectPropertyNames(objNode: SyntaxNode, state: EditorState): Set<stri
   return names;
 }
 
-const FIELD_TYPE_ICONS: Record<string, string> = {
-  char: "field-text",
-  text: "field-text",
-  html: "field-text",
-  integer: "field-number",
-  float: "field-number",
-  monetary: "field-number",
-  boolean: "field-bool",
-  date: "field-date",
-  datetime: "field-date",
-  selection: "field-select",
-  many2one: "field-m2o",
-  m2o: "field-m2o",
-  one2many: "field-o2m",
-  o2m: "field-o2m",
-  many2many: "field-m2m",
-  m2m: "field-m2m",
-  binary: "field-binary",
-  json: "field-json",
+const needsCommaBefore = (textBefore: string): boolean => {
+  const trimmed = textBefore.trim();
+  return !trimmed.endsWith("{") && !trimmed.endsWith(",");
 };
 
-const fieldTypeToIconType = (fieldType: string): string =>
-  FIELD_TYPE_ICONS[fieldType.toLowerCase()] ?? "field-other";
+const needsCommaAfter = (textAfter: string): boolean => /^\s*"[^"]+"\s*:/.test(textAfter);
 
-function applyField(view: EditorView, suggestion: Suggestion, from: number, to: number): void {
-  const tpl = getValueTemplate(suggestion.type);
-  const textBefore = view.state.sliceDoc(0, from);
-  const textAfter = view.state.sliceDoc(to);
-  const commaBefore = needsCommaBefore(textBefore) ? ", " : "";
-  const commaAfter = needsCommaAfter(textAfter) ? "," : "";
-  const insertion = `${commaBefore}"${suggestion.field}": ${tpl.template}${commaAfter}`;
-  const cursorPos = from + commaBefore.length + suggestion.field.length + 4 + tpl.cursorOffset;
-
+/** Inserts `"field": <template>` at `from..to` and puts the cursor inside the value. */
+function insertProperty(
+  view: EditorView,
+  field: string,
+  type: string,
+  from: number,
+  to: number,
+  separators: { before: string; after: string } = { before: "", after: "" },
+): void {
+  const { template } = fieldType(type);
+  const property = `"${field}": `;
   view.dispatch({
-    changes: { from, to, insert: insertion },
-    selection: { anchor: cursorPos },
+    changes: { from, to, insert: `${separators.before}${property}${template}${separators.after}` },
+    selection: {
+      anchor: from + separators.before.length + property.length + (template ? 1 : 0),
+    },
   });
+}
+
+const MAX_FIELD_OPTIONS = 1000;
+
+function fieldOptions(
+  fieldsMetadata: Record<string, FieldMetadata>,
+  usedFields: Set<string>,
+  partialText: string,
+  apply: (view: EditorView, field: string, meta: FieldMetadata, from: number, to: number) => void,
+): Completion[] {
+  const partial = partialText.toLowerCase();
+  return Object.entries(fieldsMetadata)
+    .filter(([field]) => !usedFields.has(field) && field.toLowerCase().includes(partial))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(0, MAX_FIELD_OPTIONS)
+    .map(([field, meta]) => ({
+      label: field,
+      type: fieldType(meta.type).icon,
+      detail: meta.type,
+      info: meta.string || field,
+      apply: (view, _completion, from, to) => apply(view, field, meta, from, to),
+    }));
 }
 
 interface ValueContext {
@@ -266,13 +215,12 @@ function detectCommandValueContext(
   nodeBefore: SyntaxNode,
   fieldsMetadata: Record<string, FieldMetadata>,
 ): string | null {
-  // The values object of a command call is immediately preceded by its header.
   const obj = findAncestor(nodeBefore, "Object");
   if (!obj) return null;
-  const before = state.doc.sliceString(Math.max(0, obj.from - 60), obj.from);
-  if (!/Command\.(?:create\s*\(\s*|update\s*\(\s*\d+\s*,\s*)$/.test(before)) return null;
+  if (!endsAtCommandValues(state.doc.sliceString(Math.max(0, obj.from - 60), obj.from))) {
+    return null;
+  }
 
-  // The enclosing Property names the parent relational field.
   const nameNode = findAncestor(obj.parent, "Property")?.firstChild;
   if (!nameNode || nameNode.name !== "PropertyName") return null;
   const field = state.doc.sliceString(nameNode.from, nameNode.to).slice(1, -1);
@@ -283,7 +231,7 @@ function detectCommandValueContext(
 
 type ComodelFieldsGetter = (
   comodel: string,
-  onLoad?: (fields: Record<string, FieldMetadata> | undefined) => void,
+  onLoad: () => void,
 ) => Record<string, FieldMetadata> | undefined;
 
 function loadingComodelResult(ctx: CompletionContext): CompletionResult {
@@ -302,10 +250,18 @@ function loadingComodelResult(ctx: CompletionContext): CompletionResult {
   };
 }
 
+const REQUIRED_FIELDS_LABEL = (count: number) =>
+  count > 1
+    ? t("devtools.notifications.auto_add_required_plural")
+    : t("devtools.notifications.auto_add_required");
+
+/**
+ * @param getAddRequiredFields when it returns a callback, a fresh key position also offers
+ *   "add required fields" (create payloads).
+ */
 export function fieldCompletions(
   getFieldsMetadata: () => Record<string, FieldMetadata>,
-  getMode: () => "create" | "write" | undefined,
-  getOnAddRequiredFields: () => (() => void) | undefined,
+  getAddRequiredFields: () => (() => void) | undefined,
   getComodelFields: ComodelFieldsGetter,
 ): CompletionSource {
   return (ctx: CompletionContext): CompletionResult | null => {
@@ -315,48 +271,27 @@ export function fieldCompletions(
     const comodel = detectCommandValueContext(ctx.state, nodeBefore, parentMetadata);
     let fieldsMetadata = parentMetadata;
     if (comodel) {
-      const cached = getComodelFields(comodel, (fields) => {
-        const view = ctx.view;
-        if (view && fields) {
-          try {
-            startCompletion(view);
-          } catch {
-            // view may have been destroyed
-          }
-        }
+      const cached = getComodelFields(comodel, () => {
+        // The editor may have been closed while the fields were loading.
+        if (ctx.view?.dom.isConnected) startCompletion(ctx.view);
       });
       if (!cached) return loadingComodelResult(ctx);
       fieldsMetadata = cached;
     }
 
     if (nodeBefore.name === "PropertyName") {
-      const nameText = ctx.state.doc.sliceString(nodeBefore.from, nodeBefore.to);
-      const partialText = nameText.slice(1, -1);
+      const partialText = ctx.state.doc.sliceString(nodeBefore.from + 1, nodeBefore.to - 1);
       const objNode = findAncestor(nodeBefore, "Object");
       const usedFields = objNode ? collectPropertyNames(objNode, ctx.state) : new Set<string>();
       usedFields.delete(partialText);
 
-      const options: Completion[] = Object.entries(fieldsMetadata)
-        .filter(([field]) => !usedFields.has(field))
-        .filter(
-          ([field]) => !partialText || field.toLowerCase().includes(partialText.toLowerCase()),
-        )
-        .slice(0, 1000)
-        .map(([field, meta]) => ({
-          label: field,
-          type: fieldTypeToIconType(meta.type),
-          detail: meta.type,
-          info: meta.string || field,
-          apply: (view, _completion, from, to) => {
-            const tpl = getValueTemplate(meta.type);
-            const insert = `"${field}": ${tpl.template}`;
-            view.dispatch({
-              changes: { from: from - 1, to: to + 1, insert },
-              selection: { anchor: from - 1 + field.length + 4 + tpl.cursorOffset },
-            });
-          },
-        }));
-
+      // `from..to` is inside the quotes: the quotes are replaced too.
+      const options = fieldOptions(
+        fieldsMetadata,
+        usedFields,
+        partialText,
+        (view, field, meta, from, to) => insertProperty(view, field, meta.type, from - 1, to + 1),
+      );
       if (options.length === 0) return null;
       return {
         from: nodeBefore.from + 1,
@@ -391,44 +326,34 @@ export function fieldCompletions(
     const objNode = getFreshKeyContext(nodeBefore, ctx.state);
     if (!objNode) return null;
 
-    const usedFields = collectPropertyNames(objNode, ctx.state);
+    const options = fieldOptions(
+      fieldsMetadata,
+      collectPropertyNames(objNode, ctx.state),
+      "",
+      (view, field, meta, from, to) =>
+        insertProperty(view, field, meta.type, from, to, {
+          before: needsCommaBefore(view.state.sliceDoc(0, from)) ? ", " : "",
+          after: needsCommaAfter(view.state.sliceDoc(to)) ? "," : "",
+        }),
+    );
 
-    let specialSuggestion: Suggestion | undefined;
-    if (!comodel && getMode() === "create" && getOnAddRequiredFields()) {
-      const jsonValue = ctx.state.doc.toString();
-      const missingFields = getMissingRequiredFields(jsonValue, fieldsMetadata);
-      if (missingFields.length > 0) {
-        specialSuggestion = createRequiredFieldsSuggestion(
-          missingFields,
-          getOnAddRequiredFields()!,
-        );
-      }
+    const addRequiredFields = comodel ? undefined : getAddRequiredFields();
+    const rootObject = syntaxTree(ctx.state).topNode.getChild("Object");
+    const missing = addRequiredFields
+      ? missingRequiredFields(
+          rootObject ? collectPropertyNames(rootObject, ctx.state) : [],
+          fieldsMetadata,
+        )
+      : [];
+    if (addRequiredFields && missing.length > 0) {
+      options.unshift({
+        label: REQUIRED_FIELDS_LABEL(missing.length),
+        type: "keyword",
+        apply: () => addRequiredFields(),
+      });
     }
 
-    const suggestions = buildSuggestions(fieldsMetadata, usedFields, "", 1000, specialSuggestion);
-    if (suggestions.length === 0) return null;
-
-    const options: Completion[] = suggestions.map((s) => {
-      if (s.isSpecial && s.specialAction) {
-        return {
-          label: s.description,
-          type: "keyword",
-          apply: () => {
-            s.specialAction!();
-          },
-        };
-      }
-      return {
-        label: s.field,
-        type: fieldTypeToIconType(s.type),
-        detail: s.type,
-        info: s.description,
-        apply: (view, _completion, from, to) => {
-          applyField(view, s, from, to);
-        },
-      };
-    });
-
+    if (options.length === 0) return null;
     return {
       from: ctx.pos,
       to: ctx.pos,
