@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
+import type { OdooWebClientRoot } from "@/types";
+
 import {
   buildPrintContext,
-  getUserContext,
   normalizeCompanyIds,
   resolveActiveCompanyIds,
-  type PrintRootLike,
 } from "./print-options-context";
 
 describe("normalizeCompanyIds", () => {
@@ -30,7 +30,7 @@ describe("resolveActiveCompanyIds", () => {
   it("prefers the company service over every other source", () => {
     const root = {
       env: { services: { company: { activeCompanyIds: [2, 1] } } },
-    } as PrintRootLike;
+    } as OdooWebClientRoot;
 
     expect(resolveActiveCompanyIds({ root, cidsFromUrl: "3", cidsFromCookie: "4" })).toEqual([
       2, 1,
@@ -40,7 +40,7 @@ describe("resolveActiveCompanyIds", () => {
   it("supports the legacy company service property", () => {
     const root = {
       env: { services: { company: { allowedCompanyIds: [1, 2] } } },
-    } as PrintRootLike;
+    } as OdooWebClientRoot;
 
     expect(resolveActiveCompanyIds({ root })).toEqual([1, 2]);
   });
@@ -50,7 +50,7 @@ describe("resolveActiveCompanyIds", () => {
       env: {
         services: { company: { activeCompanyIds: [], allowedCompanyIds: [1, 2] } },
       },
-    } as PrintRootLike;
+    } as OdooWebClientRoot;
 
     expect(resolveActiveCompanyIds({ root, cidsFromUrl: null, cidsFromCookie: null })).toEqual([
       1, 2,
@@ -60,7 +60,7 @@ describe("resolveActiveCompanyIds", () => {
   it("falls back to the live user context", () => {
     const root = {
       env: { services: { user: { context: { allowed_company_ids: [2, 1] } } } },
-    } as PrintRootLike;
+    } as OdooWebClientRoot;
 
     expect(resolveActiveCompanyIds({ root })).toEqual([2, 1]);
   });
@@ -93,7 +93,7 @@ describe("resolveActiveCompanyIds", () => {
   it("falls back to the current company only, never all companies", () => {
     const root = {
       env: { services: { company: { currentCompany: { id: 1 } } } },
-    } as PrintRootLike;
+    } as OdooWebClientRoot;
 
     expect(resolveActiveCompanyIds({ root, cidsFromUrl: null, cidsFromCookie: null })).toEqual([1]);
   });
@@ -132,45 +132,5 @@ describe("buildPrintContext", () => {
 
     expect(context.allowed_company_ids).toBeUndefined();
     expect(context.lang).toBe("fr_FR");
-  });
-});
-
-describe("getUserContext", () => {
-  it("returns the live user context when available", async () => {
-    const root = {
-      env: { services: { user: { context: { lang: "fr_FR" } } } },
-    } as PrintRootLike;
-
-    await expect(getUserContext(root)).resolves.toEqual({ lang: "fr_FR" });
-  });
-
-  it("asks the ORM when no live context is exposed", async () => {
-    const root = {
-      env: {
-        services: {
-          orm: {
-            call: async () => ({ lang: "en_US", uid: 7 }),
-          },
-        },
-      },
-    } as PrintRootLike;
-
-    await expect(getUserContext(root)).resolves.toEqual({ lang: "en_US", uid: 7 });
-  });
-
-  it("returns an empty object when the ORM call fails", async () => {
-    const root = {
-      env: {
-        services: {
-          orm: {
-            call: async () => {
-              throw new Error("boom");
-            },
-          },
-        },
-      },
-    } as PrintRootLike;
-
-    await expect(getUserContext(root)).resolves.toEqual({});
   });
 });

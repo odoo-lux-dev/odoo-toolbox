@@ -122,7 +122,7 @@ const handleContextMenuClick = (scope: DebugPathIgnoreScope, url?: string): void
 let lastLocale: SupportedLocale | null = null;
 
 const refreshContextMenu = async (): Promise<void> => {
-  const locale = await resolveLocale();
+  const locale = await resolveLocale(await settingsService.get("userLocale"));
   if (locale === lastLocale) return;
   lastLocale = locale;
   const messages = await getContextMenuMessages(locale);

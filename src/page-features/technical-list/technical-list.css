@@ -1,4 +1,4 @@
-@import "@/theme/daisy-theme.css";
+@import "@/theme/core.css";
 
 /**
  * Technical list sizing must stay stable across Odoo versions.
@@ -34,20 +34,13 @@
   --container-6xl: 1152px;
   --container-7xl: 1280px;
 
-  /* Tailwind text sizes */
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px;
-  --text-lg: 18px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 36px;
-  --text-5xl: 48px;
-  --text-6xl: 60px;
-  --text-7xl: 72px;
-  --text-8xl: 96px;
-  --text-9xl: 128px;
+  /* Tailwind text sizes up to 3xl come from base.css (px, theme scaled) */
+  --text-4xl: calc(36px * var(--ot-text-scale, 1));
+  --text-5xl: calc(48px * var(--ot-text-scale, 1));
+  --text-6xl: calc(60px * var(--ot-text-scale, 1));
+  --text-7xl: calc(72px * var(--ot-text-scale, 1));
+  --text-8xl: calc(96px * var(--ot-text-scale, 1));
+  --text-9xl: calc(128px * var(--ot-text-scale, 1));
 
   /* Keep Tailwind line-height variables explicit and unitless */
   --text-xs--line-height: 1.3333333333;
@@ -74,22 +67,10 @@
   --radius-3xl: 24px;
   --radius-4xl: 32px;
 
-  /* DaisyUI size-related theme variables */
-  --radius-selector: 4px;
-  --radius-field: 8px;
-  --radius-box: 8px;
-  --size-selector: 4px;
-  --size-field: 4px;
-}
-
-/* Ensure both DaisyUI themes use px sizing inside technical list only */
-[data-technical-list-root="true"][data-theme="odoodark"],
-[data-technical-list-root="true"][data-theme="odoolight"] {
-  --radius-selector: 4px;
-  --radius-field: 8px;
-  --radius-box: 8px;
-  --size-selector: 4px;
-  --size-field: 4px;
+  /*
+   * DaisyUI sizes and radii are left to the UI theme (`--size-field` derives from
+   * `--ot-control-h`, `--radius-*`): themes must declare them in px, not rem.
+   */
 }
 
 /* Keep code element sizing consistent inside technical list */

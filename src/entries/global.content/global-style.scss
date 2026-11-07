@@ -35,7 +35,7 @@
   font-style: italic;
   margin-left: 3px;
 
-  &:not(.x-odoo-copying):hover {
+  &:not([data-clipboard-state]):hover {
     opacity: 0.7;
   }
 }
@@ -65,4 +65,31 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+// Copy feedback of `copyWithFeedback()`: a label laid over the copied element.
+[data-clipboard-state] {
+  position: relative;
+  pointer-events: none;
+
+  &::after {
+    content: attr(data-clipboard-message);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: normal;
+    white-space: nowrap;
+    background-color: #198754;
+    color: white;
+  }
+}
+
+[data-clipboard-state="error"]::after {
+  background-color: #dc3545;
 }

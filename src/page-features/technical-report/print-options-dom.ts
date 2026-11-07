@@ -1,5 +1,6 @@
 import { OrmReportRecord } from "@/types";
-import { getOdooVersion, getShowPrintOptionsHTML, getShowPrintOptionsPDF } from "@/utils/utils";
+import { getOdooVersion } from "@/utils/odoo-page";
+import { readDatasetSetting } from "@/utils/settings-schema";
 
 import { HTML_ICON_SVG, PDF_ICON_SVG } from "./print-options-icons";
 import { buildReportUrl } from "./print-options-url";
@@ -8,7 +9,7 @@ import { buildReportUrl } from "./print-options-url";
 // Fall back on the DOM itself just in case
 const isNewIconFormat = (): boolean => {
   const odooVersion = getOdooVersion();
-  if (odooVersion !== undefined && parseFloat(odooVersion) >= 20) return true;
+  if (odooVersion !== null && odooVersion >= 20) return true;
   return document.querySelector('.oi[data-icon="print"]') !== null;
 };
 
@@ -168,13 +169,13 @@ const appendTechnicalPrintOptions = async (
   const { reports, currentResId, context } = printOptions;
   const odooVersion = getOdooVersion();
   if (!odooVersion) return;
-  const isVersion15 = parseFloat(odooVersion) === 15;
+  const isVersion15 = odooVersion === 15;
 
   addPrintOptionsToNode(
     targetNode,
     reports,
-    getShowPrintOptionsHTML() === "true",
-    getShowPrintOptionsPDF() === "true",
+    readDatasetSetting("enablePrintOptionsHTML"),
+    readDatasetSetting("enablePrintOptionsPDF"),
     currentResId,
     isVersion15,
     context,

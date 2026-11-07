@@ -2,35 +2,21 @@ import {
   I18N_GET_MESSAGES,
   type I18nGetMessagesRequest,
   type I18nGetMessagesResponse,
-} from "@/services/i18n-messages";
+} from "@/services/extension-messages";
 import { Logger } from "@/services/logger";
+import { createAsyncCache } from "@/utils/async-cache";
 
-const messagesCache = new Map<string, Promise<Record<string, string>>>();
-
-export const loadMessages = (locale: string): Promise<Record<string, string>> => {
-  if (!messagesCache.has(locale)) {
-    const promise = (async () => {
-      const response = await fetch(
-        browser.runtime.getURL(`_locales/${locale}/messages.json` as never),
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to load messages for locale "${locale}"`);
-      }
-
-      const messages = (await response.json()) as Record<string, { message?: string }>;
-      return Object.fromEntries(
-        Object.entries(messages).map(([key, value]) => [key, value.message ?? key]),
-      );
-    })().catch((error) => {
-      messagesCache.delete(locale);
-      throw error;
-    });
-
-    messagesCache.set(locale, promise);
+/** Reads a generated `_locales/<locale>/messages.json` file as a `key -> message` map. */
+export const loadMessages = createAsyncCache(async (locale) => {
+  const response = await fetch(browser.runtime.getURL(`_locales/${locale}/messages.json` as never));
+  if (!response.ok) {
+    throw new Error(`Failed to load messages for locale "${locale}"`);
   }
-
-  return messagesCache.get(locale)!;
-};
+  const messages = (await response.json()) as Record<string, { message?: string }>;
+  return Object.fromEntries(
+    Object.entries(messages).map(([key, value]) => [key, value.message ?? key]),
+  );
+});
 
 export const handleI18nMessage = (
   request: Partial<I18nGetMessagesRequest>,
