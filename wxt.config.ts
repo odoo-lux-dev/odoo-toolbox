@@ -24,6 +24,7 @@ export default defineConfig({
         "clipboardWrite",
         "webNavigation",
         "contextMenus",
+        "declarativeNetRequestWithHostAccess",
       ],
       web_accessible_resources: [
         {

@@ -1,11 +1,26 @@
 import type { DebugModeType, IgnoredDebugPath } from "@/types";
 
-const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 interface DebugModeUrlInput {
   defaultDebugMode: DebugModeType | undefined;
   ignoredPaths: IgnoredDebugPath[];
+  /**
+   * Debug mode the page is already rendered in (`window.odoo.debug`). Odoo stores the
+   * `debug` URL parameter in the session, so a page loaded without it can already be in
+   * debug mode: no navigation is needed then.
+   */
+  currentDebugMode?: string;
 }
+
+/**
+ * Backend (web client and login) paths, the only ones where the debug mode is forced:
+ * it is of little use on website and portal pages.
+ */
+export const BACKEND_PATH_REGEX_SOURCE = "/(?:odoo|web)(?:[/?]|$)";
+const BACKEND_PATH_REGEX = new RegExp(`^${BACKEND_PATH_REGEX_SOURCE}`);
+
+export const isBackendPath = (url: URL): boolean => BACKEND_PATH_REGEX.test(url.pathname);
 
 /**
  * Builds a matcher regex from a user-provided domain pattern. Matching is done
@@ -58,7 +73,7 @@ const buildDomainMatcher = (raw: string): RegExp | null => {
  * @param domain - The stored domain pattern (literal, wildcard or `/regex/`).
  * @returns True when the host matches, false otherwise.
  */
-const matchesDomain = (host: string, domain: string): boolean => {
+export const matchesDomain = (host: string, domain: string): boolean => {
   const regex = buildDomainMatcher(domain);
   return regex ? regex.test(host) : false;
 };
@@ -83,15 +98,17 @@ export const isDebugPathIgnored = (url: URL, ignoredPaths: IgnoredDebugPath[]): 
 
 /**
  * Returns the URL to navigate to in order to apply the configured default debug mode, or `null` when no change is needed.
- * It relies solely on the URL's `debug` parameter only
+ * Only backend paths are considered, see `isBackendPath`.
  */
 export const getDebugModeUrl = (
   url: URL,
-  { defaultDebugMode, ignoredPaths }: DebugModeUrlInput,
+  { defaultDebugMode, ignoredPaths, currentDebugMode }: DebugModeUrlInput,
 ): string | null => {
-  if (isDebugPathIgnored(url, ignoredPaths)) return null;
   if (!defaultDebugMode || defaultDebugMode === "disabled") return null;
+  if (!isBackendPath(url)) return null;
+  if (isDebugPathIgnored(url, ignoredPaths)) return null;
   if (url.searchParams.get("debug") === defaultDebugMode) return null;
+  if (currentDebugMode === defaultDebugMode) return null;
   return generateDebugModeUrl(url, defaultDebugMode);
 };
 
