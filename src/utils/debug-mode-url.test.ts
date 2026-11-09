@@ -138,7 +138,7 @@ describe("getDebugModeUrl", () => {
     const ignoredPaths: IgnoredDebugPath[] = [
       { scope: "path", path: "/thanks/trial", deletable: true },
     ];
-    const result = getDebugModeUrl(url("https://odoo.com/thanks/trial?debug=0"), {
+    const result = getDebugModeUrl(url("https://odoo.com/web/thanks/trial?debug=0"), {
       ...input,
       ignoredPaths,
     });
@@ -159,6 +159,31 @@ describe("getDebugModeUrl", () => {
   test("should return a debug rewrite when not ignored", () => {
     const result = getDebugModeUrl(url("https://odoo.com/web?debug=0"), input);
     expect(result).toBe("https://odoo.com/web?debug=1");
+  });
+
+  test("should only force the debug mode on backend paths", () => {
+    expect(getDebugModeUrl(url("https://odoo.com/odoo/my-tasks"), input)).toBe(
+      "https://odoo.com/odoo/my-tasks?debug=1",
+    );
+    expect(getDebugModeUrl(url("https://odoo.com/web/login"), input)).toBe(
+      "https://odoo.com/web/login?debug=1",
+    );
+    expect(getDebugModeUrl(url("https://odoo.com/odoo"), input)).toBe(
+      "https://odoo.com/odoo?debug=1",
+    );
+    expect(getDebugModeUrl(url("https://odoo.com/shop"), input)).toBeNull();
+    expect(getDebugModeUrl(url("https://odoo.com/"), input)).toBeNull();
+    expect(getDebugModeUrl(url("https://odoo.com/odoo-is-great"), input)).toBeNull();
+    expect(getDebugModeUrl(url("https://odoo.com/website/info"), input)).toBeNull();
+  });
+
+  test("should not reload a page the session already renders in debug mode", () => {
+    expect(
+      getDebugModeUrl(url("https://odoo.com/odoo/my-tasks"), { ...input, currentDebugMode: "1" }),
+    ).toBeNull();
+    expect(
+      getDebugModeUrl(url("https://odoo.com/odoo/my-tasks"), { ...input, currentDebugMode: "" }),
+    ).toBe("https://odoo.com/odoo/my-tasks?debug=1");
   });
 });
 

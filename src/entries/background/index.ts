@@ -2,6 +2,7 @@ import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
 import { handleI18nMessage } from "@/entries/background/i18n";
 import { configurationService } from "@/services/configuration-service";
+import { debugModeRulesService } from "@/services/debug-mode-rules-service";
 import { toggleDebugMode } from "@/services/debug-mode-service";
 import {
   DEVTOOLS_PAGE_SCRIPT,
@@ -12,7 +13,7 @@ import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 import { updateService } from "@/services/update-service";
 import type { ImportedConfig } from "@/utils/config-validation";
-import { getDebugModeUrl } from "@/utils/debug-mode-url";
+import { getDebugModeUrl, isBackendPath } from "@/utils/debug-mode-url";
 import { isRunbotBuildHost } from "@/utils/odoo-hosts";
 
 const COMMANDS: Record<string, () => void> = {
@@ -55,6 +56,7 @@ const checkAndHandleAlarms = () => {
 
 export default defineBackground(() => {
   registerContextMenuHandlers();
+  debugModeRulesService.start();
 
   browser.runtime.onStartup.addListener(async () => {
     await configurationService.alignLocalDataWithSyncedData();
@@ -120,35 +122,41 @@ export default defineBackground(() => {
     browser.tabs.sendMessage(details.tabId, message).catch(() => undefined);
   });
 
+  // Reload fallback of the network rules (see `debugModeRulesService`): for hosts not yet
+  // known as Odoo, and URLs carrying another debug mode than the default one.
   browser.webNavigation.onCommitted.addListener(async (details) => {
     if (details.frameId !== 0) return;
+
+    const url = new URL(details.url);
+    if (!isBackendPath(url)) return;
 
     const defaultDebugMode = await settingsService.get("enableDebugMode");
     if (!defaultDebugMode || defaultDebugMode === "disabled") return;
 
-    // On Runbot builds, the page script applies debug mode after auto-login.
-    if (
-      isRunbotBuildHost(new URL(details.url).hostname) &&
-      (await settingsService.get("runbotAutoLogin"))
-    ) {
-      return;
-    }
-
+    let currentDebugMode: string;
     try {
       const [result] = await browser.scripting.executeScript({
         target: { tabId: details.tabId },
         world: "MAIN",
-        func: () => typeof window.odoo !== "undefined",
+        func: () => (typeof window.odoo === "undefined" ? null : (window.odoo.debug ?? "")),
       });
-      if (!result?.result) return;
+      if (typeof result?.result !== "string") return;
+      currentDebugMode = result.result;
     } catch {
       // Non-injectable tab (chrome://, Web Store, etc.)
       return;
     }
 
-    const url = new URL(details.url);
+    // Learned before any early return: the next pages of the host skip the reload.
+    await debugModeRulesService.rememberHost(url.host);
+
+    // On Runbot builds, the page script applies debug mode after auto-login.
+    if (isRunbotBuildHost(url.hostname) && (await settingsService.get("runbotAutoLogin"))) {
+      return;
+    }
+
     const ignoredPaths = await settingsService.get("ignoredDebugPaths");
-    const targetUrl = getDebugModeUrl(url, { defaultDebugMode, ignoredPaths });
+    const targetUrl = getDebugModeUrl(url, { defaultDebugMode, ignoredPaths, currentDebugMode });
     if (targetUrl && targetUrl !== details.url) {
       await browser.tabs.update(details.tabId, { url: targetUrl });
     }

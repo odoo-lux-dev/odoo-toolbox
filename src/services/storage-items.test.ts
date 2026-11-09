@@ -5,6 +5,7 @@ import { fakeBrowser } from "wxt/testing/fake-browser";
 import { definedItems } from "../../tests/setup";
 
 // The services define their storage items on import (through the in-memory mock of setup.ts).
+import "@/services/debug-mode-rules-service";
 import "@/services/favorites-service";
 import "@/services/history-service";
 import "@/services/quick-domains-service";
@@ -23,6 +24,7 @@ const RELEASED_VERSIONS: Record<string, number> = {
   "local:quickDomains": 1,
   "sync:quickDomains": 1,
   "local:devtools_history": 3,
+  "local:odooHosts": 1,
 };
 
 describe("storage item versions", () => {
