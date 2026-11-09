@@ -557,6 +557,8 @@ options:
     odoosh_login_button_desc: Voegt een "Inloggen met Odoo.sh"-knop toe op de inlogpagina. Deze verschijnt alleen op databases die op Odoo.sh worden gehost en logt u in via uw Odoo.sh-sessie.
     runbot_auto_login: Snel inloggen op Runbot
     runbot_auto_login_desc: Voegt snel inloggen-bedieningselementen toe naast de Runbot-verbindingsknoppen om een build te openen en automatisch in te loggen als admin, demo of portal.
+    hide_home_menu_background: Aangepaste achtergrond van het hoofdmenu verbergen
+    hide_home_menu_background_desc: Verbergt de aangepaste achtergrondafbeelding van het Odoo-hoofdmenu (app-overzicht) en toont in plaats daarvan de standaardachtergrond van Odoo.
 
 browser_context_menu:
   parent: Odoo Toolbox

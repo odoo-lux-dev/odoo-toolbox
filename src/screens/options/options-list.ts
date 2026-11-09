@@ -5,6 +5,7 @@ import { TechnicalListOption } from "@/screens/options/technical-list";
 import {
   ColorBlindOption,
   DownloadLogOption,
+  HideHomeMenuBackgroundOption,
   LoginButtonsOption,
   NostalgiaModeOption,
   OdooShLoginButtonOption,
@@ -17,6 +18,7 @@ export const ExtensionOptions = [
   { component: PrintOption, category: "Odoo" },
   { component: TechnicalModelOption, category: "Odoo" },
   { component: DefaultColorSchemeOption, category: "Odoo" },
+  { component: HideHomeMenuBackgroundOption, category: "Odoo" },
   { component: NostalgiaModeOption, category: "Odoo" },
   { component: TechnicalListOption, category: "Odoo" },
   { component: LoginButtonsOption, category: "Odoo" },

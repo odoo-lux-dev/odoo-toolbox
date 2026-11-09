@@ -4,6 +4,7 @@ import { settingsService } from "@/services/settings-service";
 import {
   CHROME_STORAGE_SETTINGS_COLORBLIND_MODE,
   CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
+  CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND,
   CHROME_STORAGE_SETTINGS_NOSTALGIA_MODE,
   CHROME_STORAGE_SETTINGS_SH_PAGE_RENAME,
   CHROME_STORAGE_SETTINGS_SHOW_LOGIN_BUTTONS,
@@ -29,6 +30,16 @@ export const DownloadLogOption = () => (
     tooltipContent={t("options.settings.download_full_log_desc")}
     settingKey={CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG}
     onToggle={(checked) => settingsService.setDownloadFullLog(checked)}
+  />
+);
+
+export const HideHomeMenuBackgroundOption = () => (
+  <ToggleOption
+    id="hide-home-menu-background"
+    title={t("options.settings.hide_home_menu_background")}
+    tooltipContent={t("options.settings.hide_home_menu_background_desc")}
+    settingKey={CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND}
+    onToggle={(checked) => settingsService.setHideHomeMenuBackground(checked)}
   />
 );
 

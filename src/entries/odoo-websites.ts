@@ -1,5 +1,6 @@
 import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
+import { handleHideHomeMenuBackground } from "@/page-features/home-menu-background";
 import { handleLoginButtons } from "@/page-features/login-buttons";
 import { handleOdooShLoginButton } from "@/page-features/odoosh-login";
 import { handleRunbotAutoLogin } from "@/page-features/runbot-login";
@@ -67,6 +68,7 @@ export default defineUnlistedScript(async () => {
   const tabUrl = new URL(window.location.href);
 
   observeMenuOpening();
+  handleHideHomeMenuBackground();
   handleLoginButtons();
   handleOdooShLoginButton();
   const runbotAutoLoginHandled = handleRunbotAutoLogin();

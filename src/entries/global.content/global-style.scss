@@ -66,3 +66,9 @@
     transform: rotate(360deg);
   }
 }
+
+// Custom home menu background (Odoo Enterprise / Studio): the image is set as an
+// inline style on the home menu root, the body class is handled in JS.
+body[data-hide-home-menu-background="true"] .o_home_menu[style*="background-image"] {
+  background-image: none !important;
+}

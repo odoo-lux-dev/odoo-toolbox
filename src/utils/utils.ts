@@ -12,6 +12,7 @@ const getTechnicalListPosition = () =>
 const getShowLoginButtons = () => document.body.dataset.showLoginButtons;
 const getShowOdooShLoginButton = () => document.body.dataset.showOdooShLoginButton;
 const getRunbotAutoLogin = () => document.body.dataset.runbotAutoLogin;
+const getHideHomeMenuBackground = () => document.body.dataset.hideHomeMenuBackground;
 const getOdooToolboxTheme = () => document.body.dataset.odooToolboxTheme;
 
 const ODOO_SH_SERVER_HEADER = "odoo.sh";
@@ -122,6 +123,7 @@ export {
   getShowLoginButtons,
   getShowOdooShLoginButton,
   getRunbotAutoLogin,
+  getHideHomeMenuBackground,
   getOdooToolboxTheme,
   isOdooShHosted,
   isRunbotBuildHost,

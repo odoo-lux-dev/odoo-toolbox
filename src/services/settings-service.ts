@@ -17,6 +17,7 @@ import type {
   StoredSettingsV16,
   StoredSettingsV17,
   StoredSettingsV18,
+  StoredSettingsV19,
   StoredSettingsV2,
   StoredSettingsV3,
   StoredSettingsV4,
@@ -55,6 +56,7 @@ import {
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
   CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
   CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN,
+  CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND,
 } from "@/utils/constants";
 
 export interface SettingDef {
@@ -164,6 +166,12 @@ export const SETTINGS_CONFIG: SettingDef[] = [
     key: "runbotAutoLogin",
     default: false,
     datasetKey: "runbotAutoLogin",
+    datasetTransform: (v) => String(v || false),
+  },
+  {
+    key: "hideHomeMenuBackground",
+    default: false,
+    datasetKey: "hideHomeMenuBackground",
     datasetTransform: (v) => String(v || false),
   },
 ];
@@ -313,6 +321,9 @@ const applyMigration = (
     case 18:
       current[CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN] = false;
       break;
+    case 19:
+      current[CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND] = false;
+      break;
   }
   return current;
 };
@@ -338,6 +349,9 @@ const LOCAL_MIGRATIONS = {
   },
   8: (settings: StoredSettingsV17): StoredSettingsV18 => {
     return applyMigration(18, settings as Record<string, unknown>) as StoredSettingsV18;
+  },
+  9: (settings: StoredSettingsV18): StoredSettingsV19 => {
+    return applyMigration(19, settings as Record<string, unknown>) as StoredSettingsV19;
   },
 };
 
@@ -393,6 +407,9 @@ const SYNC_MIGRATIONS = {
   18: (settings: StoredSettingsV17): StoredSettingsV18 => {
     return applyMigration(18, settings as Record<string, unknown>) as StoredSettingsV18;
   },
+  19: (settings: StoredSettingsV18): StoredSettingsV19 => {
+    return applyMigration(19, settings as Record<string, unknown>) as StoredSettingsV19;
+  },
 };
 
 /**
@@ -415,7 +432,7 @@ class SettingsService {
     <StorageItemKey>`local:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 8,
+      version: 9,
       migrations: LOCAL_MIGRATIONS,
     },
   );
@@ -424,7 +441,7 @@ class SettingsService {
     <StorageItemKey>`sync:${CHROME_STORAGE_SETTINGS_KEY}`,
     {
       init: () => getDefaultSettings(),
-      version: 18,
+      version: 19,
       migrations: SYNC_MIGRATIONS,
     },
   );
@@ -553,6 +570,13 @@ class SettingsService {
 
   async setRunbotAutoLogin(runbotAutoLogin: boolean): Promise<void> {
     return this.updateSetting(CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN, runbotAutoLogin);
+  }
+
+  async setHideHomeMenuBackground(hideHomeMenuBackground: boolean): Promise<void> {
+    return this.updateSetting(
+      CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND,
+      hideHomeMenuBackground,
+    );
   }
 
   async getUserLocale(): Promise<string> {

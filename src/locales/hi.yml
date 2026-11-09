@@ -557,6 +557,8 @@ options:
     odoosh_login_button_desc: लॉगिन पृष्ठ पर "Odoo.sh से लॉगिन करें" बटन जोड़ता है। यह केवल Odoo.sh पर होस्ट किए गए डेटाबेस पर दिखाई देता है और आपके Odoo.sh सत्र से लॉगिन करता है।
     runbot_auto_login: Runbot त्वरित लॉगिन
     runbot_auto_login_desc: Runbot कनेक्शन बटनों के बगल में त्वरित लॉगिन नियंत्रण जोड़ता है ताकि build खुल सके और स्वतः admin, demo या portal के रूप में लॉगिन हो सके।
+    hide_home_menu_background: होम मेनू की कस्टम पृष्ठभूमि छिपाएँ
+    hide_home_menu_background_desc: Odoo होम मेनू (ऐप स्विचर) पर सेट की गई कस्टम पृष्ठभूमि छवि को छिपाता है और उसकी जगह Odoo की डिफ़ॉल्ट पृष्ठभूमि दिखाता है।
 
 browser_context_menu:
   parent: Odoo Toolbox

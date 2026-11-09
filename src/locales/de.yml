@@ -557,6 +557,8 @@ options:
     odoosh_login_button_desc: Fügt einen "Mit Odoo.sh anmelden"-Button auf der Anmeldeseite hinzu. Er erscheint nur bei Datenbanken, die auf Odoo.sh gehostet werden, und meldet Sie über Ihre Odoo.sh-Sitzung an.
     runbot_auto_login: Runbot-Schnellanmeldung
     runbot_auto_login_desc: Fügt Schnellanmelde-Steuerelemente neben den Runbot-Verbindungsbuttons hinzu, um einen Build zu öffnen und sich automatisch als Admin, Demo oder Portal anzumelden.
+    hide_home_menu_background: Benutzerdefinierten Hintergrund des Hauptmenüs ausblenden
+    hide_home_menu_background_desc: Blendet das benutzerdefinierte Hintergrundbild des Odoo-Hauptmenüs (App-Übersicht) aus und zeigt stattdessen den Standardhintergrund von Odoo an.
 
 browser_context_menu:
   parent: Odoo Toolbox

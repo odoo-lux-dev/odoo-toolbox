@@ -19,6 +19,7 @@ import {
   CHROME_STORAGE_SETTINGS_USER_LOCALE,
   CHROME_STORAGE_SETTINGS_DOWNLOAD_FULL_LOG,
   CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN,
+  CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND,
 } from "@/utils/constants";
 
 export const DEBUG_MODE_TYPES = ["disabled", "1", "assets", "assets,tests"] as const;
@@ -125,4 +126,8 @@ export type StoredSettingsV18 = StoredSettingsV17 & {
   [CHROME_STORAGE_SETTINGS_RUNBOT_AUTO_LOGIN]: boolean;
 };
 
-export type StoredSettings = StoredSettingsV18;
+export type StoredSettingsV19 = StoredSettingsV18 & {
+  [CHROME_STORAGE_SETTINGS_HIDE_HOME_MENU_BACKGROUND]: boolean;
+};
+
+export type StoredSettings = StoredSettingsV19;
