@@ -12,7 +12,8 @@
  * which sets `data-theme`, `data-ui-theme` and `data-color-scheme` on the root.
  * See src/theme/README.md to add a theme.
  */
-@import "tailwindcss";
+/* Scan `src/` only: docs and tooling folders are not UI code. */
+@import "tailwindcss" source("../");
 
 @plugin "daisyui" {
   /* Keep in sync with UI_THEMES in src/theme/themes.ts */
@@ -27,6 +28,16 @@
     console-dark,
     toybox-light,
     toybox-dark;
+  /*
+   * Tailwind detects class names in any word of the sources (comments, identifiers), so
+   * DaisyUI would emit components the UI never uses (`list`, `filter`, `stack`...).
+   * Remove a component from this list before using it.
+   */
+  exclude:
+    aura, avatar, breadcrumbs, calendar, carousel, chat, collapse, countdown, diff, dock, drawer,
+    fab, fieldset, fileinput, filter, footer, hero, hover3d, hovergallery, indicator, list, mask,
+    megamenu, mockup, navbar, otp, progress, radialprogress, range, rating, skeleton, stack,
+    stat, steps, textrotate, timeline, toast, validator;
 }
 
 /* `dark:` follows the color scheme of any UI theme */
