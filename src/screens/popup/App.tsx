@@ -1,4 +1,4 @@
-import "./style.css";
+import "@/theme/index.css";
 import { CommandPalette, useCommandPalette } from "@/components/ui/command-palette";
 import { MAIN_CONTENT_ID, SkipLink } from "@/components/ui/skip-link";
 import { useExtensionTheme } from "@/hooks/use-extension-theme";

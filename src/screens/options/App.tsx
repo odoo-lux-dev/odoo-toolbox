@@ -1,4 +1,4 @@
-import "./style.css";
+import "@/theme/index.css";
 import { Match, Switch } from "solid-js";
 
 import { useExtensionTheme } from "@/hooks/use-extension-theme";
