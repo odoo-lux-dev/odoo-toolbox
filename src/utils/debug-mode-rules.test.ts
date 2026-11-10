@@ -29,6 +29,12 @@ describe("buildDebugModeRules", () => {
     expect(buildDebugModeRules({ ...input, hosts: [] })).toEqual([]);
   });
 
+  test("should build the same rules whatever the order of the hosts", () => {
+    expect(buildDebugModeRules({ ...input, hosts: input.hosts.toReversed() })).toEqual(
+      buildDebugModeRules(input),
+    );
+  });
+
   test("should give every rule a unique positive id", () => {
     const ids = buildDebugModeRules(input).map((rule) => rule.id);
     expect(new Set(ids).size).toBe(ids.length);
