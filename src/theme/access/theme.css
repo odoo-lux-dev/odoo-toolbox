@@ -527,7 +527,7 @@
         font-weight: 700;
       }
 
-      & .ot-nav-item[aria-current] {
+      & .ot-nav-item:is([aria-current], [aria-pressed="true"]) {
         border-color: color-mix(in oklab, var(--color-primary) 34%, var(--ot-line));
         color: var(--ot-primary-strong);
       }
