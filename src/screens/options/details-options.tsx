@@ -9,6 +9,11 @@ export const InterfaceDetailsOption: SettingCard = {
   title: "options.sections.interface_title",
   switches: [
     booleanSwitch("showTechnicalModel", "technical-model", "options.settings.technical_model"),
+    booleanSwitch(
+      "hideHomeMenuBackground",
+      "hide-home-menu-background",
+      "options.settings.hide_home_menu_background",
+    ),
     booleanSwitch("nostalgiaMode", "nostalgia-mode", "options.settings.nostalgia"),
     booleanSwitch("showLoginButtons", "login-buttons", "options.settings.login_buttons"),
     booleanSwitch("runbotAutoLogin", "runbot-auto-login", "options.settings.runbot_auto_login"),

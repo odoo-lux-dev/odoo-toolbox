@@ -607,6 +607,8 @@ options:
     odoosh_login_button_desc: Ajoute un bouton "Se connecter avec Odoo.sh" sur la page de connexion. Il n'apparaît que sur les bases hébergées sur Odoo.sh et vous connecte via votre session Odoo.sh.
     runbot_auto_login: Connexion rapide Runbot
     runbot_auto_login_desc: Ajoute des contrôles de connexion rapide à côté des boutons de connexion de Runbot pour ouvrir un build et se connecter automatiquement en admin, demo ou portal.
+    hide_home_menu_background: Masquer le fond personnalisé du menu principal
+    hide_home_menu_background_desc: Masque l'image de fond personnalisée du menu principal d'Odoo (sélecteur d'applications) et affiche le fond Odoo par défaut à la place.
 
 browser_context_menu:
   parent: Odoo Toolbox

@@ -109,6 +109,7 @@ const SETTINGS = {
   downloadFullLog: bool(false),
   showOdooShLoginButton: bool(false, "showOdooShLoginButton"),
   runbotAutoLogin: bool(false, "runbotAutoLogin"),
+  hideHomeMenuBackground: bool(false, "hideHomeMenuBackground"),
   extensionUiTheme: oneOf(UI_THEME_IDS, DEFAULT_UI_THEME, "odooToolboxUiTheme"),
   extensionTextSize: oneOf(TEXT_SIZES, DEFAULT_TEXT_SIZE, "odooToolboxTextSize"),
   extensionMotion: oneOf(MOTION_PREFERENCES, DEFAULT_MOTION, "odooToolboxMotion"),

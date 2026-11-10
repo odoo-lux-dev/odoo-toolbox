@@ -54,6 +54,7 @@ This extension aims to enhance the experience of Odoo developers and Odoo.SH use
 - **Export and import extension configuration for easy sharing or backup**
 - **Download full Odoo.SH logs (raw file) directly from the log viewer pages**
 - **Quick login as admin, demo, or portal on Odoo Runbot builds**
+- **Hide the custom background image of the Odoo Enterprise home menu**
 
 <br>
 

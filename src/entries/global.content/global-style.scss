@@ -1,3 +1,8 @@
+// Inline style rewritten by web_studio on each render (see page-features/home-menu-background.ts).
+body[data-hide-home-menu-background="true"] .o_home_menu[style*="background-image"] {
+  background-image: none !important;
+}
+
 .x-odoo-technical-print-options {
   display: flex;
   align-items: stretch;

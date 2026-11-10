@@ -607,6 +607,8 @@ options:
     odoosh_login_button_desc: Añade un botón "Iniciar sesión con Odoo.sh" en la página de inicio de sesión. Solo aparece en bases de datos alojadas en Odoo.sh e inicia sesión con tu sesión de Odoo.sh.
     runbot_auto_login: Inicio de sesión rápido en Runbot
     runbot_auto_login_desc: Añade controles de inicio de sesión rápido junto a los botones de conexión de Runbot para abrir un build e iniciar sesión automáticamente como admin, demo o portal.
+    hide_home_menu_background: Ocultar el fondo personalizado del menú principal
+    hide_home_menu_background_desc: Oculta la imagen de fondo personalizada del menú principal de Odoo (selector de aplicaciones) y muestra en su lugar el fondo predeterminado de Odoo.
 
 browser_context_menu:
   parent: Odoo Toolbox
