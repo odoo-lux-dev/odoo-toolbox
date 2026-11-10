@@ -472,7 +472,7 @@ options:
     appearance: "Darstellung"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Dokumentation
     report_bug: Fehler melden
     suggest_feature: Eine Funktion vorschlagen
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Farbenblindheitsmodus aktivieren
-    color_blind_desc: Dieser Modus ersetzt einige Farben und Symbole von Odoo.SH durch eine farbenblindheitsfreundliche Palette
+    color_blind_desc: Dieser Modus ersetzt einige Farben und Symbole von Odoo.sh durch eine farbenblindheitsfreundliche Palette
     login_buttons: Anmelde-Buttons anzeigen
     login_buttons_desc: Wählen Sie, ob Sie die Standard-Anmelde-Buttons für Admin/Demo/Portal anzeigen möchten
     nostalgia: Nostalgiemodus aktivieren
     nostalgia_desc: Dieser Modus ersetzt die ursprünglichen Debug-Symbole durch Affen-Symbole, um an die berühmte Monkey-Erweiterung zu erinnern
     tab_title: Tab-Titel auf SH-Seiten aktualisieren
-    tab_title_desc: Wählen Sie, ob der Tab-Titel auf Odoo.SH-Seiten geändert werden soll, um den aktuellen Projektnamen einzuschließen
+    tab_title_desc: Wählen Sie, ob der Tab-Titel auf Odoo.sh-Seiten geändert werden soll, um den aktuellen Projektnamen einzuschließen
     technical_model: Technisches Modell anzeigen
     technical_model_desc: Wählen Sie, ob Sie das technische Modell auf der Seite anzeigen möchten (v17.2+)
     color_scheme: Standard-Farbschema
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex scheint falsch zu sein. Bitte überprüfen.
     download_full_log: Vollständige Logs herunterladen
-    download_full_log_desc: Fügt auf Odoo.SH-Logansichtsseiten eine Schaltfläche hinzu, um die vollständige Roh-Logdatei herunterzuladen, anstatt sich auf die integrierte Anzeige zu verlassen (die jeweils nur einen Abschnitt rendert).
+    download_full_log_desc: Fügt auf Odoo.sh-Logansichtsseiten eine Schaltfläche hinzu, um die vollständige Roh-Logdatei herunterzuladen, anstatt sich auf die integrierte Anzeige zu verlassen (die jeweils nur einen Abschnitt rendert).
     odoosh_login_button: Odoo.sh-Anmeldebutton anzeigen
     odoosh_login_button_desc: Fügt einen "Mit Odoo.sh anmelden"-Button auf der Anmeldeseite hinzu. Er erscheint nur bei Datenbanken, die auf Odoo.sh gehostet werden, und meldet Sie über Ihre Odoo.sh-Sitzung an.
     runbot_auto_login: Runbot-Schnellanmeldung
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "Versuche einen anderen Projektnamen."
   results_count_one: "1 Projekt"
   results_count_other: "$1 Projekte"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Zum hellen Design wechseln
     dark_theme: Zum dunklen Design wechseln

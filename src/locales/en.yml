@@ -472,7 +472,7 @@ options:
     appearance: "Appearance"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Documentation
     report_bug: Report a bug
     suggest_feature: Suggest a feature
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Enable color blind mode
-    color_blind_desc: This mode replace some colors and icons from Odoo.SH to a color blind friendly palette
+    color_blind_desc: Replaces some Odoo.sh colors and icons with a color blind friendly palette
     login_buttons: Show login buttons
     login_buttons_desc: Choose if you want to show the default login buttons for admin/demo/portal
     nostalgia: Enable nostalgia mode
     nostalgia_desc: This mode replace the original debug icons by monkey icons to remember the famous monkey extension
     tab_title: Update the tab title on SH pages
-    tab_title_desc: Select whether to change the tab title on Odoo.SH pages to includes current project name
+    tab_title_desc: Select whether to change the tab title on Odoo.sh pages to include the current project name
     technical_model: Display technical model
     technical_model_desc: Choose if you want to display the technical model onto the page (v17.2+)
     color_scheme: Default color scheme
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex seems incorrect. Please verify.
     download_full_log: Download full logs
-    download_full_log_desc: Add a button on Odoo.SH log viewer pages to download the complete raw log file instead of relying on the built-in viewer (which only renders one chunk at a time).
+    download_full_log_desc: Add a button on Odoo.sh log viewer pages to download the complete raw log file instead of relying on the built-in viewer (which only renders one chunk at a time).
     odoosh_login_button: Show Odoo.sh login button
     odoosh_login_button_desc: Add a "Log in with Odoo.sh" button on the login page. It only appears on Odoo.sh-hosted databases and logs you in through your Odoo.sh session.
     runbot_auto_login: Runbot quick login
@@ -635,7 +635,7 @@ popup:
   no_match_hint: "Try another project name."
   results_count_one: "1 project"
   results_count_other: "$1 projects"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Switch to light theme
     dark_theme: Switch to dark theme

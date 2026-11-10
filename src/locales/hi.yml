@@ -472,7 +472,7 @@ options:
     appearance: "रूप-रंग"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: दस्तावेज़ीकरण
     report_bug: Bug रिपोर्ट करें
     suggest_feature: सुविधा सुझाएं
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Color blind mode सक्षम करें
-    color_blind_desc: यह mode Odoo.SH के कुछ रंगों और आइकनों को color blind अनुकूल palette से बदल देता है
+    color_blind_desc: यह mode Odoo.sh के कुछ रंगों और आइकनों को color blind अनुकूल palette से बदल देता है
     login_buttons: Login buttons दिखाएं
     login_buttons_desc: चुनें कि क्या आप admin/demo/portal के लिए डिफ़ॉल्ट login buttons दिखाना चाहते हैं
     nostalgia: Nostalgia mode सक्षम करें
     nostalgia_desc: यह mode प्रसिद्ध monkey एक्सटेंशन को याद करने के लिए मूल debug आइकनों को monkey आइकनों से बदल देता है
     tab_title: SH पेजों पर tab शीर्षक अपडेट करें
-    tab_title_desc: चुनें कि क्या Odoo.SH पेजों पर tab शीर्षक को वर्तमान प्रोजेक्ट नाम शामिल करने के लिए बदलना है
+    tab_title_desc: चुनें कि क्या Odoo.sh पेजों पर tab शीर्षक को वर्तमान प्रोजेक्ट नाम शामिल करने के लिए बदलना है
     technical_model: तकनीकी model दिखाएं
     technical_model_desc: चुनें कि क्या आप पेज पर तकनीकी model दिखाना चाहते हैं (v17.2+)
     color_scheme: डिफ़ॉल्ट color scheme
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex गलत प्रतीत होता है। कृपया सत्यापित करें।
     download_full_log: पूर्ण लॉग डाउनलोड करें
-    download_full_log_desc: Odoo.SH लॉग व्यूअर पेजों पर एक बटन जोड़ता है ताकि बिल्ट-इन व्यूअर (जो एक बार में केवल एक भाग दिखाता है) पर निर्भर रहने के बजाय पूरी रॉ लॉग फ़ाइल डाउनलोड की जा सके।
+    download_full_log_desc: Odoo.sh लॉग व्यूअर पेजों पर एक बटन जोड़ता है ताकि बिल्ट-इन व्यूअर (जो एक बार में केवल एक भाग दिखाता है) पर निर्भर रहने के बजाय पूरी रॉ लॉग फ़ाइल डाउनलोड की जा सके।
     odoosh_login_button: Odoo.sh लॉगिन बटन दिखाएं
     odoosh_login_button_desc: लॉगिन पृष्ठ पर "Odoo.sh से लॉगिन करें" बटन जोड़ता है। यह केवल Odoo.sh पर होस्ट किए गए डेटाबेस पर दिखाई देता है और आपके Odoo.sh सत्र से लॉगिन करता है।
     runbot_auto_login: Runbot त्वरित लॉगिन
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "कोई दूसरा प्रोजेक्ट नाम आज़माएँ।"
   results_count_one: "1 प्रोजेक्ट"
   results_count_other: "$1 प्रोजेक्ट"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: हल्की theme पर स्विच करें
     dark_theme: गहरी theme पर स्विच करें
