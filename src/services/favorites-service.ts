@@ -17,7 +17,7 @@ const store = createSyncedStore<Favorite[]>(CHROME_STORAGE_FAVORITES_KEY, {
           sequence: index,
         })),
       3: (favorites: FavoritesV2[]): FavoritesV3[] =>
-        favorites.map((favorite) => ({ ...favorite, task_link: "" })),
+        favorites.map((favorite) => ({ task_link: "", ...favorite })),
     },
   },
 });

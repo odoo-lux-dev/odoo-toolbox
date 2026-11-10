@@ -141,6 +141,8 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
   replaces the local data with the synced data, **unless** the sync storage is empty. Local
   edits made while the browser is offline or not signed in can be overwritten by that path.
 - On an update, the local data (just migrated) is kept and persisted to `sync:` instead.
+- Migrations never override a value already stored: they only fill what is missing
+  (`{ newKey: default, ...stored }`).
 
 ## 7. Feature map
 

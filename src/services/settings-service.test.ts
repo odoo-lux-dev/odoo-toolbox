@@ -33,6 +33,12 @@ describe("settingsService", () => {
     expect(await settingsService.get("defaultColorScheme")).toBe("dark");
   });
 
+  test("the dark mode migration keeps a default color scheme already stored", async () => {
+    memoryStorage.set(LOCAL, { defaultDarkMode: true, defaultColorScheme: "light" });
+    storedVersions.set(LOCAL, 1);
+    expect(await settingsService.get("defaultColorScheme")).toBe("light");
+  });
+
   test("ignores a path once and never removes an undeletable one", async () => {
     const path = { scope: "domain" as const, domain: "odoo.com", deletable: true };
     await settingsService.addIgnoredDebugPath(path);

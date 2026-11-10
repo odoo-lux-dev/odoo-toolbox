@@ -13,8 +13,8 @@ type RawSettings = Record<string, unknown>;
  * now replace on purpose: `sanitizeSettings()` fills those.
  */
 const migrateDefaultDarkMode = (settings: RawSettings): RawSettings => ({
-  ...settings,
   defaultColorScheme: settings.defaultDarkMode ? "dark" : "none",
+  ...settings,
 });
 
 /** Serializes an ignored debug path into a comparable key, whatever its scope. */

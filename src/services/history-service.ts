@@ -25,8 +25,8 @@ const store = createStore<HistoryAction[]>("devtools_history", {
   normalize: applyLimit,
   version: 3,
   migrations: {
-    2: (history: HistoryActionV1[]) => history.map((action) => ({ ...action, pinned: false })),
-    3: (history: HistoryActionV2[]) => history.map((action) => ({ ...action, label: "" })),
+    2: (history: HistoryActionV1[]) => history.map((action) => ({ pinned: false, ...action })),
+    3: (history: HistoryActionV2[]) => history.map((action) => ({ label: "", ...action })),
   },
 });
 
