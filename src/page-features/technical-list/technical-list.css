@@ -1,3 +1,11 @@
+/*
+ * This stylesheet is inlined in the page script: scan only the sidebar sources, so it
+ * does not carry the utilities of the extension pages.
+ */
+@import "tailwindcss" source(none);
+@source "./";
+@source "../../screens/technical-list";
+@source "../../components/ui";
 @import "@/theme/core.css";
 
 /**

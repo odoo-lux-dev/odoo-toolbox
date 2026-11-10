@@ -13,23 +13,26 @@ tactile and playful, from `mockups/13-toybox`).
 
 ## Files
 
-| File                  | Role                                                                |
-| --------------------- | ------------------------------------------------------------------- |
-| `themes.ts`           | Registry: theme ids, labels, DaisyUI theme names, defaults          |
-| `apply-theme.ts`      | `resolveTheme()` / `applyTheme()`: sets the root attributes         |
-| `core.css`            | Tailwind + DaisyUI + contract + every theme, **without** fonts      |
-| `index.css`           | `core.css` + `fonts.css`, imported by the extension pages           |
-| `tokens.css`          | The theme contract: `--ot-*` tokens exposed as Tailwind utilities   |
-| `base.css`            | Base styles shared by all themes, written against the contract only |
-| `primitives.css`      | Shared primitives (`ot-tool`, `ot-tab`, `ot-chip`...), tokens only  |
-| `fonts.css`           | Imports the bundled font files of every theme                       |
-| `<id>/theme.css`      | DaisyUI themes `<id>-light` / `<id>-dark`, contract values, tweaks  |
-| `<id>/fonts.css`      | `@fontsource` imports of the theme fonts                            |
-| `apply-theme.test.ts` | Checks the registry, the CSS wiring and the contract completeness   |
+| File                  | Role                                                                 |
+| --------------------- | -------------------------------------------------------------------- |
+| `themes.ts`           | Registry: theme ids, labels, DaisyUI theme names, defaults           |
+| `apply-theme.ts`      | `resolveTheme()` / `applyTheme()`: sets the root attributes          |
+| `core.css`            | DaisyUI + contract + every theme, **without** Tailwind and fonts     |
+| `index.css`           | Tailwind + `core.css` + `fonts.css`, imported by the extension pages |
+| `tokens.css`          | The theme contract: `--ot-*` tokens exposed as Tailwind utilities    |
+| `base.css`            | Base styles shared by all themes, written against the contract only  |
+| `primitives.css`      | Shared primitives (`ot-tool`, `ot-tab`, `ot-chip`...), tokens only   |
+| `fonts.css`           | Imports the bundled font files of every theme                        |
+| `<id>/theme.css`      | DaisyUI themes `<id>-light` / `<id>-dark`, contract values, tweaks   |
+| `<id>/fonts.css`      | `@fontsource` imports of the theme fonts                             |
+| `apply-theme.test.ts` | Checks the registry, the CSS wiring and the contract completeness    |
 
 `core.css` is used by content scripts rendered inside a host page (technical list in a
 shadow root): font files bundled with the extension can't be used there, so those surfaces
 fall back to the system fonts listed in the theme font stacks.
+
+Tailwind is imported by each entry (`index.css`, `technical-list.css`) rather than by
+`core.css`, so that each one scans only the sources of its own surface.
 
 Each extension page imports `index.css` from its `App.tsx` (never through a page stylesheet
 that `@import`s it): the pages then share one built stylesheet instead of one copy each.
