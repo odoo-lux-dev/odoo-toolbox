@@ -64,7 +64,13 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onInstalled.addListener(async (details) => {
-    await configurationService.alignLocalDataWithSyncedData();
+    // On an update, the local data just migrated is the reference: the sync copy can be older
+    // (persisted every minute, or by another browser) and would revert it.
+    if (details.reason === "install") {
+      await configurationService.alignLocalDataWithSyncedData();
+    } else {
+      await configurationService.persistDataToSync();
+    }
     checkAndHandleAlarms();
 
     if (details.reason === "update" && details.previousVersion) {
