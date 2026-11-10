@@ -8,6 +8,10 @@ export const openFavoriteInTab = (name: string) => {
   window.close();
 };
 
+export const openFavoriteInNewTab = (name: string) => {
+  browser.tabs.create({ url: odooShProjectUrl(name), active: false });
+};
+
 export const toggleTechnicalList = async () => {
   await settingsService.toggle("showTechnicalList");
   await refreshActiveTabs();
