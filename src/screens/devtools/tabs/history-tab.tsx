@@ -28,8 +28,9 @@ import {
   historyLoading,
   loadHistory,
 } from "@/screens/devtools/history-signals";
-import { formatDayLabel, groupByDay, intlLocale } from "@/screens/devtools/history-time";
+import { formatDayLabel, groupByDay } from "@/screens/devtools/history-time";
 import { getLocale, localeVersion, t } from "@/services/i18n-service";
+import { intlLocale } from "@/utils/relative-time";
 
 export const HistoryTab = () => {
   const [filter, setFilter] = createStore<HistoryFilter>({ ...EMPTY_HISTORY_FILTER });
