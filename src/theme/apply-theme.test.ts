@@ -21,7 +21,7 @@ describe("resolveTheme", () => {
           extensionTheme: "light",
           extensionTextSize: "large",
           extensionMotion: "reduced",
-          colorBlindMode: true,
+          extensionColorSafe: true,
         }),
       ),
     ).toEqual({
@@ -87,7 +87,7 @@ describe("applyTheme", () => {
       settings({
         extensionTheme: "light",
         extensionTextSize: "large",
-        colorBlindMode: true,
+        extensionColorSafe: true,
         extensionMotion: "reduced",
       }),
       target,

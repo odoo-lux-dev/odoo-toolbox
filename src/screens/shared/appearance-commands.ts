@@ -111,7 +111,7 @@ export const appearanceCommands = (): Command[] => {
       group,
       icon: AccessibilityIcon,
       keywords: "accessibility color blind colour safe palette cvd",
-      run: () => settingsService.set("colorBlindMode", !current.colorSafe),
+      run: () => settingsService.set("extensionColorSafe", !current.colorSafe),
     },
   ];
 };

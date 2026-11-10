@@ -11,10 +11,14 @@ import {
   type UiThemeId,
 } from "./themes";
 
-/** The appearance settings (the color-safe palette follows "Color blind mode"). */
+/** The appearance settings. */
 export type ThemeSettings = Pick<
   StoredSettings,
-  "extensionUiTheme" | "extensionTheme" | "extensionTextSize" | "colorBlindMode" | "extensionMotion"
+  | "extensionUiTheme"
+  | "extensionTheme"
+  | "extensionTextSize"
+  | "extensionColorSafe"
+  | "extensionMotion"
 >;
 
 export interface ResolvedTheme {
@@ -37,7 +41,7 @@ export const resolveTheme = (settings: ThemeSettings): ResolvedTheme => {
     colorSchemePreference: settings.extensionTheme,
     daisyTheme: daisyThemeName(settings.extensionUiTheme, colorScheme),
     textSize: settings.extensionTextSize,
-    colorSafe: settings.colorBlindMode,
+    colorSafe: settings.extensionColorSafe,
     motion: settings.extensionMotion,
   };
 };

@@ -545,7 +545,7 @@ options:
     reduce_motion: "Bewegung reduzieren"
     reduce_motion_desc: "Deaktiviert Animationen und Übergänge, auch wenn das System sie erlaubt."
     color_safe: "Farbenblind-sichere Palette"
-    color_safe_desc: "Statusfarben, die auch bei Farbsehschwäche unterscheidbar sind. Gleiche Einstellung wie der Farbenblind-Modus von Odoo.sh."
+    color_safe_desc: "Statusfarben, die auch bei Farbsehschwäche unterscheidbar sind."
     language: Sprache
     language_auto: Automatisch (Browser)
     language_desc: Wählen Sie die Erweiterungssprache
