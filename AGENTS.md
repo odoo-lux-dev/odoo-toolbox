@@ -246,8 +246,27 @@ Read `src/theme/README.md` before touching any style. Summary:
 
 ## 13. Conventions and gotchas
 
-- Write only the comments the code cannot say itself: the why, a constraint, a browser or Odoo
-  quirk. Do not restate what the code does, and do not leave commented-out code.
+### Comments: the default is none
+
+This rule is the one agents break most. Read it as strict.
+
+- **Write no comment by default.** A comment is the exception. Add one only when a reader
+  of the code alone would get it wrong: a non-obvious why, a constraint, a browser or Odoo quirk,
+  a workaround.
+- **Never describe what the code does.** No doc comment that restates a function, component,
+  prop, type or variable name (`/** Start-side rail of a tab */`, `/** End of the header row */`,
+  `/** Filters of the history */`). Rename the thing instead.
+- **Never explain a condition the code already shows** (`// One database says nothing`
+  above `count > 1`, `// pressing again goes back to all` above `active ? "all" : value`).
+- One short line is enough. A comment that needs a paragraph usually hides code that needs
+  a rewrite.
+- No commented-out code, no changelog comments ("was X", "now Y"), no notes to the reviewer.
+- **Before reporting a change as done, list every comment line the diff adds**
+  (`git diff | grep '^+.*\(//\|/\*\)'`) and delete each one that does not pass the rules above.
+  When you edit an existing comment that restates the code, delete it.
+
+### Code
+
 - Keep to the essentials: no speculative options, helpers or abstractions for a single caller.
 - Keep the code readable: small functions with one job, explicit data flow, no tangled
   control flow or hidden shared state between modules. If a change makes a function hard to
