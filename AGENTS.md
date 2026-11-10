@@ -210,7 +210,6 @@ Read `src/theme/README.md` before touching any style. Summary:
 - Reuse the shared primitives (`ToolButton`, `Tabs`, `Modal`, `Chip`, `Panel`, `StatusDot`...)
   instead of rebuilding them with utilities. Accessibility behaviour (focus, keyboard,
   announcements) lives in those components.
-- `src/theme/ROADMAP.md` lists the accessibility and command palette work still open.
 
 ## 10. Odoo versions and host detection
 
@@ -271,7 +270,7 @@ Read `src/theme/README.md` before touching any style. Summary:
 
 | Surface | README |
 | ------- | ------ |
-| UI themes and tokens | [`src/theme/README.md`](src/theme/README.md) (roadmap: [`src/theme/ROADMAP.md`](src/theme/ROADMAP.md)) |
+| UI themes and tokens | [`src/theme/README.md`](src/theme/README.md) |
 | Background service worker (listeners, alarms, network rules, messages) | [`src/entries/background/README.md`](src/entries/background/README.md) |
 | In-page features on Odoo pages | [`src/page-features/README.md`](src/page-features/README.md) |
 | DevTools panel | [`src/screens/devtools/README.md`](src/screens/devtools/README.md) |
