@@ -527,6 +527,8 @@ options:
     theme_console_desc: "Compacte ontwikkelaarswerkbank: metadata in mono, vlakke oppervlakken, bedieningselementen van 28 px."
     theme_toybox: "Toybox"
     theme_toybox_desc: "Warm en tastbaar: afgeronde pasteltinten, dikke indrukbare knoppen, een lichte vering."
+    theme_classic: "Klassiek"
+    theme_classic_desc: "De oorspronkelijke look van Odoo Toolbox: het eerste paars-turquoise palet, systeemlettertypen, vlakke bedieningselementen."
     accessibility: "Toegankelijkheid"
     accessibility_desc: "Voorkeuren die met elk thema combineren"
     large_text: "Grote tekst"

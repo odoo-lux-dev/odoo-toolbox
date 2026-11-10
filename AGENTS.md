@@ -195,7 +195,7 @@ Rules that matter when you change this code:
 
 Read `src/theme/README.md` before touching any style. Summary:
 
-- Four UI themes (`odoo-native` default, `access`, `console`, `toybox`), each with light and
+- Five UI themes (`classic` default, `odoo-native`, `access`, `console`, `toybox`), each with light and
   dark variants. Components use only the shared token contract and DaisyUI classes.
 - Hardcoded hex colors, font families, font sizes (`text-[11px]`), line heights and radii
   are forbidden in components: `src/theme/no-hardcoded-styles.test.ts` fails on them.

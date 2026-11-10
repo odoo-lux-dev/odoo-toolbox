@@ -47,8 +47,8 @@
 
 @plugin "daisyui/theme" {
   name: "odoo-native-dark";
-  default: true;
-  prefersdark: true;
+  default: false;
+  prefersdark: false;
   color-scheme: "dark";
   --color-base-100: #211a20;
   --color-base-200: #1b151b;

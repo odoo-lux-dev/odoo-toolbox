@@ -527,6 +527,8 @@ options:
     theme_console_desc: "Dense developer workbench: mono metadata, flat surfaces, 28px controls."
     theme_toybox: "Toybox"
     theme_toybox_desc: "Warm and tactile: rounded pastels, chunky pressable buttons, a little bounce."
+    theme_classic: "Classic"
+    theme_classic_desc: "The original Odoo Toolbox look: the first purple and teal palette, system fonts, flat controls."
     accessibility: "Accessibility"
     accessibility_desc: "Preferences combined with any theme"
     large_text: "Large text"

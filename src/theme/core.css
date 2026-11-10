@@ -17,7 +17,9 @@
 @plugin "daisyui" {
   /* Keep in sync with UI_THEMES in src/theme/themes.ts */
   themes:
-    odoo-native-dark --default --prefersdark,
+    classic-dark --default --prefersdark,
+    classic-light,
+    odoo-native-dark,
     odoo-native-light,
     access-light,
     access-dark,
@@ -36,4 +38,5 @@
 @import "./access/theme.css";
 @import "./console/theme.css";
 @import "./toybox/theme.css";
+@import "./classic/theme.css";
 @import "./base.css";

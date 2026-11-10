@@ -1,0 +1,340 @@
+/**
+ * UI theme "classic": the look of Odoo Toolbox before the UI themes.
+ *
+ * The DaisyUI colors and sizes are the original `odoolight` / `odoodark` themes (only the
+ * dark primary is lighter, for contrast);
+ * the contract tokens are derived from them (cool grey-violet neutrals, hue 280). System
+ * fonts like the original Tailwind defaults, flat surfaces (DaisyUI depth 0), small radii.
+ */
+
+/* ------------------------------------------------------------
+   DaisyUI colors and sizes (original odoolight / odoodark)
+   ------------------------------------------------------------ */
+@plugin "daisyui/theme" {
+  name: "classic-light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(98% 0 0);
+  --color-base-300: oklch(95% 0 0);
+  --color-base-content: oklch(20% 0.02 280);
+  --color-primary: oklch(46.49% 0.066 336.68);
+  --color-primary-content: oklch(98% 0.01 310);
+  --color-secondary: oklch(55% 0.12 240);
+  --color-secondary-content: oklch(98% 0.02 240);
+  --color-accent: oklch(74.53% 0.132 183.48);
+  --color-accent-content: oklch(15% 0.02 195);
+  --color-neutral: oklch(93.36% 0.0058 264.53);
+  --color-neutral-content: oklch(25% 0.02 280);
+  --color-info: oklch(60% 0.15 220);
+  --color-info-content: oklch(98% 0.02 220);
+  --color-success: oklch(55% 0.18 150);
+  --color-success-content: oklch(98% 0.02 150);
+  --color-warning: oklch(65% 0.2 85);
+  --color-warning-content: oklch(15% 0.04 85);
+  --color-error: oklch(50% 0.2 15);
+  --color-error-content: oklch(98% 0.02 15);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "classic-dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(18% 0.02 280);
+  --color-base-200: oklch(22% 0.03 280);
+  --color-base-300: oklch(28% 0.04 280);
+  --color-base-content: oklch(92% 0.02 280);
+  /* Original plum lightened: oklch(46.49%) is barely visible as text on the dark surfaces */
+  --color-primary: oklch(68% 0.09 336.68);
+  --color-primary-content: oklch(17% 0.02 336.68);
+  --color-secondary: oklch(55% 0.12 240);
+  --color-secondary-content: oklch(95% 0.02 240);
+  --color-accent: oklch(74.53% 0.132 183.48);
+  --color-accent-content: oklch(15% 0.02 195);
+  --color-neutral: oklch(36.71% 0.0225 278.34);
+  --color-neutral-content: oklch(85% 0.02 280);
+  --color-info: oklch(70% 0.15 220);
+  --color-info-content: oklch(15% 0.02 220);
+  --color-success: oklch(65% 0.18 150);
+  --color-success-content: oklch(15% 0.02 150);
+  --color-warning: oklch(75% 0.2 85);
+  --color-warning-content: oklch(20% 0.04 85);
+  --color-error: oklch(60% 0.2 15);
+  --color-error-content: oklch(95% 0.02 15);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: calc(var(--ot-control-h) / 10);
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ------------------------------------------------------------
+   Contract tokens (see src/theme/tokens.css)
+   ------------------------------------------------------------ */
+[data-ui-theme="classic"] {
+  /* The original Tailwind font stacks: system fonts, nothing bundled */
+  --ot-font-display:
+    ui-sans-serif, system-ui, sans-serif, "Noto Sans Devanagari", "Noto Sans Arabic",
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+  --ot-font-ui:
+    ui-sans-serif, system-ui, sans-serif, "Noto Sans Devanagari", "Noto Sans Arabic",
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
+  --ot-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  --ot-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Type scale: a step above odoo-native, closer to the original Tailwind sizes */
+  --ot-text-micro: calc(8.5px * var(--ot-text-scale));
+  --ot-text-caption: calc(9.5px * var(--ot-text-scale));
+  --ot-text-meta: calc(10.5px * var(--ot-text-scale));
+  --ot-text-small: calc(11px * var(--ot-text-scale));
+  --ot-text-note: calc(11.5px * var(--ot-text-scale));
+  --ot-text-ui: calc(12px * var(--ot-text-scale));
+  --ot-text-label: calc(12.5px * var(--ot-text-scale));
+  --ot-text-body: calc(13.5px * var(--ot-text-scale));
+  --ot-text-title: calc(14.5px * var(--ot-text-scale));
+  --ot-text-heading: calc(16px * var(--ot-text-scale));
+  --ot-text-headline: calc(19px * var(--ot-text-scale));
+  --ot-text-display-sm: calc(27px * var(--ot-text-scale));
+  --ot-text-display: calc(32px * var(--ot-text-scale));
+  --ot-leading-title: 1.3;
+  --ot-leading-heading: 1.25;
+  --ot-leading-display: 1.15;
+
+  --ot-border-w: 1px;
+  --ot-radius-tight: 4px;
+  --ot-radius-panel: 8px;
+
+  /* Density */
+  --ot-target: 32px;
+  --ot-target-sm: 28px;
+  --ot-control-h: 34px;
+  --ot-control-sm-h: 28px;
+  --ot-search-h: 34px;
+  --ot-row-h: 51px;
+  --ot-table-row-h: 32px;
+  --ot-table-head-h: 32px;
+  --ot-tab-h: 42px;
+  --ot-chip-h: 20px;
+  --ot-pill-h: 18px;
+  --ot-switch-h: 22px;
+  --ot-popup-w: 372px;
+  --ot-options-sidebar-w: 268px;
+  --ot-query-rail-w: 300px;
+  --ot-focus-width: 2px;
+  --ot-focus-offset: 2px;
+}
+
+[data-ui-theme="classic"][data-color-scheme="light"],
+[data-ui-theme="classic"] [data-color-scheme="light"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: oklch(94% 0.025 336.68);
+  --ot-avatar-1-ink: oklch(46.49% 0.066 336.68);
+  --ot-avatar-2-soft: oklch(94% 0.03 183.48);
+  --ot-avatar-2-ink: oklch(48% 0.09 183.48);
+  --ot-avatar-3-soft: oklch(95% 0.04 85);
+  --ot-avatar-3-ink: oklch(50% 0.11 75);
+  --ot-avatar-4-soft: oklch(94% 0.03 240);
+  --ot-avatar-4-ink: oklch(48% 0.12 240);
+  --ot-avatar-5-soft: oklch(94% 0.04 150);
+  --ot-avatar-5-ink: oklch(47% 0.12 150);
+  --ot-avatar-6-soft: oklch(94% 0.03 40);
+  --ot-avatar-6-ink: oklch(50% 0.14 40);
+  --ot-avatar-7-soft: oklch(94% 0.03 290);
+  --ot-avatar-7-ink: oklch(48% 0.13 290);
+  --ot-avatar-8-soft: oklch(94% 0.01 260);
+  --ot-avatar-8-ink: oklch(45% 0.03 260);
+
+  --ot-canvas: oklch(97% 0.003 280);
+  --ot-canvas-soft: oklch(98% 0 0);
+  --ot-surface: oklch(100% 0 0);
+  --ot-surface-2: oklch(98% 0 0);
+  --ot-surface-3: oklch(95% 0 0);
+  --ot-surface-inset: oklch(97% 0.003 280);
+
+  --ot-line: oklch(91% 0.006 280);
+  --ot-line-strong: oklch(85% 0.01 280);
+  --ot-line-soft: oklch(94% 0.004 280);
+
+  --ot-ink: oklch(20% 0.02 280);
+  --ot-ink-2: oklch(38% 0.02 280);
+  --ot-ink-3: oklch(48% 0.02 280);
+  --ot-ink-4: oklch(54% 0.02 280);
+
+  --ot-primary-strong: oklch(38% 0.066 336.68);
+  --ot-primary-soft: oklch(95% 0.015 336.68);
+  --ot-primary-tint: oklch(90% 0.03 336.68);
+  --ot-accent-strong: oklch(50% 0.1 183.48);
+  --ot-accent-soft: oklch(95% 0.03 183.48);
+  --ot-accent-tint: oklch(90% 0.05 183.48);
+
+  --ot-warning-soft: oklch(96% 0.04 85);
+  --ot-warning-ink: oklch(50% 0.12 75);
+  --ot-error-soft: oklch(95% 0.03 15);
+  --ot-error-ink: oklch(50% 0.2 15);
+  --ot-success-soft: oklch(95% 0.04 150);
+  --ot-success-ink: oklch(48% 0.14 150);
+  --ot-info-soft: oklch(95% 0.03 220);
+  --ot-info-ink: oklch(50% 0.13 220);
+
+  --ot-scrim: oklch(20% 0.02 280 / 0.35);
+
+  --ot-topbar: oklch(46.49% 0.066 336.68);
+  --ot-topbar-content: oklch(98% 0.01 310);
+  --ot-topbar-muted: oklch(98% 0.01 310 / 0.72);
+  --ot-topbar-line: oklch(100% 0 0 / 0.14);
+
+  --ot-focus-ring: 0 0 0 3px oklch(74.53% 0.132 183.48 / 0.3);
+  --ot-shadow-raised: 0 1px 2px oklch(0% 0 0 / 0.05);
+  --ot-shadow-card: 0 1px 3px oklch(0% 0 0 / 0.08), 0 1px 2px oklch(0% 0 0 / 0.04);
+  --ot-shadow-overlay: 0 10px 30px -10px oklch(0% 0 0 / 0.25);
+  --ot-shadow-pop: 0 20px 50px -15px oklch(0% 0 0 / 0.35);
+}
+
+[data-ui-theme="classic"][data-color-scheme="dark"],
+[data-ui-theme="classic"] [data-color-scheme="dark"] {
+  /* Avatar palette: plum, teal, ochre, blue, green, rust, violet, slate */
+  --ot-avatar-1-soft: oklch(28% 0.04 336.68);
+  --ot-avatar-1-ink: oklch(80% 0.07 336.68);
+  --ot-avatar-2-soft: oklch(28% 0.04 183.48);
+  --ot-avatar-2-ink: oklch(80% 0.11 183.48);
+  --ot-avatar-3-soft: oklch(29% 0.05 85);
+  --ot-avatar-3-ink: oklch(80% 0.13 85);
+  --ot-avatar-4-soft: oklch(28% 0.05 240);
+  --ot-avatar-4-ink: oklch(78% 0.1 240);
+  --ot-avatar-5-soft: oklch(28% 0.05 150);
+  --ot-avatar-5-ink: oklch(78% 0.13 150);
+  --ot-avatar-6-soft: oklch(28% 0.05 40);
+  --ot-avatar-6-ink: oklch(78% 0.11 40);
+  --ot-avatar-7-soft: oklch(28% 0.05 290);
+  --ot-avatar-7-ink: oklch(80% 0.1 290);
+  --ot-avatar-8-soft: oklch(28% 0.02 260);
+  --ot-avatar-8-ink: oklch(80% 0.03 260);
+
+  --ot-canvas: oklch(15% 0.02 280);
+  --ot-canvas-soft: oklch(16.5% 0.02 280);
+  --ot-surface: oklch(18% 0.02 280);
+  --ot-surface-2: oklch(20% 0.025 280);
+  --ot-surface-3: oklch(22% 0.03 280);
+  --ot-surface-inset: oklch(16% 0.02 280);
+
+  --ot-line: oklch(28% 0.04 280);
+  --ot-line-strong: oklch(34% 0.04 280);
+  --ot-line-soft: oklch(24% 0.03 280);
+
+  --ot-ink: oklch(92% 0.02 280);
+  --ot-ink-2: oklch(80% 0.02 280);
+  --ot-ink-3: oklch(70% 0.02 280);
+  --ot-ink-4: oklch(66% 0.02 280);
+
+  --ot-primary-strong: oklch(78% 0.07 336.68);
+  --ot-primary-soft: oklch(28% 0.04 336.68);
+  --ot-primary-tint: oklch(33% 0.055 336.68);
+  --ot-accent-strong: oklch(80% 0.12 183.48);
+  --ot-accent-soft: oklch(26% 0.04 183.48);
+  --ot-accent-tint: oklch(32% 0.06 183.48);
+
+  --ot-warning-soft: oklch(28% 0.05 85);
+  --ot-warning-ink: oklch(80% 0.15 85);
+  --ot-error-soft: oklch(27% 0.06 15);
+  --ot-error-ink: oklch(72% 0.15 15);
+  --ot-success-soft: oklch(27% 0.05 150);
+  --ot-success-ink: oklch(75% 0.15 150);
+  --ot-info-soft: oklch(27% 0.05 220);
+  --ot-info-ink: oklch(76% 0.12 220);
+
+  --ot-scrim: oklch(5% 0.01 280 / 0.6);
+
+  --ot-topbar: oklch(22% 0.03 280);
+  --ot-topbar-content: oklch(92% 0.02 280);
+  --ot-topbar-muted: oklch(75% 0.02 280);
+  --ot-topbar-line: oklch(30% 0.04 280);
+
+  --ot-focus-ring: 0 0 0 3px oklch(74.53% 0.132 183.48 / 0.3);
+  --ot-shadow-raised: 0 1px 2px oklch(0% 0 0 / 0.3);
+  --ot-shadow-card: 0 1px 3px oklch(0% 0 0 / 0.4), 0 1px 2px oklch(0% 0 0 / 0.25);
+  --ot-shadow-overlay: 0 12px 32px -10px oklch(0% 0 0 / 0.6);
+  --ot-shadow-pop: 0 24px 60px -15px oklch(0% 0 0 / 0.7);
+}
+
+/* Color-safe palette tints (the shared hues are in base.css). */
+[data-ui-theme="classic"][data-cvd="on"][data-color-scheme="light"],
+[data-ui-theme="classic"][data-cvd="on"] [data-color-scheme="light"] {
+  --ot-success-soft: oklch(95% 0.02 240);
+  --ot-error-soft: oklch(95% 0.03 50);
+  --ot-info-soft: oklch(94% 0.03 290);
+}
+
+[data-ui-theme="classic"][data-cvd="on"][data-color-scheme="dark"],
+[data-ui-theme="classic"][data-cvd="on"] [data-color-scheme="dark"] {
+  --ot-success-soft: oklch(26% 0.04 240);
+  --ot-error-soft: oklch(27% 0.05 50);
+  --ot-info-soft: oklch(26% 0.05 290);
+}
+
+/* ------------------------------------------------------------
+   Component tweaks
+   Kept close to the DaisyUI defaults of the original look; the sizes follow the type
+   scale so the large text preference applies.
+   ------------------------------------------------------------ */
+@layer utilities {
+  @layer daisyui.ui-theme {
+    [data-ui-theme="classic"] {
+      & .btn {
+        --fontsize: var(--ot-text-body);
+      }
+
+      & .btn-sm {
+        --fontsize: var(--ot-text-label);
+      }
+
+      & .btn-xs {
+        --fontsize: var(--ot-text-ui);
+      }
+
+      & .btn-ghost:not(.btn-active):hover {
+        --btn-bg: var(--ot-surface-3);
+        --btn-border: transparent;
+      }
+
+      & .btn-soft.btn-accent {
+        --btn-fg: var(--ot-accent-strong);
+      }
+
+      & :is(.input, .select, .textarea):focus,
+      & :is(.input, .select, .textarea):focus-within {
+        --input-color: var(--color-accent);
+        outline: none;
+        box-shadow: var(--ot-focus-ring);
+      }
+
+      & .toggle:not(.toggle-xs) {
+        --size: var(--ot-switch-h);
+      }
+
+      & .kbd {
+        font-family: var(--ot-font-mono);
+        font-size: var(--ot-text-meta);
+      }
+
+      & ::selection {
+        background: var(--color-primary);
+        color: var(--color-primary-content);
+      }
+    }
+  }
+}

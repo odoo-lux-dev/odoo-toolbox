@@ -76,7 +76,7 @@ describe("system color scheme", () => {
     const target = document.createElement("div");
     applyTheme(settings({ extensionTheme: "system" }), target);
     expect(target.getAttribute("data-color-scheme")).toBe("light");
-    expect(target.getAttribute("data-theme")).toBe("odoo-native-light");
+    expect(target.getAttribute("data-theme")).toBe("classic-light");
   });
 });
 
@@ -92,8 +92,8 @@ describe("applyTheme", () => {
       }),
       target,
     );
-    expect(target.getAttribute("data-theme")).toBe("odoo-native-light");
-    expect(target.getAttribute("data-ui-theme")).toBe("odoo-native");
+    expect(target.getAttribute("data-theme")).toBe("classic-light");
+    expect(target.getAttribute("data-ui-theme")).toBe("classic");
     expect(target.getAttribute("data-color-scheme")).toBe("light");
     expect(target.getAttribute("data-text-size")).toBe("large");
     expect(target.getAttribute("data-cvd")).toBe("on");
