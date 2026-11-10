@@ -30,6 +30,20 @@ export const createStore = <T>(key: string, options: StoreOptions<T>) => {
   };
 };
 
+const sortKeys = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.keys(value)
+      .toSorted()
+      .map((key) => [key, sortKeys((value as Record<string, unknown>)[key])]),
+  );
+};
+
+// Chrome returns stored objects with their keys sorted, whatever order they were written in.
+const sameValue = (a: unknown, b: unknown): boolean =>
+  JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b));
+
 /**
  * Local store mirrored to a `sync:` item: the extension works on the local copy and the
  * background periodically persists it to the browser account.
@@ -45,10 +59,17 @@ export const createSyncedStore = <T>(
     migrations: options.sync.migrations,
   });
 
+  const isSynced = async (): Promise<boolean> =>
+    sameValue(await syncItem.getValue(), await local.get());
+
   return {
     ...local,
     getSynced: async (): Promise<T> => syncItem.getValue(),
-    persistToSync: async (): Promise<void> => syncItem.setValue(await local.get()),
+    isSynced,
+    // Every `sync:` write counts against the browser quotas: skip the unchanged ones.
+    persistToSync: async (): Promise<void> => {
+      if (!(await isSynced())) await syncItem.setValue(await local.get());
+    },
   };
 };
 

@@ -23,17 +23,15 @@ const COMMANDS: Record<string, () => void> = {
       .catch((error) => Logger.error("An error occured toggling debug mode", error)),
 };
 
+const persistDataToSync = () =>
+  configurationService
+    .persistDataToSync()
+    .catch((error: unknown) =>
+      Logger.error("An error occured while saving data to the cloud", error),
+    );
+
 const ALARMS: Record<string, { options: { periodInMinutes: number }; fn: () => void }> = {
-  "persist-local-data": {
-    options: { periodInMinutes: 1 },
-    fn: () =>
-      configurationService
-        .persistDataToSync()
-        .then(() => Logger.info("Data saved to the cloud"))
-        .catch((error: unknown) =>
-          Logger.error("An error occured while saving data to the cloud", error),
-        ),
-  },
+  "persist-local-data": { options: { periodInMinutes: 1 }, fn: persistDataToSync },
 };
 
 const checkAndHandleAlarms = () => {
@@ -69,7 +67,7 @@ export default defineBackground(() => {
     if (details.reason === "install") {
       await configurationService.alignLocalDataWithSyncedData();
     } else {
-      await configurationService.persistDataToSync();
+      await persistDataToSync();
     }
     checkAndHandleAlarms();
 

@@ -93,6 +93,7 @@ class SettingsService {
   }
 
   persistSettingsToSync = store.persistToSync;
+  isSettingsSynced = store.isSynced;
 }
 
 export const settingsService = new SettingsService();

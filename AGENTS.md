@@ -130,13 +130,17 @@ Errors cross contexts through `serializeError` / `deserializeError`, so they kee
 | DevTools quick domains (`quickDomains`) | `quick-domains-service.ts` | Local + synced, seeded by `sync.init` |
 | DevTools history (`devtools_history`) | `history-service.ts` | Local only, max 150 entries, pinned entries always kept |
 | Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, newest first |
+| Last save to `sync:` (`syncStatus`) | `configuration-service.ts` | Local only, time of the last full save and the last failure |
 
 Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`), and the
 `bySequence` / `resequence` ordering helpers, all in `services/synced-store.ts`.
 
 ### Sync
 
-- Background alarm `persist-local-data` (every minute) copies local data to `sync:`.
+- Background alarm `persist-local-data` (every minute) copies local data to `sync:`, only the
+  parts that changed (every write counts against the browser sync quotas), and records the
+  outcome in `syncStatus`. Options shows it next to the backup controls. The browser never says
+  when the data reaches the account: the status is about `sync:` only.
 - On startup and on a new install, `configurationService.alignLocalDataWithSyncedData()`
   replaces the local data with the synced data, **unless** the sync storage is empty. Local
   edits made while the browser is offline or not signed in can be overwritten by that path.
