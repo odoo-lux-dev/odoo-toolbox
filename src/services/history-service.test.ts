@@ -81,4 +81,12 @@ describe("historyService", () => {
     storedVersions.set(STORAGE_KEY, 1);
     expect(await historyService.get()).toMatchObject([{ id: "old", pinned: false, label: "" }]);
   });
+
+  test("the migrations keep the values already stored", async () => {
+    memoryStorage.set(STORAGE_KEY, [
+      { id: "old", timestamp: 1, type: "search", model: "m", pinned: true, label: "kept" },
+    ]);
+    storedVersions.set(STORAGE_KEY, 1);
+    expect(await historyService.get()).toMatchObject([{ id: "old", pinned: true, label: "kept" }]);
+  });
 });
