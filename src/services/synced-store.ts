@@ -41,7 +41,7 @@ const sortKeys = (value: unknown): unknown => {
 };
 
 // Chrome returns stored objects with their keys sorted, whatever order they were written in.
-const sameValue = (a: unknown, b: unknown): boolean =>
+export const sameValue =(a: unknown, b: unknown): boolean =>
   JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b));
 
 /**

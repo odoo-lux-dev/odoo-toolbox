@@ -64,10 +64,14 @@ export const buildDebugModeRules = ({
 }: DebugModeRulesInput): DebugModeRule[] => {
   if (!defaultDebugMode || defaultDebugMode === "disabled") return [];
 
-  const allowedHosts = hosts.filter(
-    (host) =>
-      !ignoredPaths.some((rule) => rule.scope === "domain" && matchesDomain(host, rule.domain)),
-  );
+  // Sorted, so that reordering the hosts (most recently visited first) gives the same rules
+  // and the browser rules are not replaced for nothing.
+  const allowedHosts = hosts
+    .toSorted()
+    .filter(
+      (host) =>
+        !ignoredPaths.some((rule) => rule.scope === "domain" && matchesDomain(host, rule.domain)),
+    );
   if (!allowedHosts.length) return [];
 
   const allowFilters = [

@@ -129,7 +129,7 @@ Errors cross contexts through `serializeError` / `deserializeError`, so they kee
 | Odoo.sh favorites (`starredProjects`) | `favorites-service.ts` | Local + synced, ordered by `sequence` |
 | DevTools quick domains (`quickDomains`) | `quick-domains-service.ts` | Local + synced, seeded by `sync.init` |
 | DevTools history (`devtools_history`) | `history-service.ts` | Local only, max 150 entries, pinned entries always kept |
-| Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, newest first |
+| Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, most recently visited first |
 | Last save to `sync:` (`syncStatus`) | `configuration-service.ts` | Local only, time of the last full save and the last failure |
 
 Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`), and the

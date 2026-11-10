@@ -41,7 +41,8 @@ Related modules outside this folder:
 ## Debug mode, from the background's side
 
 1. Settings or known hosts change → `debugModeRulesService` rebuilds the dynamic rules
-   (replaces all of them, skips the write when the serialized rules did not change).
+   (replaces all of them, and skips the write when the browser already has the same rules, so
+   neither a worker restart nor a reordering of the hosts rewrites them).
 2. A backend page commits (`onCommitted`, main frame only):
    - the default debug mode must be set, otherwise nothing happens;
    - the background reads `window.odoo.debug` in the page (MAIN world). A non-injectable tab
