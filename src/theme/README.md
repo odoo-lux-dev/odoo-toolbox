@@ -126,7 +126,8 @@ contract doesn't have, add a semantic token to `tokens.css` and define it in **e
    - optional component tweaks inside `@layer utilities { @layer daisyui.ui-theme { ... } }`,
      scoped to `[data-ui-theme="<id>"]` (this sub-layer wins over DaisyUI components and
      still loses to Tailwind utilities).
-2. Create `src/theme/<id>/fonts.css` (bundle fonts with `@fontsource`, no CDN).
+2. Create `src/theme/<id>/fonts.css` (bundle fonts with `@fontsource`, no CDN). The build
+   (`trimFonts` in `wxt.config.ts`) keeps only the `.woff2` files of the Latin subsets.
 3. Import them in `core.css` and `fonts.css`, and list `<id>-light, <id>-dark` in the DaisyUI
    `themes:` option of `core.css`.
 4. Register the theme in `themes.ts` (`UI_THEME_IDS` and `UI_THEMES`): the settings, the
