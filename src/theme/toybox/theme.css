@@ -544,7 +544,7 @@
         border-radius: 999px;
       }
 
-      & .ot-nav-item[aria-current] {
+      & .ot-nav-item:is([aria-current], [aria-pressed="true"]) {
         background-color: var(--ot-primary-tint);
         color: var(--ot-primary-strong);
       }

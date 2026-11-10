@@ -656,7 +656,7 @@
     color: var(--ot-ink);
   }
 
-  .ot-nav-item[aria-current] {
+  .ot-nav-item:is([aria-current], [aria-pressed="true"]) {
     background-color: var(--ot-primary-soft);
     color: var(--color-primary);
     font-weight: 600;
@@ -682,7 +682,7 @@
     white-space: nowrap;
   }
 
-  .ot-nav-item[aria-current] .ot-nav-icon {
+  .ot-nav-item:is([aria-current], [aria-pressed="true"]) .ot-nav-icon {
     color: var(--color-primary);
   }
 

@@ -486,7 +486,7 @@
         background-color: var(--ot-surface-2);
       }
 
-      & .ot-nav-item[aria-current] {
+      & .ot-nav-item:is([aria-current], [aria-pressed="true"]) {
         background-color: var(--ot-surface-3);
         color: var(--ot-ink);
         box-shadow: inset 2px 0 0 var(--color-primary);
@@ -517,8 +517,8 @@
     }
 
     /* Active nav item rail on the inline-start side in RTL locales too */
-    [data-ui-theme="console"][dir="rtl"] .ot-nav-item[aria-current],
-    [data-ui-theme="console"] [dir="rtl"] .ot-nav-item[aria-current] {
+    [data-ui-theme="console"][dir="rtl"] .ot-nav-item:is([aria-current], [aria-pressed="true"]),
+    [data-ui-theme="console"] [dir="rtl"] .ot-nav-item:is([aria-current], [aria-pressed="true"]) {
       box-shadow: inset -2px 0 0 var(--color-primary);
     }
   }
