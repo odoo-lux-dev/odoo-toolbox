@@ -142,8 +142,3 @@ contract doesn't have, add a semantic token to `tokens.css` and define it in **e
 5. Add `options.settings.theme_<id>` and `options.settings.theme_<id>_desc` to every
    locale (`-` becomes `_` in the id).
 6. `bun test src/theme` checks the wiring and the contract.
-
-## Next steps
-
-See [`ROADMAP.md`](ROADMAP.md): what is left of the accessibility behaviours and of the
-command palette.
