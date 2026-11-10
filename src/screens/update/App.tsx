@@ -13,7 +13,7 @@ import {
   Wrench01Icon,
 } from "@hugeicons/core-free-icons";
 
-import "./style.css";
+import "@/theme/index.css";
 import { Show, For, createSignal, onCleanup } from "solid-js";
 
 import { Alert } from "@/components/ui/alert";

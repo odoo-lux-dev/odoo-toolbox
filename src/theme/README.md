@@ -31,6 +31,10 @@ tactile and playful, from `mockups/13-toybox`).
 shadow root): font files bundled with the extension can't be used there, so those surfaces
 fall back to the system fonts listed in the theme font stacks.
 
+Each extension page imports `index.css` from its `App.tsx` (never through a page stylesheet
+that `@import`s it): the pages then share one built stylesheet instead of one copy each.
+Page-specific styles go in a separate file imported after it (see `screens/devtools/style.css`).
+
 ## Runtime
 
 `applyTheme(settings, target)` (the appearance settings) sets these attributes on the target

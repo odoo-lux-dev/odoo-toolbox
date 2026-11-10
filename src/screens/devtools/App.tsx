@@ -1,3 +1,4 @@
+import "@/theme/index.css";
 import "./style.css";
 import { onCleanup, onMount } from "solid-js";
 import { ToastProvider, Toaster } from "solid-notifications";
