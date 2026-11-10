@@ -5,12 +5,13 @@
  * utilities (src/theme/tokens.css) are used here, so every UI theme restyles
  * these blocks without touching them.
  */
-import { createSignal, onCleanup, onMount, Show, splitProps, type JSX } from "solid-js";
+import { children, createSignal, onCleanup, onMount, Show, splitProps, type JSX } from "solid-js";
 
 import { Chip, CountPill } from "@/components/ui/chip";
 import { cx } from "@/components/ui/cx";
 import { Panel as BasePanel } from "@/components/ui/panel";
 import { StatusDot } from "@/components/ui/status";
+import { queryRailCollapsed } from "@/screens/devtools/router";
 
 /** Small mono uppercase label (section eyebrows, field labels, table headers). */
 export const EYEBROW_CLASS =
@@ -185,6 +186,48 @@ export const Panel = (props: JSX.HTMLAttributes<HTMLElement> & { children: JSX.E
     <BasePanel class={cx("min-h-0 overflow-hidden", local.class)} {...rest}>
       {local.children}
     </BasePanel>
+  );
+};
+
+interface RailProps {
+  eyebrow: string;
+  title: string;
+  headerEnd?: JSX.Element;
+  footer: JSX.Element;
+  children: JSX.Element;
+}
+
+export const Rail = (props: RailProps) => {
+  const headerEnd = children(() => props.headerEnd);
+  return (
+    <aside
+      data-slot="query-rail"
+      data-state={queryRailCollapsed() ? "collapsed" : "open"}
+      class={cx(
+        "flex min-h-0 w-full shrink-0 flex-col border-line bg-surface-2 max-lg:max-h-[55vh] max-lg:border-b lg:h-full lg:w-query-rail lg:border-e",
+        queryRailCollapsed() ? "hidden" : undefined,
+      )}
+    >
+      <header class="flex shrink-0 items-start justify-between gap-2.5 border-b border-line-soft px-3.5 pt-3 pb-2.5">
+        <div class="min-w-0">
+          <Eyebrow>{props.eyebrow}</Eyebrow>
+          <h1 class="mt-0.5 truncate font-display text-base font-semibold tracking-tight text-ink">
+            {props.title}
+          </h1>
+        </div>
+        <Show when={headerEnd()}>
+          <span class="mt-0.5 shrink-0">{headerEnd()}</span>
+        </Show>
+      </header>
+
+      <div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3.5 py-3">
+        {props.children}
+      </div>
+
+      <div class="flex shrink-0 flex-col gap-1.5 border-t border-line bg-surface-2 px-3.5 pt-2.5 pb-3">
+        {props.footer}
+      </div>
+    </aside>
   );
 };
 
