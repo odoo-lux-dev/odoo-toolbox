@@ -330,7 +330,7 @@ const QuickDomainButtons = (props: { onDomainSelect: (domain: string) => void })
         <div
           ref={(el) => (measurementRef = el)}
           aria-hidden="true"
-          class="invisible absolute inset-s-0 top-0 flex gap-2 whitespace-nowrap"
+          class="invisible absolute inset-s-0 top-0 flex max-w-full gap-2 overflow-hidden whitespace-nowrap"
         >
           <For each={store.domains()}>
             {(domain) => (
