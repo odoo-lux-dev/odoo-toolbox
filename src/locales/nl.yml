@@ -500,6 +500,15 @@ options:
     success: Configuratie succesvol geïmporteerd
     error_import: "Er is een fout opgetreden tijdens bestandsverwerking: $1"
     invalid_format: Ongeldig bestandsformaat
+  sync:
+    hint: "Wordt elke minuut naar de synchronisatieopslag van de browser gekopieerd; de browser stuurt het daarna naar je account als synchronisatie aan staat."
+    synced: "Opgeslagen in browsersynchronisatie"
+    pending: "Wijzigingen nog niet opgeslagen in browsersynchronisatie"
+    pending_since: "Wijzigingen in afwachting, laatst opgeslagen $1"
+    failed: "Browsersynchronisatie mislukt voor $1: $2"
+    part_settings: "instellingen"
+    part_favorites: "favorieten"
+    part_quick_domains: "snelle domeinen"
   ignored_debug:
     title: Genegeerde paden voor debugmodus
     desc: Pagina's die aan deze regels voldoen, krijgen geen gedwongen debugmodus van de extensie. Handig om sommige pagina's (zoals de demo/trial-trechter) onaangeroerd te laten.

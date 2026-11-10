@@ -500,6 +500,15 @@ options:
     success: Configuration successfully imported
     error_import: "An error occured during file process: $1"
     invalid_format: Invalid file format
+  sync:
+    hint: "Copied every minute to the browser sync storage; the browser then sends it to your account when sync is on."
+    synced: "Saved to browser sync"
+    pending: "Changes not saved to browser sync yet"
+    pending_since: "Changes pending, last saved $1"
+    failed: "Browser sync failed for the $1: $2"
+    part_settings: "settings"
+    part_favorites: "favorites"
+    part_quick_domains: "quick domains"
   ignored_debug:
     title: Ignored debug paths
     desc: Pages matching these rules won't have their debug mode forced by the extension. This is useful to leave some pages (like the demo/trial funnel) untouched.
