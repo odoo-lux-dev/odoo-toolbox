@@ -55,13 +55,13 @@ Each surface root calls `useExtensionTheme()` (`src/hooks/use-extension-theme.ts
 follows their changes. The technical list reads the same settings from the page datasets
 (written by the global content script) when it starts.
 
-| Setting             | Values                    | Applied as                                                    |
-| ------------------- | ------------------------- | ------------------------------------------------------------- |
-| `extensionUiTheme`  | `UI_THEME_IDS`            | `data-ui-theme`, `data-theme`                                 |
-| `extensionTheme`    | `system`, `light`, `dark` | `data-color-scheme` (`system` follows `prefers-color-scheme`) |
-| `extensionTextSize` | `standard`, `large`       | `data-text-size`                                              |
-| `extensionMotion`   | `system`, `reduced`       | `data-motion`                                                 |
-| `colorBlindMode`    | boolean (also Odoo.sh)    | `data-cvd`                                                    |
+| Setting              | Values                    | Applied as                                                    |
+| -------------------- | ------------------------- | ------------------------------------------------------------- |
+| `extensionUiTheme`   | `UI_THEME_IDS`            | `data-ui-theme`, `data-theme`                                 |
+| `extensionTheme`     | `system`, `light`, `dark` | `data-color-scheme` (`system` follows `prefers-color-scheme`) |
+| `extensionTextSize`  | `standard`, `large`       | `data-text-size`                                              |
+| `extensionMotion`    | `system`, `reduced`       | `data-motion`                                                 |
+| `extensionColorSafe` | boolean                   | `data-cvd`                                                    |
 
 Users choose them in Options › Appearance (`src/screens/options/appearance-options.tsx`,
 with a live preview of each theme) and from every command palette

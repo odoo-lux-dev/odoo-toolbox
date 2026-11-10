@@ -545,7 +545,7 @@ options:
     reduce_motion: "Réduire les animations"
     reduce_motion_desc: "Désactive animations et transitions, même si le système les autorise."
     color_safe: "Palette adaptée aux daltoniens"
-    color_safe_desc: "Couleurs d'état distinguables en cas de daltonisme. Même réglage que le mode daltonien d'Odoo.sh."
+    color_safe_desc: "Couleurs d'état distinguables en cas de daltonisme."
     language: Langue
     language_auto: Auto (navigateur)
     language_desc: Choisir la langue de l'extension

@@ -151,7 +151,7 @@ export const AccessibilityOption: SettingCard = {
       on: "reduced",
       off: "system",
     },
-    booleanSwitch("colorBlindMode", "color-safe-palette", "options.settings.color_safe"),
+    booleanSwitch("extensionColorSafe", "color-safe-palette", "options.settings.color_safe"),
   ],
   Component: () => (
     <SwitchesCard card={AccessibilityOption} description="options.settings.accessibility_desc" />

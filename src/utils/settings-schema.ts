@@ -95,7 +95,7 @@ const SETTINGS = {
   taskUrl: text(""),
   taskUrlRegex: text("/-(\\d+)-/"),
   nostalgiaMode: bool(false),
-  colorBlindMode: bool(false, "colorBlindMode"),
+  colorBlindMode: bool(false),
   defaultColorScheme: oneOf(DEFAULT_COLOR_SCHEMES, "none", "defaultColorScheme"),
   showTechnicalList: bool(false),
   technicalListPosition: oneOf(TECHNICAL_LIST_POSITIONS, "right", "technicalListPosition"),
@@ -113,6 +113,7 @@ const SETTINGS = {
   extensionUiTheme: oneOf(UI_THEME_IDS, DEFAULT_UI_THEME, "odooToolboxUiTheme"),
   extensionTextSize: oneOf(TEXT_SIZES, DEFAULT_TEXT_SIZE, "odooToolboxTextSize"),
   extensionMotion: oneOf(MOTION_PREFERENCES, DEFAULT_MOTION, "odooToolboxMotion"),
+  extensionColorSafe: bool(false, "odooToolboxColorSafe"),
 };
 
 type Schema = typeof SETTINGS;

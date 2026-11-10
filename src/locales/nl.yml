@@ -545,7 +545,7 @@ options:
     reduce_motion: "Beweging beperken"
     reduce_motion_desc: "Schakelt animaties en overgangen uit, ook als het systeem ze toestaat."
     color_safe: "Kleurenblindvriendelijk palet"
-    color_safe_desc: "Statuskleuren die ook bij kleurenblindheid te onderscheiden zijn. Zelfde instelling als de kleurenblindmodus van Odoo.sh."
+    color_safe_desc: "Statuskleuren die ook bij kleurenblindheid te onderscheiden zijn."
     language: Taal
     language_auto: Auto (browser)
     language_desc: Kies de taal van de extensie

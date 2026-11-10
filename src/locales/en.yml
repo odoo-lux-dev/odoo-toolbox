@@ -545,7 +545,7 @@ options:
     reduce_motion: "Reduce motion"
     reduce_motion_desc: "Disables animations and transitions, even if the system allows them."
     color_safe: "Color-safe palette"
-    color_safe_desc: "Status colors distinguishable with color vision deficiencies. Same setting as the Odoo.sh color blind mode."
+    color_safe_desc: "Status colors distinguishable with color vision deficiencies."
     language: Language
     language_auto: Auto (browser)
     language_desc: Choose the extension language

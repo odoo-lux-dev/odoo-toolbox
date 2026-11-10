@@ -44,7 +44,7 @@
 }
 
 /*
- * Color-safe palette (data-cvd="on", "Color blind mode" setting): Okabe–Ito
+ * Color-safe palette (data-cvd="on", "Color-safe palette" setting): Okabe–Ito
  * based semantic colors, shared by every UI theme (each theme only tints the
  * `-soft` backgrounds). Success is blue, danger vermilion, info purple; warning
  * keeps its ochre. Icons and labels still carry meaning.
