@@ -10,6 +10,7 @@ import { LiveRegion } from "@/components/ui/live-region";
 import { StateMessage } from "@/components/ui/status";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useSlashFocus } from "@/hooks/use-slash-focus";
+import { openFavoriteInNewTab, openFavoriteInTab } from "@/screens/popup/actions";
 import { NoFavoritesState } from "@/screens/shared/no-favorites-state";
 import { t } from "@/services/i18n-service";
 
@@ -69,10 +70,16 @@ export const ProjectList = () => {
   useSlashFocus(() => searchInput);
 
   const handleSearchKeyDown = (event: KeyboardEvent) => {
-    if (event.key !== "Escape") return;
-    event.preventDefault();
-    setQuery("");
-    searchInput?.blur();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setQuery("");
+      searchInput?.blur();
+    } else if (event.key === "Enter" && query().trim() && filtered().length === 1) {
+      event.preventDefault();
+      const { name } = filtered()[0];
+      if (event.ctrlKey || event.metaKey) openFavoriteInNewTab(name);
+      else openFavoriteInTab(name);
+    }
   };
 
   return (
@@ -101,7 +108,7 @@ export const ProjectList = () => {
           affixStyle="plain"
           // The popup is a height-capped column: only the list may shrink (DaisyUI
           // `.input` is `flex-shrink: 1` and would collapse with many favorites).
-          class="group mt-2.5 h-search shrink-0 gap-1.75 rounded-field px-2.25 text-body"
+          class="mt-2.5 h-search shrink-0 gap-1.75 rounded-field px-2.25 text-body focus-within:*:last:hidden [&_input::-webkit-search-cancel-button]:cursor-pointer"
           placeholder={t("popup.search_placeholder")}
           autocomplete="off"
           spellcheck={false}
@@ -109,7 +116,7 @@ export const ProjectList = () => {
           onInput={(event) => setQuery(event.currentTarget.value)}
           onKeyDown={handleSearchKeyDown}
           prefix={<HugeiconsIcon icon={Search01Icon} size={15} strokeWidth={2} />}
-          suffix={<Kbd class="transition-opacity group-focus-within:opacity-0">/</Kbd>}
+          suffix={<Kbd>/</Kbd>}
         />
       </Show>
 
