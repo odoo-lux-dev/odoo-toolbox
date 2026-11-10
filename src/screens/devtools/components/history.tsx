@@ -36,12 +36,12 @@ import {
   setHistoryActionLabel,
   setHistoryActionPinned,
 } from "@/screens/devtools/history-signals";
-import { formatRelativeTime, intlLocale } from "@/screens/devtools/history-time";
 import { navigate } from "@/screens/devtools/router";
 import { MAX_HISTORY_ENTRIES } from "@/services/history-service";
 import { getLocale, localeVersion, t } from "@/services/i18n-service";
 import type { HistoryAction, HistoryActionType } from "@/types";
 import { showNotification } from "@/utils/notifications";
+import { formatRelativeTime, intlLocale } from "@/utils/relative-time";
 
 const restoreAction = (action: HistoryAction) => {
   const plan = historyRestorePlan(action);
