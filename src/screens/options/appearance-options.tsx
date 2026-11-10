@@ -64,7 +64,7 @@ const UiThemePicker = () => {
       tone="primary"
       wide
       description={t("options.settings.ui_theme_desc")}
-      keywords="theme appearance look style odoo native access accessibility console dense compact toybox playful rounded"
+      keywords="theme appearance look style odoo native access accessibility console dense compact toybox playful rounded classic retro original"
     >
       <div
         role="radiogroup"

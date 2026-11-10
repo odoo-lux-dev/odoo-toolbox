@@ -527,6 +527,8 @@ options:
     theme_console_desc: "सघन डेवलपर वर्कबेंच: मोनो मेटाडेटा, सपाट सतहें, 28px नियंत्रण।"
     theme_toybox: "Toybox"
     theme_toybox_desc: "गर्म और स्पर्शनीय: गोल पेस्टल रंग, मोटे दबने वाले बटन, हल्का उछाल।"
+    theme_classic: "क्लासिक"
+    theme_classic_desc: "Odoo Toolbox का मूल रूप: पहला बैंगनी और फ़िरोज़ी रंग-पैलेट, सिस्टम फ़ॉन्ट, सपाट कंट्रोल।"
     accessibility: "सुलभता"
     accessibility_desc: "किसी भी थीम के साथ जुड़ने वाली प्राथमिकताएँ"
     large_text: "बड़ा टेक्स्ट"

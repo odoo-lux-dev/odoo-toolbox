@@ -527,6 +527,8 @@ options:
     theme_console_desc: "Bancada de desenvolvedor densa: metadados em mono, superfícies planas, controles de 28 px."
     theme_toybox: "Toybox"
     theme_toybox_desc: "Acolhedor e tátil: tons pastel arredondados, botões grossos que afundam, um leve salto."
+    theme_classic: "Clássico"
+    theme_classic_desc: "O visual original do Odoo Toolbox: a primeira paleta roxa e turquesa, as fontes do sistema, controles planos."
     accessibility: "Acessibilidade"
     accessibility_desc: "Preferências combináveis com qualquer tema"
     large_text: "Texto grande"

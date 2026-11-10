@@ -22,11 +22,12 @@ export type ColorSchemePreference = (typeof COLOR_SCHEME_PREFERENCES)[number];
 
 export const SYSTEM_DARK_QUERY = "(prefers-color-scheme: dark)";
 
-export const UI_THEME_IDS = ["odoo-native", "access", "console", "toybox"] as const;
+export const UI_THEME_IDS = ["classic", "odoo-native", "access", "console", "toybox"] as const;
 export type UiThemeId = (typeof UI_THEME_IDS)[number];
 
 /** Human readable name of each UI theme (search keywords; the UI uses translations). */
 export const UI_THEMES: Record<UiThemeId, { id: UiThemeId; label: string }> = {
+  classic: { id: "classic", label: "Classic" },
   "odoo-native": { id: "odoo-native", label: "Odoo native" },
   access: { id: "access", label: "Access" },
   console: { id: "console", label: "Console" },
@@ -46,7 +47,7 @@ export type TextSize = (typeof TEXT_SIZES)[number];
 export const MOTION_PREFERENCES = ["system", "reduced"] as const;
 export type MotionPreference = (typeof MOTION_PREFERENCES)[number];
 
-export const DEFAULT_UI_THEME: UiThemeId = "odoo-native";
+export const DEFAULT_UI_THEME: UiThemeId = "classic";
 export const DEFAULT_COLOR_SCHEME: ColorScheme = "dark";
 export const DEFAULT_TEXT_SIZE: TextSize = "standard";
 export const DEFAULT_MOTION: MotionPreference = "system";

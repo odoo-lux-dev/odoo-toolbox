@@ -5,10 +5,11 @@ The extension look is defined by **UI themes**. A UI theme is a full visual iden
 variant. The layout and the components are shared by every theme: switching theme never
 touches a component.
 
-Themes: `odoo-native` (default, from `mockups/01-odoo-native`), `access`
-(accessibility first, from `mockups/07-access`) `console` (dense developer workbench,
-from `mockups/03-console-design`) and `toybox` (warm, tactile and playful, from
-`mockups/13-toybox`).
+Themes: `classic` (default: the original look of the extension, before the UI themes, with
+the `odoolight` / `odoodark` DaisyUI palettes and system fonts), `odoo-native` (from
+`mockups/01-odoo-native`), `access` (accessibility first, from `mockups/07-access`),
+`console` (dense developer workbench, from `mockups/03-console-design`) and `toybox` (warm,
+tactile and playful, from `mockups/13-toybox`).
 
 ## Files
 
