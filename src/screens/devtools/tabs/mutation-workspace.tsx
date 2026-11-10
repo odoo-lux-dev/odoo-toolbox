@@ -1,5 +1,5 @@
 import { Alert02Icon, CodeIcon } from "@hugeicons/core-free-icons";
-import { Show, type JSX } from "solid-js";
+import { lazy, Show, Suspense, type JSX } from "solid-js";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
@@ -13,11 +13,15 @@ import {
   WorkspaceBody,
   WorkspaceHeader,
 } from "@/screens/devtools/components/devtools-ui";
-import { JsonCodeEditor } from "@/screens/devtools/components/json-code-editor";
 import { ResultViewer } from "@/screens/devtools/components/result-viewer";
 import { queryStore, railFieldsMetadata, resultStore } from "@/screens/devtools/devtools-signals";
 import type { createJsonDraft } from "@/screens/devtools/drafts";
 import { t } from "@/services/i18n-service";
+
+// CodeMirror is most of the panel code and only the mutation tabs need it: load it on demand.
+const JsonCodeEditor = lazy(async () => ({
+  default: (await import("@/screens/devtools/components/json-code-editor")).JsonCodeEditor,
+}));
 
 interface MutationWorkspaceProps {
   rail: JSX.Element;
@@ -107,14 +111,16 @@ export const JsonDraftPanel = (props: {
         />
       }
     />
-    <JsonCodeEditor
-      value={props.draft.value()}
-      onChange={props.draft.setValue}
-      fieldsMetadata={railFieldsMetadata() || {}}
-      disabled={resultStore.loading}
-      class="min-h-44"
-      placeholder={props.placeholder}
-      onAddRequiredFields={props.onAddRequiredFields}
-    />
+    <Suspense fallback={<div class="min-h-44" />}>
+      <JsonCodeEditor
+        value={props.draft.value()}
+        onChange={props.draft.setValue}
+        fieldsMetadata={railFieldsMetadata() || {}}
+        disabled={resultStore.loading}
+        class="min-h-44"
+        placeholder={props.placeholder}
+        onAddRequiredFields={props.onAddRequiredFields}
+      />
+    </Suspense>
   </Panel>
 );

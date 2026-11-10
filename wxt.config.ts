@@ -133,6 +133,19 @@ export default defineConfig({
         manifest.name += " (DEV)";
       }
     },
+    // Keeps the lazy CodeMirror chunk of the DevTools panel under the 500 kB warning. Only
+    // on the extension pages build: the scripts built as IIFE cannot be code-split.
+    "vite:build:extendConfig": (entrypoints, viteConfig) => {
+      if (!entrypoints.some((entrypoint) => entrypoint.name === "devtools-panel")) return;
+      viteConfig.build ??= {};
+      viteConfig.build.rolldownOptions ??= {};
+      const options = viteConfig.build.rolldownOptions;
+      if (Array.isArray(options.output)) return;
+      options.output = {
+        ...options.output,
+        codeSplitting: { groups: [{ name: "lezer", test: /node_modules[\\/]@lezer[\\/]/ }] },
+      };
+    },
     "build:before": (wxt) => {
       if (wxt.config.mode === "development") {
         wxt.config.manifest.version = "0.0.1";
