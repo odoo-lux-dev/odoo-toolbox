@@ -500,6 +500,15 @@ options:
     success: Configuração importada com sucesso
     error_import: "Ocorreu um erro durante o processamento do ficheiro: $1"
     invalid_format: Formato de ficheiro inválido
+  sync:
+    hint: "Copiado a cada minuto para o armazenamento sincronizado do navegador; o navegador envia-o depois para a sua conta se a sincronização estiver ativada."
+    synced: "Guardado na sincronização do navegador"
+    pending: "Alterações ainda não guardadas na sincronização do navegador"
+    pending_since: "Alterações pendentes, última gravação $1"
+    failed: "Falha na sincronização do navegador para $1: $2"
+    part_settings: "definições"
+    part_favorites: "favoritos"
+    part_quick_domains: "domínios rápidos"
   ignored_debug:
     title: Caminhos ignorados para o modo de depuração
     desc: As páginas que correspondem a estas regras não terão o modo de depuração forçado pela extensão. É útil para deixar algumas páginas (como o funil demo/teste) intactas.

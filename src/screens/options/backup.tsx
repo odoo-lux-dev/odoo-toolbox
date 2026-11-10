@@ -1,15 +1,18 @@
 import { DatabaseIcon, Download01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
-import { createRoot, createSignal, Show } from "solid-js";
+import { createRoot, createSignal, onCleanup, onMount, Show } from "solid-js";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { IconTile } from "@/components/ui/icon-tile";
+import { StatusDot } from "@/components/ui/status";
+import { syncState, type SyncState } from "@/screens/options/sync-state";
 import { configurationService } from "@/services/configuration-service";
-import { t } from "@/services/i18n-service";
+import { getLocale, t } from "@/services/i18n-service";
 import { Logger } from "@/services/logger";
 import { parseConfigFile } from "@/utils/config-validation";
 import { downloadJson } from "@/utils/download";
 import { errorMessage } from "@/utils/error-message";
+import { formatRelativeTime, intlLocale } from "@/utils/relative-time";
 
 type BackupStatus = { message: string; tone: "info" | "success" | "error" };
 
@@ -79,6 +82,67 @@ export const importConfiguration = () => {
   input.click();
 };
 
+const RELATIVE_TIME_REFRESH_MS = 30_000;
+
+const SYNC_PART_LABEL = {
+  settings: "options.sync.part_settings",
+  favorites: "options.sync.part_favorites",
+  quickDomains: "options.sync.part_quick_domains",
+} as const;
+
+const SyncStatusLine = () => {
+  const [state, setState] = createSignal<SyncState>();
+  const [now, setNow] = createSignal(Date.now());
+
+  const refresh = async () => {
+    const [status, synced] = await Promise.all([
+      configurationService.getSyncStatus(),
+      configurationService.isDataSynced(),
+    ]);
+    setState(syncState(status, !synced));
+  };
+
+  onMount(() => {
+    void refresh();
+    onCleanup(configurationService.watchSyncState(() => void refresh()));
+    const timer = window.setInterval(() => setNow(Date.now()), RELATIVE_TIME_REFRESH_MS);
+    onCleanup(() => clearInterval(timer));
+  });
+
+  const ago = (timestamp: number) => formatRelativeTime(timestamp, intlLocale(getLocale()), now());
+
+  const view = (current: SyncState) => {
+    switch (current.kind) {
+      case "failed":
+        return {
+          tone: "error" as const,
+          text: t("options.sync.failed", [t(SYNC_PART_LABEL[current.part]), current.message]),
+        };
+      case "pending":
+        return {
+          tone: "warning" as const,
+          text: current.savedAt
+            ? t("options.sync.pending_since", [ago(current.savedAt)])
+            : t("options.sync.pending"),
+        };
+      case "synced":
+        return { tone: "success" as const, text: t("options.sync.synced") };
+    }
+  };
+
+  return (
+    <Show when={state()}>
+      {(current) => (
+        <p class="mt-2" title={t("options.sync.hint")}>
+          <StatusDot tone={view(current()).tone} size="caption" class="text-ink-3">
+            {view(current()).text}
+          </StatusDot>
+        </p>
+      )}
+    </Show>
+  );
+};
+
 export const BackupControls = () => (
   <div class="rounded-box border border-line bg-surface-2 p-2.5">
     <div class="flex items-center gap-2">
@@ -112,6 +176,7 @@ export const BackupControls = () => (
         {t("options.backup.restore")}
       </Button>
     </div>
+    <SyncStatusLine />
     <Show when={status()}>
       {(current) => (
         <p class={`mt-2 text-note ${STATUS_CLASS[current().tone]}`} role="status">

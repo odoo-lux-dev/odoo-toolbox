@@ -500,6 +500,15 @@ options:
     success: Konfiguration erfolgreich importiert
     error_import: "Ein Fehler ist bei der Dateiverarbeitung aufgetreten: $1"
     invalid_format: Ungültiges Dateiformat
+  sync:
+    hint: "Wird jede Minute in den Sync-Speicher des Browsers kopiert; der Browser überträgt ihn dann an Ihr Konto, wenn die Synchronisierung aktiv ist."
+    synced: "In Browser-Sync gespeichert"
+    pending: "Änderungen noch nicht in Browser-Sync gespeichert"
+    pending_since: "Änderungen ausstehend, zuletzt gespeichert $1"
+    failed: "Browser-Sync fehlgeschlagen für $1: $2"
+    part_settings: "Einstellungen"
+    part_favorites: "Favoriten"
+    part_quick_domains: "Schnelldomänen"
   ignored_debug:
     title: Ignorierte Pfade für den Debug-Modus
     desc: Seiten, die diesen Regeln entsprechen, bekommen den Debug-Modus von der Erweiterung nicht erzwungen. Nützlich, um einige Seiten (wie den Demo-/Test-Trichter) unangetastet zu lassen.

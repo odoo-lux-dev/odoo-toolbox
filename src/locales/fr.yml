@@ -500,6 +500,15 @@ options:
     success: Configuration importée avec succès
     error_import: "Une erreur s'est produite lors du traitement du fichier : $1"
     invalid_format: Format de fichier invalide
+  sync:
+    hint: "Copié chaque minute dans le stockage synchronisé du navigateur ; le navigateur l'envoie ensuite à votre compte si la synchronisation est activée."
+    synced: "Enregistré dans la synchro du navigateur"
+    pending: "Modifications pas encore enregistrées dans la synchro du navigateur"
+    pending_since: "Modifications en attente, dernier enregistrement $1"
+    failed: "Échec de la synchro du navigateur pour les $1 : $2"
+    part_settings: "réglages"
+    part_favorites: "favoris"
+    part_quick_domains: "domaines rapides"
   ignored_debug:
     title: Chemins ignorés pour le mode debug
     desc: Les pages correspondant à ces règles ne verront pas leur mode debug forcé par l'extension. Utile pour laisser certaines pages (comme l'entonnoir démo/essai) intactes.

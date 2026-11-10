@@ -500,6 +500,15 @@ options:
     success: Configurazione importata con successo
     error_import: "Si è verificato un errore durante l'elaborazione del file: $1"
     invalid_format: Formato file non valido
+  sync:
+    hint: "Copiato ogni minuto nello spazio di sincronizzazione del browser; il browser lo invia poi al tuo account se la sincronizzazione è attiva."
+    synced: "Salvato nella sincronizzazione del browser"
+    pending: "Modifiche non ancora salvate nella sincronizzazione del browser"
+    pending_since: "Modifiche in attesa, ultimo salvataggio $1"
+    failed: "Sincronizzazione del browser non riuscita per $1: $2"
+    part_settings: "impostazioni"
+    part_favorites: "preferiti"
+    part_quick_domains: "domini rapidi"
   ignored_debug:
     title: Percorsi ignorati per la modalità debug
     desc: Le pagine che corrispondono a queste regole non vedranno forzata la modalità debug dall'estensione. Utile per lasciare intatte alcune pagine (come l'imbuto demo/prova).
