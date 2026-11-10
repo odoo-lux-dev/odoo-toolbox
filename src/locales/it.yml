@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Clicca per copiare il nome del database"
-    toggle_query_rail: "Mostra/nascondi il generatore di query"
+    toggle_rail: "Mostra/nascondi la barra laterale"
     connected: "Connesso"
     database: "DB"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Operazione di eliminazione fallita
       failed_detail: "Operazione di eliminazione fallita: $1"
   history:
-    title: Cronologia DevTools
     loading: Caricamento cronologia...
     error: "Caricamento cronologia fallito: $1"
     refresh: Aggiorna
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: Sei sicuro di voler rimuovere questa azione dalla cronologia? Non può essere annullato.
     parameters: "Parametri:"
     filters:
+      title: Filtri
       all_actions: Tutte le Azioni
       search: Cerca
       write: Scrivi
@@ -240,6 +240,17 @@ devtools:
       type: Tipo
       model: Modello
       all_models: Tutti i Modelli
+      show_more: "Mostra altri $1"
+      show_less: Mostra meno
+      database: Database
+      all_databases: Tutti i Database
+      period: Data
+      periods:
+        all: Tutto
+        today: "Oggi"
+        week: 7 giorni
+        month: 30 giorni
+      pinned_only: Solo fissati
       clear_filters: Pulisci Filtri
       clear_filters_hint: Pulisci tutti i filtri
       total_actions: "Totale azioni memorizzate: $1 (ultime $2 azioni conservate)"

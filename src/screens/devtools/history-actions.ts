@@ -10,6 +10,7 @@ import {
 
 import type { IconTileTone } from "@/components/ui/icon-tile";
 import type { Drafts } from "@/screens/devtools/drafts";
+import { startOfDaysAgo } from "@/screens/devtools/history-time";
 import type { TabId } from "@/screens/devtools/router";
 import { t } from "@/services/i18n-service";
 import type { HistoryAction, HistoryActionType, RpcQueryState } from "@/types";
@@ -130,31 +131,94 @@ export const historyRestorePlan = (action: HistoryAction) =>
 export const historyActionOperation = (action: HistoryAction): string =>
   action.type === "unlink" ? action.parameters.operation : action.type;
 
-export interface HistoryFilter {
+const HISTORY_FACETS = ["type", "database", "model"] as const;
+export type HistoryFacet = (typeof HISTORY_FACETS)[number];
+
+export const HISTORY_PERIODS = ["all", "today", "week", "month"] as const;
+export type HistoryPeriod = (typeof HISTORY_PERIODS)[number];
+
+// Today is day 0: "7 days" starts 6 days ago.
+const PERIOD_DAYS_AGO = { today: 0, week: 6, month: 29 };
+
+export interface HistoryFilter extends Record<HistoryFacet, string> {
   search: string;
   type: HistoryActionType | "all";
-  model: string | "all";
+  period: HistoryPeriod;
+  pinnedOnly: boolean;
 }
 
-export const EMPTY_HISTORY_FILTER: HistoryFilter = { search: "", type: "all", model: "all" };
+export const EMPTY_HISTORY_FILTER: HistoryFilter = {
+  search: "",
+  type: "all",
+  database: "all",
+  model: "all",
+  period: "all",
+  pinnedOnly: false,
+};
 
 export const isHistoryFilterActive = (filter: HistoryFilter) =>
-  filter.search.trim() !== "" || filter.type !== "all" || filter.model !== "all";
+  filter.search.trim() !== "" ||
+  filter.period !== "all" ||
+  filter.pinnedOnly ||
+  HISTORY_FACETS.some((facet) => filter[facet] !== "all");
+
+const filterMatcher = (filter: HistoryFilter, now: number) => {
+  const term = filter.search.trim().toLowerCase();
+  const since = filter.period === "all" ? 0 : startOfDaysAgo(PERIOD_DAYS_AGO[filter.period], now);
+  return (action: HistoryAction, ignored?: HistoryFacet) =>
+    HISTORY_FACETS.every(
+      (facet) => facet === ignored || filter[facet] === "all" || action[facet] === filter[facet],
+    ) &&
+    action.timestamp >= since &&
+    (!filter.pinnedOnly || !!action.pinned) &&
+    (!term ||
+      action.model.toLowerCase().includes(term) ||
+      action.type.toLowerCase().includes(term) ||
+      (action.label ?? "").toLowerCase().includes(term));
+};
 
 /** Actions matching the filter, pinned ones first. */
 export const filterHistoryActions = (
   actions: HistoryAction[],
   filter: HistoryFilter,
+  now = Date.now(),
 ): HistoryAction[] => {
-  const term = filter.search.trim().toLowerCase();
-  const matches = actions.filter(
-    (action) =>
-      (filter.type === "all" || action.type === filter.type) &&
-      (filter.model === "all" || action.model === filter.model) &&
-      (!term ||
-        action.model.toLowerCase().includes(term) ||
-        action.type.toLowerCase().includes(term) ||
-        (action.label ?? "").toLowerCase().includes(term)),
-  );
+  const matcher = filterMatcher(filter, now);
+  const matches = actions.filter((action) => matcher(action));
   return [...matches.filter((action) => action.pinned), ...matches.filter((a) => !a.pinned)];
+};
+
+// Values are ordered by use in the whole history, not by the filtered counts: the list does
+// not jump while the other filters change, and values with no match stay listed.
+export const historyFacetCounts = (
+  actions: HistoryAction[],
+  filter: HistoryFilter,
+  facet: HistoryFacet,
+  now = Date.now(),
+): { all: number; values: { value: string; count: number }[] } => {
+  const matcher = filterMatcher(filter, now);
+  let all = 0;
+  const counts = new Map<string, { count: number; uses: number }>();
+  for (const action of actions) {
+    const matches = matcher(action, facet) ? 1 : 0;
+    all += matches;
+    const value = action[facet];
+    if (!value) continue;
+    const entry = counts.get(value) ?? { count: 0, uses: 0 };
+    counts.set(value, { count: entry.count + matches, uses: entry.uses + 1 });
+  }
+  const values = Array.from(counts).sort(
+    ([valueA, a], [valueB, b]) => b.uses - a.uses || valueA.localeCompare(valueB),
+  );
+  return { all, values: values.map(([value, { count }]) => ({ value, count })) };
+};
+
+export const visibleFacetItems = <T extends { value: string }>(
+  items: T[],
+  selected: string,
+  limit: number,
+): T[] => {
+  const head = items.slice(0, limit);
+  const selectedItem = items.slice(limit).find((item) => item.value === selected);
+  return selectedItem ? [...head, selectedItem] : head;
 };

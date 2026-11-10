@@ -6,6 +6,12 @@ export const startOfDay = (timestamp: number) => {
   return date.getTime();
 };
 
+export const startOfDaysAgo = (days: number, now = Date.now()) => {
+  const date = new Date(startOfDay(now));
+  date.setDate(date.getDate() - days);
+  return date.getTime();
+};
+
 /** "Today", "Yesterday", then the weekday and date. */
 export const formatDayLabel = (day: number, locale: string, now = Date.now()) => {
   const diff = Math.round((day - startOfDay(now)) / DAY);

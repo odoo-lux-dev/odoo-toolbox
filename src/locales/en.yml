@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Click to copy the database name"
-    toggle_query_rail: "Toggle query builder"
+    toggle_rail: "Toggle sidebar"
     connected: "Connected"
     database: "DB"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Delete operation failed
       failed_detail: "Delete operation failed: $1"
   history:
-    title: DevTools History
     loading: Loading history...
     error: "Failed to load history: $1"
     refresh: Refresh
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: Are you sure you want to remove this action from history? This cannot be undone.
     parameters: "Parameters:"
     filters:
+      title: Filters
       all_actions: All Actions
       search: Search
       write: Write
@@ -240,6 +240,17 @@ devtools:
       type: Type
       model: Model
       all_models: All Models
+      show_more: "Show $1 more"
+      show_less: Show less
+      database: Database
+      all_databases: All Databases
+      period: Date
+      periods:
+        all: All
+        today: "Today"
+        week: 7 days
+        month: 30 days
+      pinned_only: Pinned only
       clear_filters: Clear Filters
       clear_filters_hint: Clear all filters
       total_actions: "Total actions stored: $1 (last $2 actions are kept)"

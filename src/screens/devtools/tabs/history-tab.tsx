@@ -1,28 +1,26 @@
-import {
-  Alert02Icon,
-  Delete02Icon,
-  RefreshIcon,
-  Search02Icon,
-  TransactionHistoryIcon,
-} from "@hugeicons/core-free-icons";
+import { Alert02Icon, Search02Icon, TransactionHistoryIcon } from "@hugeicons/core-free-icons";
 import { createMemo, For, onMount, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { Button } from "@/components/ui/button";
-import { CountPill } from "@/components/ui/chip";
-import { confirm } from "@/components/ui/confirm-dialog";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { LiveRegion } from "@/components/ui/live-region";
 import { SkeletonRows, StateMessage } from "@/components/ui/status";
-import { Eyebrow } from "@/screens/devtools/components/devtools-ui";
-import { HistoryActionItem, HistoryFilters } from "@/screens/devtools/components/history";
+import {
+  Eyebrow,
+  QueryWorkspace,
+  WorkspaceBody,
+  WorkspaceHeader,
+} from "@/screens/devtools/components/devtools-ui";
+import { HistoryActionItem } from "@/screens/devtools/components/history-action-item";
+import { HistoryRail } from "@/screens/devtools/components/history-rail";
 import {
   EMPTY_HISTORY_FILTER,
   filterHistoryActions,
+  isHistoryFilterActive,
   type HistoryFilter,
 } from "@/screens/devtools/history-actions";
 import {
-  clearAllHistory,
   historyActions,
   historyError,
   historyLoading,
@@ -36,10 +34,6 @@ export const HistoryTab = () => {
   const [filter, setFilter] = createStore<HistoryFilter>({ ...EMPTY_HISTORY_FILTER });
 
   onMount(loadHistory);
-
-  const availableModels = createMemo(() =>
-    Array.from(new Set(historyActions().map((action) => action.model))).sort(),
-  );
 
   const filteredActions = createMemo(() => filterHistoryActions(historyActions(), filter));
 
@@ -63,58 +57,16 @@ export const HistoryTab = () => {
     });
   });
 
-  const handleClearHistory = async () => {
-    const confirmed = await confirm({
-      title: t("devtools.history.clear_all"),
-      message: t("devtools.history.clear_confirm"),
-      variant: "danger",
-      confirmText: t("devtools.history.clear_all"),
-      cancelText: t("common.cancel"),
-    });
-    if (confirmed) {
-      await clearAllHistory();
-    }
-  };
-
   return (
-    <div class="flex h-full min-h-0 flex-col overflow-y-auto">
-      <div class="mx-auto flex w-full max-w-350 flex-col gap-4 px-5 pt-5 pb-6">
-        <header class="flex flex-wrap items-start justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <h1 class="font-display text-2xl font-semibold tracking-tight text-ink">
-              {t("devtools.history.title")}
-            </h1>
-            <CountPill tone="neutral">{historyActions().length}</CountPill>
-          </div>
+    <QueryWorkspace rail={<HistoryRail filter={filter} onChange={setFilter} />}>
+      <WorkspaceHeader
+        title={t("devtools.nav.history")}
+        count={filteredActions().length}
+        path={isHistoryFilterActive(filter) ? resultsLabel() : undefined}
+      />
 
-          <div class="flex items-center gap-1.5">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              class="gap-1.5 border-line bg-surface"
-              onClick={() => loadHistory()}
-              disabled={historyLoading()}
-            >
-              <HugeiconsIcon icon={RefreshIcon} size={15} strokeWidth={1.6} />
-              {t("devtools.history.refresh")}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              color="error"
-              size="sm"
-              class="gap-1.5"
-              onClick={handleClearHistory}
-              disabled={historyLoading() || historyActions().length === 0}
-            >
-              <HugeiconsIcon icon={Delete02Icon} size={15} strokeWidth={1.6} />
-              {t("devtools.history.clear_all")}
-            </Button>
-          </div>
-        </header>
-
-        <LiveRegion message={announcement()} />
+      <LiveRegion message={announcement()} />
+      <WorkspaceBody>
         <Show
           when={!historyLoading()}
           fallback={
@@ -144,14 +96,6 @@ export const HistoryTab = () => {
               </StateMessage>
             }
           >
-            <HistoryFilters
-              filter={filter}
-              onChange={setFilter}
-              availableModels={availableModels()}
-              totalActions={historyActions().length}
-              resultsLabel={resultsLabel()}
-            />
-
             <Show
               when={filteredActions().length > 0}
               fallback={
@@ -195,7 +139,7 @@ export const HistoryTab = () => {
             </Show>
           </Show>
         </Show>
-      </div>
-    </div>
+      </WorkspaceBody>
+    </QueryWorkspace>
   );
 };

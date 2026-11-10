@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Klik om de databasenaam te kopiëren"
-    toggle_query_rail: "Querybouwer tonen/verbergen"
+    toggle_rail: "Zijbalk tonen/verbergen"
     connected: "Verbonden"
     database: "DB"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Verwijderbewerking mislukt
       failed_detail: "Verwijderbewerking mislukt: $1"
   history:
-    title: DevTools geschiedenis
     loading: Geschiedenis laden...
     error: "Geschiedenis laden mislukt: $1"
     refresh: Vernieuwen
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: Weet u zeker dat u deze actie uit de geschiedenis wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
     parameters: "Parameters:"
     filters:
+      title: Filters
       all_actions: Alle acties
       search: Zoeken
       write: Schrijven
@@ -240,6 +240,17 @@ devtools:
       type: Type
       model: Model
       all_models: Alle modellen
+      show_more: "Nog $1 tonen"
+      show_less: Minder tonen
+      database: Database
+      all_databases: Alle databases
+      period: Datum
+      periods:
+        all: Alles
+        today: "Vandaag"
+        week: 7 dagen
+        month: 30 dagen
+      pinned_only: Alleen vastgemaakt
       clear_filters: Filters wissen
       clear_filters_hint: Alle filters wissen
       total_actions: "Totaal opgeslagen acties: $1 (laatste $2 acties worden bewaard)"

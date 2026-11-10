@@ -10,13 +10,7 @@ import { Tab, Tabs } from "@/components/ui/tabs";
 import { ToolButton } from "@/components/ui/tool-button";
 import { devtoolsCommands } from "@/screens/devtools/commands";
 import { databaseSignal, odooVersionSignal } from "@/screens/devtools/environment";
-import {
-  currentTab,
-  navigate,
-  queryRailCollapsed,
-  TABS,
-  toggleQueryRail,
-} from "@/screens/devtools/router";
+import { currentTab, navigate, railCollapsed, TABS, toggleRail } from "@/screens/devtools/router";
 import { t } from "@/services/i18n-service";
 
 const extensionVersion = () => {
@@ -61,19 +55,17 @@ export const DevToolsLayout = (props: { children: JSX.Element }) => {
         data-slot="devtools-tab-rail"
         class="flex h-tab shrink-0 items-stretch border-b border-line bg-surface px-2.5"
       >
-        <Show when={currentTab().hasQueryRail}>
-          <ToolButton
-            label={t("devtools.layout.toggle_query_rail")}
-            aria-expanded={!queryRailCollapsed()}
-            size="sm"
-            tone="primary"
-            data-active={queryRailCollapsed() ? "true" : undefined}
-            class="self-center"
-            onClick={toggleQueryRail}
-            icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} strokeWidth={1.6} />}
-          />
-          <span class="mx-1.5 h-4.5 w-px shrink-0 self-center bg-line" aria-hidden="true" />
-        </Show>
+        <ToolButton
+          label={t("devtools.layout.toggle_rail")}
+          aria-expanded={!railCollapsed()}
+          size="sm"
+          tone="primary"
+          data-active={railCollapsed() ? "true" : undefined}
+          class="self-center"
+          onClick={toggleRail}
+          icon={<HugeiconsIcon icon={SidebarLeftIcon} size={16} strokeWidth={1.6} />}
+        />
+        <span class="mx-1.5 h-4.5 w-px shrink-0 self-center bg-line" aria-hidden="true" />
 
         <Tabs class="min-w-0 flex-1 scrollbar-none overflow-x-auto">
           <For each={TABS}>

@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Haz clic para copiar el nombre de la base de datos"
-    toggle_query_rail: "Mostrar/ocultar el generador de consultas"
+    toggle_rail: "Mostrar/ocultar la barra lateral"
     connected: "Conectado"
     database: "BD"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Operación de eliminación fallida
       failed_detail: "Operación de eliminación fallida: $1"
   history:
-    title: Historial de DevTools
     loading: Cargando historial...
     error: "Error al cargar el historial: $1"
     refresh: Actualizar
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: "¿Estás seguro de que quieres quitar esta acción del historial? Esto no se puede deshacer."
     parameters: "Parámetros:"
     filters:
+      title: Filtros
       all_actions: Todas las acciones
       search: Buscar
       write: Escribir
@@ -240,6 +240,17 @@ devtools:
       type: Tipo
       model: Modelo
       all_models: Todos los modelos
+      show_more: "Mostrar $1 más"
+      show_less: Mostrar menos
+      database: Base de datos
+      all_databases: Todas las bases de datos
+      period: Fecha
+      periods:
+        all: Todo
+        today: "Hoy"
+        week: 7 días
+        month: 30 días
+      pinned_only: Solo fijados
       clear_filters: Limpiar filtros
       clear_filters_hint: Limpiar todos los filtros
       total_actions: "Total de acciones almacenadas: $1 (se conservan las últimas $2 acciones)"

@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "انقر لنسخ اسم قاعدة البيانات"
-    toggle_query_rail: "إظهار/إخفاء منشئ الاستعلام"
+    toggle_rail: "إظهار/إخفاء الشريط الجانبي"
     connected: "متصل"
     database: "قاعدة البيانات"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: فشلت عملية الحذف
       failed_detail: "فشلت عملية الحذف: $1"
   history:
-    title: سجل أدوات التطوير
     loading: جارٍ تحميل السجل...
     error: "فشل تحميل السجل: $1"
     refresh: تحديث
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: هل أنت متأكد من أنك تريد إزالة هذا الإجراء من السجل؟ لا يمكن التراجع عن ذلك.
     parameters: "المعاملات:"
     filters:
+      title: عوامل التصفية
       all_actions: كل الإجراءات
       search: بحث
       write: كتابة
@@ -240,6 +240,17 @@ devtools:
       type: النوع
       model: النموذج
       all_models: كل النماذج
+      show_more: "عرض $1 إضافية"
+      show_less: عرض أقل
+      database: قاعدة البيانات
+      all_databases: كل قواعد البيانات
+      period: التاريخ
+      periods:
+        all: الكل
+        today: "اليوم"
+        week: 7 أيام
+        month: 30 يومًا
+      pinned_only: المثبّتة فقط
       clear_filters: مسح عوامل التصفية
       clear_filters_hint: مسح كل عوامل التصفية
       total_actions: "إجمالي الإجراءات المخزنة: $1 (يتم الاحتفاظ بآخر $2 إجراء)"

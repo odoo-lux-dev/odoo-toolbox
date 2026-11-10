@@ -6,13 +6,7 @@ import {
   hasPrimaryAction,
   runPrimaryAction,
 } from "@/screens/devtools/components/query-form-sidebar";
-import {
-  currentTab,
-  navigate,
-  queryRailCollapsed,
-  TABS,
-  toggleQueryRail,
-} from "@/screens/devtools/router";
+import { currentTab, navigate, railCollapsed, TABS, toggleRail } from "@/screens/devtools/router";
 import { appearanceCommands } from "@/screens/shared/appearance-commands";
 import { t } from "@/services/i18n-service";
 
@@ -44,7 +38,7 @@ export const devtoolsCommands = (): Command[] => {
       group: t("commands.group_focus"),
       icon: TextIcon,
       run: () => {
-        if (queryRailCollapsed()) toggleQueryRail();
+        if (railCollapsed()) toggleRail();
         field.target.focus();
       },
     })),
@@ -55,17 +49,13 @@ export const devtoolsCommands = (): Command[] => {
       icon: tab.icon,
       run: () => navigate(tab.id),
     })),
-    ...(current.hasQueryRail
-      ? [
-          {
-            id: "toggle-rail",
-            label: t("devtools.layout.toggle_query_rail"),
-            group: navigation,
-            icon: SidebarLeftIcon,
-            run: toggleQueryRail,
-          } satisfies Command,
-        ]
-      : []),
+    {
+      id: "toggle-rail",
+      label: t("devtools.layout.toggle_rail"),
+      group: navigation,
+      icon: SidebarLeftIcon,
+      run: toggleRail,
+    },
     ...appearanceCommands(),
     {
       id: "options",
