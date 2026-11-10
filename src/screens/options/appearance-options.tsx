@@ -1,9 +1,9 @@
 import { PaintBoardIcon, Tick02Icon } from "@hugeicons/core-free-icons";
-import { For } from "solid-js";
+import { For, onCleanup } from "solid-js";
 
 import { cx } from "@/components/ui/cx";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
-import { useActiveTheme } from "@/hooks/use-extension-theme";
+import { previewTheme, useActiveTheme } from "@/hooks/use-extension-theme";
 import { useSettings } from "@/hooks/use-settings";
 import {
   booleanSwitch,
@@ -11,6 +11,7 @@ import {
   SwitchesCard,
   type SettingCard,
 } from "@/screens/options/components/option-card";
+import { SCROLL_CONTAINER_ID } from "@/screens/options/options-nav";
 import { uiThemeLabel } from "@/screens/shared/appearance-commands";
 import { t } from "@/services/i18n-service";
 import { settingsService } from "@/services/settings-service";
@@ -52,10 +53,49 @@ const ThemePreview = (props: { id: UiThemeId; scheme: "light" | "dark" }) => (
   </span>
 );
 
+const HOVER_PREVIEW_DELAY_MS = 150;
+
 /** UI theme picker: one tile per registered theme, previewed in the current scheme. */
 const UiThemePicker = () => {
   const settings = useSettings();
   const activeTheme = useActiveTheme();
+
+  let hovered: HTMLElement | undefined;
+  let previewed: HTMLElement | undefined;
+  let previewTimer: ReturnType<typeof setTimeout> | undefined;
+
+  // A theme changes the layout (access enlarges everything): the page scrolls to keep the
+  // previewed tile where it was, and only a real mouse movement may pick another tile, since
+  // the browser also reports hover changes when the layout moves under a still pointer.
+  const preview = (tile: HTMLElement | undefined) => {
+    const anchor = tile ?? previewed;
+    const top = anchor?.getBoundingClientRect().top ?? 0;
+    previewed = tile;
+    const id = tile?.dataset.themeChoice as UiThemeId | undefined;
+    previewTheme(id && id !== settings().extensionUiTheme ? { extensionUiTheme: id } : undefined);
+    if (anchor) {
+      document
+        .getElementById(SCROLL_CONTAINER_ID)
+        ?.scrollBy(0, anchor.getBoundingClientRect().top - top);
+    }
+  };
+
+  const onPointerMove = (event: PointerEvent) => {
+    const moved = event.movementX !== 0 || event.movementY !== 0;
+    if (event.pointerType !== "mouse" || !moved) return;
+    const target = event.target as Element;
+    const tile = target.closest<HTMLElement>("[data-theme-choice]") ?? undefined;
+    if (tile === hovered) return;
+    hovered = tile;
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => preview(tile), HOVER_PREVIEW_DELAY_MS);
+  };
+  document.addEventListener("pointermove", onPointerMove);
+  onCleanup(() => {
+    document.removeEventListener("pointermove", onPointerMove);
+    clearTimeout(previewTimer);
+    previewTheme(undefined);
+  });
 
   return (
     <OptionCard
@@ -75,7 +115,10 @@ const UiThemePicker = () => {
           {(theme) => {
             const checked = () => settings().extensionUiTheme === theme.id;
             return (
-              <label class="group relative block h-full cursor-pointer">
+              <label
+                class="group relative block h-full cursor-pointer"
+                data-theme-choice={theme.id}
+              >
                 <input
                   type="radio"
                   class="peer absolute size-px opacity-0"
