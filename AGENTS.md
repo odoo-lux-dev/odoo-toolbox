@@ -137,9 +137,10 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 ### Sync
 
 - Background alarm `persist-local-data` (every minute) copies local data to `sync:`.
-- On startup and on install, `configurationService.alignLocalDataWithSyncedData()` replaces
-  the local data with the synced data, **unless** the sync storage is empty. Local edits made
-  while the browser is offline or not signed in can be overwritten by that path.
+- On startup and on a new install, `configurationService.alignLocalDataWithSyncedData()`
+  replaces the local data with the synced data, **unless** the sync storage is empty. Local
+  edits made while the browser is offline or not signed in can be overwritten by that path.
+- On an update, the local data (just migrated) is kept and persisted to `sync:` instead.
 
 ## 7. Feature map
 

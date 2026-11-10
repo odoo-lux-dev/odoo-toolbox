@@ -10,7 +10,7 @@
 
 | Listener | Behaviour |
 | -------- | --------- |
-| `runtime.onStartup`, `runtime.onInstalled` | Aligns local data with the synced data (unless sync is empty), (re)creates alarms, opens the update page (`update.html`) after an update when `updateService` says so |
+| `runtime.onStartup`, `runtime.onInstalled` | On startup and on a new install, aligns local data with the synced data (unless sync is empty); on an update, keeps the migrated local data and persists it to `sync:`. (Re)creates alarms, opens the update page (`update.html`) after an update when `updateService` says so |
 | `alarms.onAlarm` | `persist-local-data` (every minute): copies local data to `sync:` |
 | `commands.onCommand` | `toggle-debug` (see `toggleDebugMode` in `services/debug-mode-service.ts`) |
 | `runtime.onMessage` | I18n requests (`entries/background/i18n.ts`) and DevTools page-script requests (`entries/background/devtools.ts`) |
