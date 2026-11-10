@@ -43,9 +43,17 @@ const getData = (): I18nData => {
 };
 
 // Without loaded messages (e.g. in the background), fall back to the browser's own
-// `_locales` lookup. `browser.i18n` does not exist in the page world.
-const getNativeMessage = (underscoredKey: string): string =>
-  typeof browser !== "undefined" ? (browser.i18n?.getMessage(underscoredKey as never) ?? "") : "";
+// `_locales` lookup. `browser.i18n` does not exist in the page world, and the fake browser
+// WXT uses to evaluate the entrypoints at build time throws on `getMessage`.
+const getNativeMessage = (underscoredKey: string): string => {
+  try {
+    return typeof browser !== "undefined"
+      ? (browser.i18n?.getMessage(underscoredKey as never) ?? "")
+      : "";
+  } catch {
+    return "";
+  }
+};
 
 export function t(key: string, substitutions?: (string | number)[]): string {
   const underscoredKey = key.replace(/\./g, "_");
