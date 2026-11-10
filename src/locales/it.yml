@@ -472,7 +472,7 @@ options:
     appearance: "Aspetto"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Documentazione
     report_bug: Segnala un bug
     suggest_feature: Suggerisci una funzionalità
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Abilita modalità daltonico
-    color_blind_desc: Questa modalità sostituisce alcuni colori e icone di Odoo.SH con una palette adatta ai daltonici
+    color_blind_desc: Questa modalità sostituisce alcuni colori e icone di Odoo.sh con una palette adatta ai daltonici
     login_buttons: Mostra pulsanti di login
     login_buttons_desc: Scegli se mostrare i pulsanti di login predefiniti per admin/demo/portal
     nostalgia: Abilita modalità nostalgia
     nostalgia_desc: Questa modalità sostituisce le icone di debug originali con icone scimmia per ricordare la famosa estensione scimmia
     tab_title: Aggiorna il titolo della scheda nelle pagine SH
-    tab_title_desc: Seleziona se cambiare il titolo della scheda nelle pagine Odoo.SH per includere il nome del progetto corrente
+    tab_title_desc: Seleziona se cambiare il titolo della scheda nelle pagine Odoo.sh per includere il nome del progetto corrente
     technical_model: Mostra modello tecnico
     technical_model_desc: Scegli se mostrare il modello tecnico sulla pagina (v17.2+)
     color_scheme: Schema colore predefinito
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: La regex sembra non corretta. Verificarla.
     download_full_log: Scarica i log completi
-    download_full_log_desc: Aggiunge un pulsante nelle pagine del visualizzatore di log di Odoo.SH per scaricare il file di log grezzo completo invece di affidarsi al visualizzatore integrato (che mostra solo un blocco alla volta).
+    download_full_log_desc: Aggiunge un pulsante nelle pagine del visualizzatore di log di Odoo.sh per scaricare il file di log grezzo completo invece di affidarsi al visualizzatore integrato (che mostra solo un blocco alla volta).
     odoosh_login_button: Mostra pulsante di accesso Odoo.sh
     odoosh_login_button_desc: Aggiunge un pulsante "Accedi con Odoo.sh" nella pagina di accesso. Appare solo sui database ospitati su Odoo.sh e consente l'accesso tramite la sessione Odoo.sh.
     runbot_auto_login: Accesso rapido a Runbot
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "Prova un altro nome di progetto."
   results_count_one: "1 progetto"
   results_count_other: "$1 progetti"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Passa al tema chiaro
     dark_theme: Passa al tema scuro

@@ -472,7 +472,7 @@ options:
     appearance: "المظهر"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: الوثائق
     report_bug: الإبلاغ عن خطأ
     suggest_feature: اقتراح ميزة
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: تفعيل وضع عمى الألوان
-    color_blind_desc: يستبدل هذا الوضع بعض الألوان والأيقونات من Odoo.SH بلوحة ألوان ملائمة لعمى الألوان
+    color_blind_desc: يستبدل هذا الوضع بعض الألوان والأيقونات من Odoo.sh بلوحة ألوان ملائمة لعمى الألوان
     login_buttons: إظهار أزرار تسجيل الدخول
     login_buttons_desc: اختر ما إذا كنت تريد إظهار أزرار تسجيل الدخول الافتراضية لـ admin/demo/portal
     nostalgia: تفعيل وضع الحنين
     nostalgia_desc: يستبدل هذا الوضع أيقونات التصحيح الأصلية بأيقونات القرد لإحياء ذكرى إضافة القرد الشهيرة
     tab_title: تحديث عنوان التبويب في صفحات SH
-    tab_title_desc: اختر ما إذا كنت تريد تغيير عنوان التبويب في صفحات Odoo.SH ليشمل اسم المشروع الحالي
+    tab_title_desc: اختر ما إذا كنت تريد تغيير عنوان التبويب في صفحات Odoo.sh ليشمل اسم المشروع الحالي
     technical_model: عرض النموذج التقني
     technical_model_desc: اختر ما إذا كنت تريد عرض النموذج التقني على الصفحة (الإصدار 17.2+)
     color_scheme: نظام الألوان الافتراضي
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: يبدو التعبير النمطي غير صحيح. يرجى التحقق.
     download_full_log: تنزيل السجلات الكاملة
-    download_full_log_desc: يضيف زراً في صفحات عارض السجلات في Odoo.SH لتنزيل ملف السجل الخام الكامل بدلاً من الاعتماد على العارض المدمج (الذي يعرض جزءاً واحداً فقط في كل مرة).
+    download_full_log_desc: يضيف زراً في صفحات عارض السجلات في Odoo.sh لتنزيل ملف السجل الخام الكامل بدلاً من الاعتماد على العارض المدمج (الذي يعرض جزءاً واحداً فقط في كل مرة).
     odoosh_login_button: إظهار زر تسجيل الدخول عبر Odoo.sh
     odoosh_login_button_desc: يضيف زراً بعنوان "تسجيل الدخول عبر Odoo.sh" في صفحة تسجيل الدخول. يظهر فقط على قواعد البيانات المستضافة على Odoo.sh ويسجّل دخولك عبر جلسة Odoo.sh الخاصة بك.
     runbot_auto_login: تسجيل دخول سريع إلى Runbot
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "جرّب اسم مشروع آخر."
   results_count_one: "مشروع واحد"
   results_count_other: "$1 مشاريع"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: التبديل إلى السمة الفاتحة
     dark_theme: التبديل إلى السمة الداكنة

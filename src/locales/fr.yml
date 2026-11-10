@@ -472,7 +472,7 @@ options:
     appearance: "Apparence"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Documentation
     report_bug: Signaler un bug
     suggest_feature: Suggérer une fonctionnalité
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Activer le mode daltonien
-    color_blind_desc: Ce mode remplace certaines couleurs et icônes d'Odoo.SH par une palette adaptée aux daltoniens
+    color_blind_desc: Ce mode remplace certaines couleurs et icônes d'Odoo.sh par une palette adaptée aux daltoniens
     login_buttons: Afficher les boutons de connexion
     login_buttons_desc: Choisir si vous souhaitez afficher les boutons de connexion par défaut pour admin/demo/portal
     nostalgia: Activer le mode nostalgie
     nostalgia_desc: Ce mode remplace les icônes de débogage d'origine par des icônes singe en souvenir de la célèbre extension monkey
     tab_title: Mettre à jour le titre de l'onglet sur les pages SH
-    tab_title_desc: Sélectionner s'il faut changer le titre de l'onglet sur les pages Odoo.SH pour inclure le nom du projet actuel
+    tab_title_desc: Sélectionner s'il faut changer le titre de l'onglet sur les pages Odoo.sh pour inclure le nom du projet actuel
     technical_model: Afficher le modèle technique
     technical_model_desc: Choisir si vous souhaitez afficher le modèle technique sur la page (v17.2+)
     color_scheme: Thème par défaut
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: La regex semble incorrecte. Veuillez vérifier.
     download_full_log: Télécharger les journaux complets
-    download_full_log_desc: Ajouter un bouton sur les pages de visionneuse de journaux d'Odoo.SH pour télécharger le fichier journal brut complet au lieu de se fier à la visionneuse intégrée (qui n'affiche qu'une partie à la fois).
+    download_full_log_desc: Ajouter un bouton sur les pages de visionneuse de journaux d'Odoo.sh pour télécharger le fichier journal brut complet au lieu de se fier à la visionneuse intégrée (qui n'affiche qu'une partie à la fois).
     odoosh_login_button: Afficher le bouton de connexion Odoo.sh
     odoosh_login_button_desc: Ajoute un bouton "Se connecter avec Odoo.sh" sur la page de connexion. Il n'apparaît que sur les bases hébergées sur Odoo.sh et vous connecte via votre session Odoo.sh.
     runbot_auto_login: Connexion rapide Runbot
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "Essayez un autre nom de projet."
   results_count_one: "1 projet"
   results_count_other: "$1 projets"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Passer au thème clair
     dark_theme: Passer au thème sombre

@@ -472,7 +472,7 @@ options:
     appearance: "Weergave"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Documentatie
     report_bug: Een bug melden
     suggest_feature: Een functie voorstellen
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Kleurenblindmodus inschakelen
-    color_blind_desc: Deze modus vervangt bepaalde kleuren en iconen van Odoo.SH door een kleurenbladvriendelijk palet
+    color_blind_desc: Deze modus vervangt bepaalde kleuren en iconen van Odoo.sh door een kleurenblindvriendelijk palet
     login_buttons: Inlogknoppen tonen
     login_buttons_desc: Kies of u de standaard inlogknoppen voor admin/demo/portal wilt tonen
     nostalgia: Nostalgiemodus inschakelen
     nostalgia_desc: Deze modus vervangt de originele debug-iconen door aap-iconen om de beroemde aap-extensie te herinneren
     tab_title: Tabbladtitel op SH pagina's bijwerken
-    tab_title_desc: Selecteer of de tabbladtitel op Odoo.SH pagina's moet worden gewijzigd om de huidige projectnaam te bevatten
+    tab_title_desc: Selecteer of de tabbladtitel op Odoo.sh pagina's moet worden gewijzigd om de huidige projectnaam te bevatten
     technical_model: Technisch model tonen
     technical_model_desc: Kies of u het technische model op de pagina wilt tonen (v17.2+)
     color_scheme: Standaard kleurenschema
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: Regex lijkt onjuist. Controleer a.u.b.
     download_full_log: Volledige logs downloaden
-    download_full_log_desc: Voegt een knop toe op Odoo.SH-logviewerpagina's om het volledige ruwe logbestand te downloaden in plaats van te vertrouwen op de ingebouwde viewer (die slechts één blok tegelijk toont).
+    download_full_log_desc: Voegt een knop toe op Odoo.sh-logviewerpagina's om het volledige ruwe logbestand te downloaden in plaats van te vertrouwen op de ingebouwde viewer (die slechts één blok tegelijk toont).
     odoosh_login_button: Odoo.sh-loginknop tonen
     odoosh_login_button_desc: Voegt een "Inloggen met Odoo.sh"-knop toe op de inlogpagina. Deze verschijnt alleen op databases die op Odoo.sh worden gehost en logt u in via uw Odoo.sh-sessie.
     runbot_auto_login: Snel inloggen op Runbot
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "Probeer een andere projectnaam."
   results_count_one: "1 project"
   results_count_other: "$1 projecten"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Overschakelen naar licht thema
     dark_theme: Overschakelen naar donker thema

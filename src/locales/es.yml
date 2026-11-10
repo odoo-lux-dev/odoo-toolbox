@@ -472,7 +472,7 @@ options:
     appearance: "Apariencia"
     title: Odoo Toolbox
     odoo: Odoo
-    odoo_sh: Odoo.SH
+    odoo_sh: Odoo.sh
     documentation: Documentación
     report_bug: Reportar un bug
     suggest_feature: Sugerir una función
@@ -554,13 +554,13 @@ options:
     pdf: PDF
     html: HTML
     color_blind: Activar modo daltonismo
-    color_blind_desc: Este modo reemplaza algunos colores e iconos de Odoo.SH por una paleta adaptada para daltonismo
+    color_blind_desc: Este modo reemplaza algunos colores e iconos de Odoo.sh por una paleta adaptada para daltonismo
     login_buttons: Mostrar botones de inicio de sesión
     login_buttons_desc: Elige si quieres mostrar los botones de inicio de sesión por defecto para admin/demo/portal
     nostalgia: Activar modo nostalgia
     nostalgia_desc: Este modo reemplaza los iconos de depuración originales por iconos de mono para recordar la famosa extensión del mono
     tab_title: Actualizar el título de la pestaña en páginas de SH
-    tab_title_desc: Selecciona si quieres cambiar el título de la pestaña en las páginas de Odoo.SH para incluir el nombre del proyecto actual
+    tab_title_desc: Selecciona si quieres cambiar el título de la pestaña en las páginas de Odoo.sh para incluir el nombre del proyecto actual
     technical_model: Mostrar modelo técnico
     technical_model_desc: Elige si quieres mostrar el modelo técnico en la página (v17.2+)
     color_scheme: Esquema de color por defecto
@@ -611,7 +611,7 @@ options:
     regex_placeholder: /^\d+(?:\.\d+)?-(\d+)(?:-.+)?$/
     regex_incorrect: El regex parece incorrecto. Verifícalo.
     download_full_log: Descargar logs completos
-    download_full_log_desc: Añadir un botón en las páginas del visor de logs de Odoo.SH para descargar el archivo de log bruto completo en lugar de depender del visor integrado (que solo muestra un fragmento a la vez).
+    download_full_log_desc: Añadir un botón en las páginas del visor de logs de Odoo.sh para descargar el archivo de log bruto completo en lugar de depender del visor integrado (que solo muestra un fragmento a la vez).
     odoosh_login_button: Mostrar botón de inicio de sesión de Odoo.sh
     odoosh_login_button_desc: Añade un botón "Iniciar sesión con Odoo.sh" en la página de inicio de sesión. Solo aparece en bases de datos alojadas en Odoo.sh e inicia sesión con tu sesión de Odoo.sh.
     runbot_auto_login: Inicio de sesión rápido en Runbot
@@ -634,7 +634,7 @@ popup:
   no_match_hint: "Prueba con otro nombre de proyecto."
   results_count_one: "1 proyecto"
   results_count_other: "$1 proyectos"
-  header_sh: Odoo.SH
+  header_sh: Odoo.sh
   footer:
     light_theme: Cambiar a tema claro
     dark_theme: Cambiar a tema oscuro
