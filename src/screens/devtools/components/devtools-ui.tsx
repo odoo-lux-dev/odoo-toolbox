@@ -11,7 +11,7 @@ import { Chip, CountPill } from "@/components/ui/chip";
 import { cx } from "@/components/ui/cx";
 import { Panel as BasePanel } from "@/components/ui/panel";
 import { StatusDot } from "@/components/ui/status";
-import { queryRailCollapsed } from "@/screens/devtools/router";
+import { railCollapsed } from "@/screens/devtools/router";
 
 /** Small mono uppercase label (section eyebrows, field labels, table headers). */
 export const EYEBROW_CLASS =
@@ -202,10 +202,10 @@ export const Rail = (props: RailProps) => {
   return (
     <aside
       data-slot="query-rail"
-      data-state={queryRailCollapsed() ? "collapsed" : "open"}
+      data-state={railCollapsed() ? "collapsed" : "open"}
       class={cx(
         "flex min-h-0 w-full shrink-0 flex-col border-line bg-surface-2 max-lg:max-h-[55vh] max-lg:border-b lg:h-full lg:w-query-rail lg:border-e",
-        queryRailCollapsed() ? "hidden" : undefined,
+        railCollapsed() ? "hidden" : undefined,
       )}
     >
       <header class="flex shrink-0 items-start justify-between gap-2.5 border-b border-line-soft px-3.5 pt-3 pb-2.5">

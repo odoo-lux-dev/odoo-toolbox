@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Klicken, um den Datenbanknamen zu kopieren"
-    toggle_query_rail: "Abfrage-Editor ein-/ausblenden"
+    toggle_rail: "Seitenleiste ein-/ausblenden"
     connected: "Verbunden"
     database: "DB"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Löschvorgang fehlgeschlagen
       failed_detail: "Löschvorgang fehlgeschlagen: $1"
   history:
-    title: DevTools-Verlauf
     loading: Verlauf wird geladen...
     error: "Verlauf konnte nicht geladen werden: $1"
     refresh: Aktualisieren
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: Möchten Sie diese Aktion wirklich aus dem Verlauf entfernen? Dies kann nicht rückgängig gemacht werden.
     parameters: "Parameter:"
     filters:
+      title: Filter
       all_actions: Alle Aktionen
       search: Suchen
       write: Schreiben
@@ -240,6 +240,17 @@ devtools:
       type: Typ
       model: Modell
       all_models: Alle Modelle
+      show_more: "$1 weitere anzeigen"
+      show_less: Weniger anzeigen
+      database: Datenbank
+      all_databases: Alle Datenbanken
+      period: Datum
+      periods:
+        all: Alle
+        today: "Heute"
+        week: 7 Tage
+        month: 30 Tage
+      pinned_only: Nur angeheftete
       clear_filters: Filter löschen
       clear_filters_hint: Alle Filter löschen
       total_actions: "Gespeicherte Aktionen insgesamt: $1 (die letzten $2 Aktionen werden behalten)"

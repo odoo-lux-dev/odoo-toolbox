@@ -32,8 +32,8 @@ and shown by `components/error-display.tsx`.
 
 | Path | Role |
 | ---- | ---- |
-| `router.ts` | Tabs: `search`, `write`, `create`, `call-method`, `unlink`, `history` (path, label key, icon, query rail) |
-| `Layout.tsx`, `Content.tsx` | Shell: navigation, query rail, workspace |
+| `router.ts` | Tabs: `search`, `write`, `create`, `call-method`, `unlink`, `history` (path, label key, icon), and the collapsed state of the rail |
+| `Layout.tsx`, `Content.tsx` | Shell: navigation, workspace. Every tab is a `QueryWorkspace`: a `Rail` (query fields, or the history filters) beside its content |
 | `devtools-signals.ts` | Query and result state (Solid store): runs queries, pages results, records history |
 | `environment.ts`, `current-page.ts` | Inspected page state; "use the current page" (records or domain of the open view) |
 | `drafts.ts` | Unsent JSON of the write, create and method tabs. Kept across tab switches in memory only |
@@ -41,7 +41,7 @@ and shown by `components/error-display.tsx`.
 | `fields-metadata.ts` | Cached field metadata of the model (`clearFieldsCache` on navigation) |
 | `mutation.tsx` | Shared frame of the write, create, call-method and unlink tabs |
 | `tabs/` | One file per tab, plus `mutation-workspace.tsx` and `result-captions.tsx` |
-| `components/` | Result table and grid (`virtual-table*`), record rendering (`record-renderer`, `field-rendering*`), domain editor, JSON editor (CodeMirror) and its completions, calendar view, column picker, context menus, history panel |
+| `components/` | Result table and grid (`virtual-table*`), record rendering (`record-renderer`, `field-rendering*`), domain editor, JSON editor (CodeMirror) and its completions, calendar view, column picker, context menus, history rail (date, and filters with counts per type, database and model) and entries |
 | `commands.ts` | Command palette entries of the panel |
 
 ## Conventions

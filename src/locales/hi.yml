@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "डेटाबेस का नाम कॉपी करने के लिए क्लिक करें"
-    toggle_query_rail: "क्वेरी बिल्डर दिखाएँ/छिपाएँ"
+    toggle_rail: "साइडबार दिखाएँ/छिपाएँ"
     connected: "कनेक्टेड"
     database: "DB"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: हटाने का ऑपरेशन विफल
       failed_detail: "हटाने का ऑपरेशन विफल: $1"
   history:
-    title: DevTools History
     loading: History लोड हो रही है...
     error: "History लोड करने में विफल: $1"
     refresh: रिफ्रेश करें
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: क्या आप वाकई इस action को history से हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।
     parameters: "पैरामीटर्स:"
     filters:
+      title: Filters
       all_actions: सभी Actions
       search: खोजें
       write: Write
@@ -240,6 +240,17 @@ devtools:
       type: प्रकार
       model: Model
       all_models: सभी Models
+      show_more: "$1 और दिखाएँ"
+      show_less: कम दिखाएँ
+      database: Database
+      all_databases: सभी Databases
+      period: तारीख
+      periods:
+        all: सभी
+        today: "आज"
+        week: 7 दिन
+        month: 30 दिन
+      pinned_only: केवल Pinned
       clear_filters: Filters साफ़ करें
       clear_filters_hint: सभी filters साफ़ करें
       total_actions: "कुल actions संग्रहीत: $1 (अंतिम $2 actions रखे जाते हैं)"

@@ -29,7 +29,7 @@ common:
 devtools:
   layout:
     copy_database: "Cliquer pour copier le nom de la base de données"
-    toggle_query_rail: "Afficher/masquer le générateur de requête"
+    toggle_rail: "Afficher/masquer la barre latérale"
     connected: "Connecté"
     database: "BD"
   json_editor:
@@ -202,7 +202,6 @@ devtools:
       failed: Échec de l'opération de suppression
       failed_detail: "Échec de l'opération de suppression : $1"
   history:
-    title: Historique DevTools
     loading: Chargement de l'historique...
     error: "Échec du chargement de l'historique : $1"
     refresh: Rafraîchir
@@ -230,6 +229,7 @@ devtools:
     remove_confirm_desc: Êtes-vous sûr de vouloir retirer cette action de l'historique ? Cette action est irréversible.
     parameters: "Paramètres :"
     filters:
+      title: Filtres
       all_actions: Toutes les actions
       search: Recherche
       write: Écriture
@@ -240,6 +240,17 @@ devtools:
       type: Type
       model: Modèle
       all_models: Tous les modèles
+      show_more: "Afficher $1 de plus"
+      show_less: Afficher moins
+      database: Base de données
+      all_databases: Toutes les bases de données
+      period: Date
+      periods:
+        all: Tout
+        today: "Aujourd'hui"
+        week: 7 jours
+        month: 30 jours
+      pinned_only: Épinglées uniquement
       clear_filters: Effacer les filtres
       clear_filters_hint: Effacer tous les filtres
       total_actions: "Total d'actions stockées : $1 (les $2 dernières actions sont conservées)"

@@ -18,8 +18,6 @@ export interface TabDefinition {
   path: string;
   labelKey: string;
   icon: IconData;
-  /** The tab shows the query rail (and can collapse it). */
-  hasQueryRail: boolean;
 }
 
 export const TABS: readonly TabDefinition[] = [
@@ -28,42 +26,36 @@ export const TABS: readonly TabDefinition[] = [
     path: "/search",
     labelKey: "devtools.nav.search",
     icon: Search01Icon,
-    hasQueryRail: true,
   },
   {
     id: "write",
     path: "/write",
     labelKey: "devtools.nav.write",
     icon: PencilEdit01Icon,
-    hasQueryRail: true,
   },
   {
     id: "create",
     path: "/create",
     labelKey: "devtools.nav.create",
     icon: Add01Icon,
-    hasQueryRail: true,
   },
   {
     id: "call-method",
     path: "/call-method",
     labelKey: "devtools.nav.call_method",
     icon: CommandLineIcon,
-    hasQueryRail: true,
   },
   {
     id: "unlink",
     path: "/unlink",
     labelKey: "devtools.nav.unlink",
     icon: Delete02Icon,
-    hasQueryRail: true,
   },
   {
     id: "history",
     path: "/history",
     labelKey: "devtools.nav.history",
     icon: Clock01Icon,
-    hasQueryRail: false,
   },
 ];
 
@@ -83,26 +75,26 @@ export const navigate = (id: TabId) => {
   window.location.hash = tabById(id).path;
 };
 
-const QUERY_RAIL_STORAGE_KEY = "ot-devtools-query-rail-collapsed";
+// Old name kept so the stored choice survives.
+const RAIL_STORAGE_KEY = "ot-devtools-query-rail-collapsed";
 
-const readQueryRailCollapsed = () => {
+const readRailCollapsed = () => {
   try {
-    return window.localStorage.getItem(QUERY_RAIL_STORAGE_KEY) === "1";
+    return window.localStorage.getItem(RAIL_STORAGE_KEY) === "1";
   } catch {
     return false;
   }
 };
 
-const [queryRailCollapsed, setQueryRailCollapsed] = createSignal(readQueryRailCollapsed());
+const [railCollapsed, setRailCollapsed] = createSignal(readRailCollapsed());
 
-/** Whether the query rail of the query tabs is hidden (per viewer convenience). */
-export { queryRailCollapsed };
+export { railCollapsed };
 
-export const toggleQueryRail = () => {
-  const next = !queryRailCollapsed();
-  setQueryRailCollapsed(next);
+export const toggleRail = () => {
+  const next = !railCollapsed();
+  setRailCollapsed(next);
   try {
-    window.localStorage.setItem(QUERY_RAIL_STORAGE_KEY, next ? "1" : "0");
+    window.localStorage.setItem(RAIL_STORAGE_KEY, next ? "1" : "0");
   } catch {
     // Storage unavailable: the choice only lasts for this session.
   }
