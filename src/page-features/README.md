@@ -5,11 +5,11 @@ DOM, but they have no extension API. Read [`AGENTS.md`](../../AGENTS.md) section
 
 ## How they run
 
-| Entry | World | Features |
-| ----- | ----- | -------- |
-| `entries/odoo-websites.ts` (`odoo-websites.js`, injected by `global.content` on every `*://*/*` page) | MAIN | Version check, technical model names, print options, login buttons, Odoo.sh login button, Runbot auto-login, debug mode, default color scheme |
-| `entries/odoo-technical-list.ts` (`odoo-technical-list.js`, injected only when `showTechnicalList` is on) | MAIN | Technical sidebar, see [`screens/technical-list/README.md`](../screens/technical-list/README.md) |
-| `entries/odoosh.content/index.ts` (matches `*.odoo.sh/project*` and `/paas/*`) | ISOLATED | Odoo.sh features in `page-features/odoo-sh/` |
+| Entry                                                                                                     | World    | Features                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `entries/odoo-websites.ts` (`odoo-websites.js`, injected by `global.content` on every `*://*/*` page)     | MAIN     | Version check, technical model names, print options, login buttons, Odoo.sh login button, Runbot auto-login, debug mode, default color scheme, home menu background |
+| `entries/odoo-technical-list.ts` (`odoo-technical-list.js`, injected only when `showTechnicalList` is on) | MAIN     | Technical sidebar, see [`screens/technical-list/README.md`](../screens/technical-list/README.md)                                                                    |
+| `entries/odoosh.content/index.ts` (matches `*.odoo.sh/project*` and `/paas/*`)                            | ISOLATED | Odoo.sh features in `page-features/odoo-sh/`                                                                                                                        |
 
 Settings reach the page scripts through `document.body.dataset`: the global content script
 writes them (`writeSettingsDataset`), and the page reads them with `readDatasetSetting(s)`
@@ -18,17 +18,18 @@ schema.
 
 ## Features
 
-| Folder or file | Feature |
-| -------------- | ------- |
-| `debug-mode.ts` | Forces the configured debug mode when the page is loaded without it (`setDebugMode`). `getConfiguredDebugModeUrl` is reused by Runbot auto-login |
-| `default-color-scheme.ts` | Applies the default light/dark scheme of Odoo pages |
-| `login-buttons.ts`, `login-form.ts` | Demo user login buttons on the login form (admin, demo, portal) |
-| `odoosh-login.ts` | Login button for Odoo.sh databases (only when `isOdooShHosted()`) |
-| `runbot-login.ts` | Runbot auto-login: the intent is carried in the URL fragment `#x-odoo-toolbox-autologin=<user>`, because the `/runbot/run/<id>` redirect drops query parameters. The fragment is cleared after use. Reads `runbotAutoLogin` |
-| `technical-model-name.ts` | Shows the technical model name next to the model label (17.0+), also in dialogs |
-| `technical-report/` | Technical print options (PDF and HTML) on report actions (15.0+), with the URL and context helpers and their tests |
-| `technical-list/` | Mounts the sidebar (`initTechnicalList`) |
-| `odoo-sh/` | Odoo.sh project list favorites, project page (branch helpers, colorblind palette, task links), rename project page, branch name copy, full log download (`handle-sh-download-full-log.ts`) |
+| Folder or file                      | Feature                                                                                                                                                                                                                     |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug-mode.ts`                     | Forces the configured debug mode when the page is loaded without it (`setDebugMode`). `getConfiguredDebugModeUrl` is reused by Runbot auto-login                                                                            |
+| `default-color-scheme.ts`           | Applies the default light/dark scheme of Odoo pages                                                                                                                                                                         |
+| `home-menu-background.ts`           | Hides the custom home menu background of Odoo Enterprise (`hideHomeMenuBackground`): removes the body class, the inline image is overridden in `global.content/global-style.scss`                                           |
+| `login-buttons.ts`, `login-form.ts` | Demo user login buttons on the login form (admin, demo, portal)                                                                                                                                                             |
+| `odoosh-login.ts`                   | Login button for Odoo.sh databases (only when `isOdooShHosted()`)                                                                                                                                                           |
+| `runbot-login.ts`                   | Runbot auto-login: the intent is carried in the URL fragment `#x-odoo-toolbox-autologin=<user>`, because the `/runbot/run/<id>` redirect drops query parameters. The fragment is cleared after use. Reads `runbotAutoLogin` |
+| `technical-model-name.ts`           | Shows the technical model name next to the model label (17.0+), also in dialogs                                                                                                                                             |
+| `technical-report/`                 | Technical print options (PDF and HTML) on report actions (15.0+), with the URL and context helpers and their tests                                                                                                          |
+| `technical-list/`                   | Mounts the sidebar (`initTechnicalList`)                                                                                                                                                                                    |
+| `odoo-sh/`                          | Odoo.sh project list favorites, project page (branch helpers, colorblind palette, task links), rename project page, branch name copy, full log download (`handle-sh-download-full-log.ts`)                                  |
 
 ## Rules for new features
 
@@ -56,5 +57,6 @@ schema.
 ## Tests
 
 Pure logic is tested next to the code: `debug-mode.test.ts`, `default-color-scheme.test.ts`,
+`home-menu-background.test.ts`,
 `runbot-login.test.ts`, `technical-report/*.test.ts`, `odoo-sh/*.test.ts`. Tests use
 happy-dom and set `document.body.dataset` directly (see `debug-mode.test.ts`).

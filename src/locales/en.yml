@@ -607,6 +607,8 @@ options:
     odoosh_login_button_desc: Add a "Log in with Odoo.sh" button on the login page. It only appears on Odoo.sh-hosted databases and logs you in through your Odoo.sh session.
     runbot_auto_login: Runbot quick login
     runbot_auto_login_desc: Add quick-login controls next to the Runbot connect buttons to open a build and log in automatically as admin, demo, or portal.
+    hide_home_menu_background: Hide custom home menu background
+    hide_home_menu_background_desc: Hide the custom background image set on the Odoo home menu (app switcher) and show the default Odoo background instead.
 
 browser_context_menu:
   parent: Odoo Toolbox
