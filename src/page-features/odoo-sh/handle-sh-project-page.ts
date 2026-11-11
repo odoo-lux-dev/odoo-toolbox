@@ -2,7 +2,7 @@ import {
   addCopyIconToBranchTitle,
   addCopyIconToBranchTitleBuildPage,
 } from "@/page-features/odoo-sh/handle-sh-branch-name-copy";
-import { updateProjectList } from "@/page-features/odoo-sh/handle-sh-favorites";
+import { updateProjectList } from "@/page-features/odoo-sh/handle-sh-project-menu";
 import {
   addProjectTaskLinkBranchTitle,
   addProjectTaskLinkBranchTitleBuildPage,

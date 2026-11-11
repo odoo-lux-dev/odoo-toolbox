@@ -29,7 +29,7 @@ schema.
 | `technical-model-name.ts`           | Shows the technical model name next to the model label (17.0+), also in dialogs                                                                                                                                             |
 | `technical-report/`                 | Technical print options (PDF and HTML) on report actions (15.0+), with the URL and context helpers and their tests                                                                                                          |
 | `technical-list/`                   | Mounts the sidebar (`initTechnicalList`)                                                                                                                                                                                    |
-| `odoo-sh/`                          | Odoo.sh project list favorites, project page (branch helpers, colorblind palette, task links), rename project page, branch name copy, full log download (`handle-sh-download-full-log.ts`)                                  |
+| `odoo-sh/`                          | Odoo.sh favorites on the project list and in the project menu (shared `project-search.ts`, `project-sort.ts`), project page (branch helpers, colorblind palette, task links), rename project page, branch name copy, full log download (`handle-sh-download-full-log.ts`)                                  |
 
 ## Rules for new features
 
