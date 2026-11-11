@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { parseRpcContext } from "@/utils/context-utils";
+import { defaultRpcContext, parseRpcContext } from "@/utils/context-utils";
 
 describe("parseRpcContext", () => {
   test("should return empty object for empty string", () => {
@@ -52,5 +52,18 @@ describe("parseRpcContext", () => {
     const result = parseRpcContext('{"default_branch": {"name": "main", "id": 1}}');
     expect(result.isValid).toBe(true);
     expect(result.value).toEqual({ default_branch: { name: "main", id: 1 } });
+  });
+});
+
+describe("defaultRpcContext", () => {
+  test("allows every company and prefers an English language", () => {
+    expect(
+      defaultRpcContext([{ id: 1 }, { id: 3 }, {}], [{ code: "fr_BE" }, { code: "en_US" }]),
+    ).toEqual({ lang: "en_US", active_test: true, allowed_company_ids: [1, 3] });
+  });
+
+  test("falls back to the first language, or none", () => {
+    expect(defaultRpcContext([], [{ code: "fr_BE" }, { code: "nl_BE" }]).lang).toBe("fr_BE");
+    expect(defaultRpcContext([], [])).toEqual({ active_test: true, allowed_company_ids: [] });
   });
 });
