@@ -100,7 +100,8 @@ Repeated patterns are shared primitives (`ToolButton`, `Tabs`, `Segmented`, `Chi
 `--ot-avatar-<1..8>-soft|ink`; raise `AVATAR_TONE_COUNT` and add the tokens to add tones), `ChoiceTiles` (`ot-choice`), the options
 navigation (`ot-nav-item|subitem|link`; an `ot-nav-item` is current with `aria-current`, or
 `aria-pressed` in the DevTools history filters), `ot-field-label` (hidden label a theme may show),
-`Panel`, `IconTile`, `StatusDot`, `Note`, `StateMessage`, `SkeletonRows`, `ot-row`): their
+`Panel`, `IconTile`, `StatusDot`, `Note`, `StateMessage`, `SkeletonRows`, `ot-row`, `ot-inline-actions` (buttons in a
+line of text, centered on it without making it taller)): their
 look is defined once in `primitives.css` from the tokens. Reuse them instead of rebuilding a
 button, a chip or an empty state with utilities. A theme restyles one for every surface with
 `[data-ui-theme="<id>"] .ot-tab { ... }` in its sub-layer; for a one-off tweak, target a
