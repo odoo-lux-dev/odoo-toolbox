@@ -1,6 +1,7 @@
 import { ArrowUpRight01Icon, CommandIcon, Search01Icon } from "@hugeicons/core-free-icons";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import {
+  batch,
   createEffect,
   createMemo,
   createSignal,
@@ -131,13 +132,6 @@ const CommandPaletteDialog = (props: CommandPaletteProps) => {
   let listRef: HTMLDivElement | undefined;
   const previousFocus = document.activeElement as HTMLElement | null;
 
-  createEffect(() => {
-    const index = activeIndex();
-    listRef
-      ?.querySelector<HTMLElement>(`[data-command-index="${index}"]`)
-      ?.scrollIntoView({ block: "nearest" });
-  });
-
   queueMicrotask(() => inputRef?.focus());
   onCleanup(() => previousFocus?.focus?.());
 
@@ -147,9 +141,33 @@ const CommandPaletteDialog = (props: CommandPaletteProps) => {
     await command.run();
   };
 
-  const moveTo = (index: number) => {
-    setNavigated(true);
-    setActiveIndex(index);
+  // A previewed theme resizes the rows: keep the point `anchor` (0 top, 1 bottom) of the row in place.
+  const rowAt = (index: number) =>
+    listRef?.querySelector<HTMLElement>(`[data-command-index="${index}"]`);
+
+  const moveTo = (index: number, anchor = 0) => {
+    const row = rowAt(index);
+    const before = row?.getBoundingClientRect();
+    batch(() => {
+      setNavigated(true);
+      setActiveIndex(index);
+    });
+    if (!row || !before) return;
+    const after = row.getBoundingClientRect();
+    listRef?.scrollBy(0, after.top - before.top + anchor * (after.height - before.height));
+  };
+
+  const keyTo = (index: number) => {
+    moveTo(index);
+    rowAt(index)?.scrollIntoView({ block: "nearest" });
+  };
+
+  const hoverTo = (event: MouseEvent, index: number) => {
+    // The browser also reports a move when the layout moves under a still pointer.
+    if (event.movementX === 0 && event.movementY === 0) return;
+    if (index === activeIndex() && navigated()) return;
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    moveTo(index, (event.clientY - rect.top) / rect.height);
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -157,19 +175,19 @@ const CommandPaletteDialog = (props: CommandPaletteProps) => {
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
-        if (count) moveTo((activeIndex() + 1) % count);
+        if (count) keyTo((activeIndex() + 1) % count);
         break;
       case "ArrowUp":
         event.preventDefault();
-        if (count) moveTo((activeIndex() - 1 + count) % count);
+        if (count) keyTo((activeIndex() - 1 + count) % count);
         break;
       case "Home":
         event.preventDefault();
-        moveTo(0);
+        keyTo(0);
         break;
       case "End":
         event.preventDefault();
-        moveTo(Math.max(0, count - 1));
+        keyTo(Math.max(0, count - 1));
         break;
       case "Enter":
         event.preventDefault();
@@ -237,6 +255,7 @@ const CommandPaletteDialog = (props: CommandPaletteProps) => {
             onInput={(event) => {
               setQuery(event.currentTarget.value);
               setActiveIndex(0);
+              listRef?.scrollTo({ top: 0 });
             }}
           />
         </label>
@@ -279,9 +298,7 @@ const CommandPaletteDialog = (props: CommandPaletteProps) => {
                               ? "border-primary bg-primary-soft text-ink"
                               : "border-transparent text-ink-2 hover:bg-surface-2",
                           )}
-                          onMouseMove={() => {
-                            if (index() !== activeIndex() || !navigated()) moveTo(index());
-                          }}
+                          onMouseMove={(event) => hoverTo(event, index())}
                           onClick={() => void runCommand(command())}
                         >
                           <Show when={command().icon}>
