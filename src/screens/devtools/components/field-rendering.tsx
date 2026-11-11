@@ -163,7 +163,7 @@ const RelationalField = (props: {
         >
           {summary()}
         </span>
-        <div class="ms-auto flex max-h-4 shrink-0 flex-nowrap items-center gap-1">
+        <div class="ot-inline-actions ms-auto gap-1">
           <Show when={isExpanded() && records().length > 1}>
             <For each={viewModes()}>
               {(mode) => (

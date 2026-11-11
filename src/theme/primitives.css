@@ -251,6 +251,19 @@
   }
 
   /* ------------------------------------------------------------
+     Buttons in a line of text: centered on the line, the button size of the theme
+     (44px in access) overflows it instead of making the line taller
+     ------------------------------------------------------------ */
+  .ot-inline-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    align-items: center;
+    align-self: center;
+    height: 0;
+  }
+
+  /* ------------------------------------------------------------
      Chip (mono labels: field names, values, RPC methods) and count pill
      ------------------------------------------------------------ */
   .ot-chip {
