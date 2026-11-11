@@ -1,33 +1,13 @@
+import { bindProjectSearch } from "@/page-features/odoo-sh/project-search";
+import {
+  compareProjects,
+  NON_STARRED_CLASS,
+  STARRED_CLASS,
+  type ProjectSortKey,
+} from "@/page-features/odoo-sh/project-sort";
 import { favoritesService } from "@/services/favorites-service";
 import type { Favorite } from "@/types";
 import { t } from "@/utils/i18n-page";
-
-// Font Awesome star icons of the Odoo.sh project list.
-const STARRED_CLASS = "fa-star";
-const NON_STARRED_CLASS = "fa-star-o";
-
-const debounce = <A extends unknown[]>(fn: (...args: A) => void, delay: number) => {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const debounced = (...args: A) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-  debounced.cancel = () => clearTimeout(timer);
-  return debounced;
-};
-
-interface ProjectSortKey {
-  starred: boolean;
-  sequence: number;
-  name: string;
-}
-
-/** Favorites first, ordered by their sequence, then by name. */
-const compareProjects = (a: ProjectSortKey, b: ProjectSortKey): number => {
-  if (a.starred !== b.starred) return Number(b.starred) - Number(a.starred);
-  if (a.starred && a.sequence !== b.sequence) return a.sequence - b.sequence;
-  return a.name.localeCompare(b.name);
-};
 
 /** Sort key of a rendered project card / row; the star icon is the current favorite state. */
 const getRenderedProjectSortKey = (element: HTMLElement): ProjectSortKey => {
@@ -156,39 +136,6 @@ const decorateProjects = (view: ProjectView, favorites: Favorite[]) => {
   sortRenderedProjects(projects, getContainer());
 };
 
-interface ProjectSearch {
-  items: () => HTMLElement[];
-  /** Names an item matches on: its Odoo name and its favorite display name. */
-  names: (item: HTMLElement) => (string | null | undefined)[];
-  setVisible: (item: HTMLElement, visible: boolean) => void;
-  open: (item: HTMLElement) => void;
-  delay: number;
-}
-
-/** Filters the projects as the user types in `input`; Enter opens the only match. */
-const bindProjectSearch = (input: HTMLInputElement, search: ProjectSearch): (() => void) => {
-  const matches = (item: HTMLElement) => {
-    const query = input.value.trim().toLowerCase();
-    return !query || search.names(item).some((name) => name?.toLowerCase().includes(query));
-  };
-  const apply = () => {
-    for (const item of search.items()) search.setVisible(item, matches(item));
-  };
-  const applyDebounced = debounce(apply, search.delay);
-
-  input.addEventListener("input", applyDebounced);
-  input.addEventListener("keydown", (event) => {
-    if (event.key !== "Enter") return;
-    applyDebounced.cancel();
-    apply();
-    const visible = search.items().filter(matches);
-    if (visible.length !== 1) return;
-    event.preventDefault();
-    search.open(visible[0]);
-  });
-  return applyDebounced.cancel;
-};
-
 /**
  * Replaces the project search of the list page by one that also matches the favorites'
  * display names. The input is cloned to drop Odoo's own listeners; this runs again on
@@ -233,7 +180,7 @@ const createSearchBarUpdater = () => {
  *
  * @returns A teardown function disconnecting the observer (SPA navigation).
  */
-const handleProjectListPageFavorites = async (): Promise<() => void> => {
+export const handleProjectListPageFavorites = async (): Promise<() => void> => {
   const wrapper = document.querySelector(".odoo_sh_app_body") ?? document.body;
   const favorites = await favoritesService.get();
   const searchBar = createSearchBarUpdater();
@@ -266,82 +213,3 @@ const handleProjectListPageFavorites = async (): Promise<() => void> => {
     searchBar.dispose();
   };
 };
-
-/**
- * Adds a search input at the top of the project dropdown menu, matching both the display
- * name and the original Odoo name (stored in the dataset).
- */
-const setupProjectMenuSearch = (projectMenu: HTMLElement): void => {
-  const scrollableMenu = projectMenu.querySelector<HTMLElement>(".scrollable-menu");
-  if (!scrollableMenu || projectMenu.querySelector(".x-odoo-project-menu-search")) return;
-
-  const searchInput = document.createElement("input");
-  searchInput.type = "text";
-  searchInput.className = "form-control form-control-sm x-odoo-project-menu-search";
-  searchInput.placeholder = t("page_features.sh_favorites.search_placeholder");
-
-  bindProjectSearch(searchInput, {
-    items: () => [...scrollableMenu.querySelectorAll<HTMLElement>("a.d-contents.text-body")],
-    names: (project) => [project.dataset.odooShOriginalName, project.textContent],
-    setVisible: (project, visible) =>
-      project.style.setProperty("display", visible ? "" : "none", "important"),
-    open: (project) => project.click(),
-    delay: 150,
-  });
-
-  scrollableMenu.before(searchInput);
-  searchInput.focus();
-};
-
-/**
- * Sorts the projects of the project dropdown menu (favorites first), shows the favorites'
- * display names and a star, and adds a search input.
- */
-const updateProjectList = (favorites: Favorite[]): void => {
-  const projectMenu = document.querySelector<HTMLElement>("div.project-menu");
-  if (!projectMenu) return;
-  const projects = Array.from(projectMenu.querySelectorAll<HTMLElement>("a.d-contents.text-body"));
-  if (projects.length === 0) return;
-
-  const entries = projects.map((element) => {
-    const name =
-      element.querySelector("span:nth-child(2), td:nth-child(2)")?.textContent?.trim() || "";
-    const favorite = favorites.find((fav) => fav.name === name);
-    // An empty name keeps the non-favorites in Odoo's order (stable sort).
-    const key = {
-      starred: !!favorite,
-      sequence: favorite?.sequence ?? 0,
-      name: favorite ? name : "",
-    };
-    return { element, name, favorite, key };
-  });
-  const sorted = entries.toSorted((a, b) => compareProjects(a.key, b.key));
-
-  for (const { element, name, favorite } of sorted) {
-    element.dataset.odooShOriginalName = name;
-    if (!favorite) continue;
-
-    // Odoo marks its own favorites with a check in the first cell: show a star instead.
-    const indicator = element.children[0] as HTMLElement | undefined;
-    if (indicator && !indicator.querySelector(`.${STARRED_CLASS}`)) {
-      const existingCheck = indicator.querySelector(".fa-check");
-      if (existingCheck) {
-        existingCheck.classList.replace("fa-check", STARRED_CLASS);
-        existingCheck.classList.add("me-auto", "ms-auto");
-      } else {
-        const star = document.createElement("i");
-        star.className = `fa ${STARRED_CLASS} text-warning me-auto ms-auto`;
-        indicator.prepend(star);
-      }
-    }
-
-    const nameCell = element.children[1] as HTMLElement | undefined;
-    if (nameCell) nameCell.textContent = favorite.display_name;
-  }
-
-  projectMenu.querySelector(".scrollable-menu")?.append(...sorted.map(({ element }) => element));
-
-  setupProjectMenuSearch(projectMenu);
-};
-
-export { handleProjectListPageFavorites, updateProjectList };
