@@ -1,9 +1,8 @@
-import { Cancel01Icon, CheckmarkCircle02Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { Search01Icon } from "@hugeicons/core-free-icons";
 import { debounce } from "@solid-primitives/scheduled";
-import { createTable, type ColumnDef, type ColumnVisibilityState } from "@tanstack/solid-table";
-import { createMemo, createSignal, createUniqueId, Match, Show, Switch } from "solid-js";
+import { createTable, type ColumnVisibilityState } from "@tanstack/solid-table";
+import { createMemo, createSignal, createUniqueId, Show } from "solid-js";
 
-import { Chip } from "@/components/ui/chip";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,12 +11,10 @@ import {
   type PickerItem,
 } from "@/screens/devtools/components/column-picker";
 import { WorkspaceToolbar } from "@/screens/devtools/components/devtools-ui";
-import {
-  getValueClasses,
-  ValueRenderer,
-} from "@/screens/devtools/components/field-rendering-helpers";
+import { getValueClasses } from "@/screens/devtools/components/field-rendering-helpers";
 import { fieldType } from "@/screens/devtools/components/field-types";
-import { isMany2oneValue } from "@/screens/devtools/components/record-utils";
+import { PivotCorner } from "@/screens/devtools/components/virtual-table-cells";
+import { pivotColumns, recordColumns } from "@/screens/devtools/components/virtual-table-columns";
 import {
   tableFeaturesConfig,
   VirtualGrid,
@@ -25,8 +22,6 @@ import {
 } from "@/screens/devtools/components/virtual-table-grid";
 import {
   PIVOT_FIELD_KEY,
-  PIVOT_TOTAL_KEY,
-  pivotColumnKeys,
   pivotRecordIndex,
   pivotRows,
   sumField,
@@ -34,98 +29,6 @@ import {
 } from "@/screens/devtools/components/virtual-table-pivot";
 import { getDirection, getLocale, localeVersion, t } from "@/services/i18n-service";
 import type { FieldMetadata } from "@/types";
-
-const COLUMN_WIDTH = 150;
-const PIVOT_FIELD_COL_WIDTH = 200;
-
-type Column = ColumnDef<typeof tableFeaturesConfig, TableRow>;
-
-/** Dense table cell: plain values, relation chips and boolean icons. */
-const TableCellValue = (props: { value: unknown; fieldName: string; fieldType?: string }) => (
-  <Switch fallback={<ValueRenderer value={props.value} />}>
-    <Match when={props.fieldType === "boolean" && typeof props.value === "boolean"}>
-      <span class={props.value ? "text-success" : "text-ink-4"}>
-        <HugeiconsIcon
-          icon={props.value ? CheckmarkCircle02Icon : Cancel01Icon}
-          size={14}
-          strokeWidth={1.6}
-          aria-label={String(props.value)}
-        />
-      </span>
-    </Match>
-    <Match when={props.value === false || props.value === null || props.value === undefined}>
-      <span class="font-mono text-caption text-ink-4">{String(props.value ?? "null")}</span>
-    </Match>
-    <Match when={props.fieldName === "id" && typeof props.value === "number"}>
-      <span class="font-mono text-caption text-ink-3">{String(props.value)}</span>
-    </Match>
-    <Match when={isMany2oneValue(props.value) && props.value}>
-      {(value) => (
-        <Chip title={`#${value()[0]}`}>
-          <span class="truncate font-sans">{value()[1]}</span>
-        </Chip>
-      )}
-    </Match>
-    <Match when={props.fieldName === "display_name" || props.fieldName === "name"}>
-      <span class="font-semibold text-ink">{String(props.value)}</span>
-    </Match>
-    <Match when={typeof props.value === "string"}>
-      <span
-        class={
-          props.fieldType === "date" || props.fieldType === "datetime"
-            ? "font-mono text-caption text-ink-3"
-            : "text-ink-2"
-        }
-      >
-        {props.value as string}
-      </span>
-    </Match>
-    <Match when={typeof props.value === "number"}>
-      <span class="font-mono text-ink-2 tabular-nums">{String(props.value)}</span>
-    </Match>
-  </Switch>
-);
-
-const PivotCorner = (props: { width: number; height: number }) => (
-  <div class="relative size-full select-none">
-    <svg
-      class="pointer-events-none absolute inset-0"
-      width={props.width}
-      height={props.height}
-      aria-hidden="true"
-    >
-      <line
-        x1={1}
-        y1={1}
-        x2={props.width - 2}
-        y2={props.height - 1}
-        stroke-width={1}
-        class="stroke-line-strong"
-      />
-    </svg>
-    <span class="absolute inset-y-0 inset-s-2 flex items-center font-mono text-caption font-medium text-ink-3 uppercase">
-      {t("devtools.virtual_table.fields_header")}
-    </span>
-    <span class="absolute inset-y-0 inset-e-2 flex items-center font-mono text-caption font-medium text-ink-3 uppercase">
-      {t("devtools.virtual_table.ids_header")}
-    </span>
-  </div>
-);
-
-const PivotTotal = (props: { value: unknown }) => (
-  <Show
-    when={props.value !== null && props.value !== undefined}
-    fallback={
-      <span class="block truncate font-mono text-ui text-ink-4 italic">
-        {t("devtools.virtual_table.no_value")}
-      </span>
-    }
-  >
-    <span class="block truncate font-mono text-ui font-semibold">
-      <ValueRenderer value={props.value} />
-    </span>
-  </Show>
-);
 
 const rowLabel = (record: TableRow) => {
   const value = record.display_name ?? record.name ?? record.id;
@@ -178,47 +81,8 @@ export const VirtualTable = (props: {
     ),
   );
 
-  const pivotColumns = createMemo((): Column[] =>
-    pivotColumnKeys(props.data.length, showTotalColumn()).map((key) => ({
-      id: key,
-      accessorKey: key,
-      size: key === PIVOT_FIELD_KEY ? PIVOT_FIELD_COL_WIDTH : COLUMN_WIDTH,
-      minSize: 30,
-      maxSize: 1000,
-      cell: (info) => {
-        if (key === PIVOT_FIELD_KEY) {
-          return (
-            <span class="block truncate font-mono text-ui text-ink-2">
-              {String(info.getValue())}
-            </span>
-          );
-        }
-        if (key === PIVOT_TOTAL_KEY) return <PivotTotal value={info.getValue()} />;
-        return <ValueRenderer value={info.getValue()} />;
-      },
-      header: () => {
-        if (key === PIVOT_FIELD_KEY) return "";
-        if (key === PIVOT_TOTAL_KEY) return t("devtools.virtual_table.total");
-        const recordIndex = pivotRecordIndex(key) ?? 0;
-        const id = props.data[recordIndex]?.id;
-        return id != null ? String(id) : String(recordIndex + 1);
-      },
-    })),
-  );
-
-  const recordColumns = createMemo((): Column[] =>
-    orderedKeys().map((key) => ({
-      id: key,
-      accessorKey: key,
-      size: COLUMN_WIDTH,
-      minSize: 30,
-      maxSize: 1000,
-      cell: (info) => (
-        <TableCellValue value={info.getValue()} fieldName={key} fieldType={fieldTypeOf(key)} />
-      ),
-      header: () => key,
-    })),
-  );
+  const pivotColumnDefs = createMemo(() => pivotColumns(props.data, showTotalColumn()));
+  const recordColumnDefs = createMemo(() => recordColumns(orderedKeys(), fieldTypeOf));
 
   const table = createTable({
     features: tableFeaturesConfig,
@@ -226,7 +90,7 @@ export const VirtualTable = (props: {
       return props.pivoted ? pivotedData() : props.data;
     },
     get columns() {
-      return props.pivoted ? pivotColumns() : recordColumns();
+      return props.pivoted ? pivotColumnDefs() : recordColumnDefs();
     },
     enableColumnResizing: true,
     columnResizeMode: "onChange",
