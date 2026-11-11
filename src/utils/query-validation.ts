@@ -51,6 +51,11 @@ export const validateDomain = (text: string): DomainValidation => {
   return { isValid: true, domain: normalizeDomain(parsed) };
 };
 
+export const domainError = (domain: string) => {
+  const validation = validateDomain(domain);
+  return validation.isValid ? null : validation.error;
+};
+
 /** Domain ready for an RPC call; throws on an invalid domain. */
 export const parseDomain = (text: string): OdooDomain => {
   const result = validateDomain(text);
