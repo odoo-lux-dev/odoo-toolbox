@@ -31,3 +31,18 @@ export const parseRpcContext = (
     return { isValid: false, value: {}, error: message };
   }
 };
+
+export const defaultRpcContext = (
+  companies: Record<string, unknown>[],
+  languages: Record<string, unknown>[],
+): Record<string, unknown> => {
+  const langCodes = languages.map((record) => String(record.code ?? "")).filter(Boolean);
+  const lang = langCodes.find((code) => code.startsWith("en_")) || langCodes[0];
+  return {
+    ...(lang && { lang }),
+    active_test: true,
+    allowed_company_ids: companies
+      .map((record) => Number(record.id ?? NaN))
+      .filter((id) => !Number.isNaN(id)),
+  };
+};
