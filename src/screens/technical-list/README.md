@@ -18,6 +18,16 @@ fields, buttons, record and view information, database and website metadata. Rea
    OS, and the highlight palette follows the theme.
 5. `render(() => <TechnicalSidebar />)` mounts the Solid app.
 
+## Keyboard commands
+
+`toggle-technical-list` opens or closes the panel. `toggle-technical-list-selection` opens the
+panel if needed and toggles the selection mode, under the same condition as the "Select
+element" button (`canSelect`).
+
+The page-world sidebar cannot receive extension messages: the background runs a function in
+the MAIN world of the active tab that dispatches `TECHNICAL_LIST_COMMAND_EVENT` on `document`,
+and `sidebar-store.tsx` listens to it.
+
 ## Structure
 
 | File | Role |
