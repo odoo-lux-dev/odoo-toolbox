@@ -463,6 +463,7 @@ options:
     appearance_desc: "Tema y accesibilidad de las páginas de la extensión"
     odoo_desc: "Ayudas para el backend y herramientas de desarrollo."
     odoosh_desc: "Enlaces de rama, accesibilidad y herramientas de logs."
+    shortcuts_desc: "Atajos de teclado de los comandos de la extensión."
     interface_title: "Detalles de interfaz"
     interface_desc: "Opciones de visualización que no cambian el funcionamiento de Odoo."
     odoosh_enhancements_title: "Mejoras de Odoo.sh"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Atajos"
     documentation: Documentación
     report_bug: Reportar un bug
     suggest_feature: Sugerir una función
@@ -613,6 +615,14 @@ options:
     stable_v16: "Totalmente estable desde Odoo v16+"
     earlier_versions: "Versiones anteriores pueden tener información limitada"
     works_both: "Funciona tanto en backend como en páginas del sitio web"
+    shortcuts: "Atajos de teclado"
+    shortcuts_desc: "El navegador los gestiona: cámbialos en su página de atajos."
+    shortcuts_change: "Cambiar atajos"
+    shortcut_none: "Sin asignar"
+    shortcut_popup: "Abrir el popup"
+    shortcut_debug: "Activar o desactivar el modo depuración"
+    shortcut_technical_list: "Abrir o cerrar la barra lateral técnica"
+    shortcut_technical_list_selection: "Seleccionar un elemento en la barra lateral técnica"
     task_link_title: Enlace de tarea en página de rama de SH
     task_link_desc: Especifica una URL para redirigir al hacer clic en el icono de enlace de tarea en la página de rama de SH. Déjalo vacío para desactivar la función.
     task_link_hint: "Usa {{task_id}} en la URL. Cada favorito puede reemplazar este valor predeterminado desde la página Favoritos."

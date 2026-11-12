@@ -463,6 +463,7 @@ options:
     appearance_desc: "Theme und Barrierefreiheit der Erweiterungsseiten"
     odoo_desc: "Backend-Helfer und Entwicklerwerkzeuge."
     odoosh_desc: "Branch-Links, Barrierefreiheit und Log-Werkzeuge."
+    shortcuts_desc: "Tastenkombinationen der Befehle der Erweiterung."
     interface_title: "Oberflächendetails"
     interface_desc: "Optionale Anzeigeoptionen, die die Funktionsweise von Odoo nicht ändern."
     odoosh_enhancements_title: "Odoo.sh-Verbesserungen"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Tastenkombinationen"
     documentation: Dokumentation
     report_bug: Fehler melden
     suggest_feature: Eine Funktion vorschlagen
@@ -613,6 +615,14 @@ options:
     stable_v16: "Vollständig stabil ab Odoo v16+"
     earlier_versions: "Frühere Versionen haben möglicherweise eingeschränkte Informationen"
     works_both: "Funktioniert sowohl im Backend als auch auf Website-Seiten"
+    shortcuts: "Tastenkombinationen"
+    shortcuts_desc: "Der Browser verwaltet sie: Ändern Sie sie auf seiner Seite für Tastenkombinationen."
+    shortcuts_change: "Tastenkombinationen ändern"
+    shortcut_none: "Nicht festgelegt"
+    shortcut_popup: "Popup öffnen"
+    shortcut_debug: "Debug-Modus umschalten"
+    shortcut_technical_list: "Technische Seitenleiste öffnen oder schließen"
+    shortcut_technical_list_selection: "Element in der technischen Seitenleiste auswählen"
     task_link_title: Task-Link auf der SH-Branch-Seite
     task_link_desc: Geben Sie eine URL an, zu der weitergeleitet wird, wenn Sie auf das Task-Link-Symbol auf der SH-Branch-Seite klicken. Leer lassen, um die Funktion zu deaktivieren.
     task_link_hint: "Verwende {{task_id}} in der URL. Jeder Favorit kann diesen Standard auf der Favoriten-Seite überschreiben."

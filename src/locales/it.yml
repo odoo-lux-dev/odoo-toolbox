@@ -463,6 +463,7 @@ options:
     appearance_desc: "Tema e accessibilità delle pagine dell'estensione"
     odoo_desc: "Aiuti per il backend e strumenti per sviluppatori."
     odoosh_desc: "Link ai branch, accessibilità e strumenti per i log."
+    shortcuts_desc: "Scorciatoie da tastiera dei comandi dell'estensione."
     interface_title: "Dettagli dell’interfaccia"
     interface_desc: "Scelte di visualizzazione facoltative che non cambiano il funzionamento di Odoo."
     odoosh_enhancements_title: "Miglioramenti Odoo.sh"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Scorciatoie"
     documentation: Documentazione
     report_bug: Segnala un bug
     suggest_feature: Suggerisci una funzionalità
@@ -613,6 +615,14 @@ options:
     stable_v16: "Completamente stabile da Odoo v16+"
     earlier_versions: "Versioni precedenti potrebbero avere informazioni limitate"
     works_both: "Funziona sia nelle pagine backend che del sito web"
+    shortcuts: "Scorciatoie da tastiera"
+    shortcuts_desc: "Le gestisce il browser: modificale nella sua pagina delle scorciatoie."
+    shortcuts_change: "Modifica scorciatoie"
+    shortcut_none: "Non impostata"
+    shortcut_popup: "Apri il popup"
+    shortcut_debug: "Attiva o disattiva la modalità debug"
+    shortcut_technical_list: "Apri o chiudi la sidebar tecnica"
+    shortcut_technical_list_selection: "Seleziona un elemento nella sidebar tecnica"
     task_link_title: Collegamento task nella pagina branch SH
     task_link_desc: Specifica un URL a cui reindirizzare quando si clicca sull'icona del collegamento task nella pagina branch SH. Lascia vuoto per disabilitare la funzionalità.
     task_link_hint: "Usa {{task_id}} nell'URL. Ogni preferito può sostituire questo valore predefinito dalla pagina Preferiti."

@@ -463,6 +463,7 @@ options:
     appearance_desc: "Theme and accessibility of the extension pages"
     odoo_desc: "Backend helpers and developer tools."
     odoosh_desc: "Branch links, accessibility and log tools."
+    shortcuts_desc: "Keyboard shortcuts of the extension commands."
     interface_title: "Interface details"
     interface_desc: "Optional display choices that do not change how Odoo works."
     odoosh_enhancements_title: "Odoo.sh enhancements"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Shortcuts"
     documentation: Documentation
     report_bug: Report a bug
     suggest_feature: Suggest a feature
@@ -613,6 +615,14 @@ options:
     stable_v16: "Fully stable from Odoo v16+"
     earlier_versions: "Earlier versions may have limited informations"
     works_both: "Works on both backend and website pages"
+    shortcuts: "Keyboard shortcuts"
+    shortcuts_desc: "The browser manages them: change them in its shortcuts page."
+    shortcuts_change: "Change shortcuts"
+    shortcut_none: "Not set"
+    shortcut_popup: "Open the popup"
+    shortcut_debug: "Toggle debug mode"
+    shortcut_technical_list: "Open or close the technical sidebar"
+    shortcut_technical_list_selection: "Select an element in the technical sidebar"
     task_link_title: Task link on SH branch page
     task_link_desc: Specify an URL to redirect to when clicking on the task link icon on SH branch page. Leave it empty to disable the feature.
     task_link_hint: "Use {{task_id}} in the URL. Each favorite can override this default from the Favorites page."

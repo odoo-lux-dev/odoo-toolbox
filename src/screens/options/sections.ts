@@ -1,4 +1,4 @@
-import { CloudIcon, PaintBoardIcon, Wrench01Icon } from "@hugeicons/core-free-icons";
+import { CloudIcon, KeyboardIcon, PaintBoardIcon, Wrench01Icon } from "@hugeicons/core-free-icons";
 
 import type { IconData } from "@/components/ui/hugeicons-icon";
 import { AccessibilityOption, UiThemeOption } from "@/screens/options/appearance-options";
@@ -9,6 +9,7 @@ import {
 } from "@/screens/options/details-options";
 import { PrintOption } from "@/screens/options/print-option";
 import { DebugModeOption, DefaultColorSchemeOption } from "@/screens/options/radio-options";
+import { ShortcutsOption } from "@/screens/options/shortcuts-option";
 import { TaskLinkOption } from "@/screens/options/task-link-option";
 import { TechnicalListOption } from "@/screens/options/technical-list";
 
@@ -55,6 +56,15 @@ export const SETTINGS_SECTIONS = [
     description: "options.sections.appearance_desc",
     keywords: "theme accessibility appearance",
     wide: [UiThemeOption, AccessibilityOption],
+  },
+  {
+    id: "shortcuts-options",
+    icon: KeyboardIcon,
+    tone: "primary",
+    label: "options.sidebar.shortcuts",
+    description: "options.sections.shortcuts_desc",
+    keywords: "keyboard shortcut hotkey",
+    wide: [ShortcutsOption],
   },
 ] as const satisfies readonly SettingsSectionDef[];
 

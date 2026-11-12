@@ -463,6 +463,7 @@ options:
     appearance_desc: "Thème et accessibilité des pages de l'extension"
     odoo_desc: "Aides pour le backend et outils de développement."
     odoosh_desc: "Liens de branche, accessibilité et outils de logs."
+    shortcuts_desc: "Raccourcis clavier des commandes de l'extension."
     interface_title: "Détails d’interface"
     interface_desc: "Options d’affichage facultatives qui ne changent pas le fonctionnement d’Odoo."
     odoosh_enhancements_title: "Améliorations Odoo.sh"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Raccourcis"
     documentation: Documentation
     report_bug: Signaler un bug
     suggest_feature: Suggérer une fonctionnalité
@@ -613,6 +615,14 @@ options:
     stable_v16: "Entièrement stable à partir d'Odoo v16+"
     earlier_versions: "Les versions antérieures peuvent avoir des informations limitées"
     works_both: "Fonctionne à la fois sur le backend et sur les pages du site web"
+    shortcuts: "Raccourcis clavier"
+    shortcuts_desc: "Le navigateur les gère : modifiez-les dans sa page des raccourcis."
+    shortcuts_change: "Modifier les raccourcis"
+    shortcut_none: "Non défini"
+    shortcut_popup: "Ouvrir la popup"
+    shortcut_debug: "Activer ou désactiver le mode débogage"
+    shortcut_technical_list: "Ouvrir ou fermer la barre latérale technique"
+    shortcut_technical_list_selection: "Sélectionner un élément dans la barre latérale technique"
     task_link_title: Lien de tâche sur la page de branche SH
     task_link_desc: Spécifier une URL vers laquelle rediriger en cliquant sur l'icône du lien de tâche sur la page de branche SH. Laisser vide pour désactiver la fonctionnalité.
     task_link_hint: "Utilisez {{task_id}} dans l'URL. Chaque favori peut remplacer cette valeur par défaut depuis la page Favoris."

@@ -463,6 +463,7 @@ options:
     appearance_desc: "एक्सटेंशन पेजों की थीम और सुलभता"
     odoo_desc: "बैकएंड सहायक और डेवलपर टूल।"
     odoosh_desc: "ब्रांच लिंक, सुलभता और लॉग टूल।"
+    shortcuts_desc: "एक्सटेंशन commands के कीबोर्ड shortcuts।"
     interface_title: "इंटरफ़ेस विवरण"
     interface_desc: "वैकल्पिक प्रदर्शन विकल्प जो Odoo के काम करने का तरीका नहीं बदलते।"
     odoosh_enhancements_title: "Odoo.sh सुधार"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Shortcuts"
     documentation: दस्तावेज़ीकरण
     report_bug: Bug रिपोर्ट करें
     suggest_feature: सुविधा सुझाएं
@@ -613,6 +615,14 @@ options:
     stable_v16: "Odoo v16+ से पूरी तरह से stable"
     earlier_versions: "पूर्व संस्करणों में सीमित जानकारी हो सकती है"
     works_both: "backend और website दोनों पेजों पर काम करता है"
+    shortcuts: "कीबोर्ड shortcuts"
+    shortcuts_desc: "इन्हें browser प्रबंधित करता है: इन्हें उसके shortcuts पेज में बदलें।"
+    shortcuts_change: "Shortcuts बदलें"
+    shortcut_none: "सेट नहीं"
+    shortcut_popup: "popup खोलें"
+    shortcut_debug: "Debug mode चालू या बंद करें"
+    shortcut_technical_list: "तकनीकी sidebar खोलें या बंद करें"
+    shortcut_technical_list_selection: "तकनीकी sidebar में कोई element चुनें"
     task_link_title: SH branch पेज पर task link
     task_link_desc: SH branch पेज पर task link आइकन पर क्लिक करते समय redirect करने के लिए URL निर्दिष्ट करें। सुविधा को अक्षम करने के लिए खाली छोड़ें।
     task_link_hint: "URL में {{task_id}} का उपयोग करें। हर पसंदीदा, पसंदीदा पेज से इस डिफ़ॉल्ट को बदल सकता है।"

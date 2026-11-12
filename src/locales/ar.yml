@@ -463,6 +463,7 @@ options:
     appearance_desc: "سمة صفحات الإضافة وإمكانية الوصول إليها"
     odoo_desc: "أدوات مساعدة للواجهة الخلفية وأدوات للمطورين."
     odoosh_desc: "روابط الفروع وإمكانية الوصول وأدوات السجلات."
+    shortcuts_desc: "اختصارات لوحة المفاتيح لأوامر الإضافة."
     interface_title: "تفاصيل الواجهة"
     interface_desc: "خيارات عرض اختيارية لا تغيّر طريقة عمل Odoo."
     odoosh_enhancements_title: "تحسينات Odoo.sh"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "الاختصارات"
     documentation: الوثائق
     report_bug: الإبلاغ عن خطأ
     suggest_feature: اقتراح ميزة
@@ -613,6 +615,14 @@ options:
     stable_v16: "مستقر بالكامل من Odoo v16+"
     earlier_versions: "الإصدارات السابقة قد تكون بمعلومات محدودة"
     works_both: "يعمل على كل من الواجهة الخلفية وصفحات الموقع"
+    shortcuts: "اختصارات لوحة المفاتيح"
+    shortcuts_desc: "يديرها المتصفح: غيّرها من صفحة الاختصارات الخاصة به."
+    shortcuts_change: "تغيير الاختصارات"
+    shortcut_none: "غير محدد"
+    shortcut_popup: "فتح النافذة المنبثقة"
+    shortcut_debug: "تشغيل وضع التصحيح أو إيقافه"
+    shortcut_technical_list: "فتح الشريط الجانبي التقني أو إغلاقه"
+    shortcut_technical_list_selection: "تحديد عنصر في الشريط الجانبي التقني"
     task_link_title: رابط المهمة في صفحة فرع SH
     task_link_desc: حدد URL لإعادة التوجيه إليه عند النقر على أيقونة رابط المهمة في صفحة فرع SH. اتركه فارغًا لتعطيل الميزة.
     task_link_hint: "استخدم {{task_id}} في عنوان URL. يمكن لكل مفضلة تجاوز هذا الإعداد الافتراضي من صفحة المفضلة."

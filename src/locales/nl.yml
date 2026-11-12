@@ -463,6 +463,7 @@ options:
     appearance_desc: "Thema en toegankelijkheid van de extensiepagina's"
     odoo_desc: "Backendhulpmiddelen en ontwikkelaarstools."
     odoosh_desc: "Branchlinks, toegankelijkheid en logtools."
+    shortcuts_desc: "Sneltoetsen voor de opdrachten van de extensie."
     interface_title: "Interfacedetails"
     interface_desc: "Optionele weergavekeuzes die de werking van Odoo niet veranderen."
     odoosh_enhancements_title: "Odoo.sh-verbeteringen"
@@ -484,6 +485,7 @@ options:
     title: Odoo Toolbox
     odoo: Odoo
     odoo_sh: Odoo.sh
+    shortcuts: "Sneltoetsen"
     documentation: Documentatie
     report_bug: Een bug melden
     suggest_feature: Een functie voorstellen
@@ -613,6 +615,14 @@ options:
     stable_v16: "Volledig stabiel vanaf Odoo v16+"
     earlier_versions: "Eerdere versies hebben mogelijk beperkte informatie"
     works_both: "Werkt op zowel backend- als websitepagina's"
+    shortcuts: "Sneltoetsen"
+    shortcuts_desc: "De browser beheert ze: wijzig ze op de sneltoetsenpagina van de browser."
+    shortcuts_change: "Sneltoetsen wijzigen"
+    shortcut_none: "Niet ingesteld"
+    shortcut_popup: "Pop-up openen"
+    shortcut_debug: "Debugmodus in- of uitschakelen"
+    shortcut_technical_list: "Technische zijbalk openen of sluiten"
+    shortcut_technical_list_selection: "Element selecteren in de technische zijbalk"
     task_link_title: Taak-koppeling op SH branch-pagina
     task_link_desc: Geef een URL op om naar door te verwijzen bij het klikken op het taak-koppeling-icoon op de SH branch-pagina. Laat leeg om de functie uit te schakelen.
     task_link_hint: "Gebruik {{task_id}} in de URL. Elke favoriet kan deze standaard overschrijven via de pagina Favorieten."

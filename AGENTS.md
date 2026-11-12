@@ -167,7 +167,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Odoo.sh | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download | `page-features/odoo-sh/`, `entries/odoosh.content/` |
 | Any tab | Popup (projects, debug toggle), command palette | `screens/popup/`, `components/ui/command-palette.tsx` |
 | Any tab | DevTools panel: search, write, create, call method, unlink, history, domain editor | `screens/devtools/` |
-| Options | Settings, appearance (themes, text size, motion), favorites, backup/import, technical list options | `screens/options/` |
+| Options | Settings, appearance (themes, text size, motion), favorites, backup/import, technical list options, keyboard shortcuts (read only, links to the browser's page) | `screens/options/` |
 | Install/update | Update page with the changelog | `entries/update`, `screens/update`, `services/updates-changelog.ts` |
 | Context menu | Disable debug mode per domain or path | `entries/background/context-menu.ts` |
 
