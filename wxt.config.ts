@@ -72,24 +72,24 @@ export default defineConfig({
       ],
       commands: {
         _execute_action: {
-          description: "Open the extension popup",
+          description: "__MSG_options_settings_shortcut_popup__",
         },
         "toggle-debug": {
-          description: "Toggle debug mode",
+          description: "__MSG_options_settings_shortcut_debug__",
           suggested_key: {
             default: "Ctrl+Shift+D",
             mac: "Command+Shift+D",
           },
         },
         "toggle-technical-list": {
-          description: "Open or close the technical sidebar",
+          description: "__MSG_options_settings_shortcut_technical_list__",
           suggested_key: {
             default: "Ctrl+Shift+L",
             mac: "Command+Shift+L",
           },
         },
         "toggle-technical-list-selection": {
-          description: "Select an element in the technical sidebar",
+          description: "__MSG_options_settings_shortcut_technical_list_selection__",
           suggested_key: {
             default: "Ctrl+Shift+F",
             mac: "Command+Shift+F",
@@ -112,7 +112,7 @@ export default defineConfig({
       manifest.commands = {
         ...restCommands,
         _execute_browser_action: {
-          description: "Open the extension popup",
+          description: "__MSG_options_settings_shortcut_popup__",
         },
       };
 
