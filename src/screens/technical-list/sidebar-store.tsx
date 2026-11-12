@@ -9,6 +9,10 @@ import {
   type JSX,
 } from "solid-js";
 
+import {
+  TECHNICAL_LIST_COMMAND_EVENT,
+  type TechnicalListAction,
+} from "@/services/extension-messages";
 import { Logger } from "@/services/logger";
 import { errorMessage } from "@/utils/error-message";
 import { t } from "@/utils/i18n-page";
@@ -59,6 +63,7 @@ const createSidebarStore = () => {
   const selectedHighlight = createHighlighter(HIGHLIGHT_CLASSES.selected);
 
   const isWebsite = () => viewInfo()?.websiteInfo != null;
+  const canSelect = () => !isWebsite() && !!viewInfo()?.technicalFields.length;
   const elementCount = () =>
     (viewInfo()?.technicalFields.length ?? 0) + (viewInfo()?.technicalButtons.length ?? 0);
 
@@ -105,7 +110,7 @@ const createSidebarStore = () => {
 
   const toggleSelectionMode = () => {
     if (isSelectionMode()) exitSelectionMode();
-    else setSelectionMode(true);
+    else if (canSelect()) setSelectionMode(true);
   };
 
   const closePanel = () => {
@@ -114,14 +119,12 @@ const createSidebarStore = () => {
     setExpanded(false);
   };
 
-  const togglePanel = () => {
-    if (isExpanded()) {
-      closePanel();
-      return;
-    }
+  const openPanel = () => {
     refresh();
     setExpanded(true);
   };
+
+  const togglePanel = () => (isExpanded() ? closePanel() : openPanel());
 
   const highlight = (target: ElementTarget) => {
     const elements = findTargetElements(target);
@@ -140,6 +143,17 @@ const createSidebarStore = () => {
   };
   document.addEventListener("keydown", handleEscape);
   onCleanup(() => document.removeEventListener("keydown", handleEscape));
+
+  const handleCommand = (event: Event) => {
+    const action = (event as CustomEvent<TechnicalListAction>).detail;
+    if (action === "toggle-panel") togglePanel();
+    if (action === "toggle-selection") {
+      if (!isExpanded()) openPanel();
+      toggleSelectionMode();
+    }
+  };
+  document.addEventListener(TECHNICAL_LIST_COMMAND_EVENT, handleCommand);
+  onCleanup(() => document.removeEventListener(TECHNICAL_LIST_COMMAND_EVENT, handleCommand));
 
   // Selection mode: capture listeners so the Odoo page doesn't react to the picking click.
   createEffect(() => {
@@ -207,6 +221,7 @@ const createSidebarStore = () => {
     error,
     dbInfo,
     isWebsite,
+    canSelect,
     elementCount,
     filtered,
     picked,

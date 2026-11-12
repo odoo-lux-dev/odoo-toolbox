@@ -115,7 +115,6 @@ const FieldFilters = () => {
 
 const SidePanelHeader = () => {
   const sidebar = useSidebar();
-  const canSelect = () => !sidebar.isWebsite() && !!sidebar.viewInfo()?.technicalFields.length;
 
   return (
     <header class="flex flex-none items-start justify-between gap-2.5 border-b border-solid border-line ps-4.5 pe-4 pt-3.5 pb-3">
@@ -131,7 +130,7 @@ const SidePanelHeader = () => {
         </h2>
       </div>
       <div class="flex flex-none items-center gap-1">
-        <Show when={canSelect()}>
+        <Show when={sidebar.canSelect()}>
           <IconButton
             label={
               sidebar.isSelectionMode()

@@ -58,7 +58,11 @@ Defined in `wxt.config.ts`:
   `<all_urls>` added to the permissions.
 - Permissions: `storage`, `tabs`, `alarms`, `scripting`, `clipboardWrite`, `webNavigation`,
   `contextMenus`, `declarativeNetRequestWithHostAccess`.
-- Commands: `toggle-debug` (`Ctrl+Shift+D` / `Command+Shift+D`) and the popup action.
+- Commands: `toggle-debug` (`Ctrl+Shift+D`), `toggle-technical-list` (`Ctrl+Shift+L`),
+  `toggle-technical-list-selection` (`Ctrl+Shift+F`), with `Command` instead of `Ctrl` on Mac,
+  and the popup action. Chrome accepts at most four commands with a suggested key.
+- A new command shortcut follows the same pattern: `Ctrl+Shift+<letter>`, `Command+Shift+<letter>`
+  on Mac. `Alt+Shift` is Odoo's hotkey space and types characters on Mac.
 - `web_accessible_resources`: `odoo-websites.js` and `odoo-technical-list.js` (any `*://*/*`).
 - `default_locale: "en"`. Translations use `browser.i18n` keys from the YAML files.
 

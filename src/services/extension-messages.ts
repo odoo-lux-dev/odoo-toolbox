@@ -21,6 +21,10 @@ export interface OdooShRouteChangedMessage {
   type: typeof ODOOSH_ROUTE_CHANGED;
 }
 
+export type TechnicalListAction = "toggle-panel" | "toggle-selection";
+
+export const TECHNICAL_LIST_COMMAND_EVENT = "odoo-toolbox:technical-list-command";
+
 /** Helpers the DevTools panel can run in the inspected page (see `runPageScript`). */
 export interface PageScripts {
   GET_ODOO_INFO: { params: null; result: OdooInfo };

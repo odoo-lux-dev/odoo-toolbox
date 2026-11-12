@@ -7,7 +7,9 @@ import { toggleDebugMode } from "@/services/debug-mode-service";
 import {
   DEVTOOLS_PAGE_SCRIPT,
   ODOOSH_ROUTE_CHANGED,
+  TECHNICAL_LIST_COMMAND_EVENT,
   type OdooShRouteChangedMessage,
+  type TechnicalListAction,
 } from "@/services/extension-messages";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
@@ -16,11 +18,25 @@ import type { ImportedConfig } from "@/utils/config-validation";
 import { getDebugModeUrl, isBackendPath } from "@/utils/debug-mode-url";
 import { isRunbotBuildHost } from "@/utils/odoo-hosts";
 
-const COMMANDS: Record<string, () => void> = {
-  "toggle-debug": () =>
-    toggleDebugMode()
-      .then(() => Logger.info("Debug mode toggled"))
-      .catch((error) => Logger.error("An error occured toggling debug mode", error)),
+const sendTechnicalListCommand = async (action: TechnicalListAction) => {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (tab?.id === undefined) return;
+  await browser.scripting
+    .executeScript({
+      target: { tabId: tab.id },
+      world: "MAIN",
+      func: (type: string, detail: string) =>
+        document.dispatchEvent(new CustomEvent(type, { detail })),
+      args: [TECHNICAL_LIST_COMMAND_EVENT, action],
+    })
+    // Non-injectable tab (chrome://, Web Store, etc.)
+    .catch(() => undefined);
+};
+
+const COMMANDS: Record<string, () => Promise<void>> = {
+  "toggle-debug": toggleDebugMode,
+  "toggle-technical-list": () => sendTechnicalListCommand("toggle-panel"),
+  "toggle-technical-list-selection": () => sendTechnicalListCommand("toggle-selection"),
 };
 
 const persistDataToSync = () =>
@@ -102,7 +118,9 @@ export default defineBackground(() => {
   });
 
   browser.commands.onCommand.addListener((command) => {
-    COMMANDS[command]?.();
+    COMMANDS[command]?.().catch((error) =>
+      Logger.error(`An error occurred running the ${command} command`, error),
+    );
   });
 
   browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {

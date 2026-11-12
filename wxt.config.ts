@@ -81,6 +81,20 @@ export default defineConfig({
             mac: "Command+Shift+D",
           },
         },
+        "toggle-technical-list": {
+          description: "Open or close the technical sidebar",
+          suggested_key: {
+            default: "Ctrl+Shift+L",
+            mac: "Command+Shift+L",
+          },
+        },
+        "toggle-technical-list-selection": {
+          description: "Select an element in the technical sidebar",
+          suggested_key: {
+            default: "Ctrl+Shift+F",
+            mac: "Command+Shift+F",
+          },
+        },
       },
     };
 
