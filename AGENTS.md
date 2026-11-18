@@ -25,8 +25,10 @@ trust the code and fix this file.
 | `bun run compile`                 | `tsc --noEmit`                                           |
 | `bun lint` / `bun lint:fix`       | `oxlint` (type-aware through `oxlint-tsgolint`)          |
 | `bun format` / `bun format:check` | `oxfmt`                                                  |
+| `bun run check:comments`          | List the comment lines added since `HEAD` (section 13)   |
 
-Run `bun test`, `bun run compile` and `bun lint` before reporting a change as done.
+Run `bun test`, `bun run compile`, `bun lint` and `bun run check:comments` before
+reporting a change as done.
 `dist/` is git-ignored.
 
 ## 2. Repository map
@@ -45,6 +47,7 @@ Run `bun test`, `bun run compile` and `bun lint` before reporting a change as do
 | `src/locales/*.yml`         | Translations (en is the source of truth)                                                 |
 | `src/utils/odoo-py_js/`    | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)         |
 | `tests/`                    | Test preload (`setup.ts`: DOM and in-memory `wxt/utils/storage`)                         |
+| `scripts/`                  | Developer scripts run through `package.json` (`check-added-comments.sh`)                 |
 | `docs/`                     | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                      |
 | `.fusion/`                  | Tooling state of an agent orchestrator, not extension code: do not edit                   |
 | `dist/`                     | Build output (git-ignored)                                                               |
@@ -273,7 +276,7 @@ This rule is the one agents break most. Read it as strict.
   a rewrite.
 - No commented-out code, no changelog comments ("was X", "now Y"), no notes to the reviewer.
 - **Before reporting a change as done, list every comment line the diff adds**
-  (`git diff | grep '^+.*\(//\|/\*\)'`) and delete each one that does not pass the rules above.
+  (`bun run check:comments`) and delete each one that does not pass the rules above.
   When you edit an existing comment that restates the code, delete it.
 
 ### Code

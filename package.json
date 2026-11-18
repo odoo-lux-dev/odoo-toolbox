@@ -14,6 +14,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "tsc --noEmit",
+    "check:comments": "bash scripts/check-added-comments.sh",
     "postinstall": "wxt prepare",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
