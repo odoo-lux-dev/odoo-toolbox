@@ -1,7 +1,7 @@
 const LOCAL_HOSTNAME_REGEXES = [
   /^localhost$/,
   /\.localhost$/,
-  /^::1$/,
+  /^\[::1\]$/,
   /^0\.0\.0\.0$/,
   /^127\.\d+\.\d+\.\d+$/, // loopback
   /^10\.\d+\.\d+\.\d+$/, // RFC 1918
@@ -19,7 +19,7 @@ export const isRunbotFrontendHost = (hostname: string): boolean =>
 export const isRunbotBuildHost = (hostname: string): boolean =>
   RUNBOT_BUILD_HOSTNAME_REGEX.test(hostname);
 
-const isLocalHost = (hostname: string): boolean =>
+export const isLocalHost = (hostname: string): boolean =>
   LOCAL_HOSTNAME_REGEXES.some((regex) => regex.test(hostname));
 
 /**

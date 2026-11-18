@@ -109,9 +109,11 @@ All message types and their payloads are in `src/services/extension-messages.ts`
   to Odoo.sh tabs, because the Odoo.sh SPA navigates with the History API.
 - `ODOO_VERSION_DETECTED`: the global content script forwards the `server_version_info` that
   `odoo-websites.js` dispatches as the `ODOO_VERSION_EVENT` DOM event; the background shows it
-  on the toolbar badge of the tab (`entries/background/odoo-version-badge.ts`). It is null on
-  an Odoo page that hides the version (logged out): the background then reads the per-origin
-  cache, or asks `/web/webclient/version_info` once per origin and per day.
+  on the toolbar badge of the tab (`entries/background/odoo-version-badge.ts`). A page is Odoo
+  when it defines `window.odoo` (or `window.openerp`, its old name). The version is null when
+  the page hides it (logged out): the background then reads the per-origin cache, or asks
+  `/web/webclient/version_info` (again after 30 minutes, failures included). Local
+  hosts are never cached, as one local server can change version at each restart.
 - `onMessageExternal`: accepts only the public extension ID of the legacy "Odoo.sh"
   extension (per browser) and imports its configuration (`importConfiguration`).
 
@@ -142,7 +144,7 @@ Errors cross contexts through `serializeError` / `deserializeError`, so they kee
 | DevTools quick domains (`quickDomains`) | `quick-domains-service.ts` | Local + synced, seeded by `sync.init` |
 | DevTools history (`devtools_history`) | `history-service.ts` | Local only, max 150 entries, pinned entries always kept |
 | Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, most recently visited first |
-| Odoo version per origin (`odooVersions`) | `entries/background/odoo-version-badge.ts` | Local only, max 200 origins, most recently checked first, 24h TTL (failures included) |
+| Odoo version per origin (`odooVersions`) | `entries/background/odoo-version-badge.ts` | Local only, max 200 origins, most recently checked first, 30 min TTL (failures included), local hosts never stored |
 | Last save to `sync:` (`syncStatus`) | `configuration-service.ts` | Local only, time of the last full save and the last failure |
 
 Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`), and the

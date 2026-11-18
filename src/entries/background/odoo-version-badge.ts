@@ -3,6 +3,7 @@ import {
   type OdooVersionDetectedMessage,
 } from "@/services/extension-messages";
 import { createStore } from "@/services/synced-store";
+import { isLocalHost } from "@/utils/odoo-hosts";
 import { formatOdooVersionBadge } from "@/utils/odoo-page";
 import {
   findFreshVersion,
@@ -52,10 +53,15 @@ const setBadge = (tabId: number, text: string) => {
   ]);
 };
 
-const rememberVersion = async (origin: string, text: string | null) =>
-  versionsStore.set(
+// One local server can run another Odoo version after each restart.
+const isCacheable = (origin: string) => !isLocalHost(new URL(origin).hostname);
+
+const rememberVersion = async (origin: string, text: string | null) => {
+  if (!isCacheable(origin)) return;
+  await versionsStore.set(
     recordVersion(await versionsStore.get(), { origin, text, checkedAt: Date.now() }),
   );
+};
 
 // Public route (`auth="none"`), the only one giving the version to a logged-out visitor.
 const fetchVersion = async (origin: string): Promise<string | null> => {
@@ -75,7 +81,8 @@ const fetchVersion = async (origin: string): Promise<string | null> => {
 };
 
 const lookUpVersion = async (origin: string): Promise<string | null> => {
-  const cached = findFreshVersion(await versionsStore.get(), origin, Date.now());
+  const cached =
+    isCacheable(origin) && findFreshVersion(await versionsStore.get(), origin, Date.now());
   if (cached) return cached.text;
   const text = await fetchVersion(origin);
   await rememberVersion(origin, text);

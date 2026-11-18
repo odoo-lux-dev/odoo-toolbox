@@ -22,10 +22,16 @@ describe("findFreshVersion", () => {
     expect(findFreshVersion(entries, "https://b.com", NOW)?.text).toBeNull();
   });
 
-  test("ignores expired entries and other origins", () => {
-    const entries = [entry("https://a.com")];
+  test("keeps an entry for the TTL only", () => {
+    const entries = [entry("https://a.com", "18.0")];
+    expect(findFreshVersion(entries, "https://a.com", NOW + ODOO_VERSION_TTL_MS - 1)?.text).toBe(
+      "18.0",
+    );
     expect(findFreshVersion(entries, "https://a.com", NOW + ODOO_VERSION_TTL_MS)).toBeUndefined();
-    expect(findFreshVersion(entries, "http://a.com", NOW)).toBeUndefined();
+  });
+
+  test("ignores other origins", () => {
+    expect(findFreshVersion([entry("https://a.com")], "http://a.com", NOW)).toBeUndefined();
   });
 });
 

@@ -1,5 +1,5 @@
 export const MAX_ODOO_VERSIONS = 200;
-export const ODOO_VERSION_TTL_MS = 24 * 60 * 60 * 1000;
+export const ODOO_VERSION_TTL_MS = 30 * 60 * 1000;
 
 /** `text` is the badge text, or null when the origin gave no version. */
 export interface OdooVersionEntry {
