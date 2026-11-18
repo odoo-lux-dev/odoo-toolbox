@@ -425,7 +425,6 @@ devtools:
     unknown: Inconnu
 options:
   shell:
-    tagline: "Compagnon Odoo"
     settings: "Paramètres"
     favorites: "Favoris"
     projects: "Projets"
@@ -647,7 +646,6 @@ browser_context_menu:
   domain_path: Ignorer le mode debug sur ce chemin (ce domaine)
 popup:
   search_label: "Rechercher un projet"
-  tagline: "Compagnon Odoo"
   open_sh: "Ouvrir les projets Odoo.sh"
   open_runbot: "Ouvrir Runbot"
   title: "Vos projets"

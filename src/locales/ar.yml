@@ -425,7 +425,6 @@ devtools:
     unknown: غير معروف
 options:
   shell:
-    tagline: "رفيق Odoo"
     settings: "الإعدادات"
     favorites: "المفضلة"
     projects: "المشاريع"
@@ -647,7 +646,6 @@ browser_context_menu:
   domain_path: تجاهل وضع التصحيح على هذا المسار (هذا النطاق)
 popup:
   search_label: "البحث في المشاريع"
-  tagline: "رفيق Odoo"
   open_sh: "فتح مشاريع Odoo.sh"
   open_runbot: "فتح Runbot"
   title: "مشاريعك"

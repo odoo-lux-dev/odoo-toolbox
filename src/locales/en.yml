@@ -425,7 +425,6 @@ devtools:
     unknown: Unknown
 options:
   shell:
-    tagline: "Odoo companion"
     settings: "Settings"
     favorites: "Favorites"
     projects: "Projects"
@@ -648,7 +647,6 @@ browser_context_menu:
 
 popup:
   search_label: "Search projects"
-  tagline: "Odoo companion"
   open_sh: "Open Odoo.sh projects"
   open_runbot: "Open Runbot"
   title: "Your projects"

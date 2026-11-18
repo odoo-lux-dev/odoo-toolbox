@@ -425,7 +425,6 @@ devtools:
     unknown: Onbekend
 options:
   shell:
-    tagline: "Odoo-hulpmiddel"
     settings: "Instellingen"
     favorites: "Favorieten"
     projects: "Projecten"
@@ -647,7 +646,6 @@ browser_context_menu:
   domain_path: Debugmodus negeren op dit pad (dit domein)
 popup:
   search_label: "Projecten zoeken"
-  tagline: "Odoo-hulpmiddel"
   open_sh: "Odoo.sh-projecten openen"
   open_runbot: "Runbot openen"
   title: "Jouw projecten"

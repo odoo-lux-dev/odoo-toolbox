@@ -30,14 +30,9 @@ export const Header = () => (
   >
     <div class="flex min-w-0 items-center gap-2.25">
       <BrandLogo size={30} class="ring-1 ring-topbar-line" />
-      <div class="flex min-w-0 flex-col leading-tight">
-        <strong class="truncate font-display text-title font-semibold tracking-[-0.01em]">
-          Odoo Toolbox
-        </strong>
-        <span class="mt-0.5 truncate font-mono text-micro font-medium tracking-[0.11em] text-topbar-muted uppercase">
-          {t("popup.tagline")}
-        </span>
-      </div>
+      <strong class="ot-cap-line font-display text-title/tight font-semibold tracking-[-0.01em]">
+        Odoo Toolbox
+      </strong>
     </div>
     <div class="flex flex-none items-center gap-1.5">
       <ExternalLink

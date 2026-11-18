@@ -95,14 +95,9 @@ export const OptionsSidebar = () => {
     >
       <a href="#/options" class="flex items-center gap-2.5 px-1.5 pt-0.5 pb-3.5">
         <BrandLogo size={34} class="ring-1 ring-line" />
-        <span class="flex min-w-0 flex-col leading-tight">
-          <strong class="font-display text-sm font-semibold tracking-tight">
-            {t("options.sidebar.title")}
-          </strong>
-          <span class="mt-0.5 font-mono text-micro tracking-[0.08em] text-ink-3 uppercase rtl:font-sans rtl:tracking-normal">
-            {t("options.shell.tagline")}
-          </span>
-        </span>
+        <strong class="ot-cap-line font-display text-sm/tight font-semibold tracking-tight">
+          {t("options.sidebar.title")}
+        </strong>
       </a>
 
       <div class="min-h-0 flex-1 overflow-y-auto pt-0.5 pb-2">

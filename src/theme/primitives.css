@@ -682,17 +682,21 @@
     color: var(--ot-ink-3);
   }
 
-  /* Label trimmed to its cap height so it centers optically on the icon (the
-     UI fonts sit ~1px high otherwise). `clip` + margin keeps descenders visible
-     while still truncating. */
+  /* Single line trimmed to its cap height so it centers optically on an icon
+     (the UI fonts sit ~1px high otherwise). `clip` + margin keeps descenders
+     visible while still truncating. */
+  .ot-cap-line,
   .ot-nav-label {
     min-width: 0;
-    flex: 1;
     overflow: clip;
     overflow-clip-margin: 4px;
     text-box: trim-both cap alphabetic;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .ot-nav-label {
+    flex: 1;
   }
 
   .ot-nav-item:is([aria-current], [aria-pressed="true"]) .ot-nav-icon {

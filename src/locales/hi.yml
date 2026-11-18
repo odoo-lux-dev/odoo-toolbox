@@ -425,7 +425,6 @@ devtools:
     unknown: अज्ञात
 options:
   shell:
-    tagline: "Odoo साथी"
     settings: "सेटिंग्स"
     favorites: "पसंदीदा"
     projects: "प्रोजेक्ट"
@@ -647,7 +646,6 @@ browser_context_menu:
   domain_path: इस पथ पर डिबग मोड अनदेखा करें (यह डोमेन)
 popup:
   search_label: "प्रोजेक्ट खोजें"
-  tagline: "Odoo साथी"
   open_sh: "Odoo.sh प्रोजेक्ट खोलें"
   open_runbot: "Runbot खोलें"
   title: "आपके प्रोजेक्ट"
