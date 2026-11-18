@@ -7,6 +7,7 @@ import type { OdooActionParams, OdooInfo, OdooPageInfo } from "@/types";
 export const I18N_GET_MESSAGES = "i18n:get-messages";
 export const ODOOSH_ROUTE_CHANGED = "odoosh:route-changed";
 export const DEVTOOLS_PAGE_SCRIPT = "devtools:page-script";
+export const ODOO_VERSION_DETECTED = "odoo:version-detected";
 
 export interface I18nGetMessagesRequest {
   type: typeof I18N_GET_MESSAGES;
@@ -20,6 +21,14 @@ export type I18nGetMessagesResponse =
 export interface OdooShRouteChangedMessage {
   type: typeof ODOOSH_ROUTE_CHANGED;
 }
+
+export interface OdooVersionDetectedMessage {
+  type: typeof ODOO_VERSION_DETECTED;
+  /** JSON `server_version_info`, null on an Odoo page that does not expose it. */
+  serverVersionInfo: string | null;
+}
+
+export const ODOO_VERSION_EVENT = "odoo-toolbox:odoo-version";
 
 export type TechnicalListAction = "toggle-panel" | "toggle-selection";
 

@@ -13,10 +13,10 @@
 | `runtime.onStartup`, `runtime.onInstalled` | On startup and on a new install, aligns local data with the synced data (unless sync is empty); on an update, keeps the migrated local data and persists it to `sync:`. (Re)creates alarms, opens the update page (`update.html`) after an update when `updateService` says so |
 | `alarms.onAlarm` | `persist-local-data` (every minute): copies the changed local data to `sync:` and records the outcome (`syncStatus`, shown in Options) |
 | `commands.onCommand` | `toggle-debug` (see `toggleDebugMode` in `services/debug-mode-service.ts`); `toggle-technical-list` and `toggle-technical-list-selection`, dispatched in the active tab as the `TECHNICAL_LIST_COMMAND_EVENT` DOM event |
-| `runtime.onMessage` | I18n requests (`entries/background/i18n.ts`) and DevTools page-script requests (`entries/background/devtools.ts`) |
+| `runtime.onMessage` | I18n requests (`entries/background/i18n.ts`), DevTools page-script requests (`entries/background/devtools.ts`) and the Odoo version of a tab, shown on the toolbar badge (`entries/background/odoo-version-badge.ts`) |
 | `runtime.onMessageExternal` | Imports the configuration sent by the legacy Odoo.sh extension (public ID checked per browser) |
 | `webNavigation.onHistoryStateUpdated` | Tells Odoo.sh tabs about SPA route changes (`ODOOSH_ROUTE_CHANGED`) |
-| `webNavigation.onCommitted` | Debug-mode reload fallback for backend pages of hosts not yet learned |
+| `webNavigation.onCommitted` | Clears the Odoo version badge of the tab (main frame, any URL); debug-mode reload fallback for backend pages of hosts not yet learned |
 
 `registerContextMenuHandlers()` (`context-menu.ts`) adds the "ignore debug mode" items, and
 `debugModeRulesService.start()` keeps the network rules in sync.
@@ -28,6 +28,7 @@
 | `index.ts` | Wiring above, reload fallback, external messages |
 | `devtools.ts` | Runs a DevTools page script in the MAIN world of the inspected tab (`callPageRuntime`, injected with `func`, so it must stay self-contained) |
 | `i18n.ts` | Serves the translations of a locale to the other contexts (`loadMessages`) |
+| `odoo-version-badge.ts` | Validates the `server_version_info` sent by the top frame and sets the badge text of its tab (`action` on Chrome, `browserAction` on Firefox MV2). On an Odoo page without the version (logged out), uses the `odooVersions` cache (24h per origin) or fetches `POST /web/webclient/version_info` once per origin, then checks the tab still shows that origin |
 | `context-menu.ts` | Context menu items to ignore debug mode per domain, path or both; titles read from the locale messages |
 | `devtools.test.ts` | Unit tests of the DevTools relay |
 

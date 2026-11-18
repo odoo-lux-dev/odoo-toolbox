@@ -104,6 +104,11 @@ All message types and their payloads are in `src/services/extension-messages.ts`
   (`entries/background/devtools.ts`, called from `services/odoo-rpc-service.ts`).
 - `ODOOSH_ROUTE_CHANGED`: sent by the background on `webNavigation.onHistoryStateUpdated`
   to Odoo.sh tabs, because the Odoo.sh SPA navigates with the History API.
+- `ODOO_VERSION_DETECTED`: the global content script forwards the `server_version_info` that
+  `odoo-websites.js` dispatches as the `ODOO_VERSION_EVENT` DOM event; the background shows it
+  on the toolbar badge of the tab (`entries/background/odoo-version-badge.ts`). It is null on
+  an Odoo page that hides the version (logged out): the background then reads the per-origin
+  cache, or asks `/web/webclient/version_info` once per origin and per day.
 - `onMessageExternal`: accepts only the public extension ID of the legacy "Odoo.sh"
   extension (per browser) and imports its configuration (`importConfiguration`).
 
@@ -134,6 +139,7 @@ Errors cross contexts through `serializeError` / `deserializeError`, so they kee
 | DevTools quick domains (`quickDomains`) | `quick-domains-service.ts` | Local + synced, seeded by `sync.init` |
 | DevTools history (`devtools_history`) | `history-service.ts` | Local only, max 150 entries, pinned entries always kept |
 | Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, most recently visited first |
+| Odoo version per origin (`odooVersions`) | `entries/background/odoo-version-badge.ts` | Local only, max 200 origins, most recently checked first, 24h TTL (failures included) |
 | Last save to `sync:` (`syncStatus`) | `configuration-service.ts` | Local only, time of the last full save and the last failure |
 
 Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`), and the
@@ -164,6 +170,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Odoo pages | Technical print options PDF/HTML (15+) | `page-features/technical-report/` |
 | Odoo pages | Technical sidebar (fields, buttons, record and view info) | `page-features/technical-list/`, `screens/technical-list/` |
 | Odoo pages | Debug-mode and color-scheme settings on the page | `global.content`, `utils/settings-schema.ts` |
+| Odoo pages | Odoo version on the toolbar badge, per tab | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
 | Odoo.sh | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download | `page-features/odoo-sh/`, `entries/odoosh.content/` |
 | Any tab | Popup (projects, debug toggle), command palette | `screens/popup/`, `components/ui/command-palette.tsx` |
 | Any tab | DevTools panel: search, write, create, call method, unlink, history, domain editor | `screens/devtools/` |

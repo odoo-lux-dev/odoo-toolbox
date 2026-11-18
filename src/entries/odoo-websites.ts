@@ -2,6 +2,7 @@ import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { hideCustomHomeMenuBackground } from "@/page-features/home-menu-background";
 import { handleLoginButtons } from "@/page-features/login-buttons";
+import { announceOdooVersion } from "@/page-features/odoo-version";
 import { handleOdooShLoginButton } from "@/page-features/odoosh-login";
 import { handleRunbotAutoLogin } from "@/page-features/runbot-login";
 import {
@@ -48,6 +49,7 @@ const observeOdooUi = () => {
 export default defineUnlistedScript(async () => {
   const tabUrl = new URL(window.location.href);
 
+  announceOdooVersion();
   observeOdooUi();
   hideCustomHomeMenuBackground();
   handleLoginButtons();

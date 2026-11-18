@@ -1,6 +1,10 @@
 import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
 import { handleI18nMessage } from "@/entries/background/i18n";
+import {
+  clearOdooVersionBadge,
+  handleOdooVersionMessage,
+} from "@/entries/background/odoo-version-badge";
 import { configurationService } from "@/services/configuration-service";
 import { debugModeRulesService } from "@/services/debug-mode-rules-service";
 import { toggleDebugMode } from "@/services/debug-mode-service";
@@ -123,9 +127,12 @@ export default defineBackground(() => {
     );
   });
 
-  browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (handleI18nMessage(request, sendResponse)) {
       return true;
+    }
+    if (handleOdooVersionMessage(request, sender)) {
+      return false;
     }
     if (request?.type === DEVTOOLS_PAGE_SCRIPT) {
       handleDevToolsMessage(request, sendResponse);
@@ -143,6 +150,8 @@ export default defineBackground(() => {
     // The content script may not be injected (yet) in that tab.
     browser.tabs.sendMessage(details.tabId, message).catch(() => undefined);
   });
+
+  browser.webNavigation.onCommitted.addListener(clearOdooVersionBadge);
 
   // Reload fallback of the network rules (see `debugModeRulesService`): for hosts not yet
   // known as Odoo, and URLs carrying another debug mode than the default one.
