@@ -649,6 +649,7 @@ popup:
   search_label: "प्रोजेक्ट खोजें"
   tagline: "Odoo साथी"
   open_sh: "Odoo.sh प्रोजेक्ट खोलें"
+  open_runbot: "Runbot खोलें"
   title: "आपके प्रोजेक्ट"
   search_placeholder: "प्रोजेक्ट खोजें…"
   no_match: "कोई मेल नहीं"
@@ -656,6 +657,7 @@ popup:
   results_count_one: "1 प्रोजेक्ट"
   results_count_other: "$1 प्रोजेक्ट"
   header_sh: Odoo.sh
+  header_runbot: Runbot
   footer:
     light_theme: हल्की theme पर स्विच करें
     dark_theme: गहरी theme पर स्विच करें

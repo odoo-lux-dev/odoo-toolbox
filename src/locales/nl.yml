@@ -649,6 +649,7 @@ popup:
   search_label: "Projecten zoeken"
   tagline: "Odoo-hulpmiddel"
   open_sh: "Odoo.sh-projecten openen"
+  open_runbot: "Runbot openen"
   title: "Jouw projecten"
   search_placeholder: "Zoek een project…"
   no_match: "Geen resultaat"
@@ -656,6 +657,7 @@ popup:
   results_count_one: "1 project"
   results_count_other: "$1 projecten"
   header_sh: Odoo.sh
+  header_runbot: Runbot
   footer:
     light_theme: Overschakelen naar licht thema
     dark_theme: Overschakelen naar donker thema

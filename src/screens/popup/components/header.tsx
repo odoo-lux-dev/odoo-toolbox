@@ -3,7 +3,25 @@ import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { HugeiconsIcon } from "@/components/ui/hugeicons-icon";
 import { t } from "@/services/i18n-service";
-import { ODOO_SH_PROJECTS_URL } from "@/utils/constants";
+import { ODOO_SH_PROJECTS_URL, RUNBOT_URL } from "@/utils/constants";
+
+const ExternalLink = (props: { href: string; title: string; label: string }) => (
+  <a
+    href={props.href}
+    target="_blank"
+    rel="noreferrer noopener"
+    title={props.title}
+    class="inline-flex min-h-control-sm flex-none items-center gap-1 rounded-field border border-topbar-line bg-topbar-content/7 px-2 text-note font-semibold transition-colors duration-150 ease-theme hover:bg-topbar-content/14"
+  >
+    {props.label}
+    <HugeiconsIcon
+      icon={ArrowUpRight01Icon}
+      size={12}
+      strokeWidth={2}
+      class="opacity-70 rtl:-scale-x-100"
+    />
+  </a>
+);
 
 export const Header = () => (
   <header
@@ -16,25 +34,22 @@ export const Header = () => (
         <strong class="truncate font-display text-title font-semibold tracking-[-0.01em]">
           Odoo Toolbox
         </strong>
-        <span class="mt-0.5 font-mono text-micro font-medium tracking-[0.11em] text-topbar-muted uppercase">
+        <span class="mt-0.5 truncate font-mono text-micro font-medium tracking-[0.11em] text-topbar-muted uppercase">
           {t("popup.tagline")}
         </span>
       </div>
     </div>
-    <a
-      href={ODOO_SH_PROJECTS_URL}
-      target="_blank"
-      rel="noreferrer noopener"
-      title={t("popup.open_sh")}
-      class="inline-flex min-h-control-sm flex-none items-center gap-1 rounded-field border border-topbar-line bg-topbar-content/7 px-2 text-note font-semibold transition-colors duration-150 ease-theme hover:bg-topbar-content/14"
-    >
-      {t("popup.header_sh")}
-      <HugeiconsIcon
-        icon={ArrowUpRight01Icon}
-        size={12}
-        strokeWidth={2}
-        class="opacity-70 rtl:-scale-x-100"
+    <div class="flex flex-none items-center gap-1.5">
+      <ExternalLink
+        href={RUNBOT_URL}
+        title={t("popup.open_runbot")}
+        label={t("popup.header_runbot")}
       />
-    </a>
+      <ExternalLink
+        href={ODOO_SH_PROJECTS_URL}
+        title={t("popup.open_sh")}
+        label={t("popup.header_sh")}
+      />
+    </div>
   </header>
 );

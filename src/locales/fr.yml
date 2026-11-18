@@ -649,6 +649,7 @@ popup:
   search_label: "Rechercher un projet"
   tagline: "Compagnon Odoo"
   open_sh: "Ouvrir les projets Odoo.sh"
+  open_runbot: "Ouvrir Runbot"
   title: "Vos projets"
   search_placeholder: "Trouver un projet…"
   no_match: "Aucun résultat"
@@ -656,6 +657,7 @@ popup:
   results_count_one: "1 projet"
   results_count_other: "$1 projets"
   header_sh: Odoo.sh
+  header_runbot: Runbot
   footer:
     light_theme: Passer au thème clair
     dark_theme: Passer au thème sombre

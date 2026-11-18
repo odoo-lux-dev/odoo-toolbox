@@ -649,6 +649,7 @@ popup:
   search_label: "البحث في المشاريع"
   tagline: "رفيق Odoo"
   open_sh: "فتح مشاريع Odoo.sh"
+  open_runbot: "فتح Runbot"
   title: "مشاريعك"
   search_placeholder: "ابحث عن مشروع…"
   no_match: "لا توجد نتائج"
@@ -656,6 +657,7 @@ popup:
   results_count_one: "مشروع واحد"
   results_count_other: "$1 مشاريع"
   header_sh: Odoo.sh
+  header_runbot: Runbot
   footer:
     light_theme: التبديل إلى السمة الفاتحة
     dark_theme: التبديل إلى السمة الداكنة
