@@ -44,6 +44,7 @@ Run `bun test`, `bun run compile` and `bun lint` before reporting a change as do
 | `src/hooks/`                | Solid hooks shared by the screens (`useExtensionTheme`, `useSettings`...)                |
 | `src/locales/*.yml`         | Translations (en is the source of truth)                                                 |
 | `src/utils/odoo-py_js/`    | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)         |
+| `public/`                   | Static files copied as is into the build (`action-icons/`: toolbar icon variants)         |
 | `tests/`                    | Test preload (`setup.ts`: DOM and in-memory `wxt/utils/storage`)                         |
 | `docs/`                     | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                      |
 | `.fusion/`                  | Tooling state of an agent orchestrator, not extension code: do not edit                   |
@@ -102,6 +103,9 @@ All message types and their payloads are in `src/services/extension-messages.ts`
 - `DEVTOOLS_PAGE_SCRIPT`: the DevTools panel asks the background to run a page helper
   (`GET_ODOO_INFO`, `GET_CURRENT_PAGE_INFO`, `EXECUTE_ODOO_ACTION`) in the inspected tab
   (`entries/background/devtools.ts`, called from `services/odoo-rpc-service.ts`).
+- `DEBUG_MODE_DETECTED`: the global content script reports the page's `odoo.debug`, left by
+  `odoo-websites.js` in `document.documentElement.dataset`, and the background shows it on the
+  toolbar icon of that tab (`entries/background/action-icon.ts`).
 - `ODOOSH_ROUTE_CHANGED`: sent by the background on `webNavigation.onHistoryStateUpdated`
   to Odoo.sh tabs, because the Odoo.sh SPA navigates with the History API.
 - `onMessageExternal`: accepts only the public extension ID of the legacy "Odoo.sh"
@@ -170,6 +174,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Options | Settings, appearance (themes, text size, motion), favorites, backup/import, technical list options, keyboard shortcuts (read only, links to the browser's page) | `screens/options/` |
 | Install/update | Update page with the changelog | `entries/update`, `screens/update`, `services/updates-changelog.ts` |
 | Context menu | Disable debug mode per domain or path | `entries/background/context-menu.ts` |
+| Toolbar icon | Debug mode of the tab: amber dot for debug, orange triangle for debug with assets | `entries/background/action-icon.ts`, `utils/action-icon.ts`, `public/action-icons/` |
 
 ## 8. Debug mode
 

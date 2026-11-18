@@ -1,3 +1,4 @@
+import { DEBUG_MODE_DATASET_KEY } from "@/services/extension-messages";
 import { getDebugModeUrl } from "@/utils/debug-mode-url";
 import { readDatasetSetting } from "@/utils/settings-schema";
 
@@ -19,4 +20,9 @@ const setDebugMode = (url: URL): { reload: boolean; url?: string } => {
   return targetUrl ? { reload: true, url: targetUrl } : { reload: false };
 };
 
-export { setDebugMode };
+const exposeDebugMode = () => {
+  if (typeof window.odoo === "undefined") return;
+  document.documentElement.dataset[DEBUG_MODE_DATASET_KEY] = window.odoo.debug ?? "";
+};
+
+export { exposeDebugMode, setDebugMode };

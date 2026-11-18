@@ -7,6 +7,7 @@ import type { OdooActionParams, OdooInfo, OdooPageInfo } from "@/types";
 export const I18N_GET_MESSAGES = "i18n:get-messages";
 export const ODOOSH_ROUTE_CHANGED = "odoosh:route-changed";
 export const DEVTOOLS_PAGE_SCRIPT = "devtools:page-script";
+export const DEBUG_MODE_DETECTED = "debug-mode:detected";
 
 export interface I18nGetMessagesRequest {
   type: typeof I18N_GET_MESSAGES;
@@ -24,6 +25,17 @@ export interface OdooShRouteChangedMessage {
 export type TechnicalListAction = "toggle-panel" | "toggle-selection";
 
 export const TECHNICAL_LIST_COMMAND_EVENT = "odoo-toolbox:technical-list-command";
+
+export interface DebugModeDetectedMessage {
+  type: typeof DEBUG_MODE_DETECTED;
+  debugMode: string;
+}
+
+/**
+ * `document.documentElement.dataset` key where the page-world script leaves `odoo.debug` for
+ * the global content script, which cannot read `window.odoo`.
+ */
+export const DEBUG_MODE_DATASET_KEY = "odooToolboxDebug";
 
 /** Helpers the DevTools panel can run in the inspected page (see `runPageScript`). */
 export interface PageScripts {

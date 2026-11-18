@@ -1,4 +1,4 @@
-import { setDebugMode } from "@/page-features/debug-mode";
+import { exposeDebugMode, setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { hideCustomHomeMenuBackground } from "@/page-features/home-menu-background";
 import { handleLoginButtons } from "@/page-features/login-buttons";
@@ -48,6 +48,8 @@ const observeOdooUi = () => {
 export default defineUnlistedScript(async () => {
   const tabUrl = new URL(window.location.href);
 
+  // Synchronous: the content script reads it as soon as this script has loaded.
+  exposeDebugMode();
   observeOdooUi();
   hideCustomHomeMenuBackground();
   handleLoginButtons();

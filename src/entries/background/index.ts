@@ -1,3 +1,4 @@
+import { showDebugModeOnActionIcon } from "@/entries/background/action-icon";
 import { registerContextMenuHandlers } from "@/entries/background/context-menu";
 import { handleDevToolsMessage } from "@/entries/background/devtools";
 import { handleI18nMessage } from "@/entries/background/i18n";
@@ -5,6 +6,7 @@ import { configurationService } from "@/services/configuration-service";
 import { debugModeRulesService } from "@/services/debug-mode-rules-service";
 import { toggleDebugMode } from "@/services/debug-mode-service";
 import {
+  DEBUG_MODE_DETECTED,
   DEVTOOLS_PAGE_SCRIPT,
   ODOOSH_ROUTE_CHANGED,
   TECHNICAL_LIST_COMMAND_EVENT,
@@ -123,13 +125,16 @@ export default defineBackground(() => {
     );
   });
 
-  browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (handleI18nMessage(request, sendResponse)) {
       return true;
     }
     if (request?.type === DEVTOOLS_PAGE_SCRIPT) {
       handleDevToolsMessage(request, sendResponse);
       return true;
+    }
+    if (request?.type === DEBUG_MODE_DETECTED && sender.tab?.id !== undefined) {
+      void showDebugModeOnActionIcon(sender.tab.id, request.debugMode);
     }
     return false;
   });

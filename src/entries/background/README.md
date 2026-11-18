@@ -13,7 +13,7 @@
 | `runtime.onStartup`, `runtime.onInstalled` | On startup and on a new install, aligns local data with the synced data (unless sync is empty); on an update, keeps the migrated local data and persists it to `sync:`. (Re)creates alarms, opens the update page (`update.html`) after an update when `updateService` says so |
 | `alarms.onAlarm` | `persist-local-data` (every minute): copies the changed local data to `sync:` and records the outcome (`syncStatus`, shown in Options) |
 | `commands.onCommand` | `toggle-debug` (see `toggleDebugMode` in `services/debug-mode-service.ts`); `toggle-technical-list` and `toggle-technical-list-selection`, dispatched in the active tab as the `TECHNICAL_LIST_COMMAND_EVENT` DOM event |
-| `runtime.onMessage` | I18n requests (`entries/background/i18n.ts`) and DevTools page-script requests (`entries/background/devtools.ts`) |
+| `runtime.onMessage` | I18n requests (`entries/background/i18n.ts`), DevTools page-script requests (`entries/background/devtools.ts`) and the debug mode of a page, shown on the toolbar icon of its tab (`entries/background/action-icon.ts`) |
 | `runtime.onMessageExternal` | Imports the configuration sent by the legacy Odoo.sh extension (public ID checked per browser) |
 | `webNavigation.onHistoryStateUpdated` | Tells Odoo.sh tabs about SPA route changes (`ODOOSH_ROUTE_CHANGED`) |
 | `webNavigation.onCommitted` | Debug-mode reload fallback for backend pages of hosts not yet learned |
@@ -27,6 +27,7 @@
 | ---- | ---- |
 | `index.ts` | Wiring above, reload fallback, external messages |
 | `devtools.ts` | Runs a DevTools page script in the MAIN world of the inspected tab (`callPageRuntime`, injected with `func`, so it must stay self-contained) |
+| `action-icon.ts` | Sets the toolbar icon of a tab from the debug mode of its page (`utils/action-icon.ts` picks the variant, images in `public/action-icons/`) |
 | `i18n.ts` | Serves the translations of a locale to the other contexts (`loadMessages`) |
 | `context-menu.ts` | Context menu items to ignore debug mode per domain, path or both; titles read from the locale messages |
 | `devtools.test.ts` | Unit tests of the DevTools relay |
