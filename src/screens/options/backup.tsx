@@ -134,7 +134,7 @@ const SyncStatusLine = () => {
     <Show when={state()}>
       {(current) => (
         <p class="mt-2" title={t("options.sync.hint")}>
-          <StatusDot tone={view(current()).tone} size="caption" class="text-ink-3">
+          <StatusDot tone={view(current()).tone} size="small" class="text-ink-2">
             {view(current()).text}
           </StatusDot>
         </p>

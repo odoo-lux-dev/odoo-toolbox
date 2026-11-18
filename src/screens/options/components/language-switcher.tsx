@@ -123,7 +123,7 @@ export const LanguageSwitcher = () => {
         onClick={() => (isOpen() ? close() : open())}
       >
         <LocaleFlag locale={storedLocale()} />
-        <span class="font-mono text-caption font-semibold tracking-[0.04em] uppercase max-sm:hidden">
+        <span class="font-mono text-meta font-semibold tracking-[0.04em] uppercase max-sm:hidden">
           {localeCode(storedLocale())}
         </span>
         <span
@@ -142,7 +142,7 @@ export const LanguageSwitcher = () => {
           aria-label={t("options.settings.language")}
           class="absolute inset-e-0 top-[calc(100%+7px)] z-50 max-h-[min(430px,calc(100vh-78px))] w-58 max-w-[calc(100vw-24px)] overflow-y-auto rounded-box border border-line bg-surface p-1.25 shadow-overlay"
         >
-          <p class="px-2 pt-1.75 pb-1.25 font-mono text-caption font-medium tracking-widest text-ink-3 uppercase rtl:font-sans rtl:tracking-normal">
+          <p class="px-2 pt-1.75 pb-1.25 font-mono text-meta font-medium tracking-widest text-ink-2 uppercase rtl:font-sans rtl:tracking-normal">
             {t("options.settings.language")}
           </p>
           <For each={LOCALE_OPTIONS}>
@@ -169,8 +169,8 @@ export const LanguageSwitcher = () => {
                   <span class="flex-1">{localeName(locale)}</span>
                   <span
                     class={cx(
-                      "font-mono text-micro uppercase",
-                      isActive() ? "text-primary" : "text-ink-3",
+                      "font-mono text-caption uppercase",
+                      isActive() ? "text-primary" : "text-ink-2",
                     )}
                   >
                     {localeCode(locale)}

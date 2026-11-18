@@ -146,7 +146,7 @@ export const OptionsSidebar = () => {
           class="flex flex-col gap-px border-t border-line pt-2.5"
           aria-label={t("options.shell.resources")}
         >
-          <p class="px-1 pb-1 font-mono text-caption font-medium tracking-[0.13em] text-ink-3 uppercase rtl:font-sans rtl:tracking-normal">
+          <p class="px-1 pb-1 font-mono text-meta font-medium tracking-[0.13em] text-ink-2 uppercase rtl:font-sans rtl:tracking-normal">
             {t("options.shell.resources")}
           </p>
           <For each={RESOURCES}>
