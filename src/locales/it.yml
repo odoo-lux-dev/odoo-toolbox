@@ -575,6 +575,8 @@ options:
     tab_title_desc: Seleziona se cambiare il titolo della scheda nelle pagine Odoo.sh per includere il nome del progetto corrente
     technical_model: Mostra modello tecnico
     technical_model_desc: Scegli se mostrare il modello tecnico sulla pagina (v17.2+)
+    odoo_version_badge: "Mostra la versione di Odoo sull'icona dell'estensione"
+    odoo_version_badge_desc: "Mostra la versione di Odoo della pagina corrente come badge sull'icona della barra degli strumenti"
     color_scheme: Schema colore predefinito
     color_scheme_desc: Scegli lo schema colore predefinito per Odoo 16 e versioni successive.
     color_scheme_warning: Questa funzione è sperimentale e può causare problemi su alcune versioni di Odoo. In caso di problemi, ripristinare su "Nessuno".

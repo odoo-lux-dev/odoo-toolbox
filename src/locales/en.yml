@@ -575,6 +575,8 @@ options:
     tab_title_desc: Select whether to change the tab title on Odoo.sh pages to include the current project name
     technical_model: Display technical model
     technical_model_desc: Choose if you want to display the technical model onto the page (v17.2+)
+    odoo_version_badge: "Show the Odoo version on the extension icon"
+    odoo_version_badge_desc: "Displays the Odoo version of the current page as a badge on the toolbar icon"
     color_scheme: Default color scheme
     color_scheme_desc: Choose the default color scheme for Odoo 16 and above.
     color_scheme_warning: This feature is experimental and may cause issues on some Odoo versions. If you encounter problems, set it back to "None".

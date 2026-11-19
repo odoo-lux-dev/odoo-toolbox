@@ -28,7 +28,7 @@
 | `index.ts` | Wiring above, reload fallback, external messages |
 | `devtools.ts` | Runs a DevTools page script in the MAIN world of the inspected tab (`callPageRuntime`, injected with `func`, so it must stay self-contained) |
 | `i18n.ts` | Serves the translations of a locale to the other contexts (`loadMessages`) |
-| `odoo-version-badge.ts` | Validates the `server_version_info` sent by the top frame and sets the badge text of its tab (`action` on Chrome, `browserAction` on Firefox MV2). On an Odoo page (`window.odoo` or `window.openerp` defined) without the version (logged out), uses the `odooVersions` cache (30 min per origin, never for a local host) or fetches `POST /web/webclient/version_info` once per origin, then checks the tab still shows that origin |
+| `odoo-version-badge.ts` | Validates the `server_version_info` sent by the top frame and sets the badge text of its tab (`action` on Chrome, `browserAction` on Firefox MV2). On an Odoo page (`window.odoo` or `window.openerp` defined) without the version (logged out), uses the `odooVersions` cache (30 min per origin, never for a local host) or fetches `POST /web/webclient/version_info` once per origin, then checks the tab still shows that origin. Does nothing when `showOdooVersionBadge` is off, and clears every tab's badge when it is turned off |
 | `context-menu.ts` | Context menu items to ignore debug mode per domain, path or both; titles read from the locale messages |
 | `devtools.test.ts` | Unit tests of the DevTools relay |
 

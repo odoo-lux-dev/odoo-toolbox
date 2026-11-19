@@ -575,6 +575,8 @@ options:
     tab_title_desc: Selecteer of de tabbladtitel op Odoo.sh pagina's moet worden gewijzigd om de huidige projectnaam te bevatten
     technical_model: Technisch model tonen
     technical_model_desc: Kies of u het technische model op de pagina wilt tonen (v17.2+)
+    odoo_version_badge: "Odoo-versie op het extensiepictogram tonen"
+    odoo_version_badge_desc: "Toont de Odoo-versie van de huidige pagina als badge op het werkbalkpictogram"
     color_scheme: Standaard kleurenschema
     color_scheme_desc: Kies het standaard kleurenschema voor Odoo 16 en hoger.
     color_scheme_warning: Deze functie is experimenteel en kan problemen veroorzaken op sommige Odoo-versies. Bij problemen, terugzetten naar "Geen".

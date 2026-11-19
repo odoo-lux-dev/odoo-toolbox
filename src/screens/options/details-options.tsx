@@ -10,6 +10,11 @@ export const InterfaceDetailsOption: SettingCard = {
   switches: [
     booleanSwitch("showTechnicalModel", "technical-model", "options.settings.technical_model"),
     booleanSwitch(
+      "showOdooVersionBadge",
+      "odoo-version-badge",
+      "options.settings.odoo_version_badge",
+    ),
+    booleanSwitch(
       "hideHomeMenuBackground",
       "hide-home-menu-background",
       "options.settings.hide_home_menu_background",

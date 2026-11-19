@@ -90,6 +90,7 @@ const SETTINGS = {
   enablePrintOptionsPDF: bool(false, "showPrintOptionsPDF"),
   enablePrintOptionsHTML: bool(false, "showPrintOptionsHTML"),
   showTechnicalModel: bool(false, "showTechnicalModel"),
+  showOdooVersionBadge: bool(true),
   renameShProjectPage: bool(false),
   extensionTheme: oneOf(COLOR_SCHEME_PREFERENCES, DEFAULT_COLOR_SCHEME, "odooToolboxTheme"),
   taskUrl: text(""),

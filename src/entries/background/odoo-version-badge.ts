@@ -2,6 +2,7 @@ import {
   ODOO_VERSION_DETECTED,
   type OdooVersionDetectedMessage,
 } from "@/services/extension-messages";
+import { settingsService } from "@/services/settings-service";
 import { createStore } from "@/services/synced-store";
 import { isLocalHost } from "@/utils/odoo-hosts";
 import { formatOdooVersionBadge } from "@/utils/odoo-page";
@@ -102,6 +103,7 @@ const tabShowsOrigin = async (tabId: number, origin: string) =>
   originOf((await browser.tabs.get(tabId)).url) === origin;
 
 const showVersion = async (tabId: number, origin: string, serverVersionInfo: string | null) => {
+  if (!(await settingsService.get("showOdooVersionBadge"))) return;
   if (serverVersionInfo !== null) {
     const text = formatOdooVersionBadge(parseServerVersionInfo(serverVersionInfo));
     if (!text) return;
@@ -130,9 +132,19 @@ export const handleOdooVersionMessage = (
   return true;
 };
 
+const clearBadge = (tabId: number) =>
+  toolbarAction()
+    .setBadgeText({ tabId, text: "" })
+    .catch(() => undefined);
+
 export const clearOdooVersionBadge = (details: { tabId: number; frameId: number }) => {
   if (details.frameId !== 0) return;
-  toolbarAction()
-    .setBadgeText({ tabId: details.tabId, text: "" })
-    .catch(() => undefined);
+  void clearBadge(details.tabId);
 };
+
+export const watchOdooVersionBadgeSetting = () =>
+  settingsService.watchSettings(async ({ showOdooVersionBadge }) => {
+    if (showOdooVersionBadge) return;
+    const tabs = await browser.tabs.query({});
+    for (const { id } of tabs) if (id !== undefined) void clearBadge(id);
+  });

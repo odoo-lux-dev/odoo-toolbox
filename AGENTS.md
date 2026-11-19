@@ -175,7 +175,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Odoo pages | Technical print options PDF/HTML (15+) | `page-features/technical-report/` |
 | Odoo pages | Technical sidebar (fields, buttons, record and view info) | `page-features/technical-list/`, `screens/technical-list/` |
 | Odoo pages | Debug-mode and color-scheme settings on the page | `global.content`, `utils/settings-schema.ts` |
-| Odoo pages | Odoo version on the toolbar badge, per tab | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
+| Odoo pages | Odoo version on the toolbar badge, per tab (`showOdooVersionBadge`, on by default) | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
 | Odoo.sh | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download | `page-features/odoo-sh/`, `entries/odoosh.content/` |
 | Any tab | Popup (projects, debug toggle), command palette | `screens/popup/`, `components/ui/command-palette.tsx` |
 | Any tab | DevTools panel: search, write, create, call method, unlink, history, domain editor | `screens/devtools/` |

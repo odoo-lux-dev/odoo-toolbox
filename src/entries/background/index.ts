@@ -4,6 +4,7 @@ import { handleI18nMessage } from "@/entries/background/i18n";
 import {
   clearOdooVersionBadge,
   handleOdooVersionMessage,
+  watchOdooVersionBadgeSetting,
 } from "@/entries/background/odoo-version-badge";
 import { configurationService } from "@/services/configuration-service";
 import { debugModeRulesService } from "@/services/debug-mode-rules-service";
@@ -152,6 +153,7 @@ export default defineBackground(() => {
   });
 
   browser.webNavigation.onCommitted.addListener(clearOdooVersionBadge);
+  watchOdooVersionBadgeSetting();
 
   // Reload fallback of the network rules (see `debugModeRulesService`): for hosts not yet
   // known as Odoo, and URLs carrying another debug mode than the default one.
