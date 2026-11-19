@@ -107,9 +107,11 @@ All message types and their payloads are in `src/services/extension-messages.ts`
   (`entries/background/devtools.ts`, called from `services/odoo-rpc-service.ts`).
 - `ODOOSH_ROUTE_CHANGED`: sent by the background on `webNavigation.onHistoryStateUpdated`
   to Odoo.sh tabs, because the Odoo.sh SPA navigates with the History API.
-- `ODOO_VERSION_DETECTED`: the global content script forwards the `server_version_info` that
-  `odoo-websites.js` dispatches as the `ODOO_VERSION_EVENT` DOM event; the background shows it
-  on the toolbar badge of the tab (`entries/background/odoo-version-badge.ts`). A page is Odoo
+- `ODOO_VERSION_DETECTED`: the global content script forwards the `server_version_info` and the
+  `odoo.debug` that `odoo-websites.js` dispatches as the `ODOO_VERSION_EVENT` DOM event; the
+  background shows the version on the toolbar badge of the tab
+  (`entries/background/odoo-version-badge.ts`), on a yellow background in debug mode and a red
+  one in debug mode with assets (`utils/odoo-version-badge.ts`). A page is Odoo
   when it defines `window.odoo` (or `window.openerp`, its old name). The version is null when
   the page hides it (logged out): the background then reads the per-origin cache, or asks
   `/web/webclient/version_info` (again after 30 minutes, failures included). Local
@@ -175,7 +177,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Odoo pages | Technical print options PDF/HTML (15+) | `page-features/technical-report/` |
 | Odoo pages | Technical sidebar (fields, buttons, record and view info) | `page-features/technical-list/`, `screens/technical-list/` |
 | Odoo pages | Debug-mode and color-scheme settings on the page | `global.content`, `utils/settings-schema.ts` |
-| Odoo pages | Odoo version on the toolbar badge, per tab (`showOdooVersionBadge`, on by default) | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
+| Odoo pages | Odoo version on the toolbar badge, per tab, yellow in debug mode and red in debug mode with assets (`showOdooVersionBadge`, on by default) | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
 | Odoo.sh | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download | `page-features/odoo-sh/`, `entries/odoosh.content/` |
 | Any tab | Popup (projects, debug toggle), command palette | `screens/popup/`, `components/ui/command-palette.tsx` |
 | Any tab | DevTools panel: search, write, create, call method, unlink, history, domain editor | `screens/devtools/` |
