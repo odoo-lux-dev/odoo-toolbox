@@ -19,6 +19,10 @@ const FORBIDDEN = [
 const SRC = join(import.meta.dir, "../src");
 const ENTRIES = join(SRC, "entries");
 
+const CONTENT_SCRIPT_ENTRIES = readdirSync(ENTRIES)
+  .filter((name) => name.endsWith(".content"))
+  .map((name) => join(ENTRIES, name, "index.ts"));
+
 /** Entries injected in the page: WXT unlisted scripts. */
 const PAGE_WORLD_ENTRIES = readdirSync(ENTRIES)
   .filter((name) => /\.tsx?$/.test(name))
@@ -45,14 +49,14 @@ const importsOf = (source: string) =>
   ].map((m) => m[1]!);
 
 /** Import chain from `entry` to a forbidden module, or undefined. */
-const findForbiddenChain = (entry: string): string[] | undefined => {
+const findForbiddenChain = (entry: string, forbidden = FORBIDDEN): string[] | undefined => {
   const seen = new Set<string>();
   const visit = (file: string, chain: string[]): string[] | undefined => {
     if (seen.has(file)) return undefined;
     seen.add(file);
     for (const specifier of importsOf(readFileSync(file, "utf8"))) {
       const here = [...chain, relative(SRC, file)];
-      if (FORBIDDEN.includes(specifier)) return [...here, specifier];
+      if (forbidden.includes(specifier)) return [...here, specifier];
       const next = resolveLocal(specifier, file);
       const found = next && visit(next, here);
       if (found) return found;
@@ -70,6 +74,19 @@ describe("page-world imports", () => {
   for (const entry of PAGE_WORLD_ENTRIES) {
     test(relative(SRC, entry), () => {
       expect(findForbiddenChain(entry)).toBeUndefined();
+    });
+  }
+});
+
+// Content scripts of one frame share `globalThis`: two Solid copies make the dev build warn.
+describe("content-script imports", () => {
+  test("every content-script entry is checked", () => {
+    expect(CONTENT_SCRIPT_ENTRIES.length).toBeGreaterThanOrEqual(2);
+  });
+
+  for (const entry of CONTENT_SCRIPT_ENTRIES) {
+    test(relative(SRC, entry), () => {
+      expect(findForbiddenChain(entry, ["solid-js"])).toBeUndefined();
     });
   }
 });

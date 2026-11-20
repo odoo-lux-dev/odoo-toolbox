@@ -3,7 +3,7 @@ import { handleShDownloadFullLog } from "@/page-features/odoo-sh/handle-sh-downl
 import { handleProjectListPageFavorites } from "@/page-features/odoo-sh/handle-sh-favorites";
 import { handleProjectPage } from "@/page-features/odoo-sh/handle-sh-project-page";
 import { ODOOSH_ROUTE_CHANGED } from "@/services/extension-messages";
-import { initI18n } from "@/services/i18n-service";
+import { initI18n } from "@/services/i18n-core";
 import { Logger } from "@/services/logger";
 import { settingsService } from "@/services/settings-service";
 

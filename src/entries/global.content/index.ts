@@ -4,7 +4,7 @@ import {
   ODOO_VERSION_EVENT,
   type OdooVersionDetectedMessage,
 } from "@/services/extension-messages";
-import { initI18n } from "@/services/i18n-service";
+import { initI18n } from "@/services/i18n-core";
 import { settingsService } from "@/services/settings-service";
 import { writeSettingsDataset } from "@/utils/settings-schema";
 
