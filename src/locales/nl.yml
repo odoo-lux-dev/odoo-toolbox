@@ -640,6 +640,10 @@ options:
     runbot_auto_login_desc: Voegt snel inloggen-bedieningselementen toe naast de Runbot-verbindingsknoppen om een build te openen en automatisch in te loggen als admin, demo of portal.
     hide_home_menu_background: Aangepaste achtergrond van het hoofdmenu verbergen
     hide_home_menu_background_desc: Verbergt de aangepaste achtergrondafbeelding van het Odoo-hoofdmenu (app-overzicht) en toont in plaats daarvan de standaardachtergrond van Odoo.
+    side_chatter_controls: "Bediening van de zijdelingse chatter"
+    side_chatter_controls_desc: "Wijzig de breedte van de chatter naast formulieren op brede schermen of verberg hem (Odoo 15+)."
+    hide_chatter_by_default: "Chatter standaard verbergen"
+    hide_chatter_by_default_desc: "Opent elke pagina met de zijdelingse chatter verborgen."
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -893,6 +897,11 @@ page_features:
     login_as_user: "Inloggen als $1 gebruiker"
   technical_model:
     label: "Technisch model :"
+  chatter_resize:
+    handle_title: "Slepen om de chatter van formaat te wijzigen, dubbelklikken om te herstellen"
+  chatter_collapse:
+    hide: "Chatter verbergen"
+    show: "Chatter tonen"
   sh_favorites:
     star_hint: Klik om project te markeren
     search_placeholder: Projecten zoeken...

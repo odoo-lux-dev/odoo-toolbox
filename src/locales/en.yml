@@ -640,6 +640,10 @@ options:
     runbot_auto_login_desc: Add quick-login controls next to the Runbot connect buttons to open a build and log in automatically as admin, demo, or portal.
     hide_home_menu_background: Hide custom home menu background
     hide_home_menu_background_desc: Hide the custom background image set on the Odoo home menu (app switcher) and show the default Odoo background instead.
+    side_chatter_controls: "Side chatter controls"
+    side_chatter_controls_desc: "Resize or hide the chatter shown beside forms on wide screens (Odoo 15+)."
+    hide_chatter_by_default: "Hide the chatter by default"
+    hide_chatter_by_default_desc: "Open every page with the side chatter hidden."
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -894,6 +898,11 @@ page_features:
     login_as_user: "Login as $1 user"
   technical_model:
     label: "Technical model :"
+  chatter_resize:
+    handle_title: "Drag to resize the chatter, double-click to reset"
+  chatter_collapse:
+    hide: "Hide the chatter"
+    show: "Show the chatter"
   sh_favorites:
     star_hint: Click to star project
     search_placeholder: Search projects...

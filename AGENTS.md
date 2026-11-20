@@ -173,6 +173,7 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 | Odoo pages | Default color scheme | `page-features/default-color-scheme.ts` |
 | Odoo pages | Technical model name (17.0+) | `page-features/technical-model-name.ts` |
 | Odoo pages | Technical print options PDF/HTML (15+) | `page-features/technical-report/` |
+| Odoo pages | Resizable and collapsible side chatter (15.0+, `sideChatterControls`, `hideChatterByDefault`) | `page-features/chatter-resize.ts`, `chatter-collapse.ts`, `chatter-aside.ts`, `global.content/global-style.scss` |
 | Odoo pages | Technical sidebar (fields, buttons, record and view info) | `page-features/technical-list/`, `screens/technical-list/` |
 | Odoo pages | Debug-mode and color-scheme settings on the page | `global.content`, `utils/settings-schema.ts` |
 | Odoo pages | Odoo version on the toolbar badge, per tab (`showOdooVersionBadge`, on by default) | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |

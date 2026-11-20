@@ -7,7 +7,7 @@ DOM, but they have no extension API. Read [`AGENTS.md`](../../AGENTS.md) section
 
 | Entry                                                                                                     | World    | Features                                                                                                                                                            |
 | --------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `entries/odoo-websites.ts` (`odoo-websites.js`, injected by `global.content` on every `*://*/*` page)     | MAIN     | Version check, technical model names, print options, login buttons, Odoo.sh login button, Runbot auto-login, debug mode, default color scheme, home menu background |
+| `entries/odoo-websites.ts` (`odoo-websites.js`, injected by `global.content` on every `*://*/*` page)     | MAIN     | Version check, technical model names, print options, chatter resize and collapse handles, login buttons, Odoo.sh login button, Runbot auto-login, debug mode, default color scheme, home menu background |
 | `entries/odoo-technical-list.ts` (`odoo-technical-list.js`, injected only when `showTechnicalList` is on) | MAIN     | Technical sidebar, see [`screens/technical-list/README.md`](../screens/technical-list/README.md)                                                                    |
 | `entries/odoosh.content/index.ts` (matches `*.odoo.sh/project*` and `/paas/*`)                            | ISOLATED | Odoo.sh features in `page-features/odoo-sh/`                                                                                                                        |
 
@@ -20,6 +20,9 @@ schema.
 
 | Folder or file                      | Feature                                                                                                                                                                                                                     |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chatter-aside.ts`                  | Shared by the side chatter features: the chatter container selectors (15.0 Enterprise, 16.0, 17.0+) and the `localStorage` helpers of the Odoo origin |
+| `chatter-collapse.ts`               | Hides the chatter beside the form (15.0+, only with `o-aside`) from a button added at the start of its topbar. The button that shows it back sits on the form edge and only appears when the mouse nears it. `hideChatterByDefault` starts every page load collapsed. The state is a class on `<html>`, kept in `localStorage`. Reads `sideChatterControls` |
+| `chatter-resize.ts`                 | Resize handle on the chatter beside the form (15.0+, only when Odoo gives it `o-aside`). The width is a CSS variable on `<html>`, kept in the Odoo origin's `localStorage`; double-click resets it. Dragging it below 200 px collapses the chatter (shared state in `chatter-aside.ts`). Reads `sideChatterControls` |
 | `debug-mode.ts`                     | Forces the configured debug mode when the page is loaded without it (`setDebugMode`). `getConfiguredDebugModeUrl` is reused by Runbot auto-login                                                                            |
 | `default-color-scheme.ts`           | Applies the default light/dark scheme of Odoo pages                                                                                                                                                                         |
 | `home-menu-background.ts`           | Hides the custom home menu background of Odoo Enterprise (`hideHomeMenuBackground`): removes the body class, the inline image is overridden in `global.content/global-style.scss`                                           |
@@ -56,7 +59,7 @@ schema.
 
 ## Tests
 
-Pure logic is tested next to the code: `debug-mode.test.ts`, `default-color-scheme.test.ts`,
+Pure logic is tested next to the code: `chatter-collapse.test.ts`, `chatter-resize.test.ts`, `debug-mode.test.ts`, `default-color-scheme.test.ts`,
 `home-menu-background.test.ts`,
 `runbot-login.test.ts`, `technical-report/*.test.ts`, `odoo-sh/*.test.ts`. Tests use
 happy-dom and set `document.body.dataset` directly (see `debug-mode.test.ts`).

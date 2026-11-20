@@ -640,6 +640,10 @@ options:
     runbot_auto_login_desc: يضيف عناصر تحكم لتسجيل الدخول السريع بجانب أزرار الاتصال في Runbot لفتح البناء وتسجيل الدخول تلقائياً كمسؤول أو demo أو portal.
     hide_home_menu_background: إخفاء الخلفية المخصصة للقائمة الرئيسية
     hide_home_menu_background_desc: يخفي صورة الخلفية المخصصة للقائمة الرئيسية في Odoo (مبدّل التطبيقات) ويعرض خلفية Odoo الافتراضية بدلاً منها.
+    side_chatter_controls: "عناصر التحكم في الدردشة الجانبية"
+    side_chatter_controls_desc: "غيّر حجم الدردشة المعروضة بجانب النماذج على الشاشات العريضة أو أخفِها (Odoo 15 فما فوق)."
+    hide_chatter_by_default: "إخفاء الدردشة افتراضيًا"
+    hide_chatter_by_default_desc: "يفتح كل صفحة والدردشة الجانبية مخفية."
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -893,6 +897,11 @@ page_features:
     login_as_user: "تسجيل الدخول كمستخدم $1"
   technical_model:
     label: "النموذج التقني :"
+  chatter_resize:
+    handle_title: "اسحب لتغيير حجم الدردشة، وانقر نقرًا مزدوجًا لإعادة التعيين"
+  chatter_collapse:
+    hide: "إخفاء الدردشة"
+    show: "إظهار الدردشة"
   sh_favorites:
     star_hint: انقر لتمييز المشروع بنجمة
     search_placeholder: ابحث عن المشاريع...

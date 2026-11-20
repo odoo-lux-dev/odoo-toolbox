@@ -3,6 +3,158 @@ body[data-hide-home-menu-background="true"] .o_home_menu[style*="background-imag
   background-image: none !important;
 }
 
+// Odoo's `.btn` display comes later in the cascade than this sheet.
+body .x-odoo-chatter-resizer,
+body .x-odoo-chatter-open,
+body .x-odoo-chatter-close {
+  display: none;
+}
+
+body[data-side-chatter-controls="true"] {
+  .o_FormRenderer_chatterContainer.o-aside,
+  .o-mail-Form-chatter.o-aside {
+    position: relative;
+  }
+
+  .o-aside > .x-odoo-chatter-resizer {
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    z-index: 10;
+    width: 6px;
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      inset-inline-start: 1px;
+      width: 4px;
+      height: 2.5rem;
+      transform: translateY(-50%);
+      border-radius: 2px;
+      background-color: color-mix(in srgb, currentColor 25%, transparent);
+    }
+
+    &:hover,
+    &:active {
+      background-color: color-mix(in srgb, currentColor 12%, transparent);
+
+      &::before {
+        background-color: color-mix(in srgb, currentColor 45%, transparent);
+      }
+    }
+  }
+
+  .o-aside .x-odoo-chatter-close {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    align-self: center;
+    margin-inline-end: 0.25rem;
+
+    svg:dir(rtl) {
+      transform: scaleX(-1);
+    }
+  }
+}
+
+html.x-odoo-chatter-resized body[data-side-chatter-controls="true"] {
+  .o_FormRenderer_chatterContainer.o-aside,
+  .o-mail-Form-chatter.o-aside {
+    flex: 0 0 auto;
+    width: clamp(200px, var(--x-odoo-chatter-width), calc(100% - 480px));
+    max-width: none;
+  }
+
+  // 17.0+ caps the sheet, which would leave a gap next to a narrowed chatter.
+  .o_form_sheet_bg:has(~ .o-aside) {
+    max-width: none;
+  }
+}
+
+// Dragging below the threshold collapses the chatter: the handle keeps the drag going.
+html.x-odoo-chatter-collapsed:not(.x-odoo-chatter-resizing)
+  body[data-side-chatter-controls="true"]
+  .o-aside
+  > .x-odoo-chatter-resizer {
+  display: none;
+}
+
+html.x-odoo-chatter-collapsed body[data-side-chatter-controls="true"] {
+  .o_FormRenderer_chatterContainer.o-aside,
+  .o-mail-Form-chatter.o-aside {
+    flex: 0 0 auto;
+    width: 0;
+    min-width: 0;
+    max-width: none;
+    padding: 0;
+    border: 0;
+
+    > :not(.x-odoo-chatter-open, .x-odoo-chatter-resizer) {
+      display: none !important;
+    }
+  }
+
+  // The hidden button slides in from past the window edge, which would scroll the page sideways.
+  :has(> .o_FormRenderer_chatterContainer.o-aside, > .o-mail-Form-chatter.o-aside) {
+    overflow-x: clip;
+  }
+
+  .o-aside > .x-odoo-chatter-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 0;
+    z-index: 11;
+    width: 2rem;
+    height: 4rem;
+    padding: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    --x-odoo-chatter-open-shift: 40%;
+    transform: translate(calc(-1 * var(--x-odoo-chatter-open-shift)), -50%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease-out,
+      transform 0.2s ease-out;
+
+    &:dir(rtl) {
+      transform: translate(var(--x-odoo-chatter-open-shift), -50%);
+    }
+
+    &.x-odoo-chatter-open-near,
+    &:hover,
+    &:focus-visible {
+      --x-odoo-chatter-open-shift: 100%;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    svg {
+      transform: scaleX(-1);
+    }
+
+    svg:dir(rtl) {
+      transform: none;
+    }
+  }
+
+  .o_form_sheet_bg:has(~ .o-aside) {
+    max-width: none;
+  }
+}
+
 .x-odoo-technical-print-options {
   display: flex;
   align-items: stretch;

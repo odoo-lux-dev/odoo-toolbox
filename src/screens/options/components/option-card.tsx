@@ -25,6 +25,7 @@ export type SettingSwitch = {
     label: string;
     on: StoredSettings[K];
     off: StoredSettings[K];
+    child?: SettingSwitch;
   };
 }[SettingKey];
 
@@ -32,12 +33,14 @@ export const booleanSwitch = (
   key: BooleanSettingKey,
   id: string,
   label: string,
+  child?: SettingSwitch,
 ): SettingSwitch => ({
   key,
   id,
   label,
   on: true,
   off: false,
+  child,
 });
 
 /** A card of the settings page, also listed (with its switches) by the command palette. */
@@ -163,6 +166,27 @@ export const SettingToggleRow = (props: { setting: SettingSwitch }) => (
  * among the visible ones (`data-first`, `data-col`, `data-row`) is set by the
  * settings search filter.
  */
+const SwitchLabel = (props: { setting: SettingSwitch }) => (
+  <label for={`${props.setting.id}-toggle`} class="flex min-w-0 cursor-pointer flex-col gap-0.5">
+    <span class="text-label font-semibold text-ink">{t(props.setting.label)}</span>
+    <span class="text-note/snug text-pretty text-ink-3">{t(`${props.setting.label}_desc`)}</span>
+  </label>
+);
+
+const SwitchChild = (props: { parent: SettingSwitch; child: SettingSwitch }) => {
+  const settings = useSettings();
+  return (
+    <Show when={settings()[props.parent.key] === props.parent.on}>
+      <div class="mt-3 flex items-start justify-between gap-3.5 border-s-2 border-line-soft ps-3">
+        <SwitchLabel setting={props.child} />
+        <div class="mt-0.5">
+          <SettingToggle setting={props.child} id={`${props.child.id}-toggle`} />
+        </div>
+      </div>
+    </Show>
+  );
+};
+
 export const SwitchesCard = (props: { card: SettingCard; description: string }) => (
   <article
     id={props.card.id}
@@ -180,20 +204,17 @@ export const SwitchesCard = (props: { card: SettingCard; description: string }) 
           <div
             id={setting.id}
             data-search-item
-            class="flex items-start justify-between gap-3.5 border-line-soft py-3 max-md:data-[first=false]:border-t md:py-0.5 md:data-[col=0]:pe-4.5 md:data-[col=1]:border-s md:data-[col=1]:ps-4.5 md:data-[row=next]:border-t md:data-[row=next]:pt-4"
+            class="border-line-soft py-3 max-md:data-[first=false]:border-t md:py-0.5 md:data-[col=0]:pe-4.5 md:data-[col=1]:border-s md:data-[col=1]:ps-4.5 md:data-[row=next]:border-t md:data-[row=next]:pt-4"
           >
-            <label
-              for={`${setting.id}-toggle`}
-              class="flex min-w-0 cursor-pointer flex-col gap-0.5"
-            >
-              <span class="text-label font-semibold text-ink">{t(setting.label)}</span>
-              <span class="text-note/snug text-pretty text-ink-3">
-                {t(`${setting.label}_desc`)}
-              </span>
-            </label>
-            <div class="mt-0.5">
-              <SettingToggle setting={setting} id={`${setting.id}-toggle`} />
+            <div class="flex items-start justify-between gap-3.5">
+              <SwitchLabel setting={setting} />
+              <div class="mt-0.5">
+                <SettingToggle setting={setting} id={`${setting.id}-toggle`} />
+              </div>
             </div>
+            <Show when={setting.child}>
+              {(child) => <SwitchChild parent={setting} child={child()} />}
+            </Show>
           </div>
         )}
       </For>

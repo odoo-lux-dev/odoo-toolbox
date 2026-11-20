@@ -1,3 +1,5 @@
+import { handleChatterToggle, restoreChatterCollapsed } from "@/page-features/chatter-collapse";
+import { handleChatterResizer, restoreChatterWidth } from "@/page-features/chatter-resize";
 import { setDebugMode } from "@/page-features/debug-mode";
 import { setDefaultColorScheme } from "@/page-features/default-color-scheme";
 import { hideCustomHomeMenuBackground } from "@/page-features/home-menu-background";
@@ -18,19 +20,20 @@ import { getOdooVersion } from "@/utils/odoo-page";
 const enhanceVersion17AndAbove = (element: Element) => {
   handleTechnicalModelName(element);
   void handleTechnicalReportsVersion17andAbove(element);
+  handleChatterResizer(element);
+  handleChatterToggle(element);
 };
 
-/**
- * Enhances the Odoo UI as it renders: technical model names (17.0+) and technical print
- * options (above 14.0). Older versions are not supported.
- */
+const enhanceVersion15And16 = (element: Element) => {
+  void handleTechnicalReportsVersion15and16(element);
+  handleChatterResizer(element);
+  handleChatterToggle(element);
+};
+
 const observeOdooUi = () => {
   const odooVersion = getOdooVersion();
   if (!odooVersion || odooVersion <= 14) return;
-  const enhance =
-    odooVersion >= 17
-      ? enhanceVersion17AndAbove
-      : (element: Element) => void handleTechnicalReportsVersion15and16(element);
+  const enhance = odooVersion >= 17 ? enhanceVersion17AndAbove : enhanceVersion15And16;
 
   const observer = new MutationObserver((mutations) => {
     let hasAddedElement = false;
@@ -51,6 +54,8 @@ export default defineUnlistedScript(async () => {
 
   announceOdooVersion();
   observeOdooUi();
+  restoreChatterWidth();
+  restoreChatterCollapsed();
   hideCustomHomeMenuBackground();
   handleLoginButtons();
   handleOdooShLoginButton();

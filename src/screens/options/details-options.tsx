@@ -19,6 +19,16 @@ export const InterfaceDetailsOption: SettingCard = {
       "hide-home-menu-background",
       "options.settings.hide_home_menu_background",
     ),
+    booleanSwitch(
+      "sideChatterControls",
+      "side-chatter-controls",
+      "options.settings.side_chatter_controls",
+      booleanSwitch(
+        "hideChatterByDefault",
+        "hide-chatter-by-default",
+        "options.settings.hide_chatter_by_default",
+      ),
+    ),
     booleanSwitch("nostalgiaMode", "nostalgia-mode", "options.settings.nostalgia"),
     booleanSwitch("showLoginButtons", "login-buttons", "options.settings.login_buttons"),
     booleanSwitch("runbotAutoLogin", "runbot-auto-login", "options.settings.runbot_auto_login"),

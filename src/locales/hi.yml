@@ -640,6 +640,10 @@ options:
     runbot_auto_login_desc: Runbot कनेक्शन बटनों के बगल में त्वरित लॉगिन नियंत्रण जोड़ता है ताकि build खुल सके और स्वतः admin, demo या portal के रूप में लॉगिन हो सके।
     hide_home_menu_background: होम मेनू की कस्टम पृष्ठभूमि छिपाएँ
     hide_home_menu_background_desc: Odoo होम मेनू (ऐप स्विचर) पर सेट की गई कस्टम पृष्ठभूमि छवि को छिपाता है और उसकी जगह Odoo की डिफ़ॉल्ट पृष्ठभूमि दिखाता है।
+    side_chatter_controls: "साइड चैटर के नियंत्रण"
+    side_chatter_controls_desc: "चौड़ी स्क्रीन पर फ़ॉर्म के बगल में दिखने वाले चैटर का आकार बदलें या उसे छिपाएँ (Odoo 15+)।"
+    hide_chatter_by_default: "चैटर को डिफ़ॉल्ट रूप से छिपाएँ"
+    hide_chatter_by_default_desc: "हर पेज को साइड चैटर छिपाकर खोलता है।"
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -893,6 +897,11 @@ page_features:
     login_as_user: "$1 उपयोगकर्ता के रूप में login करें"
   technical_model:
     label: "तकनीकी model :"
+  chatter_resize:
+    handle_title: "चैटर का आकार बदलने के लिए खींचें, रीसेट करने के लिए डबल-क्लिक करें"
+  chatter_collapse:
+    hide: "चैटर छिपाएँ"
+    show: "चैटर दिखाएँ"
   sh_favorites:
     star_hint: प्रोजेक्ट को star करने के लिए क्लिक करें
     search_placeholder: प्रोजेक्ट्स खोजें...

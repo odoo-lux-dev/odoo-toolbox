@@ -640,6 +640,10 @@ options:
     runbot_auto_login_desc: Adiciona controlos de início de sessão rápido junto aos botões de ligação do Runbot para abrir um build e iniciar sessão automaticamente como admin, demo ou portal.
     hide_home_menu_background: Ocultar o fundo personalizado do menu principal
     hide_home_menu_background_desc: Oculta a imagem de fundo personalizada do menu principal do Odoo (seletor de aplicações) e mostra o fundo predefinido do Odoo em vez disso.
+    side_chatter_controls: "Controlos do chatter lateral"
+    side_chatter_controls_desc: "Redimensione ou oculte o chatter apresentado ao lado dos formulários em ecrãs largos (Odoo 15+)."
+    hide_chatter_by_default: "Ocultar o chatter por predefinição"
+    hide_chatter_by_default_desc: "Abre cada página com o chatter lateral oculto."
 
 browser_context_menu:
   parent: Odoo Toolbox
@@ -893,6 +897,11 @@ page_features:
     login_as_user: "Iniciar sessão como utilizador $1"
   technical_model:
     label: "Modelo técnico :"
+  chatter_resize:
+    handle_title: "Arraste para redimensionar o chatter, duplo clique para repor"
+  chatter_collapse:
+    hide: "Ocultar o chatter"
+    show: "Mostrar o chatter"
   sh_favorites:
     star_hint: Clique para marcar o projeto com estrela
     search_placeholder: Pesquisar projetos...
