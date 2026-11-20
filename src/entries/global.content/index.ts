@@ -16,8 +16,8 @@ const forwardOdooVersion = () => {
     ODOO_VERSION_EVENT,
     (event) => {
       const { detail } = event as CustomEvent<unknown>;
-      if (typeof detail !== "string" && detail !== null) return;
-      message = { type: ODOO_VERSION_DETECTED, serverVersionInfo: detail };
+      if (typeof detail !== "string") return;
+      message = { type: ODOO_VERSION_DETECTED, pageInfo: detail };
       void send();
     },
     { once: true },

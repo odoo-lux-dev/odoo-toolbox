@@ -24,8 +24,8 @@ export interface OdooShRouteChangedMessage {
 
 export interface OdooVersionDetectedMessage {
   type: typeof ODOO_VERSION_DETECTED;
-  /** JSON `server_version_info`, null on an Odoo page that does not expose it. */
-  serverVersionInfo: string | null;
+  /** JSON `OdooVersionPageInfo` (see `utils/odoo-version-badge.ts`). */
+  pageInfo: string;
 }
 
 export const ODOO_VERSION_EVENT = "odoo-toolbox:odoo-version";

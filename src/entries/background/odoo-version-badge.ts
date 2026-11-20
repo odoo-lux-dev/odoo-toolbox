@@ -7,6 +7,11 @@ import { createStore } from "@/services/synced-store";
 import { isLocalHost } from "@/utils/odoo-hosts";
 import { formatOdooVersionBadge } from "@/utils/odoo-page";
 import {
+  getBadgeColors,
+  type OdooVersionPageInfo,
+  parseOdooVersionPageInfo,
+} from "@/utils/odoo-version-badge";
+import {
   findFreshVersion,
   MAX_ODOO_VERSIONS,
   type OdooVersionEntry,
@@ -14,8 +19,6 @@ import {
 } from "@/utils/odoo-version-cache";
 
 const VERSION_REQUEST_TIMEOUT_MS = 5000;
-const BADGE_BACKGROUND = "#ede4ea";
-const BADGE_TEXT_COLOR = "#714b67";
 
 const versionsStore = createStore<OdooVersionEntry[]>("odooVersions", {
   init: () => [],
@@ -27,14 +30,6 @@ const pendingLookups = new Map<string, Promise<string | null>>();
 // Chrome builds MV3 (`action`), Firefox MV2 (`browserAction`).
 const toolbarAction = () => browser.action ?? browser.browserAction;
 
-const parseServerVersionInfo = (json: string): unknown => {
-  try {
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-};
-
 const originOf = (url: string | undefined): string | null => {
   if (!url) return null;
   try {
@@ -45,11 +40,12 @@ const originOf = (url: string | undefined): string | null => {
   }
 };
 
-const setBadge = (tabId: number, text: string) => {
+const setBadge = (tabId: number, text: string, debugMode: string) => {
   const action = toolbarAction();
+  const colors = getBadgeColors(debugMode);
   return Promise.all([
-    action.setBadgeBackgroundColor({ tabId, color: BADGE_BACKGROUND }),
-    action.setBadgeTextColor?.({ tabId, color: BADGE_TEXT_COLOR }),
+    action.setBadgeBackgroundColor({ tabId, color: colors.background }),
+    action.setBadgeTextColor?.({ tabId, color: colors.text }),
     action.setBadgeText({ tabId, text }),
   ]);
 };
@@ -102,17 +98,21 @@ const lookUpVersionOnce = (origin: string): Promise<string | null> => {
 const tabShowsOrigin = async (tabId: number, origin: string) =>
   originOf((await browser.tabs.get(tabId)).url) === origin;
 
-const showVersion = async (tabId: number, origin: string, serverVersionInfo: string | null) => {
+const showVersion = async (
+  tabId: number,
+  origin: string,
+  { serverVersionInfo, debugMode }: OdooVersionPageInfo,
+) => {
   if (!(await settingsService.get("showOdooVersionBadge"))) return;
   if (serverVersionInfo !== null) {
-    const text = formatOdooVersionBadge(parseServerVersionInfo(serverVersionInfo));
+    const text = formatOdooVersionBadge(serverVersionInfo);
     if (!text) return;
-    await setBadge(tabId, text);
+    await setBadge(tabId, text, debugMode);
     await rememberVersion(origin, text);
     return;
   }
   const text = await lookUpVersionOnce(origin);
-  if (text && (await tabShowsOrigin(tabId, origin))) await setBadge(tabId, text);
+  if (text && (await tabShowsOrigin(tabId, origin))) await setBadge(tabId, text, debugMode);
 };
 
 export const handleOdooVersionMessage = (
@@ -123,12 +123,11 @@ export const handleOdooVersionMessage = (
 
   const tabId = sender.tab?.id;
   const origin = originOf(sender.url);
-  const { serverVersionInfo } = request;
-  if (tabId === undefined || sender.frameId !== 0 || !origin) return true;
-  if (typeof serverVersionInfo !== "string" && serverVersionInfo !== null) return true;
+  const pageInfo = parseOdooVersionPageInfo(request.pageInfo);
+  if (tabId === undefined || sender.frameId !== 0 || !origin || !pageInfo) return true;
 
   // The tab may have been closed since the message was sent.
-  showVersion(tabId, origin, serverVersionInfo).catch(() => undefined);
+  showVersion(tabId, origin, pageInfo).catch(() => undefined);
   return true;
 };
 
