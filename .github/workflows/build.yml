@@ -16,7 +16,7 @@ on:
         default: true
         type: boolean
       test_mode:
-        description: "Run in test mode (no upload to stores - no release notes)"
+        description: "Run in test mode (no upload to Firefox Add-ons - no release notes)"
         required: false
         default: false
         type: boolean
@@ -82,7 +82,7 @@ jobs:
             dist/odoo-toolbox-${{ needs.prepare.outputs.version }}-sources.zip
 
   upload-stores:
-    name: Upload to Stores
+    name: Upload to Firefox Add-ons
     runs-on: ubuntu-latest
     needs: [prepare, build]
     steps:
@@ -102,18 +102,11 @@ jobs:
           name: extension-builds
           path: dist/
 
-      - name: Upload to stores
+      - name: Upload to Firefox Add-ons
         run: |
           bun wxt submit \
-            --chrome-zip dist/odoo-toolbox-${{ needs.prepare.outputs.version }}-chrome.zip \
             --firefox-zip dist/odoo-toolbox-${{ needs.prepare.outputs.version }}-firefox.zip --firefox-sources-zip dist/odoo-toolbox-${{ needs.prepare.outputs.version }}-sources.zip
         env:
-          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          CHROME_PUBLISH_TARGET: default
-          CHROME_SKIP_SUBMIT_REVIEW: false
           FIREFOX_EXTENSION_ID: odoo_toolbox@thcl-saju
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
           FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}

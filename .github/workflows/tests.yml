@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Tests and checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: "package.json"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Unit tests
+        run: bun test
+
+      - name: Type check
+        run: bun run compile
+
+      - name: Lint
+        run: bun lint
+
+      - name: Format
+        run: bun format:check
