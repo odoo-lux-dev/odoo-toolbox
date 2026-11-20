@@ -36,8 +36,8 @@
   exclude:
     aura, avatar, breadcrumbs, calendar, carousel, chat, collapse, countdown, diff, dock, drawer,
     fab, fieldset, fileinput, filter, footer, hero, hover3d, hovergallery, indicator, list, mask,
-    megamenu, mockup, navbar, otp, progress, radialprogress, range, rating, skeleton, stack,
-    stat, steps, textrotate, timeline, toast, validator;
+    megamenu, mockup, navbar, otp, progress, radialprogress, range, rating, skeleton, stack, stat,
+    steps, textrotate, timeline, toast, validator;
 }
 
 /* `dark:` follows the color scheme of any UI theme */

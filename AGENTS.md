@@ -15,17 +15,17 @@ trust the code and fix this file.
   `src/entries/`), Tailwind CSS 4 + DaisyUI 5, Bun as package manager and test runner.
 - Commands (run from the repo root, with Bun):
 
-| Command                           | Purpose                                                  |
-| --------------------------------- | -------------------------------------------------------- |
-| `bun install`                     | Install dependencies (`postinstall` runs `wxt prepare`)  |
-| `bun dev` / `bun dev:firefox`     | Watch build with auto-reload                             |
-| `bun build` / `bun build:firefox` | Production build into `dist/`                            |
-| `bun zip` / `bun zip:firefox`     | Store-ready zip                                          |
-| `bun test`                        | Unit tests (`bun:test`, happy-dom, see section 12)       |
-| `bun run compile`                 | `tsc --noEmit`                                           |
-| `bun lint` / `bun lint:fix`       | `oxlint` (type-aware through `oxlint-tsgolint`)          |
-| `bun format` / `bun format:check` | `oxfmt`                                                  |
-| `bun run check:comments`          | List the comment lines added since `HEAD` (section 13)   |
+| Command                           | Purpose                                                 |
+| --------------------------------- | ------------------------------------------------------- |
+| `bun install`                     | Install dependencies (`postinstall` runs `wxt prepare`) |
+| `bun dev` / `bun dev:firefox`     | Watch build with auto-reload                            |
+| `bun build` / `bun build:firefox` | Production build into `dist/`                           |
+| `bun zip` / `bun zip:firefox`     | Store-ready zip                                         |
+| `bun test`                        | Unit tests (`bun:test`, happy-dom, see section 12)      |
+| `bun run compile`                 | `tsc --noEmit`                                          |
+| `bun lint` / `bun lint:fix`       | `oxlint` (type-aware through `oxlint-tsgolint`)         |
+| `bun format` / `bun format:check` | `oxfmt`                                                 |
+| `bun run check:comments`          | List the comment lines added since `HEAD` (section 13)  |
 
 Run `bun test`, `bun run compile`, `bun lint` and `bun run check:comments` before
 reporting a change as done.
@@ -33,24 +33,24 @@ reporting a change as done.
 
 ## 2. Repository map
 
-| Path                        | Content                                                                                  |
-| --------------------------- | ---------------------------------------------------------------------------------------- |
-| `src/entries/`              | One folder or file per WXT entrypoint (background, popup, options, devtools, content scripts, unlisted page scripts) |
-| `src/page-features/`        | Features that run inside Odoo pages (see `src/page-features/README.md`)                  |
-| `src/screens/`              | Solid UIs: `popup`, `options`, `update`, `devtools` (panel), `technical-list` (sidebar), `shared` |
-| `src/components/ui/`        | Shared UI primitives (Button, Modal, Tabs, Tooltip, Popover, CommandPalette...)          |
-| `src/services/`             | Stateful services: storage stores, settings, favorites, history, RPC clients, messaging, i18n, logger |
-| `src/utils/`                | Pure helpers (domains, debug-mode URLs and rules, settings schema, host detection, cookies...) |
-| `src/types/`                | Shared types. `settings.types.ts` holds the setting value lists                           |
-| `src/theme/`                | UI themes and the design-token contract (see `src/theme/README.md`)                      |
-| `src/hooks/`                | Solid hooks shared by the screens (`useExtensionTheme`, `useSettings`...)                |
-| `src/locales/*.yml`         | Translations (en is the source of truth)                                                 |
-| `src/utils/odoo-py_js/`    | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)         |
-| `tests/`                    | Test preload (`setup.ts`: DOM and in-memory `wxt/utils/storage`)                         |
-| `scripts/`                  | Developer scripts run through `package.json` (`check-added-comments.sh`)                 |
-| `docs/`                     | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                      |
-| `.fusion/`                  | Tooling state of an agent orchestrator, not extension code: do not edit                   |
-| `dist/`                     | Build output (git-ignored)                                                               |
+| Path                    | Content                                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `src/entries/`          | One folder or file per WXT entrypoint (background, popup, options, devtools, content scripts, unlisted page scripts) |
+| `src/page-features/`    | Features that run inside Odoo pages (see `src/page-features/README.md`)                                              |
+| `src/screens/`          | Solid UIs: `popup`, `options`, `update`, `devtools` (panel), `technical-list` (sidebar), `shared`                    |
+| `src/components/ui/`    | Shared UI primitives (Button, Modal, Tabs, Tooltip, Popover, CommandPalette...)                                      |
+| `src/services/`         | Stateful services: storage stores, settings, favorites, history, RPC clients, messaging, i18n, logger                |
+| `src/utils/`            | Pure helpers (domains, debug-mode URLs and rules, settings schema, host detection, cookies...)                       |
+| `src/types/`            | Shared types. `settings.types.ts` holds the setting value lists                                                      |
+| `src/theme/`            | UI themes and the design-token contract (see `src/theme/README.md`)                                                  |
+| `src/hooks/`            | Solid hooks shared by the screens (`useExtensionTheme`, `useSettings`...)                                            |
+| `src/locales/*.yml`     | Translations (en is the source of truth)                                                                             |
+| `src/utils/odoo-py_js/` | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)                                     |
+| `tests/`                | Test preload (`setup.ts`: DOM and in-memory `wxt/utils/storage`)                                                     |
+| `scripts/`              | Developer scripts run through `package.json` (`check-added-comments.sh`)                                             |
+| `docs/`                 | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                                                 |
+| `.fusion/`              | Tooling state of an agent orchestrator, not extension code: do not edit                                              |
+| `dist/`                 | Build output (git-ignored)                                                                                           |
 
 ## 3. Targets and manifest
 
@@ -75,16 +75,16 @@ Any new permission must be justified in the root `README.md` ("Extension Permiss
 
 Code runs in several isolated contexts. Know which one you are in before you call an API.
 
-| Context | Entry (`src/entries/`) | Runs | Can use `browser.*` | Sees `window.odoo` |
-| ------- | ---------------------- | ---- | ------------------- | ------------------ |
-| Background service worker / event page | `background/index.ts` | Listeners, alarms, commands, context menus, DNR rules, reload fallback, external messages | Yes (all) | No |
-| Global content script (isolated world, every `*://*/*`) | `global.content/index.ts` | Initialises i18n, writes settings to `document.body.dataset`, injects the page scripts below | Yes (limited) | No |
-| `odoo-websites.js` (page world, injected by global content) | `odoo-websites.ts` | Odoo UI enhancements: login buttons, debug mode, default color scheme, technical model names, print options, Runbot auto-login | No | Yes |
-| `odoo-technical-list.js` (page world, only if `showTechnicalList`) | `odoo-technical-list.ts` | Mounts the technical sidebar in a shadow root | No | Yes |
-| `odoo-page-runtime.js` (page world, injected on demand by the background) | `odoo-page-runtime.ts` | Exposes `runPageScript` for DevTools page helpers | No | Yes |
-| Odoo.sh content script (`*.odoo.sh/project*`, `/paas/*`) | `odoosh.content/index.ts` | Odoo.sh project list and project page features, log download | Yes (limited) | No |
-| DevTools panel (`devtools-panel.html`) | `devtools-panel/` (screen: `screens/devtools`) | RPC client, query UI, history | Yes (limited) | Via messages only |
-| Popup, options, update page | `popup/`, `options/`, `update/` | Extension UIs | Yes | No |
+| Context                                                                   | Entry (`src/entries/`)                         | Runs                                                                                                                           | Can use `browser.*` | Sees `window.odoo` |
+| ------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------- | ------------------ |
+| Background service worker / event page                                    | `background/index.ts`                          | Listeners, alarms, commands, context menus, DNR rules, reload fallback, external messages                                      | Yes (all)           | No                 |
+| Global content script (isolated world, every `*://*/*`)                   | `global.content/index.ts`                      | Initialises i18n, writes settings to `document.body.dataset`, injects the page scripts below                                   | Yes (limited)       | No                 |
+| `odoo-websites.js` (page world, injected by global content)               | `odoo-websites.ts`                             | Odoo UI enhancements: login buttons, debug mode, default color scheme, technical model names, print options, Runbot auto-login | No                  | Yes                |
+| `odoo-technical-list.js` (page world, only if `showTechnicalList`)        | `odoo-technical-list.ts`                       | Mounts the technical sidebar in a shadow root                                                                                  | No                  | Yes                |
+| `odoo-page-runtime.js` (page world, injected on demand by the background) | `odoo-page-runtime.ts`                         | Exposes `runPageScript` for DevTools page helpers                                                                              | No                  | Yes                |
+| Odoo.sh content script (`*.odoo.sh/project*`, `/paas/*`)                  | `odoosh.content/index.ts`                      | Odoo.sh project list and project page features, log download                                                                   | Yes (limited)       | No                 |
+| DevTools panel (`devtools-panel.html`)                                    | `devtools-panel/` (screen: `screens/devtools`) | RPC client, query UI, history                                                                                                  | Yes (limited)       | Via messages only  |
+| Popup, options, update page                                               | `popup/`, `options/`, `update/`                | Extension UIs                                                                                                                  | Yes                 | No                 |
 
 Consequences:
 
@@ -137,15 +137,15 @@ Errors cross contexts through `serializeError` / `deserializeError`, so they kee
 
 ### Other stores (all in `services/`)
 
-| Data | Store | Notes |
-| ---- | ----- | ----- |
-| Settings | `settings-service.ts` | Local + synced, see above |
-| Odoo.sh favorites (`starredProjects`) | `favorites-service.ts` | Local + synced, ordered by `sequence` |
-| DevTools quick domains (`quickDomains`) | `quick-domains-service.ts` | Local + synced, seeded by `sync.init` |
-| DevTools history (`devtools_history`) | `history-service.ts` | Local only, max 150 entries, pinned entries always kept |
-| Hosts detected as Odoo (`odooHosts`) | `debug-mode-rules-service.ts` | Local only, max 200 hosts, most recently visited first |
+| Data                                     | Store                                      | Notes                                                                                                              |
+| ---------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Settings                                 | `settings-service.ts`                      | Local + synced, see above                                                                                          |
+| Odoo.sh favorites (`starredProjects`)    | `favorites-service.ts`                     | Local + synced, ordered by `sequence`                                                                              |
+| DevTools quick domains (`quickDomains`)  | `quick-domains-service.ts`                 | Local + synced, seeded by `sync.init`                                                                              |
+| DevTools history (`devtools_history`)    | `history-service.ts`                       | Local only, max 150 entries, pinned entries always kept                                                            |
+| Hosts detected as Odoo (`odooHosts`)     | `debug-mode-rules-service.ts`              | Local only, max 200 hosts, most recently visited first                                                             |
 | Odoo version per origin (`odooVersions`) | `entries/background/odoo-version-badge.ts` | Local only, max 200 origins, most recently checked first, 30 min TTL (failures included), local hosts never stored |
-| Last save to `sync:` (`syncStatus`) | `configuration-service.ts` | Local only, time of the last full save and the last failure |
+| Last save to `sync:` (`syncStatus`)      | `configuration-service.ts`                 | Local only, time of the last full save and the last failure                                                        |
 
 Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`), and the
 `bySequence` / `resequence` ordering helpers, all in `services/synced-store.ts`.
@@ -165,24 +165,24 @@ Helpers: `createStore` (local), `createSyncedStore` (local mirrored to `sync:`),
 
 ## 7. Feature map
 
-| Surface | Feature | Code |
-| ------- | ------- | ---- |
-| Odoo pages | Debug mode (default, toggle, ignored paths) | `page-features/debug-mode.ts`, `utils/debug-mode-url.ts`, background rules |
-| Odoo pages | Login buttons (demo users, Odoo.sh) | `page-features/login-buttons.ts`, `login-form.ts`, `odoosh-login.ts` |
-| Odoo pages | Runbot auto-login (admin, demo, portal) | `page-features/runbot-login.ts` |
-| Odoo pages | Default color scheme | `page-features/default-color-scheme.ts` |
-| Odoo pages | Technical model name (17.0+) | `page-features/technical-model-name.ts` |
-| Odoo pages | Technical print options PDF/HTML (15+) | `page-features/technical-report/` |
-| Odoo pages | Resizable and collapsible side chatter (15.0+, `sideChatterControls`, `hideChatterByDefault`) | `page-features/chatter-resize.ts`, `chatter-collapse.ts`, `chatter-aside.ts`, `global.content/global-style.scss` |
-| Odoo pages | Technical sidebar (fields, buttons, record and view info) | `page-features/technical-list/`, `screens/technical-list/` |
-| Odoo pages | Debug-mode and color-scheme settings on the page | `global.content`, `utils/settings-schema.ts` |
-| Odoo pages | Odoo version on the toolbar badge, per tab (`showOdooVersionBadge`, on by default) | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts` |
-| Odoo.sh | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download | `page-features/odoo-sh/`, `entries/odoosh.content/` |
-| Any tab | Popup (projects, debug toggle), command palette | `screens/popup/`, `components/ui/command-palette.tsx` |
-| Any tab | DevTools panel: search, write, create, call method, unlink, history, domain editor | `screens/devtools/` |
-| Options | Settings, appearance (themes, text size, motion), favorites, backup/import, technical list options, keyboard shortcuts (read only, links to the browser's page) | `screens/options/` |
-| Install/update | Update page with the changelog | `entries/update`, `screens/update`, `services/updates-changelog.ts` |
-| Context menu | Disable debug mode per domain or path | `entries/background/context-menu.ts` |
+| Surface        | Feature                                                                                                                                                         | Code                                                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Odoo pages     | Debug mode (default, toggle, ignored paths)                                                                                                                     | `page-features/debug-mode.ts`, `utils/debug-mode-url.ts`, background rules                                       |
+| Odoo pages     | Login buttons (demo users, Odoo.sh)                                                                                                                             | `page-features/login-buttons.ts`, `login-form.ts`, `odoosh-login.ts`                                             |
+| Odoo pages     | Runbot auto-login (admin, demo, portal)                                                                                                                         | `page-features/runbot-login.ts`                                                                                  |
+| Odoo pages     | Default color scheme                                                                                                                                            | `page-features/default-color-scheme.ts`                                                                          |
+| Odoo pages     | Technical model name (17.0+)                                                                                                                                    | `page-features/technical-model-name.ts`                                                                          |
+| Odoo pages     | Technical print options PDF/HTML (15+)                                                                                                                          | `page-features/technical-report/`                                                                                |
+| Odoo pages     | Resizable and collapsible side chatter (15.0+, `sideChatterControls`, `hideChatterByDefault`)                                                                   | `page-features/chatter-resize.ts`, `chatter-collapse.ts`, `chatter-aside.ts`, `global.content/global-style.scss` |
+| Odoo pages     | Technical sidebar (fields, buttons, record and view info)                                                                                                       | `page-features/technical-list/`, `screens/technical-list/`                                                       |
+| Odoo pages     | Debug-mode and color-scheme settings on the page                                                                                                                | `global.content`, `utils/settings-schema.ts`                                                                     |
+| Odoo pages     | Odoo version on the toolbar badge, per tab (`showOdooVersionBadge`, on by default)                                                                              | `page-features/odoo-version.ts`, `global.content`, `entries/background/odoo-version-badge.ts`                    |
+| Odoo.sh        | Project list favorites, rename project page, branch name copy, task links, colorblind mode, full log download                                                   | `page-features/odoo-sh/`, `entries/odoosh.content/`                                                              |
+| Any tab        | Popup (projects, debug toggle), command palette                                                                                                                 | `screens/popup/`, `components/ui/command-palette.tsx`                                                            |
+| Any tab        | DevTools panel: search, write, create, call method, unlink, history, domain editor                                                                              | `screens/devtools/`                                                                                              |
+| Options        | Settings, appearance (themes, text size, motion), favorites, backup/import, technical list options, keyboard shortcuts (read only, links to the browser's page) | `screens/options/`                                                                                               |
+| Install/update | Update page with the changelog                                                                                                                                  | `entries/update`, `screens/update`, `services/updates-changelog.ts`                                              |
+| Context menu   | Disable debug mode per domain or path                                                                                                                           | `entries/background/context-menu.ts`                                                                             |
 
 ## 8. Debug mode
 
@@ -193,8 +193,7 @@ Debug mode is the feature with the most moving parts. The default is `enableDebu
    for each host already learned as Odoo, two dynamic `declarativeNetRequest` rules redirect
    backend GET navigations (`/odoo`, `/web`, login) to the same URL with `debug=<mode>` added.
    Service-worker requests (`xmlhttprequest`, `other`) are redirected only on `/odoo` and
-   `/web` entry points, so the web client's own calls are not touched. Allow rules (priority
-   2) skip URLs already carrying `debug=` and the ignored paths. Rules are rebuilt when the
+   `/web` entry points, so the web client's own calls are not touched. Allow rules (priority 2) skip URLs already carrying `debug=` and the ignored paths. Rules are rebuilt when the
    settings or the host list change. Chrome caps the rules, hence the 200-host limit.
 2. **Reload fallback** (`entries/background/index.ts`, `webNavigation.onCommitted`): for a
    backend page whose host is not yet learned, the background reads `window.odoo.debug` in the
@@ -304,15 +303,15 @@ This rule is the one agents break most. Read it as strict.
 
 ## 14. Surface READMEs
 
-| Surface | README |
-| ------- | ------ |
-| UI themes and tokens | [`src/theme/README.md`](src/theme/README.md) |
-| Background service worker (listeners, alarms, network rules, messages) | [`src/entries/background/README.md`](src/entries/background/README.md) |
-| In-page features on Odoo pages | [`src/page-features/README.md`](src/page-features/README.md) |
-| DevTools panel | [`src/screens/devtools/README.md`](src/screens/devtools/README.md) |
-| Technical sidebar | [`src/screens/technical-list/README.md`](src/screens/technical-list/README.md) |
-| Bundled Odoo code (LGPLv3) | [`src/utils/odoo-py_js/README.md`](src/utils/odoo-py_js/README.md) |
-| Onchange research notes | [`docs/onchange-mechanism.md`](docs/onchange-mechanism.md) |
+| Surface                                                                | README                                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| UI themes and tokens                                                   | [`src/theme/README.md`](src/theme/README.md)                                   |
+| Background service worker (listeners, alarms, network rules, messages) | [`src/entries/background/README.md`](src/entries/background/README.md)         |
+| In-page features on Odoo pages                                         | [`src/page-features/README.md`](src/page-features/README.md)                   |
+| DevTools panel                                                         | [`src/screens/devtools/README.md`](src/screens/devtools/README.md)             |
+| Technical sidebar                                                      | [`src/screens/technical-list/README.md`](src/screens/technical-list/README.md) |
+| Bundled Odoo code (LGPLv3)                                             | [`src/utils/odoo-py_js/README.md`](src/utils/odoo-py_js/README.md)             |
+| Onchange research notes                                                | [`docs/onchange-mechanism.md`](docs/onchange-mechanism.md)                     |
 
 ## 15. Commit messages
 
@@ -357,4 +356,3 @@ Fixes #123
 - **Scope of a commit**: one area per commit, so that one area can be reverted on its own.
   Do not bundle unrelated changes.
 - Write in English, the language of the code and of the existing history.
-

@@ -30,17 +30,17 @@ and `sidebar-store.tsx` listens to it.
 
 ## Structure
 
-| File | Role |
-| ---- | ---- |
-| `view-scanner.ts` | Reads the page DOM: fields (`.o_field_widget`, `.o_field_cell` with `name`), buttons (`button[type="object"|"action"]`), website info. Pure DOM, no Solid, no `window.odoo`. Also finds the element under a click (`findPickTarget`, limited depth) |
-| `page-info.ts` | Reads `window.odoo` through `owl-runtime`: controller, model, view type, database and debug mode |
-| `filter-elements.ts` | Filters the scanned elements (search and type filters, `DEFAULT_FILTERS`) |
-| `highlighter.ts`, `highlight-styles.ts` | Adds classes to Odoo elements to highlight them: card hover, pointer hover, selection (`HIGHLIGHT_CLASSES`). The palette is in the theme |
-| `panel-layout.ts` | Pads the Odoo body on the panel side while the panel is open (desktop), and moves the floating button. On narrow screens the panel covers the page |
-| `sidebar-store.tsx` | Solid context: scanned elements, filters, selection, expanded state, scroll into view |
-| `components/` | Sidebar, floating button, cards, field and button items, record info, database and website info, field details modal, access modal (ACLs, record rules), view modal, record data viewer, XML formatting |
-| `types.ts` | Element and info types |
-| `technical-list.css` (in `page-features/technical-list/`) | Styles of the shadow root |
+| File                                                      | Role                                                                                                                                                                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `view-scanner.ts`                                         | Reads the page DOM: fields (`.o_field_widget`, `.o_field_cell` with `name`), buttons (`button[type="object"                                                                                             | "action"]`), website info. Pure DOM, no Solid, no `window.odoo`. Also finds the element under a click (`findPickTarget`, limited depth) |
+| `page-info.ts`                                            | Reads `window.odoo` through `owl-runtime`: controller, model, view type, database and debug mode                                                                                                        |
+| `filter-elements.ts`                                      | Filters the scanned elements (search and type filters, `DEFAULT_FILTERS`)                                                                                                                               |
+| `highlighter.ts`, `highlight-styles.ts`                   | Adds classes to Odoo elements to highlight them: card hover, pointer hover, selection (`HIGHLIGHT_CLASSES`). The palette is in the theme                                                                |
+| `panel-layout.ts`                                         | Pads the Odoo body on the panel side while the panel is open (desktop), and moves the floating button. On narrow screens the panel covers the page                                                      |
+| `sidebar-store.tsx`                                       | Solid context: scanned elements, filters, selection, expanded state, scroll into view                                                                                                                   |
+| `components/`                                             | Sidebar, floating button, cards, field and button items, record info, database and website info, field details modal, access modal (ACLs, record rules), view modal, record data viewer, XML formatting |
+| `types.ts`                                                | Element and info types                                                                                                                                                                                  |
+| `technical-list.css` (in `page-features/technical-list/`) | Styles of the shadow root                                                                                                                                                                               |
 
 ## Rules
 
