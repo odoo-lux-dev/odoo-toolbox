@@ -1,10 +1,6 @@
-import { beforeEach, describe, expect, test } from "bun:test";
-
-import { resetStorage } from "@@/tests/setup";
+import { describe, expect, test } from "vitest";
 
 import { favoritesService } from "@/services/favorites-service";
-
-beforeEach(resetStorage);
 
 describe("favoritesService", () => {
   test("lists favorites by sequence without duplicates", async () => {

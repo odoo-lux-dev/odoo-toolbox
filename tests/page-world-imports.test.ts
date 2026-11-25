@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 
@@ -16,7 +16,7 @@ const FORBIDDEN = [
   "wxt/utils/storage",
 ];
 
-const SRC = join(import.meta.dir, "../src");
+const SRC = join(import.meta.dirname, "../src");
 const ENTRIES = join(SRC, "entries");
 
 const CONTENT_SCRIPT_ENTRIES = readdirSync(ENTRIES)

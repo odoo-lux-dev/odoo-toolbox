@@ -1,14 +1,15 @@
-import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+
+import { describe, expect, test } from "vitest";
 
 /**
  * Shared primitives (src/theme/primitives.css) are restyled by every theme through
  * the contract: they must only read contract tokens, and every `ot-*` class used
  * by a component must exist there.
  */
-const primitivesCss = readFileSync(join(import.meta.dir, "primitives.css"), "utf8");
-const tokensCss = readFileSync(join(import.meta.dir, "tokens.css"), "utf8");
+const primitivesCss = readFileSync(join(import.meta.dirname, "primitives.css"), "utf8");
+const tokensCss = readFileSync(join(import.meta.dirname, "tokens.css"), "utf8");
 const contract = new Set([...tokensCss.matchAll(/var\((--ot-[\w-]+)\)/g)].map((m) => m[1]));
 
 /** Theme-provided variables that are not `--ot-*` (DaisyUI and Tailwind). */

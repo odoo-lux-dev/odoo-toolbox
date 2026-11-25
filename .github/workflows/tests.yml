@@ -12,8 +12,20 @@ concurrency:
 
 jobs:
   checks:
-    name: Tests and checks
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Unit tests
+            run: bun run test
+          - name: Type check
+            run: bun run compile
+          - name: Lint
+            run: bun lint
+          - name: Format
+            run: bun format:check
     steps:
       - uses: actions/checkout@v4
 
@@ -22,17 +34,13 @@ jobs:
         with:
           bun-version-file: "package.json"
 
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Unit tests
-        run: bun test
-
-      - name: Type check
-        run: bun run compile
-
-      - name: Lint
-        run: bun lint
-
-      - name: Format
-        run: bun format:check
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}

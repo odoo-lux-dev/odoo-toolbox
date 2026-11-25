@@ -1,10 +1,10 @@
-import { afterEach, describe, expect, mock, test } from "bun:test";
+import { describe, expect, test, vi } from "vitest";
+import { fakeBrowser } from "wxt/testing/fake-browser";
 
 import { DEVTOOLS_PAGE_SCRIPT, type PageScriptResponse } from "@/services/extension-messages";
 
 import { handleDevToolsMessage } from "./devtools";
 
-const globals = globalThis as { browser?: unknown };
 const request = {
   type: DEVTOOLS_PAGE_SCRIPT,
   tabId: 1,
@@ -18,21 +18,18 @@ const run = async () => {
   return response;
 };
 
-afterEach(() => {
-  delete globals.browser;
-});
-
 describe("handleDevToolsMessage", () => {
   // Regression: a runtime left in an open page by a previous extension version was reused.
   test("reinstalls the page runtime before every call", async () => {
-    const executeScript = mock(async (details: { files?: string[] }) =>
-      details.files ? [{ result: undefined }] : [{ result: { ok: true, result: 17 } }],
-    );
-    globals.browser = { scripting: { executeScript } };
+    const executeScript = vi
+      .spyOn(fakeBrowser.scripting, "executeScript")
+      .mockImplementation(async (details) =>
+        "files" in details ? [{ result: undefined }] : [{ result: { ok: true, result: 17 } }],
+      );
 
     expect(await run()).toEqual({ ok: true, result: 17 });
     expect(await run()).toEqual({ ok: true, result: 17 });
-    expect(executeScript.mock.calls.map(([details]) => !!details.files)).toEqual([
+    expect(executeScript.mock.calls.map(([details]) => "files" in details)).toEqual([
       true,
       false,
       true,
@@ -42,13 +39,9 @@ describe("handleDevToolsMessage", () => {
 
   // Regression: the Error used to be passed as is, which serializes to `{}`.
   test("answers with a serialized error when the injection fails", async () => {
-    globals.browser = {
-      scripting: {
-        executeScript: async () => {
-          throw new Error("Cannot access a chrome:// URL");
-        },
-      },
-    };
+    vi.spyOn(fakeBrowser.scripting, "executeScript").mockRejectedValue(
+      new Error("Cannot access a chrome:// URL"),
+    );
     expect(await run()).toMatchObject({
       ok: false,
       error: { name: "Error", message: "Cannot access a chrome:// URL" },

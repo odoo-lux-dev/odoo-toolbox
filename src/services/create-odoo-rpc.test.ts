@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
 import { createOdooRpc, type OdooRpcOptions } from "@/services/create-odoo-rpc";
 import { isOdooError } from "@/services/odoo-error";

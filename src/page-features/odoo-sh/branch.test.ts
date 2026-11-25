@@ -1,6 +1,4 @@
-import { beforeEach, describe, expect, test } from "bun:test";
-
-import { resetStorage } from "@@/tests/setup";
+import { describe, expect, test } from "vitest";
 
 import { settingsService } from "@/services/settings-service";
 
@@ -20,8 +18,6 @@ describe("extractBranchFromGitClone", () => {
 });
 
 describe("extractTaskId", () => {
-  beforeEach(resetStorage);
-
   test("returns the first capture group of the task regex", async () => {
     await settingsService.set("taskUrlRegex", "/-(\\d+)-/");
     expect(await extractTaskId("17.0-4242-fix-invoice")).toBe("4242");

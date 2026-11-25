@@ -12,7 +12,8 @@ trust the code and fix this file.
 ## 1. Stack and commands
 
 - Solid.js + TypeScript, built with WXT (`wxt.config.ts`, sources in `src/`, entries in
-  `src/entries/`), Tailwind CSS 4 + DaisyUI 5, Bun as package manager and test runner.
+  `src/entries/`), Tailwind CSS 4 + DaisyUI 5, Bun as package manager, Vitest as
+  test runner.
 - Commands (run from the repo root, with Bun):
 
 | Command                           | Purpose                                                 |
@@ -21,13 +22,13 @@ trust the code and fix this file.
 | `bun dev` / `bun dev:firefox`     | Watch build with auto-reload                            |
 | `bun build` / `bun build:firefox` | Production build into `dist/`                           |
 | `bun zip` / `bun zip:firefox`     | Store-ready zip                                         |
-| `bun test`                        | Unit tests (`bun:test`, happy-dom, see section 12)      |
+| `bun run test`                    | Unit tests (Vitest, happy-dom, see section 12)          |
 | `bun run compile`                 | `tsc --noEmit`                                          |
 | `bun lint` / `bun lint:fix`       | `oxlint` (type-aware through `oxlint-tsgolint`)         |
 | `bun format` / `bun format:check` | `oxfmt`                                                 |
 | `bun run check:comments`          | List the comment lines added since `HEAD` (section 13)  |
 
-Run `bun test`, `bun run compile`, `bun lint` and `bun run check:comments` before
+Run `bun run test`, `bun run compile`, `bun lint` and `bun run check:comments` before
 reporting a change as done.
 `dist/` is git-ignored.
 
@@ -46,7 +47,7 @@ reporting a change as done.
 | `src/hooks/`            | Solid hooks shared by the screens (`useExtensionTheme`, `useSettings`...)                                            |
 | `src/locales/*.yml`     | Translations (en is the source of truth)                                                                             |
 | `src/utils/odoo-py_js/` | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)                                     |
-| `tests/`                | Test preload (`setup.ts`: DOM and in-memory `wxt/utils/storage`)                                                     |
+| `tests/`                | Vitest setup (`setup.ts`: resets `fakeBrowser` before each test) and test helpers (`storage.ts`)                     |
 | `scripts/`              | Developer scripts run through `package.json` (`check-added-comments.sh`)                                             |
 | `docs/`                 | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                                                 |
 | `.fusion/`              | Tooling state of an agent orchestrator, not extension code: do not edit                                              |
@@ -251,9 +252,18 @@ Read `src/theme/README.md` before touching any style. Summary:
 
 ## 12. Tests
 
-- `bun test` runs every `*.test.ts(x)` file. `bunfig.toml` preloads `tests/setup.ts`, which
-  sets up happy-dom and mocks `wxt/utils/storage` with an in-memory store that replays
-  `defineItem` options (`version`, `migrations`, `init`). A test can call `resetStorage()`.
+- `bun run test` runs Vitest with WXT's `WxtVitest()` plugin (`vitest.config.ts`), as the
+  [WXT guide](https://wxt.dev/guide/essentials/unit-testing) recommends. `bun test` would
+  start Bun's own runner instead: always go through the script.
+- `browser` is WXT's in-memory fake (`fakeBrowser` from `wxt/testing/fake-browser`), so
+  `wxt/utils/storage` runs for real. `tests/setup.ts` calls `fakeBrowser.reset()` before each
+  test, which also drops the listeners registered earlier.
+- Mock a browser API the fake does not implement with
+  `vi.spyOn(fakeBrowser.<api>, "<method>")`, never by replacing the `browser` global. Spies are
+  restored after each test (`restoreMocks`).
+- WXT runs a storage item's migrations once, when the item is defined: to test one, store the
+  old value with `storeAtVersion()` (`tests/storage.ts`), then `vi.resetModules()` and import
+  the service again.
 - Tests sit next to their code. Prefer pure helpers (`utils/`, `screens/*/**.ts`) for logic.
 - Notable suites: `src/theme/*.test.ts` (theme contract, no hardcoded styles),
   `services/settings-service.test.ts` (migrations), `utils/debug-mode-rules.test.ts` and

@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vitest";
 
 import { rankOptions, type SelectOption } from "@/screens/devtools/components/select-options";
 

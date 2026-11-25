@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
 import { COLLAPSED_CLASS, COLLAPSED_STORAGE_KEY } from "./chatter-aside";
 import { handleChatterToggle, restoreChatterCollapsed } from "./chatter-collapse";

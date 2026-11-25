@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 
 import type { FieldMetadata, RpcQueryState } from "@/types";
 
@@ -61,7 +61,7 @@ describe("validateDomain", () => {
   test("rejects incomplete conditions with a specific message", () => {
     expect(errorOf('[["name", "="]]')).toContain("must have exactly 3 elements");
     expect(errorOf("[('name', '=')]")).toContain("must have exactly 3 elements");
-    expect(errorOf("[[]]")).toBeString();
+    expect(errorOf("[[]]")).toEqual(expect.any(String));
   });
 
   test("rejects invalid field names", () => {
@@ -76,7 +76,7 @@ describe("validateDomain", () => {
     expect(errorOf('["name", "=", "test"')).toBe(
       "services.validation.invalid_domain_format_expected",
     );
-    expect(errorOf("[('name', '=', str(123))]")).toBeString();
+    expect(errorOf("[('name', '=', str(123))]")).toEqual(expect.any(String));
   });
 
   test("rejects non-list values", () => {

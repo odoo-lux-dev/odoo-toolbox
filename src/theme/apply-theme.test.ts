@@ -1,6 +1,7 @@
-import { afterEach, describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+import { afterEach, describe, expect, test } from "vitest";
 
 import { getDefaultSettings } from "@/utils/settings-schema";
 
@@ -122,7 +123,7 @@ const cvdBlock = (css: string, scheme: string) =>
 
 describe("color-safe palette", () => {
   test("base.css gives every theme the color-safe hues of both color schemes", () => {
-    const baseCss = readFileSync(join(import.meta.dir, "base.css"), "utf8");
+    const baseCss = readFileSync(join(import.meta.dirname, "base.css"), "utf8");
     const hues = ["success", "error", "info"].flatMap((tone) => [
       `--color-${tone}`,
       `--ot-${tone}-ink`,
@@ -135,14 +136,14 @@ describe("color-safe palette", () => {
 });
 
 describe("theme registry", () => {
-  const tokensCss = readFileSync(join(import.meta.dir, "tokens.css"), "utf8");
+  const tokensCss = readFileSync(join(import.meta.dirname, "tokens.css"), "utf8");
   const contract = [...new Set([...tokensCss.matchAll(/var\((--ot-[\w-]+)\)/g)].map((m) => m[1]))];
-  const coreCss = readFileSync(join(import.meta.dir, "core.css"), "utf8");
-  const fontsCss = readFileSync(join(import.meta.dir, "fonts.css"), "utf8");
+  const coreCss = readFileSync(join(import.meta.dirname, "core.css"), "utf8");
+  const fontsCss = readFileSync(join(import.meta.dirname, "fonts.css"), "utf8");
 
   for (const theme of Object.values(UI_THEMES)) {
     test(`"${theme.id}" is wired in the theme CSS`, () => {
-      const themeCss = readFileSync(join(import.meta.dir, theme.id, "theme.css"), "utf8");
+      const themeCss = readFileSync(join(import.meta.dirname, theme.id, "theme.css"), "utf8");
       expect(coreCss).toContain(`@import "./${theme.id}/theme.css";`);
       expect(fontsCss).toContain(`@import "./${theme.id}/fonts.css";`);
       for (const daisyTheme of [
@@ -155,7 +156,7 @@ describe("theme registry", () => {
     });
 
     test(`"${theme.id}" defines every contract token for both color schemes`, () => {
-      const themeCss = readFileSync(join(import.meta.dir, theme.id, "theme.css"), "utf8");
+      const themeCss = readFileSync(join(import.meta.dirname, theme.id, "theme.css"), "utf8");
       const common = definedTokens(themeCss);
       const light = definedTokens(themeCss, 'data-color-scheme="light"');
       const dark = definedTokens(themeCss, 'data-color-scheme="dark"');
@@ -171,7 +172,7 @@ describe("theme registry", () => {
     });
 
     test(`"${theme.id}" type scale follows the large text preference`, () => {
-      const themeCss = readFileSync(join(import.meta.dir, theme.id, "theme.css"), "utf8");
+      const themeCss = readFileSync(join(import.meta.dirname, theme.id, "theme.css"), "utf8");
       const unscaled = [...themeCss.matchAll(/(--ot-text-[\w-]+)\s*:\s*([^;]+);/g)]
         .filter(([, , value = ""]) => !value.includes("var(--ot-text-scale)"))
         .map(([, token]) => token);
@@ -179,7 +180,7 @@ describe("theme registry", () => {
     });
 
     test(`"${theme.id}" table heights are plain px (read in JavaScript)`, () => {
-      const themeCss = readFileSync(join(import.meta.dir, theme.id, "theme.css"), "utf8");
+      const themeCss = readFileSync(join(import.meta.dirname, theme.id, "theme.css"), "utf8");
       for (const token of ["--ot-table-row-h", "--ot-table-head-h"]) {
         const value = themeCss.match(new RegExp(`${token}:\\s*([^;]+);`))?.[1]?.trim();
         expect(value).toMatch(/^\d+(\.\d+)?px$/);
@@ -187,7 +188,7 @@ describe("theme registry", () => {
     });
 
     test(`"${theme.id}" tints the color-safe palette for both color schemes`, () => {
-      const themeCss = readFileSync(join(import.meta.dir, theme.id, "theme.css"), "utf8");
+      const themeCss = readFileSync(join(import.meta.dirname, theme.id, "theme.css"), "utf8");
       for (const scheme of ["light", "dark"]) {
         const body = cvdBlock(themeCss, scheme);
         const soft = ["success", "error", "info"].map((tone) => `--ot-${tone}-soft`);

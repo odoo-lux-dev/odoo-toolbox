@@ -20,8 +20,8 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "test": "bun test",
-    "test:validation": "bun test src/utils/query-validation.test.ts"
+    "test": "vitest run",
+    "test:validation": "vitest run src/utils/query-validation.test.ts"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",
@@ -57,21 +57,22 @@
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
-    "@happy-dom/global-registrator": "^20.14.5",
     "@solid-primitives/scheduled": "^1.5.3",
-    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.10",
     "@wxt-dev/auto-icons": "^1.1.1",
     "@wxt-dev/module-solid": "^1.1.4",
-    "bun-types": "^1.4.4",
     "eslint-plugin-better-tailwindcss": "^4.10.0",
+    "happy-dom": "^21.0.4",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
     "sass": "^1.107.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
+    "vitest": "^5.1.2",
     "web-ext": "^10.8.0",
-    "wxt": "^0.21.5"
+    "wxt": "^0.21.5",
+    "yaml": "^2.9.1"
   },
   "packageManager": "bun@1.4.4"
 }

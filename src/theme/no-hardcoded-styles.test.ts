@@ -1,6 +1,7 @@
-import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+
+import { describe, expect, test } from "vitest";
 
 /**
  * Components must stay theme-agnostic (see src/theme/README.md): sizes, radii and

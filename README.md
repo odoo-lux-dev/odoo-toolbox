@@ -150,7 +150,7 @@ That's it. The language switcher, RTL support, and browser auto-detection all wo
 
 1. Edit the corresponding `src/locales/<code>.yml` file
 2. Make sure the YAML structure matches `en.yml` (same keys, same nesting)
-3. Verify with `bun test` that nothing breaks
+3. Verify with `bun run test` that nothing breaks
 
 > **Note:** Translations were initially generated with AI assistance. Community improvements are very welcome! Use the "Improve a translation" link in the options sidebar or open a [translation issue](https://github.com/odoo-lux-dev/odoo-toolbox/issues/new?template=translation.yml).
 

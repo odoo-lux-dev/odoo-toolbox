@@ -1,6 +1,7 @@
-import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+import { describe, expect, test } from "vitest";
 
 import { AVATAR_TONE_COUNT, avatarTone, initials } from "./avatar-tone";
 
@@ -13,7 +14,7 @@ describe("avatarTone", () => {
   });
 
   test("every tone is styled and part of the theme contract", () => {
-    const root = join(import.meta.dir, "../../theme");
+    const root = join(import.meta.dirname, "../../theme");
     const primitives = readFileSync(join(root, "primitives.css"), "utf8");
     const contract = readFileSync(join(root, "tokens.css"), "utf8");
     for (const tone of tones) {

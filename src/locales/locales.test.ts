@@ -1,8 +1,10 @@
-import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const LOCALES_DIR = import.meta.dir;
+import { describe, expect, test } from "vitest";
+import { parse } from "yaml";
+
+const LOCALES_DIR = import.meta.dirname;
 
 const flatten = (value: unknown, prefix = ""): string[] =>
   value && typeof value === "object"
@@ -12,7 +14,7 @@ const flatten = (value: unknown, prefix = ""): string[] =>
     : [prefix];
 
 const keysOf = (file: string) =>
-  new Set(flatten(Bun.YAML.parse(readFileSync(join(LOCALES_DIR, file), "utf8"))));
+  new Set(flatten(parse(readFileSync(join(LOCALES_DIR, file), "utf8"))));
 
 const english = keysOf("en.yml");
 

@@ -1,12 +1,10 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { fakeBrowser } from "wxt/testing/fake-browser";
 
 import { injectTranslations, t } from "@/utils/i18n-page";
 
-const globals = globalThis as { browser?: unknown };
-
 afterEach(() => {
   document.getElementById("__odoo-toolbox-i18n")?.remove();
-  delete globals.browser;
 });
 
 describe("t", () => {
@@ -25,7 +23,9 @@ describe("t", () => {
   // Regression: the background has no injected messages, so the default quick domains
   // were named after their translation key.
   test("falls back to the browser's own translations when none are injected", () => {
-    globals.browser = { i18n: { getMessage: (key: string) => (key === "c_d" ? "Native" : "") } };
+    vi.spyOn(fakeBrowser.i18n, "getMessage").mockImplementation((key) =>
+      key === "c_d" ? "Native" : "",
+    );
     expect(t("c.d")).toBe("Native");
   });
 
