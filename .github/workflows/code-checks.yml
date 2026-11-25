@@ -1,4 +1,4 @@
-name: Tests
+name: Code checks
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - main
 
 concurrency:
-  group: tests-${{ github.ref }}
+  group: code-checks-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
           - name: Format
             run: bun format:check
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Use Bun
         uses: oven-sh/setup-bun@v2
@@ -35,7 +35,7 @@ jobs:
           bun-version-file: "package.json"
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
