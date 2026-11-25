@@ -23,6 +23,8 @@ trust the code and fix this file.
 | `bun build` / `bun build:firefox` | Production build into `dist/`                           |
 | `bun zip` / `bun zip:firefox`     | Store-ready zip                                         |
 | `bun run test`                    | Unit tests (Vitest, happy-dom, see section 12)          |
+| `bun run test:e2e`                | Build, then end-to-end tests (Playwright, Docker Odoo)  |
+| `bun run test:e2e:ui`             | Same, in Playwright's UI mode on `127.0.0.1:9323`       |
 | `bun run compile`                 | `tsc --noEmit`                                          |
 | `bun lint` / `bun lint:fix`       | `oxlint` (type-aware through `oxlint-tsgolint`)         |
 | `bun format` / `bun format:check` | `oxfmt`                                                 |
@@ -47,8 +49,9 @@ reporting a change as done.
 | `src/hooks/`            | Solid hooks shared by the screens (`useExtensionTheme`, `useSettings`...)                                            |
 | `src/locales/*.yml`     | Translations (en is the source of truth)                                                                             |
 | `src/utils/odoo-py_js/` | Odoo's own Python-expression evaluator, LGPLv3, kept unmodified (see its README)                                     |
+| `e2e/`                  | Playwright end-to-end tests: `extension/` (no Odoo), `odoo/` (Docker Odoo 18.0 to 20.0), fixtures (section 12)       |
 | `tests/`                | Vitest setup (`setup.ts`: resets `fakeBrowser` before each test) and test helpers (`storage.ts`)                     |
-| `scripts/`              | Developer scripts run through `package.json` (`check-added-comments.sh`)                                             |
+| `scripts/`              | Developer scripts run through `package.json` (`check-added-comments.sh`, `e2e.sh`)                                   |
 | `docs/`                 | Research notes (e.g. `docs/onchange-mechanism.md`), not product code                                                 |
 | `.fusion/`              | Tooling state of an agent orchestrator, not extension code: do not edit                                              |
 | `dist/`                 | Build output (git-ignored)                                                                                           |
@@ -269,6 +272,38 @@ Read `src/theme/README.md` before touching any style. Summary:
   `services/settings-service.test.ts` (migrations), `utils/debug-mode-rules.test.ts` and
   `utils/debug-mode-url.test.ts` (debug mode), `page-features/*.test.ts`.
 - `tests/page-world-imports.test.ts` checks which modules the page-world bundles may import.
+- End-to-end tests (`e2e/`, `bun run test:e2e`) load the built `dist/chrome-mv3` in Playwright's
+  Chromium (Firefox cannot load extensions there). `e2e/fixtures.ts` gives each test a fresh
+  profile and helpers that write the extension storage through the service worker.
+- `e2e/extension/` needs no Odoo: popup, options, install and update. `e2e/odoo/` runs once per
+  Odoo version (projects `odoo-18.0`, `odoo-19.0`, `odoo-20.0`) against the official Docker
+  images started by `e2e/odoo/docker-compose.yml` (setup project `odoo-setup`): `sale_management`
+  with demo data, admin `admin`/`admin`. The database lives in memory. `scripts/e2e.sh` (behind
+  both scripts) stops the containers when the run ends, on Ctrl+C or when the terminal closes;
+  extra arguments go to Playwright (`bun run test:e2e --project=odoo-19.0`). Version
+  `XX` answers on `odooXX.test:80XX`, a host the browser maps to 127.0.0.1. Supporting a new
+  Odoo version: add its service, its entry in `e2e/odoo/versions.ts` and its matrix entry in
+  both E2E workflows. `E2E_ODOO_VERSIONS=19.0` limits a run to some versions and their
+  containers: each CI job (Extension, Odoo 18.0...) runs one project this way.
+- With `E2E_ODOO_SOURCES=<dir>` (`<dir>/18.0`, `<dir>/19.0`... being checkouts of Odoo's
+  branches), `e2e/odoo/docker-compose.source.yml` runs Odoo from those checkouts; the images
+  only provide the dependencies. The weekly CI workflow (`e2e-odoo-branches.yml`, Tuesday) clones the heads of the stable
+  branches this way, to catch a change of Odoo's standard code; pull requests use the images.
+- The setup project also warms each Odoo up (bundles, templates): a cold Odoo answering the
+  parallel tests first would make them wait past their timeout.
+- UI mode (`bun run test:e2e:ui`) runs the setup project first, as the UI does not run project
+  dependencies; it then shows only the `extension` project: tick the `odoo-*` projects in its
+  "Projects" filter. `E2E_SLOW_MO=<ms>` slows every browser action down (off by default).
+- Most page features only enhance what Odoo renders after the page script is injected: open a
+  form through the web client (`openFirstRecord`), not by loading its URL.
+- Playwright cannot open the browser's DevTools: `e2e/odoo/devtools.spec.ts` opens
+  `devtools-panel.html` in a tab and stubs `devtools` (on `chrome` and `browser`) to point at
+  the Odoo tab.
+- Use e2e tests for what crosses contexts or needs the real browser (injection, network rules,
+  badge), not for logic a unit test covers.
+- An extension update is tested by loading the extension through the DevTools protocol
+  (`Extensions.loadUnpacked`), then loading it again: Chromium never updates an extension
+  given by `--load-extension`, it installs it again at each launch.
 
 ## 13. Conventions and gotchas
 

@@ -1,0 +1,52 @@
+name: odoo-toolbox-e2e
+
+x-odoo: &odoo
+  depends_on:
+    db:
+      condition: service_healthy
+  environment:
+    HOST: db
+    USER: odoo
+    PASSWORD: odoo
+  healthcheck:
+    test:
+      - CMD
+      - python3
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://localhost:8069/web/login')
+    interval: 3s
+    timeout: 5s
+    retries: 300
+    start_period: 10s
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD, pg_isready, -U, odoo]
+      interval: 2s
+      retries: 30
+
+  odoo-18:
+    <<: *odoo
+    image: odoo:18.0
+    command: [--database=odoo18, --db-filter=^odoo18$, --init=sale_management]
+    ports: ["127.0.0.1:8018:8069"]
+
+  odoo-19:
+    <<: *odoo
+    image: odoo:19.0
+    command: [--database=odoo19, --db-filter=^odoo19$, --init=sale_management, --with-demo]
+    ports: ["127.0.0.1:8019:8069"]
+
+  odoo-20:
+    <<: *odoo
+    image: odoo:20.0
+    command: [--database=odoo20, --db-filter=^odoo20$, --init=sale_management, --with-demo]
+    ports: ["127.0.0.1:8020:8069"]

@@ -21,6 +21,8 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "test": "vitest run",
+    "test:e2e": "bash scripts/e2e.sh",
+    "test:e2e:ui": "bash scripts/e2e.sh --ui",
     "test:validation": "vitest run src/utils/query-validation.test.ts"
   },
   "dependencies": {
@@ -57,6 +59,7 @@
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@solid-primitives/scheduled": "^1.5.3",
     "@types/node": "^26.6.10",
     "@wxt-dev/auto-icons": "^1.1.1",

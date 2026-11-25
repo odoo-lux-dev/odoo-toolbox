@@ -1,0 +1,63 @@
+name: E2E tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Extension
+            project: extension
+          - name: Odoo 18.0
+            project: odoo-18.0
+            odoo: "18.0"
+          - name: Odoo 19.0
+            project: odoo-19.0
+            odoo: "19.0"
+          - name: Odoo 20.0
+            project: odoo-20.0
+            odoo: "20.0"
+    env:
+      E2E_ODOO_VERSIONS: ${{ matrix.odoo }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: "package.json"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run the end-to-end tests
+        run: bun run test:e2e --project=${{ matrix.project }}
+
+      - name: Upload the Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 14

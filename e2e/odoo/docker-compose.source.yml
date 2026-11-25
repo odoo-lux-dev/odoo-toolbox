@@ -1,0 +1,47 @@
+# Runs each Odoo from a checkout of its branch (`$E2E_ODOO_SOURCES/<version>`) instead of the
+# code packaged in the image, which only provides the system and Python dependencies.
+x-source: &source
+  entrypoint: [python3, /mnt/odoo-src/odoo-bin]
+  # `odoo` is a namespace package: the packaged copy would mix its addons with the checkout's.
+  tmpfs: [/usr/lib/python3/dist-packages/odoo]
+  environment:
+    PYTHONDONTWRITEBYTECODE: "1"
+
+services:
+  odoo-18:
+    <<: *source
+    volumes: ["${E2E_ODOO_SOURCES:?}/18.0:/mnt/odoo-src:ro"]
+    command:
+      - --db_host=db
+      - --db_user=odoo
+      - --db_password=odoo
+      - --addons-path=/mnt/odoo-src/addons
+      - --database=odoo18
+      - --db-filter=^odoo18$
+      - --init=sale_management
+
+  odoo-19:
+    <<: *source
+    volumes: ["${E2E_ODOO_SOURCES:?}/19.0:/mnt/odoo-src:ro"]
+    command:
+      - --db_host=db
+      - --db_user=odoo
+      - --db_password=odoo
+      - --addons-path=/mnt/odoo-src/addons
+      - --database=odoo19
+      - --db-filter=^odoo19$
+      - --init=sale_management
+      - --with-demo
+
+  odoo-20:
+    <<: *source
+    volumes: ["${E2E_ODOO_SOURCES:?}/20.0:/mnt/odoo-src:ro"]
+    command:
+      - --db_host=db
+      - --db_user=odoo
+      - --db_password=odoo
+      - --addons-path=/mnt/odoo-src/addons
+      - --database=odoo20
+      - --db-filter=^odoo20$
+      - --init=sale_management
+      - --with-demo

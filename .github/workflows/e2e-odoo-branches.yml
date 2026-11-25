@@ -1,0 +1,59 @@
+name: E2E tests on Odoo stable branches
+
+# Odoo pushes its weekly changes on Monday; the Docker images are only rebuilt every few weeks.
+on:
+  schedule:
+    - cron: "0 6 * * 2"
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-odoo-branches
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Odoo ${{ matrix.odoo }} branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        odoo: ["18.0", "19.0", "20.0"]
+    env:
+      E2E_ODOO_VERSIONS: ${{ matrix.odoo }}
+      E2E_ODOO_SOURCES: ${{ github.workspace }}/../odoo
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: "package.json"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      # The image provides Python and Odoo's dependencies; the code comes from the branch.
+      - name: Check out Odoo's ${{ matrix.odoo }} branch
+        run: |
+          git clone --quiet --depth 1 --branch "${{ matrix.odoo }}" https://github.com/odoo/odoo.git "$E2E_ODOO_SOURCES/${{ matrix.odoo }}"
+          git -C "$E2E_ODOO_SOURCES/${{ matrix.odoo }}" log -1 --format='%h %cs %s'
+
+      - name: Run the end-to-end tests
+        run: bun run test:e2e --project=odoo-${{ matrix.odoo }}
+
+      - name: Upload the Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-odoo-${{ matrix.odoo }}
+          path: playwright-report/
+          retention-days: 14
