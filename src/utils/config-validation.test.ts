@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 
 import { parseConfigFile } from "@/utils/config-validation";
 import { getDefaultSettings } from "@/utils/settings-schema";

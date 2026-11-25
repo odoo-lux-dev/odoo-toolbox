@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, test } from "bun:test";
-
-import { memoryStorage, resetStorage, storedVersions } from "@@/tests/setup";
+import { storeAtVersion } from "@@/tests/storage";
+import { describe, expect, test, vi } from "vitest";
+import { storage } from "wxt/utils/storage";
 
 import { MAX_HISTORY_ENTRIES, historyService } from "@/services/history-service";
 import type { HistoryAction } from "@/types";
@@ -22,12 +22,14 @@ const action = (overrides: Partial<HistoryAction> = {}): HistoryAction =>
 const add = (model: string) =>
   historyService.addAction({ type: "search", model, parameters: {} } as never);
 
-const seed = (actions: HistoryAction[]) => {
-  memoryStorage.set(STORAGE_KEY, actions);
-  storedVersions.set(STORAGE_KEY, 3);
-};
+const seed = (actions: HistoryAction[]) => storage.setItem(STORAGE_KEY, actions);
 
-beforeEach(resetStorage);
+const migratedHistory = async (stored: unknown[]) => {
+  await storeAtVersion(STORAGE_KEY, stored, 1);
+  vi.resetModules();
+  const { historyService } = await import("@/services/history-service");
+  return historyService.get();
+};
 
 describe("historyService", () => {
   test("lists the newest action first", async () => {
@@ -43,7 +45,7 @@ describe("historyService", () => {
     const actions = Array.from({ length: MAX_HISTORY_ENTRIES + 5 }, (_, i) =>
       action({ timestamp: i }),
     );
-    seed(actions);
+    await seed(actions);
     const history = await historyService.get();
     expect(history).toHaveLength(MAX_HISTORY_ENTRIES);
     expect(history.at(-1)?.timestamp).toBe(5);
@@ -54,14 +56,14 @@ describe("historyService", () => {
     const recent = Array.from({ length: MAX_HISTORY_ENTRIES }, (_, i) =>
       action({ timestamp: i + 1 }),
     );
-    seed([...recent, pinned]);
+    await seed([...recent, pinned]);
     const history = await historyService.get();
     expect(history).toHaveLength(MAX_HISTORY_ENTRIES);
     expect(history[0].id).toBe("pinned");
   });
 
   test("pins, labels and removes a single action", async () => {
-    seed([action({ id: "a" }), action({ id: "b" })]);
+    await seed([action({ id: "a" }), action({ id: "b" })]);
     await historyService.setActionPinned("b", true);
     await historyService.setActionLabel("b", "my query");
     await historyService.removeAction("a");
@@ -77,16 +79,16 @@ describe("historyService", () => {
   });
 
   test("migrates v1 entries (no pinned, no label)", async () => {
-    memoryStorage.set(STORAGE_KEY, [{ id: "old", timestamp: 1, type: "search", model: "m" }]);
-    storedVersions.set(STORAGE_KEY, 1);
-    expect(await historyService.get()).toMatchObject([{ id: "old", pinned: false, label: "" }]);
+    const history = await migratedHistory([
+      { id: "old", timestamp: 1, type: "search", model: "m" },
+    ]);
+    expect(history).toMatchObject([{ id: "old", pinned: false, label: "" }]);
   });
 
   test("the migrations keep the values already stored", async () => {
-    memoryStorage.set(STORAGE_KEY, [
+    const history = await migratedHistory([
       { id: "old", timestamp: 1, type: "search", model: "m", pinned: true, label: "kept" },
     ]);
-    storedVersions.set(STORAGE_KEY, 1);
-    expect(await historyService.get()).toMatchObject([{ id: "old", pinned: true, label: "kept" }]);
+    expect(history).toMatchObject([{ id: "old", pinned: true, label: "kept" }]);
   });
 });

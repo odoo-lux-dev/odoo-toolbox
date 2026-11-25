@@ -1,6 +1,5 @@
-import { expect, test } from "bun:test";
-
 import { createRoot, createSignal } from "solid-js";
+import { expect, test } from "vitest";
 
 import { createGridNavigation } from "@/screens/devtools/components/grid-navigation";
 

@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vitest";
 
 import { compareProjects, type ProjectSortKey } from "@/page-features/odoo-sh/project-sort";
 

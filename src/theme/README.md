@@ -144,4 +144,4 @@ contract doesn't have, add a semantic token to `tokens.css` and define it in **e
    import validation, the picker and the commands list it automatically.
 5. Add `options.settings.theme_<id>` and `options.settings.theme_<id>_desc` to every
    locale (`-` becomes `_` in the id).
-6. `bun test src/theme` checks the wiring and the contract.
+6. `bun run test src/theme` checks the wiring and the contract.

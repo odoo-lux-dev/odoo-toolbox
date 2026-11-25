@@ -1,14 +1,8 @@
-import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
-
-import { memoryStorage, resetStorage } from "@@/tests/setup";
+import { describe, expect, test, vi } from "vitest";
 import { storage } from "wxt/utils/storage";
 
 import { configurationService } from "@/services/configuration-service";
 import { favoritesService } from "@/services/favorites-service";
-
-beforeEach(resetStorage);
-
-afterEach(() => mock.restore());
 
 describe("configurationService sync", () => {
   test("records the save and reports the data as synced", async () => {
@@ -17,13 +11,13 @@ describe("configurationService sync", () => {
 
     await configurationService.persistDataToSync();
     expect(await configurationService.isDataSynced()).toBe(true);
-    expect((await configurationService.getSyncStatus()).syncedAt).toBeNumber();
+    expect((await configurationService.getSyncStatus()).syncedAt).toEqual(expect.any(Number));
   });
 
   test("ignores the key order of the synced copy", async () => {
     await configurationService.persistDataToSync();
-    const synced = memoryStorage.get("sync:settings") as Record<string, unknown>;
-    memoryStorage.set(
+    const synced = (await storage.getItem("sync:settings")) as Record<string, unknown>;
+    await storage.setItem(
       "sync:settings",
       Object.fromEntries(Object.entries(synced).toSorted(([a], [b]) => a.localeCompare(b))),
     );
@@ -43,7 +37,7 @@ describe("configurationService sync", () => {
   test("records the failed part and keeps the last successful save", async () => {
     await configurationService.persistDataToSync();
     const { syncedAt } = await configurationService.getSyncStatus();
-    spyOn(favoritesService, "persistToSync").mockRejectedValue(
+    vi.spyOn(favoritesService, "persistToSync").mockRejectedValue(
       new Error("QUOTA_BYTES_PER_ITEM quota exceeded"),
     );
 

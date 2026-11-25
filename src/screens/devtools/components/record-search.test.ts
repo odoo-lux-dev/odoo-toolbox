@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vitest";
 
 import { findMatches } from "@/screens/devtools/components/record-search-dom";
 

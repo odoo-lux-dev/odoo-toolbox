@@ -1,15 +1,20 @@
-import { beforeEach, describe, expect, test } from "bun:test";
+import { describe, expect, test, vi } from "vitest";
+import { type StorageItemKey, storage } from "wxt/utils/storage";
 
-import { fakeBrowser } from "wxt/testing/fake-browser";
+type ItemOptions = NonNullable<Parameters<typeof storage.defineItem>[1]>;
 
-import { definedItems } from "../../tests/setup";
+const definedItems = new Map<string, ItemOptions>();
+const defineItem = storage.defineItem.bind(storage);
+vi.spyOn(storage, "defineItem").mockImplementation(((key: StorageItemKey, options: ItemOptions) => {
+  definedItems.set(key, options);
+  return defineItem(key, options);
+}) as typeof storage.defineItem);
 
-// The services define their storage items on import (through the in-memory mock of setup.ts).
-import "@/services/debug-mode-rules-service";
-import "@/services/favorites-service";
-import "@/services/history-service";
-import "@/services/quick-domains-service";
-import "@/services/settings-service";
+await import("@/services/debug-mode-rules-service");
+await import("@/services/favorites-service");
+await import("@/services/history-service");
+await import("@/services/quick-domains-service");
+await import("@/services/settings-service");
 
 /**
  * Versions already released. WXT only runs the migrations above the stored version, so a
@@ -36,27 +41,17 @@ describe("storage item versions", () => {
   });
 });
 
-// The real WXT storage engine, on a fake browser, replaying the services' item options.
-// Its own copy of `@wxt-dev/browser` reads the `browser` global once, when first imported.
-const globals = globalThis as { browser?: unknown };
-globals.browser = fakeBrowser;
-const { storage } = await import("@wxt-dev/storage");
-delete globals.browser;
-
-/** Stores `value` at `version` the way WXT does, then reads it back through the real engine. */
-const migrate = async (key: string, value: unknown, version: number) => {
-  const [area, name] = key.split(":") as ["local" | "sync", string];
-  await fakeBrowser.storage[area].set({ [name]: value, [`${name}$`]: { v: version } });
-  const item = storage.defineItem(key as `local:${string}`, definedItems.get(key)!);
+const migrate = async (key: StorageItemKey, value: unknown, version: number) => {
+  await storage.setItem(key, value);
+  await storage.setMeta(key, { v: version });
+  const item = defineItem(key, definedItems.get(key)!);
   return {
     value: await item.getValue(),
     version: ((await item.getMeta()) as { v?: number }).v,
   };
 };
 
-describe("storage migrations (real WXT storage)", () => {
-  beforeEach(() => fakeBrowser.reset());
-
+describe("storage migrations", () => {
   test("sync settings: defaultDarkMode becomes defaultColorScheme", async () => {
     const { value, version } = await migrate("sync:settings", { defaultDarkMode: true }, 10);
     expect(version).toBe(19);

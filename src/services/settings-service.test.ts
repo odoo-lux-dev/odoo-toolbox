@@ -1,14 +1,16 @@
-import { beforeEach, describe, expect, test } from "bun:test";
+import { storeAtVersion } from "@@/tests/storage";
+import { describe, expect, test, vi } from "vitest";
 
-import { memoryStorage, resetStorage, storedVersions } from "../../tests/setup";
-
-const { settingsService } = await import("@/services/settings-service");
-const { getDefaultSettings } = await import("@/utils/settings-schema");
+import { settingsService } from "@/services/settings-service";
+import { getDefaultSettings } from "@/utils/settings-schema";
 
 const LOCAL = "local:settings";
 const SYNC = "sync:settings";
 
-beforeEach(resetStorage);
+const migratedSettingsService = async () => {
+  vi.resetModules();
+  return (await import("@/services/settings-service")).settingsService;
+};
 
 describe("settingsService", () => {
   test("sets, reads and toggles a setting", async () => {
@@ -19,24 +21,21 @@ describe("settingsService", () => {
   });
 
   test("upgrading from an old sync version keeps the fresh-install task defaults", async () => {
-    memoryStorage.set(SYNC, { enableDebugMode: "1", enablePrintOptionsPDF: true });
-    storedVersions.set(SYNC, 4);
-    const synced = await settingsService.getSyncedSettings();
+    await storeAtVersion(SYNC, { enableDebugMode: "1", enablePrintOptionsPDF: true }, 4);
+    const synced = await (await migratedSettingsService()).getSyncedSettings();
     expect(synced.taskUrl).toBe(getDefaultSettings().taskUrl);
     expect(synced.taskUrlRegex).toBe(getDefaultSettings().taskUrlRegex);
     expect(synced.enablePrintOptionsPDF).toBe(true);
   });
 
   test("migrates the former dark mode flag to the default color scheme", async () => {
-    memoryStorage.set(LOCAL, { defaultDarkMode: true });
-    storedVersions.set(LOCAL, 1);
-    expect(await settingsService.get("defaultColorScheme")).toBe("dark");
+    await storeAtVersion(LOCAL, { defaultDarkMode: true }, 1);
+    expect(await (await migratedSettingsService()).get("defaultColorScheme")).toBe("dark");
   });
 
   test("the dark mode migration keeps a default color scheme already stored", async () => {
-    memoryStorage.set(LOCAL, { defaultDarkMode: true, defaultColorScheme: "light" });
-    storedVersions.set(LOCAL, 1);
-    expect(await settingsService.get("defaultColorScheme")).toBe("light");
+    await storeAtVersion(LOCAL, { defaultDarkMode: true, defaultColorScheme: "light" }, 1);
+    expect(await (await migratedSettingsService()).get("defaultColorScheme")).toBe("light");
   });
 
   test("ignores a path once and never removes an undeletable one", async () => {

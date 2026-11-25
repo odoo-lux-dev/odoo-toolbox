@@ -1,5 +1,3 @@
-import { beforeAll, describe, expect, test } from "bun:test";
-
 import {
   CompletionContext,
   type Completion,
@@ -9,22 +7,18 @@ import { json } from "@codemirror/lang-json";
 import { ensureSyntaxTree } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { beforeAll, describe, expect, test } from "vitest";
+import { fakeBrowser } from "wxt/testing/fake-browser";
 
 import { fieldCompletions } from "@/screens/devtools/components/json-cm-completions";
 import { initI18n } from "@/services/i18n-service";
 import type { FieldMetadata } from "@/types";
 
 beforeAll(async () => {
-  (globalThis as typeof globalThis & { browser?: unknown }).browser = {
-    runtime: {
-      sendMessage: async () => ({
-        ok: true,
-        messages: { devtools_completions_loading: "Loading fields..." },
-      }),
-    },
-    i18n: { getMessage: () => "" },
-  };
-
+  fakeBrowser.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
+    sendResponse({ ok: true, messages: { devtools_completions_loading: "Loading fields..." } });
+    return true;
+  });
   await initI18n();
 });
 

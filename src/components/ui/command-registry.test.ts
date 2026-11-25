@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 
 import { filterCommands, matchesQuery, type Command } from "./command-registry";
 

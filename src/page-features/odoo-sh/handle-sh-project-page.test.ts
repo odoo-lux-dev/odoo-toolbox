@@ -1,13 +1,10 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
-
-import { resetStorage } from "@@/tests/setup";
+import { afterEach, beforeEach, expect, test } from "vitest";
 
 import { handleProjectPage } from "./handle-sh-project-page";
 
 let dispose: () => void = () => {};
 
 beforeEach(() => {
-  resetStorage();
   document.body.innerHTML =
     '<div class="odoo_sh_app_body"></div><input class="js_git_command" value="git clone -b 17.0-fix x.git">';
 });

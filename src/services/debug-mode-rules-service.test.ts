@@ -1,34 +1,32 @@
-import { beforeAll, beforeEach, describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { fakeBrowser } from "wxt/testing/fake-browser";
+import { storage } from "wxt/utils/storage";
 
-import { memoryStorage, resetStorage } from "../../tests/setup";
-
-const { MAX_ODOO_HOSTS, debugModeRulesService } =
-  await import("@/services/debug-mode-rules-service");
-const { settingsService } = await import("@/services/settings-service");
-const { buildDebugModeRules } = await import("@/utils/debug-mode-rules");
+import { MAX_ODOO_HOSTS, debugModeRulesService } from "@/services/debug-mode-rules-service";
+import { settingsService } from "@/services/settings-service";
+import { buildDebugModeRules } from "@/utils/debug-mode-rules";
 
 const KEY = "local:odooHosts";
 const hostNames = (count: number) => Array.from({ length: count }, (_, i) => `h${i}.example.com`);
-
-beforeEach(resetStorage);
+const storedHosts = () => storage.getItem<string[]>(KEY);
 
 describe("debugModeRulesService.rememberHost", () => {
   test("puts the last visited host first, without duplicates", async () => {
     await debugModeRulesService.rememberHost("a.example.com");
     await debugModeRulesService.rememberHost("b.example.com");
     await debugModeRulesService.rememberHost("a.example.com");
-    expect(memoryStorage.get(KEY)).toEqual(["a.example.com", "b.example.com"]);
+    expect(await storedHosts()).toEqual(["a.example.com", "b.example.com"]);
   });
 
   test("keeps a host visited again before the list overflows", async () => {
     const hosts = hostNames(MAX_ODOO_HOSTS);
     const oldest = hosts[MAX_ODOO_HOSTS - 1];
-    memoryStorage.set(KEY, hosts);
+    await storage.setItem(KEY, hosts);
 
     await debugModeRulesService.rememberHost(oldest);
     await debugModeRulesService.rememberHost("new.example.com");
 
-    const stored = memoryStorage.get(KEY) as string[];
+    const stored = (await storedHosts())!;
     expect(stored).toHaveLength(MAX_ODOO_HOSTS);
     expect(stored).toContain(oldest);
     expect(stored).not.toContain(hosts[MAX_ODOO_HOSTS - 2]);
@@ -36,11 +34,11 @@ describe("debugModeRulesService.rememberHost", () => {
 
   test("drops the oldest host when a new one exceeds the limit", async () => {
     const hosts = hostNames(MAX_ODOO_HOSTS);
-    memoryStorage.set(KEY, hosts);
+    await storage.setItem(KEY, hosts);
 
     await debugModeRulesService.rememberHost("new.example.com");
 
-    const stored = memoryStorage.get(KEY) as string[];
+    const stored = (await storedHosts())!;
     expect(stored).toHaveLength(MAX_ODOO_HOSTS);
     expect(stored[0]).toBe("new.example.com");
     expect(stored).not.toContain(hosts[MAX_ODOO_HOSTS - 1]);
@@ -66,11 +64,11 @@ const fakeDnr = {
   rules: [] as Rule[],
   updates: 0,
   async getDynamicRules(): Promise<Rule[]> {
-    await Bun.sleep(0);
+    await new Promise((resolve) => setTimeout(resolve, 0));
     return (sortKeys(this.rules) as Rule[]).toReversed();
   },
   async updateDynamicRules(options: { removeRuleIds: number[]; addRules: Rule[] }) {
-    await Bun.sleep(0);
+    await new Promise((resolve) => setTimeout(resolve, 0));
     const kept = this.rules.filter((rule) => !options.removeRuleIds.includes(rule.id));
     const duplicate = options.addRules.find((rule) => kept.some(({ id }) => id === rule.id));
     if (duplicate) throw new Error(`Rule with id ${duplicate.id} does not have a unique ID.`);
@@ -79,29 +77,30 @@ const fakeDnr = {
   },
 };
 
-const settle = () => Bun.sleep(20);
+const settle = () => new Promise((resolve) => setTimeout(resolve, 20));
 
 const expectedRules = async () => {
   const settings = await settingsService.getSettings();
   return buildDebugModeRules({
     defaultDebugMode: settings.enableDebugMode,
     ignoredPaths: settings.ignoredDebugPaths,
-    hosts: memoryStorage.get(KEY) as string[],
+    hosts: (await storedHosts())!,
   });
 };
 
 const appliedRules = () => fakeDnr.rules.toSorted((a, b) => a.id - b.id);
 
 describe("debugModeRulesService rules", () => {
-  beforeAll(async () => {
-    (globalThis as typeof globalThis & { browser?: unknown }).browser = {
-      declarativeNetRequest: fakeDnr,
-    };
+  beforeEach(async () => {
+    vi.spyOn(fakeBrowser.declarativeNetRequest, "getDynamicRules").mockImplementation(() =>
+      fakeDnr.getDynamicRules(),
+    );
+    vi.spyOn(fakeBrowser.declarativeNetRequest, "updateDynamicRules").mockImplementation(
+      (options) => fakeDnr.updateDynamicRules(options as never),
+    );
+    // fakeBrowser.reset() drops the storage listeners start() registered.
     debugModeRulesService.start();
     await settle();
-  });
-
-  beforeEach(() => {
     fakeDnr.rules = [];
     fakeDnr.updates = 0;
   });
@@ -128,7 +127,7 @@ describe("debugModeRulesService rules", () => {
     await debugModeRulesService.rememberHost("a.example.com");
     await settle();
 
-    expect(memoryStorage.get(KEY)).toEqual(["a.example.com", "b.example.com"]);
+    expect(await storedHosts()).toEqual(["a.example.com", "b.example.com"]);
     expect(fakeDnr.updates).toBe(updates);
   });
 });

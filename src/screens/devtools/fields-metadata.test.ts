@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, spyOn, test } from "bun:test";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { cachedFieldsOf, clearFieldsCache, fieldsOf } from "@/screens/devtools/fields-metadata";
 import { odooRpcService } from "@/services/odoo-rpc-service";
@@ -9,7 +9,9 @@ afterEach(clearFieldsCache);
 
 describe("fieldsOf", () => {
   test("fetches the fields of a model once, until the cache is cleared", async () => {
-    const getFieldsInfo = spyOn(odooRpcService, "getFieldsInfo").mockResolvedValue(partnerFields);
+    const getFieldsInfo = vi
+      .spyOn(odooRpcService, "getFieldsInfo")
+      .mockResolvedValue(partnerFields);
 
     await Promise.all([fieldsOf("res.partner"), fieldsOf("res.partner")]);
     expect(await fieldsOf("res.partner")).toEqual(partnerFields);
@@ -22,7 +24,8 @@ describe("fieldsOf", () => {
   });
 
   test("does not cache a failed call", async () => {
-    const getFieldsInfo = spyOn(odooRpcService, "getFieldsInfo")
+    const getFieldsInfo = vi
+      .spyOn(odooRpcService, "getFieldsInfo")
       .mockRejectedValueOnce(new Error("offline"))
       .mockResolvedValueOnce(partnerFields);
 

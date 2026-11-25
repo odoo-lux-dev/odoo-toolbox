@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 
 import { filterElements, type ElementFilters } from "./filter-elements";
 import type { ButtonInfo, FieldInfo } from "./types";
