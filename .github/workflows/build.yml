@@ -28,7 +28,7 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Extract version
         id: get_version
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Update extension version
         run: sed -i "s/{{EXTENSION_VERSION}}/${{ needs.prepare.outputs.version }}/" package.json
@@ -73,7 +73,7 @@ jobs:
           bun run zip:firefox
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: extension-builds
           path: |
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare, build]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Use Bun
         uses: oven-sh/setup-bun@v2
@@ -97,7 +97,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: extension-builds
           path: dist/
@@ -118,14 +118,14 @@ jobs:
     needs: [prepare, build]
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: extension-builds
           path: dist/
 
       - name: Create Release
         if: github.event_name != 'workflow_dispatch' || (inputs.release_notes && !inputs.test_mode)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: "v${{ needs.prepare.outputs.version }}"
           name: "Release v${{ needs.prepare.outputs.version }}"
